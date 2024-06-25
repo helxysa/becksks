@@ -1,5 +1,5 @@
 <template>
-    <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-80 h-screen pt-20 mt-16 transition-transform -translate-x-full bg-white border-r-8 border-blue-100 sm:translate-x-0" aria-label="Sidebar">
+    <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-72 h-screen pt-20 mt-16 transition-transform -translate-x-full bg-white border-r-8 border-blue-100 sm:translate-x-0" aria-label="Sidebar">
         <div class="h-full pt-12 overflow-y-auto bg-white flex justify-center w-full">
            <ul class="space-y-8">
               <li>

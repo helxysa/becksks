@@ -122,24 +122,24 @@ const contratos =  ref([
 ])
 
 watchEffect( ()=> {
-  const  objeto = JSON.parse(localStorage.getItem('contrato'))
+  // const  objeto = JSON.parse(localStorage.getItem('contrato'))
   
- if (objeto) {
+//  if (objeto) {
 
-   contratos.value.push({...objeto, id: 1});
- }
+//    contratos.value.push({...objeto, id: 1});
+//  }
 //   contratos = contratos.concat(objeto.map(item => ({
 //   ...objeto
 // })));
-  console.log(contratos.value, 'contrartos')
+  // console.log(contratos.value, 'contrartos')
 
 
 
-//   api.get(`/contracts`).then((response)  => {
-//     console.log('lista  contratos', response)
-//   }).catch((erro)=>{
-//      console.log(erro, 'erro')
-//   })
+  api.get(`/contracts`).then((response)  => {
+    console.log('lista  contratos', response)
+  }).catch((erro)=>{
+     console.log(erro, 'erro')
+  })
 }
 )
 
