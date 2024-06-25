@@ -158,51 +158,28 @@ const route = useRoute();
     
 
 const  router  =  useRouter();
+const contratoEdit =  localStorage.getItem('contrato')
+const id = route.params.id;
 onMounted(() => {
-    const id = route.params.id;
+    // const id = route.params.id;
   console.log('id', id)
+  
+  console.log(contratoEdit, 'edit')
+  console.log(form ,'formulário')
    if (id) {
-    console.log('entrou')
-    const  objeto = JSON.parse(localStorage.getItem('contrato'))
     form = {
-        id: objeto.id,
-    nome_cliente: objeto.nome_cliente, 
-    vigencia: objeto.vigencia, 
-    saldo_contrato: objeto.saldo_contrato, 
-    fiscal: objeto.fiscal, 
-    ponto_focal: objeto.ponto_focal,
-    cidade: objeto.cidade, 
-    objeto_contrato: objeto.objeto_contrato, 
-    items: objeto.items
-
-    }
-
-    console.log(form, 'form')
-   } else {
-
-    console.log('else')
-
-       form = {
-        id: 1,
-  nome_cliente: "", 
-  vigencia: "", 
-  saldo_contrato: "", 
-  fiscal: "", 
-  ponto_focal: "",
-  cidade: "", 
-  objeto_contrato: "", 
-  items: [
-      // {
-      //     titulo: "Item 2", 
-      //     unidade_medida: "PF",
-      //     valor_unitario: "50.00", 
-      //     saldo_quantidade_contratada: "100"
-      // }
-  ]
-       }  
-    
-
+    id: contratoEdit.id ,
+    nome_cliente: contratoEdit.nome_cliente, 
+    vigencia: contratoEdit.vigencia , 
+    saldo_contrato: contratoEdit.saldo_contrato, 
+    fiscal: contratoEdit.fiscal, 
+    ponto_focal:contratoEdit.ponto_focal,
+    cidade:contratoEdit.cidade, 
+    objeto_contrato:contratoEdit.objeto_contrato, 
+    items: contratoEdit.items 
+}
    }
+ 
 })
 
 const voltarListagem = () => {
@@ -218,15 +195,15 @@ const toggleOpenListItems = () => {
 
 const exibirModal = ref(false);
 let form = reactive({
-    id: 1,
-    nome_cliente: "", 
-    vigencia: "", 
-    saldo_contrato: "", 
-    fiscal: "", 
-    ponto_focal: "",
-    cidade: "", 
-    objeto_contrato: "", 
-    items: [
+    id: id? contratoEdit.id: "" ,
+    nome_cliente: id? contratoEdit.nome_cliente: "", 
+    vigencia: id? contratoEdit.vigencia :"", 
+    saldo_contrato: id? contratoEdit.saldo_contrato: "", 
+    fiscal: id? contratoEdit.fiscal:"", 
+    ponto_focal:id? contratoEdit.ponto_focal: "",
+    cidade:id? contratoEdit.cidade:"", 
+    objeto_contrato:id? contratoEdit.objeto_contrato: "", 
+    items: id? contratoEdit.items : [
         // {
         //     titulo: "Item 2", 
         //     unidade_medida: "PF",
