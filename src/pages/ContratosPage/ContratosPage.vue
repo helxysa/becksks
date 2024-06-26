@@ -10,7 +10,11 @@
         </router-link>
       </button>
     </div>
-    <table class="mt-16 table-auto border border-slate-200 rounded-2xl w-full">
+    <div class="flex gap-8 flex-wrap">
+      <ListContratos/>
+
+    </div>
+    <!-- <table class="mt-16 table-auto border border-slate-200 rounded-2xl w-full">
       <thead class="h-24 bg-slate-100 border-1">
         <tr class="">
           <th class="text-2xl">Nome</th>
@@ -22,7 +26,7 @@
       <tbody>
         <ListContratos />
       </tbody>
-    </table>
+    </table> -->
   </div>
 </template>
 

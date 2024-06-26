@@ -1,6 +1,71 @@
 <template>
-    <tr class="h-20 text-center" v-for="contrato in contratos" :key="contrato.name">
-      <td class="text-2xl ">{{ contrato.nome_cliente }}</td>
+    <div  v-for="contrato in contratos" :key="contrato.id" class="flex flex-col">
+      
+
+  <Card style="width: 25rem; overflow: hidden">
+      <!-- <template #header>
+          <img alt="user header" src="https://primefaces.org/cdn/primevue/images/usercard.png" />
+      </template> -->
+      <template #title >
+          <div class="flex justify-end text-lg">
+            <Button>Aguardando pagamento</Button>
+
+          </div>
+      </template>
+     
+      <template #content>
+        <img src="../../assets/imagens/imageCard.png" alt="imagem representativa  do  contrato"/>
+        <p class="flex justify-center font-semibold mt-2">{{ contrato.nomeCliente }}</p>
+        <div>
+          <span class="font-semibold">Vigência:</span>         
+          <span>{{
+            new Intl.DateTimeFormat("pt-BR", {
+              timeZone: "UTC",
+          }).format(
+              new Date(
+                  contrato.vigencia
+              )
+          )
+            }}</span>
+          
+        </div>
+        <div>
+          <span class="font-semibold">
+            Saldo atual : 
+          </span>
+          <span>{{contrato.saldoContrato}}</span>
+        </div>
+        <div>
+          <span class="font-semibold">
+            Valor aguard.  faturamento : 
+          </span>
+        
+          <!-- <span>{{contrato.saldoContrato}}</span> -->
+        </div>
+        <div>
+          <span class="font-semibold">
+            Valor aguard. pagamento:
+          </span>
+         
+        </div>
+        
+      </template>
+     
+  </Card>
+  <div class="flex justify-end mt-2">
+    <router-link :to="{name:'editarcontrato', params: {id: contrato.id}}">
+      <router-view>
+        <Icon icon="bx:edit" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer"/>
+      </router-view>
+    </router-link>
+      <Icon icon="ph:trash" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+      @click=" openModalDeleteContrato"/>
+  </div>
+
+
+
+
+      <!-- <td class="text-2xl ">{{ contrato.nome_cliente }}</td>
       <td class="text-2xl ">{{ 
         new Intl.DateTimeFormat("pt-BR", {
           timeZone: "UTC",
@@ -25,8 +90,8 @@
         </router-link>
           <Icon icon="ph:trash" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer"
           @click=" openModalDeleteContrato"/>
-      </td>
-    </tr>
+      </td> -->
+    </div>
     <JetDialogModal
     :show="excluirModal"
     @close="closeModal"
@@ -67,6 +132,8 @@ import { RouterLink, useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import JetDialogModal from '@/components/modals/DialogModal.vue'
 import { api } from '@/services/api';
+import Card from 'primevue/card';
+import Button from 'primevue/button';
 
 const  router =  useRouter()
 
@@ -119,6 +186,75 @@ const  closeModal = ()=> {
 }
 
 const contratos =  ref([
+  {
+        id: 1,
+        nomeCliente: "Cliente B",
+        vigencia: "2024-12-31T00:00:00.000Z",
+        saldoContrato: "500.00",
+        fiscal: "Supervisor",
+        pontoFocal: "Ponto Focal",
+        cidade: "Cidade",
+        objetoContrato: "Objeto",
+        createdAt: "2024-06-26T12:21:53.957+00:00",
+        updatedAt: "2024-06-26T12:21:53.957+00:00",
+        contratoItens: [
+            {
+                id: 1,
+                contratoId: 1,
+                titulo: "desenvolvimento",
+                unidadeMedida: "PF",
+                valorUnitario: "50",
+                saldoQuantidadeContratada: "100",
+                createdAt: "2024-06-26T12:21:53.962+00:00",
+                updatedAt: "2024-06-26T12:21:53.962+00:00"
+            },
+            {
+                id: 2,
+                contratoId: 1,
+                titulo: "Sustentação",
+                unidadeMedida: "PF",
+                valorUnitario: "50",
+                saldoQuantidadeContratada: "100",
+                createdAt: "2024-06-26T12:21:53.962+00:00",
+                updatedAt: "2024-06-26T12:21:53.962+00:00"
+            }
+        ]
+    },
+
+    {
+        id: 1,
+        nomeCliente: "Cliente B",
+        vigencia: "2024-12-31T00:00:00.000Z",
+        saldoContrato: "500.00",
+        fiscal: "Supervisor",
+        pontoFocal: "Ponto Focal",
+        cidade: "Cidade",
+        objetoContrato: "Objeto",
+        createdAt: "2024-06-26T12:21:53.957+00:00",
+        updatedAt: "2024-06-26T12:21:53.957+00:00",
+        contratoItens: [
+            {
+                id: 1,
+                contratoId: 1,
+                titulo: "desenvolvimento",
+                unidadeMedida: "PF",
+                valorUnitario: "50",
+                saldoQuantidadeContratada: "100",
+                createdAt: "2024-06-26T12:21:53.962+00:00",
+                updatedAt: "2024-06-26T12:21:53.962+00:00"
+            },
+            {
+                id: 2,
+                contratoId: 1,
+                titulo: "Sustentação",
+                unidadeMedida: "PF",
+                valorUnitario: "50",
+                saldoQuantidadeContratada: "100",
+                createdAt: "2024-06-26T12:21:53.962+00:00",
+                updatedAt: "2024-06-26T12:21:53.962+00:00"
+            }
+        ]
+    }
 ])
 
 watchEffect( ()=> {
@@ -135,7 +271,7 @@ watchEffect( ()=> {
 
 
 
-  api.get(`/contracts`).then((response)  => {
+  api.get(`/contratos`).then((response)  => {
     console.log('lista  contratos', response)
   }).catch((erro)=>{
      console.log(erro, 'erro')
