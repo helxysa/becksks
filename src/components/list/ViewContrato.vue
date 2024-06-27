@@ -214,10 +214,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter,RouterLink } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import { api } from '@/services/api';
 import JetDialogModal from '@/components/modals/DialogModal.vue';
+import { toast } from 'vue3-toastify';
 
 const  router  =  useRouter();
 const route = useRoute();
@@ -235,10 +236,10 @@ const openModalDeleteContrato = (contratoExcluido) => {
 const deleteContrato = () => {
   api.delete(`/contratos/${contrato.value.id}`).then((response) => {
     closeModal();
-    toast("Contrato deletado com sucesso!", {
-      theme: "colored",
-      type: "success"
-    });
+    // toast("Contrato deletado com sucesso!", {
+    //   theme: "colored",
+    //   type: "success"
+    // });
     voltarListagem()
     // fetchContratos();
   }).catch((error) => {
