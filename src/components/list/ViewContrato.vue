@@ -1,9 +1,23 @@
 <template>
-  <div class="flex items-center mt-12 ">
-    <span @click="voltarListagem" class="cursor-pointer">
-      <Icon icon="ic:round-arrow-back" height="30" />
-    </span>
-    <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
+  <div class="flex items-center justify-between mt-12 ">
+    <div class="flex">
+      <span @click="voltarListagem" class="cursor-pointer">
+        <Icon icon="ic:round-arrow-back" height="30" />
+      </span>
+      <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
+
+    </div>
+    <div class="flex gap-4">
+      <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
+        <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
+          <router-view>
+            Editar
+          </router-view>
+        </router-link>      
+      </button>
+      <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
+      @click="openModalDeleteContrato(contrato)">Excluir</button>
+    </div>
   </div>
 
   <section class="mt-12">
@@ -180,6 +194,21 @@
 </template>
 
 </JetDialogModal>
+ <JetDialogModal :show="excluirModal" @close="closeModal" :withouHeader="true">
+    <template #content>
+      <div class="flex justify-center font-semibold">
+        <h1>Tem certeza de excluir esse contrato?</h1>
+      </div>
+      <div class="mt-9 flex justify-end gap-4">
+        <button @click="closeModal" class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40">
+          Não
+        </button>
+        <button type="button" class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40" @click="deleteContrato">
+          Sim
+        </button>
+      </div>
+    </template>
+  </JetDialogModal>
  
 </template>
 
@@ -195,6 +224,37 @@ const route = useRoute();
 const contrato = ref({});
 const faturamentos = ref([]);
 const modalFaturamento = ref(false)
+const excluirModal = ref(false);
+
+const openModalDeleteContrato = (contratoExcluido) => {
+  console.log(contratoExcluido,'contrato')
+  contrato.value = contratoExcluido;
+  excluirModal.value = true;
+};
+
+const deleteContrato = () => {
+  api.delete(`/contracts/${contrato.value.id}`).then((response) => {
+    closeModal();
+    toast("Contrato deletado com sucesso!", {
+      theme: "colored",
+      type: "success"
+    });
+    voltarListagem()
+    // fetchContratos();
+  }).catch((error) => {
+    closeModal();
+    toast("Não foi possível deletar o contrato!", {
+      theme: "colored",
+      type: "error"
+    });
+    console.error('Erro ao deletar contrato:', error);
+  });
+};
+
+const closeModal = () => {
+  excluirModal.value = false;
+};
+
 
 
 const showExibirModalFaturamento = () => {
@@ -293,4 +353,14 @@ const formatDate = (dateString) => {
 .btn-save-faturamento:hover {
   background-color: #0ea5e9;
 }
+
+.btn-item {
+  background-color: var(--bluePrimary);
+}
+
+.btn-item:hover {
+  background-color: #0ea5e9;
+}
+
+
 </style>
