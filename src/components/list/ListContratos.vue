@@ -1,10 +1,12 @@
 <template>
   <div v-for="contrato in contratos" :key="contrato.id" class="flex flex-col">
     <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
-      <Card style="width: 25rem; overflow: hidden" class="cursor-pointer hover:bg-slate-300">
+      <Card style="width: 35rem; overflow: hidden" class="cursor-pointer hover:bg-slate-300">
         <template #title>
-          <div class="flex justify-end text-lg">
-            <Button>Aguardando pagamento</Button>
+          <div class="flex justify-end ">
+            <span class="bg-green-500 text-white text-lg rounded-md p-2">Aguardando pagamento</span>
+
+            <!-- <Button>Aguardando pagamento</Button> -->
           </div>
         </template>
 
@@ -117,6 +119,7 @@ const fetchContratos = async () => {
   try {
     const response = await api.get('/contratos');
     contratos.value = response.data;
+    console.log(contratos.value, 'valor')
   } catch (error) {
     console.error('Erro ao buscar contratos:', error);
   }
