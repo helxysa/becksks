@@ -14,19 +14,7 @@
       <ListContratos/>
 
     </div>
-    <!-- <table class="mt-16 table-auto border border-slate-200 rounded-2xl w-full">
-      <thead class="h-24 bg-slate-100 border-1">
-        <tr class="">
-          <th class="text-2xl">Nome</th>
-          <th class="text-2xl">Vigência</th>
-          <th class="text-2xl">Objeto contrato</th>
-          <th class="text-2xl">Opções</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ListContratos />
-      </tbody>
-    </table> -->
+  
   </div>
 </template>
 
