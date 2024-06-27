@@ -288,6 +288,7 @@ import { toast } from "vue3-toastify";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
 import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const exibirModal = ref(false);
@@ -351,7 +352,20 @@ const saveItem = () => {
   closeModal();
 };
 const removeItem = (index) => {
-  contratoForm.items.splice(index, 1);
+    Swal.fire({
+        title: 'Confirmar exclusão',
+        text: 'Tem certeza que deseja excluir este item do contrato?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Excluir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if  (result.isConfirmed ){
+            contratoForm.items.splice(index, 1);
+        }
+    })
 };
 const saveContrato = () => {
   api.post("/contratos", contratoForm)
