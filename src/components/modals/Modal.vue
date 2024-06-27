@@ -47,7 +47,7 @@
                                         class="font-bold"
                                         style="font-size: 24px; color: #374151"
                                     >
-                                       Adicionar Item
+                                       {{ props.modalTitle }}
                                     </h1>
 
                                     <svg
@@ -126,6 +126,10 @@ const props = defineProps({
     withouHeader: {
         type: Boolean,
         default: false,
+    },
+    modalTitle: {
+        type: String,
+        default: 'Modal Title',
     },
 })
 

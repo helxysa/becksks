@@ -5,12 +5,9 @@
     :closeable="closeable"
     @close="close"
     :withouHeader="withoutHeader"
+    :modalTitle="modalTitle"
 >
     <div class="px-6 py-4">
-        <div class="text-lg">
-            <slot name="title" />
-        </div>
-
         <div class="mt-2">
             <slot name="content" />
         </div>
@@ -44,7 +41,8 @@ defineProps({
     showFooter: {
         type: Boolean,
         default: true,
-    }
+    },
+    modalTitle: String,
 });
 
 const close = () => {
