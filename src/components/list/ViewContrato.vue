@@ -1,5 +1,8 @@
 <template>
-  <div class="flex justify-between mt-12 ">
+  <div class="flex items-center mt-12 ">
+    <span @click="voltarListagem" class="cursor-pointer">
+      <Icon icon="ic:round-arrow-back" height="30"  />
+    </span>
     <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
   </div>
 
@@ -7,31 +10,31 @@
       <div class="w-full flex flex-col gap-10">
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Nome do cliente:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.nome_cliente}}</span>
+          <span class="pl-4 font-bold  p-2 w-80">{{contrato.nome_cliente}}</span>
         </div>
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Vigência:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.vigencia}}</span>
+          <span class="pl-4 font-bold  p-2 w-80">{{contrato.vigencia}}</span>
         </div>
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Saldo Contrato:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.saldo_contrato}}</span>
+          <span class="pl-4 font-bold  p-2  w-80">{{contrato.saldo_contrato}}</span>
         </div>
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Fiscal:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.fiscal}}</span>
+          <span class="pl-4 font-bold  p-2 w-80">{{contrato.fiscal}}</span>
         </div>
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Ponto Focal:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.ponto_focal}}</span>
+          <span class="pl-4 font-bold p-2 w-80">{{contrato.ponto_focal}}</span>
         </div>
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Cidade:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.cidade}}</span>
+          <span class="pl-4 font-bold  p-2  w-80">{{contrato.cidade}}</span>
         </div>
         <div class="flex items-center gap-4 w-3/4">
           <label class="font-medium w-60">Objeto do Contrato:</label>
-          <span class="pl-4 font-bold border-2 p-2 rounded-lg w-80">{{contrato.objeto_contrato}}</span>
+          <span class="pl-4 font-bold  p-2  w-80">{{contrato.objeto_contrato}}</span>
         </div>
       </div>
   </section>
@@ -96,6 +99,13 @@
 
 <script setup>
 import { Icon } from '@iconify/vue';
+import { useRouter } from 'vue-router';
+
+const  router  =  useRouter();
+
+const voltarListagem = () => {
+    router.push({ name: 'Contratos' });
+}
 
 const contrato = {
   nome_cliente: "Pedro Souza",

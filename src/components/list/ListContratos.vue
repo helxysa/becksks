@@ -1,57 +1,60 @@
 <template>
     <div  v-for="contrato in contratos" :key="contrato.id" class="flex flex-col">
+        <router-link  :to="{name:'visualizarContrato', params: {id: contrato.id}}">
+
+          <Card style="width: 25rem; overflow: hidden" class="cursor-pointer hover:bg-slate-300">
+          
+        
+              <template #title >
+                  <div class="flex justify-end text-lg">
+                    <Button>Aguardando pagamento</Button>
+          
+                  </div>
+              </template>
+             
+              <template #content>
+                <img src="../../assets/imagens/imageCard.png" alt="imagem representativa  do  contrato"/>
+                <p class="flex justify-center font-semibold mt-2">{{ contrato.nomeCliente }}</p>
+                <div class="flex gap-2">
+                  <span class="font-semibold">Vigência:</span>         
+                  <span>{{
+                    new Intl.DateTimeFormat("pt-BR", {
+                      timeZone: "UTC",
+                  }).format(
+                      new Date(
+                          contrato.vigencia
+                      )
+                  )
+                    }}</span>
+                  
+                </div>
+                <div class="flex gap-2">
+                  <span class="font-semibold">
+                    Saldo atual : 
+                  </span>
+                  <span>{{contrato.saldoContrato}}</span>
+                </div>
+                <div class="flex gap-2">
+                  <span class="font-semibold">
+                    Valor aguard.  faturamento : 
+                  </span>
+                
+                  <!-- <span>{{contrato.saldoContrato}}</span> -->
+                </div>
+                <div class="flex gap-2">
+                  <span class="font-semibold">
+                    Valor aguard. pagamento:
+                  </span>
+                 
+                </div>
+                
+              </template>    
+             
+          </Card>
+
+        </router-link>
       
 
-  <Card style="width: 25rem; overflow: hidden">
-      <!-- <template #header>
-          <img alt="user header" src="https://primefaces.org/cdn/primevue/images/usercard.png" />
-      </template> -->
-      <template #title >
-          <div class="flex justify-end text-lg">
-            <Button>Aguardando pagamento</Button>
-
-          </div>
-      </template>
-     
-      <template #content>
-        <img src="../../assets/imagens/imageCard.png" alt="imagem representativa  do  contrato"/>
-        <p class="flex justify-center font-semibold mt-2">{{ contrato.nomeCliente }}</p>
-        <div>
-          <span class="font-semibold">Vigência:</span>         
-          <span>{{
-            new Intl.DateTimeFormat("pt-BR", {
-              timeZone: "UTC",
-          }).format(
-              new Date(
-                  contrato.vigencia
-              )
-          )
-            }}</span>
-          
-        </div>
-        <div>
-          <span class="font-semibold">
-            Saldo atual : 
-          </span>
-          <span>{{contrato.saldoContrato}}</span>
-        </div>
-        <div>
-          <span class="font-semibold">
-            Valor aguard.  faturamento : 
-          </span>
-        
-          <!-- <span>{{contrato.saldoContrato}}</span> -->
-        </div>
-        <div>
-          <span class="font-semibold">
-            Valor aguard. pagamento:
-          </span>
-         
-        </div>
-        
-      </template>
-     
-  </Card>
   <div class="flex justify-end mt-2">
     <router-link :to="{name:'editarcontrato', params: {id: contrato.id}}">
       <router-view>
