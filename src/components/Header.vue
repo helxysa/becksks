@@ -57,7 +57,7 @@
                 </div> -->
             </template>
             <template #end>
-                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
+                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" size="xlarge"/>
             </template>
         </MegaMenu>
     </div>
