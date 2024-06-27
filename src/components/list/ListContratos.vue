@@ -59,7 +59,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect  } from 'vue';
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import JetDialogModal from '@/components/modals/DialogModal.vue';
@@ -123,6 +123,10 @@ const fetchContratos = async () => {
 };
 
 onMounted(() => {
+  fetchContratos();
+});
+
+watchEffect(() => {
   fetchContratos();
 });
 </script>
