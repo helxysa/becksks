@@ -233,7 +233,7 @@ const openModalDeleteContrato = (contratoExcluido) => {
 };
 
 const deleteContrato = () => {
-  api.delete(`/contracts/${contrato.value.id}`).then((response) => {
+  api.delete(`/contratos/${contrato.value.id}`).then((response) => {
     closeModal();
     toast("Contrato deletado com sucesso!", {
       theme: "colored",
