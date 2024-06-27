@@ -33,6 +33,7 @@
 <script setup>
 import ListContratos from "@/components/list/ListContratos.vue";
 import { RouterLink } from 'vue-router';
+
 </script>
 
 <style  scoped>
