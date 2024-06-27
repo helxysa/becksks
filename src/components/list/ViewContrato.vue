@@ -78,7 +78,7 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-24 bg-slate-100 border-1">
         <tr>
-          <th class="text-2xl">Título</th>
+          <!-- <th class="text-2xl">Título</th> -->
           <th class="text-2xl">Valor</th>
           <th class="text-2xl">Status</th>
           <th class="text-2xl">Saldo Atual</th>
@@ -87,7 +87,7 @@
       </thead>
       <tbody>
         <tr class="h-20 text-center" v-for="faturamento in faturamentos" :key="faturamento.id">
-          <td class="text-2xl">{{ faturamento.titulo }}</td>
+          <!-- <td class="text-2xl">{{ faturamento.titulo }}</td> -->
           <td class="text-2xl">{{ formatCurrency(faturamento.valor) }}</td>
           <td class="text-2xl">{{ faturamento.status }}</td>
           <td class="text-2xl">{{ formatCurrency(faturamento.saldo) }}</td>
@@ -108,48 +108,62 @@
   </section>
   <JetDialogModal
   :show="modalFaturamento"
-  :withouHeader="true"
+  :withouHeader="false"
   @close="closeModalFaturamento"
   maxWidth="4xl"
+  :modalTitle="'Faturamento'"
 >
 <template #title>
 <!-- <h1 class="font-bold text-xl">Gerenciamento do status de vaga</h1> -->
 </template>
 <template #content>
+ 
   <form @submit.prevent="saveFaturamento">
+    
       <div class="mt-8 flex gap-2 items-center ">
-          <label  class="font-bold w-60">Título </label>
-          <input type="text"  placeholder="Titulo do item"    class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
-          required
-         />
-      </div>
-      <div class="mt-8 flex gap-2 items-center ">
-          <label  class="font-bold w-60">Unidade  de medida </label>
+          <label  class="font-bold w-60">Status </label>
           <select
           class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300  rounded-3xl h-14"
           required
       >
           <option value="">
-              Selecione a unidade  de  medida
+              Selecione o   status do faturamento
           </option>
-          <option>PF</option>
-          <option>UST</option>
-          <option>Funcionário</option>
+          <option>Aguardando Faturamento</option>
+          <option>Aguardando Pagamento</option>
+          <option>Pago</option>
       </select>
 
-      </div>
-      <div class="mt-8 flex gap-2 items-center ">
-          <label  class="font-bold w-60">Valor unitário </label>
-          <input type="text"  placeholder="Informe o valor  do item"    class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
-          required
-         />
-      </div>
-      <div class="mt-8 flex gap-2 items-center ">
-          <label  class="font-bold w-60">Saldo  </label>
-          <input type="text"  placeholder="Saldo  da  quantidade  contratada"    class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
-          required
-         />
-      </div>
+      </div> 
+      <div class="mt-8">
+        <label>Items</label>
+        <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+          <thead class="h-24 bg-slate-100 border-1">
+            <tr>
+              <th class="text-2xl">Título</th>
+              <th class="text-2xl">Valor</th> 
+              <th class="text-2xl">Quantidade Items</th>           
+              <th class="text-2xl">Saldo Atual</th>
+              
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="h-20 text-center" v-for="item in contrato.contratoItens" :key="item.id">
+              <td class="text-2xl">{{ item.titulo }}</td>
+              <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>   
+              <td>
+                <input type="number" v-model="item.quantidadeItems"/>
+              </td>          
+              <!-- <td class="text-2xl">{{ formatCurrency(faturamento.saldo) }}</td> -->
+              <td class="text-2xl flex justify-center mt-4 gap-3">
+              
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>    
     
       <div class="mt-9 flex justify-end gap-4">
           <button @click="closeModalFaturamento"  class=" ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700  tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40">
@@ -182,6 +196,7 @@ const contrato = ref({});
 const faturamentos = ref([]);
 const modalFaturamento = ref(false)
 
+
 const showExibirModalFaturamento = () => {
     modalFaturamento.value = true;
 };
@@ -191,8 +206,30 @@ const  closeModalFaturamento = () => {
 }
 
 
-const  saveFaturamento = () => {
+const  saveFaturamento = async(fat) => {
+  console.log(contrato, 'meu contrato')
+  let object = {
+    status:  contrato.value.faturamentos.status,
+    itens: [	
+	]
+  }
+ 
+  if (contrato.value.faturamentos.faturamentoItens) {
+    object.itens = contrato.value.faturamentos.faturamentoItens.map(item => ({
+    id_item: item.id,
+    quantidade_itens: item.quantidadeItens
+  }));
+  console.log(object.itens, 'objectItens')
+  }
+    try{
 
+      const response = await api.post(`/contratos/${contrato.id}/faturamentos`, object
+    
+      );
+      console.log(response, 'resposta3')
+    } catch (error){
+      console.error('Erro ao adicionar faturamento:', error);
+    }
 }
 
 const voltarListagem = () => {
@@ -208,7 +245,11 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    if(!contrato.value.quantidadeItems){
+         
+    }
     console.log(response.data, 'resposta')
+
     faturamentos.value = response.data.faturamentos || [];
   } catch (error) {
     console.error('Erro ao buscar contrato:', error);
