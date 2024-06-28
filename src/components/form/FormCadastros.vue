@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center mt-12">
+    <div class="flex items-center mt-12 gap-4">
       <span @click="voltarListagem" class="cursor-pointer">
         <Icon icon="ic:round-arrow-back" height="30" />
       </span>
@@ -96,7 +96,7 @@
               <th class="text-2xl">Título</th>
               <th class="text-2xl">Unidade de medida</th>
               <th class="text-2xl">Valor unitário</th>
-              <th class="text-2xl">Saldo</th>
+              <th class="text-2xl">Saldo Contrato</th>
               <th class="text-2xl">Opções</th>
             </tr>
           </thead>
@@ -131,7 +131,10 @@
             </tr>
           </tbody>
         </table>
-        <div class="mt-8 flex gap-2 justify-end">
+        <div class="mt-8 flex gap-8 justify-end">
+          <span @click="voltarListagem" class="cursor-pointer">
+            <button class="btn-submit-contrato" type="submit">Voltar</button>
+          </span>
           <button class="btn-submit-contrato" type="submit">Salvar</button>
         </div>
       </form>
@@ -385,6 +388,9 @@ const saveContrato = () => {
     });
   router.push({ name: "Contratos" });
 };
+const voltarListagem = () => {
+    router.push({ name: 'Contratos' });
+}
 
 </script>
 
