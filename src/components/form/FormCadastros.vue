@@ -135,7 +135,10 @@
           <span @click="voltarListagem" class="cursor-pointer">
             <button class="btn-submit-contrato" type="submit">Voltar</button>
           </span>
-          <button class="btn-submit-contrato" type="submit">Salvar</button>
+          <button class="btn-submit-contrato" type="submit">
+            {{ route.params.id? 'Editar' : 'Salvar'}}
+             
+          </button>
         </div>
       </form>
     </section>
@@ -284,9 +287,9 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
 import ListItems from "../list/ListItems.vue";
@@ -294,11 +297,13 @@ import { api } from "@/services/api";
 import Swal from 'sweetalert2';
 
 const router = useRouter();
+const route = useRoute();
 const exibirModal = ref(false);
 const exibirEditModal = ref(false);
+const  contratoEdit = ref({})
 
 let editIndex = ref(-1);
-let contratoForm = reactive({
+let contratoForm = ref({
   nome_cliente: "",
   vigencia: "",
   saldo_contrato: "",
@@ -320,6 +325,30 @@ let editItem = ref({
   valor_unitario: "",
   saldo_quantidade_contratada: "",
 });
+
+onMounted(()=>{
+  const contratoId = route.params.id;
+  console.log(contratoId, 'contratoId')
+  if(contratoId){
+      fetchContrato(contratoId)
+      console.log('edit')
+  }
+})
+
+const fetchContrato = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}`);
+    contratoEdit.value = response.data;
+    contratoForm.value =  contratoEdit.value;
+
+   
+    console.log(response.data, "form");
+    console.log(contratoEdit.value, 'formedit')
+    console.log(contratoForm.value, 'vaklor form')
+  } catch (error) {
+    console.error("Erro ao buscar contrato:", error);
+  }
+};
 
 const showExibirModalItems = () => {
   exibirModal.value = true;
@@ -371,6 +400,24 @@ const removeItem = (index) => {
     })
 };
 const saveContrato = () => {
+if (route.params.id){
+   api.put(`/contratos/${route.params.id}`, contratoForm)  
+    .then((response) => {
+      toast("Contrato editado com sucesso!", {
+        theme: "colored",
+        type: "success",
+      });
+      router.push({ name: "Contratos" });
+    })
+    .catch((error) => {
+      toast("Não foi possível editar o contrato!", {
+        theme: "colored",
+        type: "error",
+      });
+      console.error("Erro ao editar contrato:", error);
+    });
+  router.push({ name: "Contratos" });
+} else {
   api.post("/contratos", contratoForm)
     .then((response) => {
       toast("Contrato cadastrado com sucesso!", {
@@ -387,6 +434,8 @@ const saveContrato = () => {
       console.error("Erro ao cadastrar contrato:", error);
     });
   router.push({ name: "Contratos" });
+}
+ 
 };
 const voltarListagem = () => {
     router.push({ name: 'Contratos' });
