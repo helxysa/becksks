@@ -245,7 +245,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter,RouterLink } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import { api } from '@/services/api';
