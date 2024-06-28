@@ -3,6 +3,7 @@ import {  createRouter, createWebHistory } from "vue-router";
 const HomePage = () => import("../pages/HomePage/HomePage.vue")
 const ContratosPage = ()=> import ("../pages/ContratosPage/ContratosPage.vue")
 const FormContratosPage = () => import("../components/form/FormCadastros.vue")
+const FormContratosEdit = ()=> import ("../components/form/FormCadastrosEdit.vue")
 const ViewContrato = () => import("../components/list/ViewContrato.vue")
 
 const  routes = [
@@ -27,7 +28,7 @@ const  routes = [
    {
     path: '/cadastro/contratos/:id',
     name: 'editarcontrato',
-    component: FormContratosPage,
+    component: FormContratosEdit,
     },
 
     {
