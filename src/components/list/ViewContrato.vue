@@ -16,7 +16,7 @@
         </router-link>
       </button>
       <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
-      @click="openModalDeleteContrato(contrato)">Excluir</button>
+      @click="deleteContrato(contrato)">Excluir</button>
     </div>
   </div>
 
@@ -251,44 +251,49 @@ import { Icon } from '@iconify/vue';
 import { api } from '@/services/api';
 import JetDialogModal from '@/components/modals/DialogModal.vue';
 import { toast } from 'vue3-toastify';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const route = useRoute();
 const contrato = ref({});
 const faturamentos = ref([]);
 const modalFaturamento = ref(false)
-const excluirModal = ref(false);
 
-const openModalDeleteContrato = (contratoExcluido) => {
-  console.log(contratoExcluido,'contrato')
-  contrato.value = contratoExcluido;
-  excluirModal.value = true;
-};
-
-const deleteContrato = () => {
-  api.delete(`/contratos/${contrato.value.id}`).then((response) => {
-    closeModal();
-    // toast("Contrato deletado com sucesso!", {
-    //   theme: "colored",
-    //   type: "success"
-    // });
-    voltarListagem()
-    // fetchContratos();
-  }).catch((error) => {
-    closeModal();
-    toast("Não foi possível deletar o contrato!", {
-      theme: "colored",
-      type: "error"
-    });
-    console.error('Erro ao deletar contrato:', error);
+const deleteContrato = (contratoAtual) => {
+  Swal.fire({
+    title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir este contrato?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      api
+        .delete(`/contratos/${contratoAtual.id}`)
+        .then((response) => {
+          toast("Contrato deletado com sucesso!", {
+            theme: "colored",
+            type: "success",
+          });
+          voltarListagem();
+        })
+        .catch((error) => {
+          toast("Não foi possível deletar o contrato!", {
+            theme: "colored",
+            type: "error",
+          });
+          console.error("Erro ao deletar contrato:", error);
+        });
+    }
   });
 };
 
 const closeModal = () => {
   excluirModal.value = false;
 };
-
-
 
 const showExibirModalFaturamento = () => {
   modalFaturamento.value = true;
