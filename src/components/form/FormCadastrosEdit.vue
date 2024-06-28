@@ -16,7 +16,7 @@
             type="text"
             placeholder="Informe o nome do cliente"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.nome_cliente"
+            v-model="contratoForm.nomeCliente"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -36,7 +36,7 @@
             type="text"
             placeholder="Informe o saldo do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.saldo_contrato"
+            v-model="contratoForm.saldoContrato"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -56,7 +56,7 @@
             type="text"
             placeholder="Informe o ponto focal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.ponto_focal"
+            v-model="contratoForm.pontoFocal"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -76,7 +76,7 @@
             type="text"
             placeholder="Informe o objeto do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.objeto_contrato"
+            v-model="contratoForm.objetoContrato"
           />
         </div>
         <div class="mt-14 flex justify-center">
@@ -102,15 +102,15 @@
           </thead>
           <tbody>
             <tr
-              v-for="(item, index) in contratoForm.items"
+              v-for="(item, index) in contratoForm.contratoItens"
               :key="index"
               class="text-center"
             >
               <td class="text-xl p-4">{{ item.titulo }}</td>
-              <td class="text-xl p-4">{{ item.unidade_medida }}</td>
-              <td class="text-xl p-4">{{ item.valor_unitario }}</td>
+              <td class="text-xl p-4">{{ item.unidadeMedida }}</td>
+              <td class="text-xl p-4">{{ item.valorUnitario }}</td>
               <td class="text-xl p-4">
-                {{ item.saldo_quantidade_contratada }}
+                {{ item.saldoQuantidadeContratada }}
               </td>
               <td>
                 <button type="button" @click="openEditModal(index)">
@@ -304,14 +304,14 @@ const  contratoEdit = ref({})
 
 let editIndex = ref(-1);
 let contratoForm = ref({
-  nome_cliente: "",
+  nomeCliente: "",
   vigencia: "",
-  saldo_contrato: "",
+  saldContrato: "",
   fiscal: "",
-  ponto_focal: "",
+  pontoFocal: "",
   cidade: "",
-  objeto_contrato: "",
-  items: []
+  objetoContrato: "",
+  contratoItens: []
 });
 let novoItem = ref({
   titulo: "",
@@ -340,6 +340,7 @@ const fetchContrato = async (id) => {
     const response = await api.get(`/contratos/${id}`);
     contratoEdit.value = response.data;
     contratoForm.value =  contratoEdit.value;
+    contratoForm.value.vigencia = formatDate( contratoEdit.value.vigencia)
 
    
     console.log(response.data, "form");
@@ -370,11 +371,11 @@ const saveEditModal = () => {
 };
 const openEditModal = (index) => {
   editIndex.value = index;
-  editItem.value = { ...contratoForm.items[index] };
+  editItem.value = { ...contratoForm.contratoItens[index] };
   exibirEditModal.value = true;
 };
 const saveItem = () => {
-  contratoForm.items.push({ ...novoItem.value });
+  contratoForm.contratoItens.push({ ...novoItem.value });
   novoItem.value = {
     titulo: "",
     unidade_medida: "",
@@ -394,14 +395,26 @@ const removeItem = (index) => {
         confirmButtonText: 'Excluir',
         cancelButtonText: 'Cancelar'
     }).then((result) => {
+      console.log(  contratoForm.contratoItens, 'itens')
         if  (result.isConfirmed ){
-            contratoForm.items.splice(index, 1);
+            contratoForm.contratoItens.splice(index, 1);
         }
     })
 };
 const saveContrato = () => {
 if (route.params.id){
-   api.put(`/contratos/${route.params.id}`, contratoForm)  
+  const objectEdit = {
+    nome_cliente: contratoForm.nomeCliente,
+    vigencia: contratoForm.vigencia,
+    saldo_contrato: contratoForm.saldoContrato,
+    fiscal: contratoForm.fiscal,
+    ponto_focal: contratoForm.pontoFocal,
+    cidade: contratoForm.cidade,
+    objeto_contrato: contratoForm.objetoContrato,
+    items:  contratoForm.contratoItens
+
+  }
+   api.put(`/contratos/${route.params.id}`, objectEdit)  
     .then((response) => {
       toast("Contrato editado com sucesso!", {
         theme: "colored",
@@ -417,29 +430,20 @@ if (route.params.id){
       console.error("Erro ao editar contrato:", error);
     });
   router.push({ name: "Contratos" });
-} else {
-  api.post("/contratos", contratoForm)
-    .then((response) => {
-      toast("Contrato cadastrado com sucesso!", {
-        theme: "colored",
-        type: "success",
-      });
-      router.push({ name: "Contratos" });
-    })
-    .catch((error) => {
-      toast("Não foi possível cadastrar o contrato!", {
-        theme: "colored",
-        type: "error",
-      });
-      console.error("Erro ao cadastrar contrato:", error);
-    });
-  router.push({ name: "Contratos" });
-}
+} 
  
 };
 const voltarListagem = () => {
     router.push({ name: 'Contratos' });
 }
+
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return isNaN(date)
+    ? ""
+    : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
+};
 
 </script>
 
