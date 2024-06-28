@@ -67,7 +67,7 @@
     <div class="flex justify-between items-center">
       <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
       <button
-        @click="openCreateModal"
+        @click="openCreateItemModal"
         class="btn-faturamento"
       >
         Adicionar Item
@@ -101,7 +101,7 @@
                   class="hover:text-red-500 hover:rounded-md cursor-pointer"
                 />
               </button>
-              <button type="button" @click="removeItem(item.id)">
+              <button type="button" @click="deleteItem(item.id)">
                 <Icon
                   icon="ph:trash"
                   height="20"
@@ -113,7 +113,170 @@
       </tbody>
     </table>
   </section>
-  <!-- Modal Criar Item -->
+
+  <section>
+    <div class="flex justify-between mt-12">
+      <h1 class="text-4xl font-medium">Faturamentos</h1>
+      <button class="btn-faturamento" @click="ExibirModalFaturamento">
+        Novo Faturamento
+      </button>
+    </div>
+    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+      <thead class="h-24 bg-slate-100 border-1">
+        <tr>
+          <th class="text-2xl">Faturado em</th>
+          <th class="text-2xl">Quantidade itens</th>
+          <th class="text-2xl">Saldo do Faturamento</th>
+          <th class="text-2xl">Situação</th>
+          <th class="text-2xl">Saldo Atual do Contrato</th>
+          <th class="text-2xl">Ações</th>
+        </tr>
+      </thead>
+      <tbody v-if="contrato.faturamentos">
+        <tr
+          class="h-20 text-center"
+          v-for="faturamento in faturamentosOrdenados"
+          :key="faturamento.id"
+        >
+          <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
+          <td class="text-2xl">{{(calcularQuantidadeItens(faturamento.faturamentoItens))}}</td>
+          <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
+          <td class="text-2xl">
+            <span
+            class="border-2 px-8 py-2 rounded-2xl font-bold text-slate-600"
+            :class="{
+              'bg-green-200 border-green-400': faturamento.status === 'Faturamento Pago',
+              'bg-yellow-200 border-yellow-400': faturamento.status === 'Aguardando Pagamento',
+              'bg-blue-200 border-blue-400': faturamento.status === 'Aguardando Faturamento',
+            }"
+            >
+            {{ faturamento.status }}
+          </span>
+        </td>
+          <td class="text-2xl">{{ formatCurrency(500) }}</td>
+          <td class="text-2xl flex justify-center mt-4 gap-3">
+            <!-- <span>
+              <Icon
+                icon="ph:eye"
+                height="20"
+                class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+              />
+            </span>
+            <span>
+              <Icon
+                icon="bx:edit"
+                height="20"
+                class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+              />
+            </span> -->
+            <span @click="deleteFaturamento(faturamento.id)">
+              <Icon
+                icon="ph:trash"
+                height="20"
+                class="hover:text-red-500 hover:rounded-md cursor-pointer"
+              />
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Modal criar Faturamento -->
+  <JetDialogModal
+    :show="modalFaturamento"
+    :withouHeader="false"
+    @close="closeModalFaturamento"
+    maxWidth="6xl"
+    :modalTitle="'Faturamento'"
+  >
+    <template #content>
+      <form @submit.prevent="createFaturamento">
+        <section class="flex flex-col gap-8">
+          <div class="mt-8 flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Situação:</label>
+            <select
+            v-model="selectNovoFaturamento"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            required
+            >
+            <option disabled hidden value="">Selecione a situação</option>
+            <option>Aguardando Faturamento</option>
+            <option>Aguardando Pagamento</option>
+            <option>Faturamento Pago</option>
+          </select>
+        </div>
+        <div class="flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Saldo atual do contrato:</label>
+          <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtual())}}</span>
+        </div>
+      </section>
+        <div class="mt-8">
+          <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+            <thead class="h-24 bg-slate-100 border-1">
+              <tr>
+                <th class="text-2xl">Título</th>
+                <th class="text-2xl">Valor unitário</th>
+                <th class="text-2xl">Quantidade contratada</th>
+                <th class="text-2xl">Quantidade de Itens</th>
+                <th class="text-2xl">Saldo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="h-20 text-center"
+                v-for="item in contrato.contratoItens"
+                :key="item.id"
+              >
+                <td class="text-2xl">{{ item.titulo }}</td>
+                <td class="text-2xl">
+                  {{ formatCurrency(item.valorUnitario) }}
+                </td>
+                <td>
+                  <span>
+                    {{item.saldoQuantidadeContratada}}
+                  </span>
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    v-model="item.quantidadeItems"
+                    class="border-2 text-center max-w-60"
+                  />
+                </td>
+                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                  <span
+                    class="max-w-60"
+                    :class="{'text-red-500': saldoMaiorQueContrato(item)}"
+                  >
+                  {{ formatCurrency(calcularSaldoitem(item) || 0) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            @click="closeModalFaturamento"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"
+            :disabled="isSaldoNegativo"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+          >
+            Salvar
+          </button>
+      </div>
+  </form>
+</template>
+</JetDialogModal>
+
+  <!-- Modal criar item -->
   <JetDialogModal
   :show="modalCreateItem"
   :withouHeader="false"
@@ -182,7 +345,8 @@
     </form>
   </template>
 </JetDialogModal>
-<!-- Modal Editar item -->
+
+<!-- Modal editar item -->
   <JetDialogModal
   :show="modalEditItem"
   :withouHeader="false"
@@ -252,158 +416,6 @@
   </template>
 </JetDialogModal>
 
-  <section>
-    <div class="flex justify-between mt-12">
-      <h1 class="text-4xl font-medium">Faturamentos</h1>
-      <button class="btn-faturamento" @click="showExibirModalFaturamento">
-        Novo Faturamento
-      </button>
-    </div>
-    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
-      <thead class="h-24 bg-slate-100 border-1">
-        <tr>
-          <th class="text-2xl">Faturado em</th>
-          <th class="text-2xl">Quantidade itens</th>
-          <th class="text-2xl">Saldo do Faturamento</th>
-          <th class="text-2xl">Saldo Atual do Contrato</th>
-          <th class="text-2xl">Situação</th>
-          <th class="text-2xl">Ações</th>
-        </tr>
-      </thead>
-      <tbody v-if="contrato.faturamentos">
-        <tr
-          class="h-20 text-center"
-          v-for="faturamento in faturamentosOrdenados"
-          :key="faturamento.id"
-        >
-          <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
-          <td class="text-2xl">soma da quantidade itens</td>
-          <td class="text-2xl">soma do saldo dos itens do faturamento</td>
-          <td class="text-2xl">
-            <span
-            class="border-2 px-8 py-2 rounded-2xl font-bold text-slate-600"
-            :class="{
-              'bg-green-200 border-green-400': faturamento.status === 'Faturamento Pago',
-              'bg-yellow-200 border-yellow-400': faturamento.status === 'Aguardando Pagamento',
-              'bg-blue-200 border-blue-400': faturamento.status === 'Aguardando Faturamento',
-            }"
-            >
-            {{ faturamento.status }}
-          </span>
-        </td>
-          <td class="text-2xl">{{ formatCurrency(500) }}</td>
-          <td class="text-2xl flex justify-center mt-4 gap-3">
-            <!-- <span>
-              <Icon
-                icon="ph:eye"
-                height="20"
-                class="hover:text-blue-500 hover:rounded-md cursor-pointer"
-              />
-            </span>
-            <span>
-              <Icon
-                icon="bx:edit"
-                height="20"
-                class="hover:text-blue-500 hover:rounded-md cursor-pointer"
-              />
-            </span> -->
-            <span @click="deleteFaturamento(faturamento.id)">
-              <Icon
-                icon="ph:trash"
-                height="20"
-                class="hover:text-red-500 hover:rounded-md cursor-pointer"
-              />
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
-
-  <JetDialogModal
-    :show="modalFaturamento"
-    :withouHeader="false"
-    @close="closeModalFaturamento"
-    maxWidth="6xl"
-    :modalTitle="'Faturamento'"
-  >
-    <template #content>
-      <form @submit.prevent="saveFaturamento">
-        <section class="flex flex-col gap-8">
-          <div class="mt-8 flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Situação:</label>
-            <select
-            v-model="selectNovoFaturamento"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            >
-            <option disabled hidden value="">Selecione a situação</option>
-            <option>Aguardando Faturamento</option>
-            <option>Aguardando Pagamento</option>
-            <option>Faturamento Pago</option>
-          </select>
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Saldo atual do contrato:</label>
-          <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtual())}}</span>
-        </div>
-      </section>
-        <div class="mt-8">
-          <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
-            <thead class="h-24 bg-slate-100 border-1">
-              <tr>
-                <th class="text-2xl">Título</th>
-                <th class="text-2xl">Valor unitário</th>
-                <th class="text-2xl">Quantidade de Itens</th>
-                <th class="text-2xl">Saldo</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                class="h-20 text-center"
-                v-for="item in contrato.contratoItens"
-                :key="item.id"
-              >
-                <td class="text-2xl">{{ item.titulo }}</td>
-                <td class="text-2xl">
-                  {{ formatCurrency(item.valorUnitario) }}
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    v-model="item.quantidadeItems"
-                    class="border-2 text-center max-w-60"
-                  />
-                </td>
-                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
-                  <span class="max-w-60" :class="{'text-red-500': saldoAtualMenor(item)}">{{ formatCurrency((item.valorUnitario * item.quantidadeItems) || 0) }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="mt-9 flex justify-end gap-4">
-          <button
-            @click="closeModalFaturamento"
-            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-          >
-            Fechar
-          </button>
-          <button
-            type="submit"
-            :disabled="isSaldoNegativo"
-            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
-          >
-            Salvar
-          </button>
-      </div>
-  </form>
-</template>
-
-</JetDialogModal>
-
 </template>
 
 <script setup>
@@ -421,6 +433,15 @@ const contrato = ref({});
 const faturamentos = ref([]);
 const modalFaturamento = ref(false)
 const selectNovoFaturamento = ref(null)
+const modalCreateItem = ref(false);
+const newItem = ref({
+  titulo: '',
+  unidadeMedida: '',
+  valorUnitario: '',
+  saldoQuantidadeContratada: '',
+});
+const modalEditItem = ref(false);
+const editingItem = ref({});
 
 const deleteContrato = (contratoAtual) => {
   Swal.fire({
@@ -458,9 +479,17 @@ const closeModal = () => {
   excluirModal.value = false;
 };
 
-const showExibirModalFaturamento = () => {
+const ExibirModalFaturamento = () => {
+  if (contrato.value.contratoItens.length === 0) {
+    toast("Não é possível adicionar um novo faturamento. Não há itens no contrato.", {
+      theme: "colored",
+      type: "error",
+    });
+    return;
+  }
   modalFaturamento.value = true;
 };
+
 const isSaldoNegativo = computed(() => {
   return contrato.value.contratoItens.some(item => calcularSaldoAtual(item) < 0);
 });
@@ -477,13 +506,31 @@ const resetForm = () => {
   closeModalFaturamento();
 };
 
-const saveFaturamento = async () => {
+const createFaturamento = async () => {
   let itensQuantidadePreenchida = contrato.value.contratoItens
     .filter((item) => item.quantidadeItems)
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItems,
     }));
+
+    if (itensQuantidadePreenchida.length === 0) {
+      toast("Adicione pelo menos um item para criar o faturamento.", {
+        theme: "colored",
+        type: "error",
+      });
+      return;
+    }
+
+    const saldoMaiorQuantidadeContratada = contrato.value.contratoItens
+    .some(item => {
+      return calcularSaldoitem(item) > item.saldoQuantidadeContratada;
+    })
+
+    if (saldoMaiorQuantidadeContratada) {
+    toast.error('O saldo do item não pode ultrapassar a quantidade contratada.');
+    return;
+  }
 
   let payload = {
     status: selectNovoFaturamento.value,
@@ -588,14 +635,44 @@ const calcularSaldoAtual = () => {
   return saldoTotal;
 };
 
-const saldoAtualMenor = (item) => {
+const saldoMaiorQueContrato = (item) => {
   const saldoAtual = calcularSaldoAtual(item);
 
   return saldoAtual < 0;
 };
 
-const modalEditItem = ref(false);
-const editingItem = ref({});
+const calcularSaldoitem = (item) => {
+  let valor = 0;
+  valor = item.valorUnitario * item.quantidadeItems;
+
+  return valor
+}
+
+const calcularSaldoFaturamentoItens = (faturamento) => {
+  let saldoTotal = 0;
+
+  faturamento.forEach(item => {
+    const quantidadeItems = parseFloat(item.quantidadeItens) || 0;
+    const valorUnitario = parseFloat(item.valorUnitario) || 0;
+    const valorTotalItem = quantidadeItems * valorUnitario;
+    saldoTotal += valorTotalItem;
+  });
+
+  return parseFloat(saldoTotal.toFixed(2));
+}
+
+const calcularQuantidadeItens = (faturamento) => {
+  let saldoTotal = 0;
+
+  faturamento.forEach(item => {
+    const quantidadeItems = parseFloat(item.quantidadeItens) || 0;
+    saldoTotal += quantidadeItems;
+  });
+
+  return parseFloat(saldoTotal.toFixed(2));
+}
+
+// Editar Item do contrato
 
 const openEditModal = (item) => {
   editingItem.value = { ...item };
@@ -608,17 +685,31 @@ const closeModalEditItem = () => {
 
 const saveEditedItem = async () => {
   const itemIndex = contrato.value.contratoItens.findIndex((i) => i.id === editingItem.value.id);
+  let itemEditado = { ...editingItem.value };
+  console.log('itemEditado', itemEditado)
+
+  let totalItensQuantidadeContratada = 0;
+  contrato.value.contratoItens.forEach(item => {
+    if (item.id !== itemEditado.id) {
+      totalItensQuantidadeContratada += parseInt(item.saldoQuantidadeContratada);
+    }
+  });
+
+  const saldoContratoRestante = contrato.value.saldoContrato - totalItensQuantidadeContratada;
+
+  if (saldoContratoRestante < itemEditado.saldoQuantidadeContratada) {
+    toast.error(`Saldo contratado excedido. Saldo restante: ${saldoContratoRestante}`);
+    return;
+  }
+
+  let obj_editado = {
+    titulo: itemEditado.titulo,
+    unidade_medida: itemEditado.unidadeMedida,
+    valor_unitario: itemEditado.valorUnitario,
+    saldo_quantidade_contratada: itemEditado.saldoQuantidadeContratada
+  }
 
   try {
-    let itemEditado = { ...editingItem.value };
-    console.log('itemEditado',itemEditado)
-
-    let obj_editado = {
-      titulo: itemEditado.titulo,
-      unidade_medida: itemEditado.unidadeMedida,
-      valor_unitario: itemEditado.valorUnitario,
-      saldo_quantidade_contratada: itemEditado.saldoQuantidadeContratada
-    }
     const response = await api.put(`/contratos/items/${itemEditado.id}`, obj_editado);
 
     toast("Item alterado com sucesso!", {
@@ -637,31 +728,34 @@ const saveEditedItem = async () => {
   }
 };
 
-const removeItem = async (itemId) => {
-  try {
-    const response = await api.delete(`/contratos/items/${itemId}`);
-    toast("Item deletado com sucesso!", {
-      theme: "colored",
-      type: "success",
-    });
-    fetchContrato(route.params.id);
-  } catch (error) {
-    toast("Erro ao deletar item!", {
-      theme: "colored",
-      type: "error",
-    });
-    console.error("Erro ao deletar item:", error);
-  }
+// Deletar Item do contrato
+const deleteItem = async (itemId) => {
+  Swal.fire({
+    title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir este item?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const response = await api.delete(`/contratos/items/${itemId}`);
+        fetchContrato(route.params.id);
+        toast("Item deletado com sucesso!", { theme: "colored", type: "success" });
+      } catch (error) {
+        toast("Erro ao deletar item!", { theme: "colored", type: "error" });
+        console.error("Erro ao deletar item:", error);
+      }
+    }
+  });
 };
-const modalCreateItem = ref(false);
-const newItem = ref({
-  titulo: '',
-  unidadeMedida: '',
-  valorUnitario: '',
-  saldoQuantidadeContratada: '',
-});
 
-const openCreateModal = () => {
+// Criar item do contrato
+
+const openCreateItemModal = () => {
   modalCreateItem.value = true;
 };
 
@@ -676,6 +770,17 @@ const closeModalCreateItem = () => {
 };
 
 const createNewItem = async () => {
+  //Verificar para que a soma não ultrapasse o saldo do contrato
+  let totalItensQuantidadeContratada = 0;
+  contrato.value.contratoItens.forEach(item => totalItensQuantidadeContratada += parseInt(item.saldoQuantidadeContratada))
+
+  const saldoContratoRestante = contrato.value.saldoContrato - totalItensQuantidadeContratada;
+
+  if (saldoContratoRestante < newItem.value.saldo_quantidade_contratada) {
+    toast.error(`Saldo contratado excedido. Saldo restante: ${saldoContratoRestante}`);
+    return;
+  }
+
   try {
     const response = await api.post(`/contratos/${route.params.id}/items`, newItem.value);
     toast("Item criado com sucesso!", {
@@ -692,6 +797,7 @@ const createNewItem = async () => {
     console.error("Erro ao criar item:", error);
   }
 };
+
 </script>
 
 <style scoped>
