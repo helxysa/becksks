@@ -32,17 +32,17 @@
       </Card>
     </router-link>
 
-    <div class="flex justify-end mt-2">
+    <!-- <div class="flex justify-end mt-2">
       <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
         <router-view>
           <Icon icon="bx:edit" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer" />
         </router-view>
       </router-link>
       <Icon icon="ph:trash" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer" @click="openModalDeleteContrato(contrato)" />
-    </div>
+    </div> -->
   </div>
 
-  <JetDialogModal :show="excluirModal" @close="closeModal" :withouHeader="true">
+  <!-- <JetDialogModal :show="excluirModal" @close="closeModal" :withouHeader="true">
     <template #content>
       <div class="flex justify-center font-semibold">
         <h1>Tem certeza de excluir esse contrato?</h1>
@@ -56,7 +56,7 @@
         </button>
       </div>
     </template>
-  </JetDialogModal>
+  </JetDialogModal> -->
 </template>
 
 <script setup>
@@ -72,34 +72,34 @@ import Button from 'primevue/button';
 const router = useRouter();
 const contratos = ref([]);
 const contrato = ref({});
-const excluirModal = ref(false);
+// const excluirModal = ref(false);
 
-const openModalDeleteContrato = (contratoExcluido) => {
-  contrato.value = contratoExcluido;
-  excluirModal.value = true;
-};
+// const openModalDeleteContrato = (contratoExcluido) => {
+//   contrato.value = contratoExcluido;
+//   excluirModal.value = true;
+// };
 
-const deleteContrato = () => {
-  api.delete(`/contracts/${contrato.value.id}`).then((response) => {
-    closeModal();
-    toast("Contrato deletado com sucesso!", {
-      theme: "colored",
-      type: "success"
-    });
-    fetchContratos();
-  }).catch((error) => {
-    closeModal();
-    toast("Não foi possível deletar o contrato!", {
-      theme: "colored",
-      type: "error"
-    });
-    console.error('Erro ao deletar contrato:', error);
-  });
-};
+// const deleteContrato = () => {
+//   api.delete(`/contracts/${contrato.value.id}`).then((response) => {
+//     closeModal();
+//     toast("Contrato deletado com sucesso!", {
+//       theme: "colored",
+//       type: "success"
+//     });
+//     fetchContratos();
+//   }).catch((error) => {
+//     closeModal();
+//     toast("Não foi possível deletar o contrato!", {
+//       theme: "colored",
+//       type: "error"
+//     });
+//     console.error('Erro ao deletar contrato:', error);
+//   });
+// };
 
-const closeModal = () => {
-  excluirModal.value = false;
-};
+// const closeModal = () => {
+//   excluirModal.value = false;
+// };
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('pt-BR', {

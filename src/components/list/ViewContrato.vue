@@ -1,9 +1,23 @@
 <template>
-  <div class="flex items-center mt-12">
-    <span @click="voltarListagem" class="cursor-pointer">
-      <Icon icon="ic:round-arrow-back" height="30" />
-    </span>
-    <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
+  <div class="flex items-center justify-between mt-12 ">
+    <div class="flex">
+      <span @click="voltarListagem" class="cursor-pointer">
+        <Icon icon="ic:round-arrow-back" height="30" />
+      </span>
+      <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
+
+    </div>
+    <div class="flex gap-4">
+      <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
+        <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
+          <router-view>
+            Editar
+          </router-view>
+        </router-link>
+      </button>
+      <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
+      @click="openModalDeleteContrato(contrato)">Excluir</button>
+    </div>
   </div>
 
   <section class="mt-12">
@@ -222,26 +236,60 @@
           >
             Salvar
           </button>
-        </div>
-      </form>
-    </template>
-  </JetDialogModal>
+      </div>
+  </form>
+</template>
+
+</JetDialogModal>
+
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { Icon } from "@iconify/vue";
-import { api } from "@/services/api";
-import JetDialogModal from "@/components/modals/DialogModal.vue";
-import { toast } from "vue3-toastify";
-import Swal from "sweetalert2";
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter,RouterLink } from 'vue-router';
+import { Icon } from '@iconify/vue';
+import { api } from '@/services/api';
+import JetDialogModal from '@/components/modals/DialogModal.vue';
+import { toast } from 'vue3-toastify';
 
 const router = useRouter();
 const route = useRoute();
 const contrato = ref({});
-const modalFaturamento = ref(false);
-const selectNovoFaturamento = ref("");
+const faturamentos = ref([]);
+const modalFaturamento = ref(false)
+const excluirModal = ref(false);
+
+const openModalDeleteContrato = (contratoExcluido) => {
+  console.log(contratoExcluido,'contrato')
+  contrato.value = contratoExcluido;
+  excluirModal.value = true;
+};
+
+const deleteContrato = () => {
+  api.delete(`/contratos/${contrato.value.id}`).then((response) => {
+    closeModal();
+    // toast("Contrato deletado com sucesso!", {
+    //   theme: "colored",
+    //   type: "success"
+    // });
+    voltarListagem()
+    // fetchContratos();
+  }).catch((error) => {
+    closeModal();
+    toast("Não foi possível deletar o contrato!", {
+      theme: "colored",
+      type: "error"
+    });
+    console.error('Erro ao deletar contrato:', error);
+  });
+};
+
+const closeModal = () => {
+  excluirModal.value = false;
+};
+
+
+
 const showExibirModalFaturamento = () => {
   modalFaturamento.value = true;
 };
@@ -400,4 +448,14 @@ const saldoAtualMenor = (item) => {
 .btn-save-faturamento:hover {
   background-color: #0ea5e9;
 }
+
+.btn-item {
+  background-color: var(--bluePrimary);
+}
+
+.btn-item:hover {
+  background-color: #0ea5e9;
+}
+
+
 </style>
