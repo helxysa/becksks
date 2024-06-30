@@ -303,7 +303,7 @@ const exibirEditModal = ref(false);
 const  contratoEdit = ref({})
 
 let editIndex = ref(-1);
-let contratoForm = ref({
+let contratoForm = reactive({
   nome_cliente: "",
   vigencia: "",
   saldo_contrato: "",
