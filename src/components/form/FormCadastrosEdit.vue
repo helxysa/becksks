@@ -341,6 +341,8 @@ const fetchContrato = async (id) => {
     contratoEdit.value = response.data;
     contratoForm.value =  contratoEdit.value;
     contratoForm.value.vigencia = formatDate( contratoEdit.value.vigencia)
+   
+   
 
    
     console.log(response.data, "form");
