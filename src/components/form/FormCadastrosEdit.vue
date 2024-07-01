@@ -343,11 +343,6 @@ const fetchContrato = async (id) => {
     contratoForm.value.vigencia = formatDate( contratoEdit.value.vigencia)
    
    
-
-   
-    console.log(response.data, "form");
-    console.log(contratoEdit.value, 'formedit')
-    console.log(contratoForm.value, 'vaklor form')
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
@@ -405,17 +400,20 @@ const removeItem = (index) => {
 };
 const saveContrato = () => {
 if (route.params.id){
+
   const objectEdit = {
-    nome_cliente: contratoForm.nomeCliente,
-    vigencia: contratoForm.vigencia,
-    saldo_contrato: contratoForm.saldoContrato,
-    fiscal: contratoForm.fiscal,
-    ponto_focal: contratoForm.pontoFocal,
-    cidade: contratoForm.cidade,
-    objeto_contrato: contratoForm.objetoContrato,
-    items:  contratoForm.contratoItens
+    nome_cliente: contratoForm.value.nomeCliente,
+    vigencia: contratoForm.value.vigencia,
+    saldo_contrato: contratoForm.value.saldoContrato,
+    fiscal: contratoForm.value.fiscal,
+    ponto_focal: contratoForm.value.pontoFocal,
+    cidade: contratoForm.value.cidade,
+    objeto_contrato: contratoForm.value.objetoContrato,
+    items:  contratoForm.value.contratoItens
 
   }
+
+  console.log(objectEdit, 'objetoEditado')
    api.put(`/contratos/${route.params.id}`, objectEdit)  
     .then((response) => {
       toast("Contrato editado com sucesso!", {
