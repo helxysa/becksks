@@ -33,7 +33,7 @@
           <label class="font-bold w-60">Saldo de contrato</label>
           <input
             required
-            type="text"
+            type="number"
             placeholder="Informe o saldo do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.saldo_contrato"
@@ -110,7 +110,7 @@
               <td class="text-xl p-4">{{ item.unidade_medida }}</td>
               <td class="text-xl p-4">{{ item.valor_unitario }}</td>
               <td class="text-xl p-4">
-                {{ item.saldo_quantidade_contratada }}
+                {{ formatCurrency(item.saldo_quantidade_contratada) }}
               </td>
               <td>
                 <button type="button" @click="openEditModal(index)">
@@ -137,7 +137,7 @@
           </span>
           <button class="btn-submit-contrato" type="submit">
             {{ route.params.id? 'Editar' : 'Salvar'}}
-             
+
           </button>
         </div>
       </form>
@@ -177,7 +177,7 @@
           <div class="mt-8 flex gap-2 items-center">
             <label class="font-bold w-60">Valor unitário</label>
             <input
-              type="text"
+              type="number"
               placeholder="Informe o valor do item"
               v-model="novoItem.valor_unitario"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
@@ -187,7 +187,7 @@
           <div class="mt-8 flex gap-2 items-center">
             <label class="font-bold w-60">Saldo</label>
             <input
-              type="text"
+              type="number"
               placeholder="Saldo da quantidade contratada"
               v-model="novoItem.saldo_quantidade_contratada"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
@@ -284,7 +284,7 @@
       </template>
     </JetDialogModal>
 
-  
+
 
   </div>
 </template>
@@ -344,7 +344,7 @@ const fetchContrato = async (id) => {
     contratoEdit.value = response.data;
     contratoForm.value =  contratoEdit.value;
 
-   
+
     console.log(response.data, "form");
     console.log(contratoEdit.value, 'formedit')
     console.log(contratoForm.value, 'vaklor form')
@@ -404,7 +404,7 @@ const removeItem = (index) => {
 };
 const saveContrato = () => {
 if (route.params.id){
-   api.put(`/contratos/${route.params.id}`, contratoForm)  
+   api.put(`/contratos/${route.params.id}`, contratoForm)
     .then((response) => {
       toast("Contrato editado com sucesso!", {
         theme: "colored",
@@ -438,11 +438,19 @@ if (route.params.id){
     });
   router.push({ name: "Contratos" });
 }
- 
+
 };
 const voltarListagem = () => {
     router.push({ name: 'Contratos' });
 }
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};
 
 </script>
 
