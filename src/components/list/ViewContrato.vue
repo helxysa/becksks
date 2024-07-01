@@ -96,7 +96,7 @@
           <td>
               <button type="button" @click="openEditModal(item)">
                 <Icon
-                  icon="ph:pencil"
+                  icon="bx:edit"
                   height="20"
                   class="hover:text-red-500 hover:rounded-md cursor-pointer"
                 />
@@ -155,20 +155,20 @@
         </td>
           <td class="text-2xl">{{ formatCurrency(500) }}</td>
           <td class="text-2xl flex justify-center mt-4 gap-3">
-            <!-- <span>
+            <span @click="openViewFaturamentoModal(faturamento)">
               <Icon
                 icon="ph:eye"
                 height="20"
                 class="hover:text-blue-500 hover:rounded-md cursor-pointer"
               />
             </span>
-            <span>
+            <span @click="openEditFaturamentoModal(faturamento)">
               <Icon
                 icon="bx:edit"
                 height="20"
                 class="hover:text-blue-500 hover:rounded-md cursor-pointer"
               />
-            </span> -->
+            </span>
             <span @click="deleteFaturamento(faturamento.id)">
               <Icon
                 icon="ph:trash"
@@ -240,7 +240,7 @@
                 <td>
                   <input
                     type="number"
-                    v-model="item.quantidadeItems"
+                    v-model="item.quantidadeItens"
                     class="border-2 text-center max-w-60"
                   />
                 </td>
@@ -249,7 +249,7 @@
                     class="max-w-60"
                     :class="{'text-red-500': saldoMaiorQueContrato(item)}"
                   >
-                  {{ formatCurrency(calcularSaldoitem(item) || 0) }}
+                  {{ formatCurrency(calcularSaldoItem(item) || 0) }}
                   </span>
                 </td>
               </tr>
@@ -416,6 +416,103 @@
   </template>
 </JetDialogModal>
 
+<!-- Modal editar faturamento-->
+<JetDialogModal
+:show="modalEditFaturamento"
+:withouHeader="false"
+@close="closeEditFaturamentoModal"
+maxWidth="6xl"
+:modalTitle="'Editar Faturamento'"
+>
+<template #content>
+  <form @submit.prevent="saveEditedFaturamento">
+    <section class="flex flex-col gap-8">
+      <div class="mt-8 flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Situação:</label>
+        <select
+          :disabled="modalViewOnly"
+          v-model="editingFaturamento.status"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          required
+        >
+          <option disabled hidden value="">Selecione a situação</option>
+          <option>Aguardando Faturamento</option>
+          <option>Aguardando Pagamento</option>
+          <option>Faturamento Pago</option>
+        </select>
+      </div>
+      <div class="flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Saldo atual do contrato:</label>
+        <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtualEditFaturamento())}}</span>
+      </div>
+    </section>
+    <div class="mt-8">
+      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+        <thead class="h-24 bg-slate-100 border-1">
+          <tr>
+            <th class="text-2xl">Título</th>
+            <th class="text-2xl">Valor unitário</th>
+            <th class="text-2xl">Quantidade contratada</th>
+            <th class="text-2xl">Quantidade de Itens</th>
+            <th class="text-2xl">Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="h-20 text-center"
+            v-for="item in editingFaturamento.faturamentoItens"
+            :key="item.id"
+          >
+            <td class="text-2xl">{{ item.titulo }}</td>
+            <td class="text-2xl">
+              {{ formatCurrency(item.valorUnitario) }}
+            </td>
+            <td>
+              <span>
+                {{item.saldoQuantidadeContratada}}
+              </span>
+            </td>
+            <td>
+              <input
+                :disabled="modalViewOnly"
+                type="number"
+                v-model="item.quantidadeItens"
+                class="border-2 text-center max-w-60"
+              />
+            </td>
+            <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+              <span
+                class="max-w-60"
+                :class="{'text-red-500': saldoMaiorQueContratoEditFaturamento(item)}"
+              >
+              {{ formatCurrency(calcularSaldoItem(item) || 0) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-9 flex justify-end gap-4">
+      <button
+        @click="closeEditFaturamentoModal"
+        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+      >
+        Fechar
+      </button>
+      <button
+        v-if="!modalViewOnly"
+        type="submit"
+        :disabled="isSaldoNegativo"
+        class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+      >
+        Salvar
+      </button>
+    </div>
+  </form>
+</template>
+</JetDialogModal>
+
 </template>
 
 <script setup>
@@ -442,6 +539,9 @@ const newItem = ref({
 });
 const modalEditItem = ref(false);
 const editingItem = ref({});
+const modalEditFaturamento = ref(false);
+const editingFaturamento = ref({});
+const modalViewOnly = ref(false);
 
 const deleteContrato = (contratoAtual) => {
   Swal.fire({
@@ -501,17 +601,17 @@ const closeModalFaturamento = () => {
 const resetForm = () => {
   selectNovoFaturamento.value = "";
   contrato.value.contratoItens.forEach((item) => {
-    item.quantidadeItems = null;
+    item.quantidadeItens = null;
   });
   closeModalFaturamento();
 };
 
 const createFaturamento = async () => {
   let itensQuantidadePreenchida = contrato.value.contratoItens
-    .filter((item) => item.quantidadeItems)
+    .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id_item: item.id,
-      quantidade_itens: item.quantidadeItems,
+      quantidade_itens: item.quantidadeItens,
     }));
 
     if (itensQuantidadePreenchida.length === 0) {
@@ -524,7 +624,7 @@ const createFaturamento = async () => {
 
     const saldoMaiorQuantidadeContratada = contrato.value.contratoItens
     .some(item => {
-      return calcularSaldoitem(item) > item.saldoQuantidadeContratada;
+      return calcularSaldoItem(item) > item.saldoQuantidadeContratada;
     })
 
     if (saldoMaiorQuantidadeContratada) {
@@ -540,7 +640,12 @@ const createFaturamento = async () => {
     const response = await api.post(
       `/contratos/${contrato.value.id}/faturamentos`,
       payload
-    );
+    ).then(response => {
+      toast("Faturamento criado com sucesso!", {
+        theme: "colored",
+        type: "success",
+      });
+    });
     resetForm();
     fetchContrato(route.params.id);
   } catch (error) {
@@ -561,9 +666,8 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
-    if (!contrato.value.quantidadeItems) {
+    if (!contrato.value.quantidadeItens) {
     }
-    // console.log(response.data, "resposta");
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
@@ -623,11 +727,24 @@ const faturamentosOrdenados = computed(() => {
   });
 });
 
+// Cálculos de saldo
 const calcularSaldoAtual = () => {
   let saldoTotal = contrato.value.saldoContrato;
 
   contrato.value.contratoItens.forEach((item) => {
-    const valorTotalItem = item.quantidadeItems ? item.quantidadeItems * item.valorUnitario : 0;
+    const valorTotalItem = item.quantidadeItens ? item.quantidadeItens * item.valorUnitario : 0;
+
+    saldoTotal -= valorTotalItem;
+  });
+
+  return saldoTotal;
+};
+
+const calcularSaldoAtualEditFaturamento = () => {
+  let saldoTotal = contrato.value.saldoContrato;
+
+  editingFaturamento.value.faturamentoItens.forEach((item) => {
+    const valorTotalItem = item.quantidadeItens ? item.quantidadeItens * item.valorUnitario : 0;
 
     saldoTotal -= valorTotalItem;
   });
@@ -641,9 +758,15 @@ const saldoMaiorQueContrato = (item) => {
   return saldoAtual < 0;
 };
 
-const calcularSaldoitem = (item) => {
+const saldoMaiorQueContratoEditFaturamento = (item) => {
+  const saldoAtual = calcularSaldoAtualEditFaturamento(item);
+
+  return saldoAtual < 0;
+};
+
+const calcularSaldoItem = (item) => {
   let valor = 0;
-  valor = item.valorUnitario * item.quantidadeItems;
+  valor = item.valorUnitario * item.quantidadeItens;
 
   return valor
 }
@@ -652,21 +775,21 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
 
   faturamento.forEach(item => {
-    const quantidadeItems = parseFloat(item.quantidadeItens) || 0;
+    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
-    const valorTotalItem = quantidadeItems * valorUnitario;
+    const valorTotalItem = quantidadeItens * valorUnitario;
     saldoTotal += valorTotalItem;
   });
 
   return parseFloat(saldoTotal.toFixed(2));
 }
 
-const calcularQuantidadeItens = (faturamento) => {
+const calcularQuantidadeItens = (faturamentoItens) => {
   let saldoTotal = 0;
 
-  faturamento.forEach(item => {
-    const quantidadeItems = parseFloat(item.quantidadeItens) || 0;
-    saldoTotal += quantidadeItems;
+  faturamentoItens.forEach(item => {
+    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
+    saldoTotal += quantidadeItens;
   });
 
   return parseFloat(saldoTotal.toFixed(2));
@@ -686,7 +809,6 @@ const closeModalEditItem = () => {
 const saveEditedItem = async () => {
   const itemIndex = contrato.value.contratoItens.findIndex((i) => i.id === editingItem.value.id);
   let itemEditado = { ...editingItem.value };
-  console.log('itemEditado', itemEditado)
 
   let totalItensQuantidadeContratada = 0;
   contrato.value.contratoItens.forEach(item => {
@@ -732,7 +854,7 @@ const saveEditedItem = async () => {
 const deleteItem = async (itemId) => {
   Swal.fire({
     title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este item?",
+    text: "Excluir um item vinculado em um faturamento, irá afetar aquele faturamento. Tem certeza que deseja excluir este item?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -795,6 +917,66 @@ const createNewItem = async () => {
       type: "error",
     });
     console.error("Erro ao criar item:", error);
+  }
+};
+
+// Editar faturamento do contrato
+const openEditFaturamentoModal = (faturamento) => {
+  // editingFaturamento.value = { ...faturamento };
+  editingFaturamento.value = JSON.parse(JSON.stringify(faturamento));
+  modalEditFaturamento.value = true;
+};
+
+const openViewFaturamentoModal = (faturamento) => {
+  modalViewOnly.value = true;
+  editingFaturamento.value = { ...faturamento };
+  modalEditFaturamento.value = true;
+};
+
+const closeEditFaturamentoModal = () => {
+  modalViewOnly.value = false;
+  editingFaturamento.value = {};
+  modalEditFaturamento.value = false;
+};
+
+const saveEditedFaturamento = async () => {
+  let itensQuantidadePreenchida = editingFaturamento.value.faturamentoItens
+    .filter(item => item.quantidadeItens)
+    .map(item => ({
+      id: item.id,
+      quantidade_itens: item.quantidadeItens.toString()
+    }));
+
+  if (itensQuantidadePreenchida.length === 0){
+    toast("Adicione pelo menos um item para criar o faturamento.", {
+      theme: "colored",
+      type: "error",
+    });
+    return;
+  }
+
+  const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return calcularSaldoItem(item) > item.saldoQuantidadeContratada})
+
+  if (saldoMaiorQuantidadeContratada) { toast.error('O saldo do item não pode ultrapassar a quantidade contratada.'); return;}
+
+  let payload = {
+    status: editingFaturamento.value.status,
+    itens: itensQuantidadePreenchida
+  };
+
+  try {
+    const response = await api.put(`/faturamentos/${editingFaturamento.value.id}`, payload)
+    .then((response) => {
+      Object.assign(editingFaturamento.value);
+      toast("Faturamento atualizado com sucesso!", {
+        theme: "colored",
+        type: "success",
+      });
+      modalEditFaturamento.value = false;
+      fetchContrato(route.params.id);
+    })
+  } catch (error) {
+    console.error(error);
   }
 };
 
