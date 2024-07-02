@@ -333,7 +333,6 @@ onMounted(()=>{
   const contratoId = route.params.id;
   if(contratoId){
       fetchContrato(contratoId)
-      console.log('edit')
   }
 })
 
