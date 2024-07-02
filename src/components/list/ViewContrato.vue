@@ -68,7 +68,7 @@
           <th class="text-xl">Título</th>
           <th class="text-xl">Unidade de medida</th>
           <th class="text-xl">Valor Unitário</th>
-          <th class="text-xl">Saldo Quantidade Contratada</th>
+          <th class="text-xl">Quantidade Contratada</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -81,7 +81,7 @@
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
-          <td class="text-2xl">{{ formatCurrency(item.saldoQuantidadeContratada) }}</td>
+          <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
@@ -124,7 +124,7 @@
           <th class="text-xl">Quantidade itens</th>
           <th class="text-xl">Saldo do Faturamento</th>
           <th class="text-xl">Situação</th>
-          <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
+          <th class="text-xl">Saldo Atual do Contrato</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -151,7 +151,8 @@
             </span>
           </div>
           </td>
-          <!-- <td class="text-2xl">{{ formatCurrency(500) }}</td> -->
+          <!-- <td class="text-2xl">{{ formatCurrency(calcularSaldoAtualContrato()) }}</td> -->
+           <td class="text-2xl">{{formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl">
            <div class="flex justify-center items-center gap-2">
               <span @click="openViewFaturamentoModal(faturamento)">
@@ -207,7 +208,11 @@
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Saldo atual do contrato:</label>
+          <label class="font-bold text-3xl">Saldo do contrato:</label>
+          <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(contrato.saldoContrato)}}</span>
+        </div>
+        <div class="flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Saldo atual:</label>
           <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtual())}}</span>
         </div>
       </section>
