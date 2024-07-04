@@ -31,15 +31,15 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Saldo de contrato</label>
-          <input
-            required
-            type="text"
-            placeholder="Informe o saldo do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.saldo_contrato"
-            v-money3="money" 
-          />
+          <label class="font-bold w-60">Valor contratado</label>
+          <money3
+          required
+          type="text"
+          placeholder="Informe o valor contratado"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+          v-model="contratoForm.saldo_contrato"
+          v-bind="moneyConfig"
+        />
         </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Fiscal do contrato</label>
@@ -102,7 +102,7 @@
               <th class="text-2xl">Título</th>
               <th class="text-2xl">Unidade de medida</th>
               <th class="text-2xl">Valor unitário</th>
-              <th class="text-2xl">Saldo Contrato</th>
+              <th class="text-2xl">Quantidade  contratada</th>
               <th class="text-2xl">Opções</th>
             </tr>
           </thead>
@@ -114,9 +114,9 @@
             >
               <td class="text-xl p-4">{{ item.titulo }}</td>
               <td class="text-xl p-4">{{ item.unidade_medida }}</td>
-              <td class="text-xl p-4">{{ item.valor_unitario }}</td>
+              <td class="text-xl p-4">{{ formatCurrency(item.valor_unitario) }}</td>
               <td class="text-xl p-4">
-                {{ formatCurrency(item.saldo_quantidade_contratada) }}
+                {{ item.saldo_quantidade_contratada }}
               </td>
               <td>
                 <button type="button" @click="openEditModal(index)">
@@ -184,25 +184,25 @@
             </div>
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Valor Unitário:</label>
-              <input              
+              <money3              
                 v-model="novoItem.valor_unitario"
                 type="text"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-                required
-                v-money3="money"
+                required                
                  placeholder="Informe o valor do item"
                  maxlength="20"
+                 v-bind="moneyConfig"
               />
             </div>
             <div class="flex gap-4 justify-between items-center">
-              <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
+              <label class="font-bold text-3xl">Quantidade Contratada:</label>
               <input            
                 v-model="novoItem.saldo_quantidade_contratada"
-                type="text"
+                type="number"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-                required
-                v-money3="money"
-                placeholder="Saldo da quantidade contratada"
+                required               
+                placeholder="Quantidade contratada"
+                min="0"
               />
             </div>
           </section>
@@ -321,25 +321,25 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
-            <input              
+            <money3             
               v-model="editItem.valor_unitario"
               type="text"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
-              v-money3="money"
+               v-bind="moneyConfig"
                placeholder="Informe o valor do item"
                maxlength="20"
             />
           </div>
           <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
+            <label class="font-bold text-3xl">Quantidade Contratada:</label>
             <input            
               v-model="editItem.saldo_quantidade_contratada"
-              type="text"
+              type="number"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required
-              v-money3="money"
-              placeholder="Saldo da quantidade contratada"
+              required            
+              placeholder="Quantidade contratada"
+              min="0"
             />
           </div>
         </section>
@@ -437,7 +437,8 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
 import Swal from 'sweetalert2';
-import money from 'v-money3'
+import { Money3Component } from 'v-money3'
+
 
 
 const router = useRouter();
@@ -445,6 +446,14 @@ const route = useRoute();
 const exibirModal = ref(false);
 const exibirEditModal = ref(false);
 const  contratoEdit = ref({})
+const moneyConfig = {
+  precision: 2,
+  decimal: ',',
+  thousands: '.',
+  prefix: 'R$ ',  
+  masked: false
+};
+
 
 let editIndex = ref(-1);
 let contratoForm = reactive({
