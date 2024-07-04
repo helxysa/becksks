@@ -416,25 +416,26 @@ maxWidth="6xl"
         </div>
         <div class="flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Valor Unitário:</label>
-          <input
+          <money3
             v-model="newItem.valor_unitario"
             type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            v-money3="money"
+            required           
+            v-bind="moneyConfig"
             placeholder="Informe o valor do item"
             maxlength="20"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
+          <label class="font-bold text-3xl">Quantidade Contratada:</label>
           <input
             v-model="newItem.saldo_quantidade_contratada"
-            type="text"
+            type="number"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
-             v-money3="money"
-                placeholder="Saldo da quantidade contratada"
+            min="0"
+            
+                placeholder="Quantidade contratada"
           />
         </div>
       </section>
@@ -494,26 +495,26 @@ maxWidth="6xl"
         </div>
         <div class="flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Valor Unitário:</label>
-          <input
+          <money3
             :disabled="isItemViewModal"
             v-model="editingItem.valorUnitario"
             type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required           
-            v-money3="money"
+            required   
+            v-bind="moneyConfig"          
             placeholder="Informe o valor do item"
             maxlength="20"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
+          <label class="font-bold text-3xl">Quantidade Contratada:</label>
           <input
           :disabled="isItemViewModal"
             v-model="editingItem.saldoQuantidadeContratada"
-            type="text"
+            type="number"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
-              v-money3="money"
+            min="0"
                 placeholder="Saldo da quantidade contratada"
           />
         </div>
@@ -549,7 +550,7 @@ import { api } from '@/services/api';
 import JetDialogModal from '@/components/modals/DialogModal.vue';
 import { toast } from 'vue3-toastify';
 import Swal from 'sweetalert2';
-import money from 'v-money3'
+import { Money3Component } from 'v-money3'
 
 
 const router = useRouter();
@@ -571,6 +572,14 @@ const modalEditFaturamento = ref(false);
 const editingFaturamento = ref({});
 const isFaturamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
+
+const moneyConfig = {
+  precision: 2,
+  decimal: ',',
+  thousands: '.',
+  prefix: 'R$ ', 
+  masked: false
+};
 
 const deleteContrato = (contratoAtual) => {
   Swal.fire({
