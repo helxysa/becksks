@@ -247,6 +247,7 @@
                     type="number"
                     v-model="item.quantidadeItens"
                     class="border-2 text-center max-w-60"
+                    min="0"
                   />
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
@@ -343,6 +344,7 @@ maxWidth="6xl"
                 type="number"
                 v-model="item.quantidadeItens"
                 class="border-2 text-center max-w-60"
+                min="0"
               />
             </td>
             <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
@@ -395,6 +397,8 @@ maxWidth="6xl"
             v-model="newItem.titulo"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
+            maxlength="50"
+              placeholder="Titulo do item"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -404,7 +408,7 @@ maxWidth="6xl"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
             >
-            <option disabled hidden value="">Selecione a situação</option>
+            <option disabled hidden value="">Selecione a unidade  de medida</option>
             <option>PF</option>
             <option>UST</option>
             <option>Funcionário</option>
@@ -414,18 +418,23 @@ maxWidth="6xl"
           <label class="font-bold text-3xl">Valor Unitário:</label>
           <input
             v-model="newItem.valor_unitario"
-            type="number"
+            type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
+            v-money3="money"
+            placeholder="Informe o valor do item"
+            maxlength="20"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
           <input
             v-model="newItem.saldo_quantidade_contratada"
-            type="number"
+            type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
+             v-money3="money"
+                placeholder="Saldo da quantidade contratada"
           />
         </div>
       </section>
@@ -466,6 +475,7 @@ maxWidth="6xl"
             v-model="editingItem.titulo"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
+            maxlength="50"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -487,9 +497,12 @@ maxWidth="6xl"
           <input
             :disabled="isItemViewModal"
             v-model="editingItem.valorUnitario"
-            type="number"
+            type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
+            required           
+            v-money3="money"
+            placeholder="Informe o valor do item"
+            maxlength="20"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -497,9 +510,11 @@ maxWidth="6xl"
           <input
           :disabled="isItemViewModal"
             v-model="editingItem.saldoQuantidadeContratada"
-            type="number"
+            type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
+              v-money3="money"
+                placeholder="Saldo da quantidade contratada"
           />
         </div>
       </section>
@@ -534,6 +549,8 @@ import { api } from '@/services/api';
 import JetDialogModal from '@/components/modals/DialogModal.vue';
 import { toast } from 'vue3-toastify';
 import Swal from 'sweetalert2';
+import money from 'v-money3'
+
 
 const router = useRouter();
 const route = useRoute();
@@ -681,6 +698,11 @@ const voltarListagem = () => {
 onMounted(() => {
   const contratoId = route.params.id;
   fetchContrato(contratoId);
+  window.scroll({
+  top: 0,
+  // left: 100,
+  // behavior: "smooth",
+});
 });
 
 const fetchContrato = async (id) => {
