@@ -17,6 +17,7 @@
             placeholder="Informe o nome do cliente"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.nome_cliente"
+            maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -33,10 +34,11 @@
           <label class="font-bold w-60">Saldo de contrato</label>
           <input
             required
-            type="number"
+            type="text"
             placeholder="Informe o saldo do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.saldo_contrato"
+            v-money3="money" 
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -47,6 +49,7 @@
             placeholder="Informe o fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.fiscal"
+              maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -57,6 +60,7 @@
             placeholder="Informe o ponto focal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.ponto_focal"
+              maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -67,6 +71,7 @@
             placeholder="Informe a cidade do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.cidade"
+              maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -77,6 +82,7 @@
             placeholder="Informe o objeto do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.objeto_contrato"
+              maxlength="120"
           />
         </div>
         <div class="mt-14 flex justify-center">
@@ -148,15 +154,80 @@
       :withouHeader="false"
       @close="closeModal"
       :modalTitle="'Adicionar Item'"
+       maxWidth="6xl"
     >
       <template #content>
         <form @submit.prevent="saveItem">
-          <div class="mt-8 flex gap-2 items-center">
+          <section class="flex flex-col gap-8">
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Título:</label>
+              <input               
+                v-model="novoItem.titulo"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required
+                maxlength="50"
+                  placeholder="Titulo do item"
+              />
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Unidade de Medida:</label>
+              <select              
+                v-model="novoItem.unidade_medida"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required
+                >
+                <!-- <option disabled hidden value="">Selecione a unidade de medida</option> -->
+                <option>PF</option>
+                <option>UST</option>
+                <option>Funcionário</option>
+              </select>
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Valor Unitário:</label>
+              <input              
+                v-model="novoItem.valor_unitario"
+                type="text"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required
+                v-money3="money"
+                 placeholder="Informe o valor do item"
+                 maxlength="20"
+              />
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
+              <input            
+                v-model="novoItem.saldo_quantidade_contratada"
+                type="text"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required
+                v-money3="money"
+                placeholder="Saldo da quantidade contratada"
+              />
+            </div>
+          </section>
+          <div class="mt-9 flex justify-end gap-4">
+            <button
+              type="button"
+              @click="closeModal"
+              class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+            >
+              Fechar
+            </button>
+            <button              
+              type="submit"
+              class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+            >
+              Salvar
+            </button>
+          </div>
+          <!-- <div class="mt-8 flex gap-2 items-center">
             <label class="font-bold w-60">Título</label>
             <input
               type="text"
               placeholder="Titulo do item"
               v-model="novoItem.titulo"
+              maxlength="50"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
               required
             />
@@ -180,6 +251,7 @@
               type="number"
               placeholder="Informe o valor do item"
               v-model="novoItem.valor_unitario"
+              min="0"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
               required
             />
@@ -187,11 +259,12 @@
           <div class="mt-8 flex gap-2 items-center">
             <label class="font-bold w-60">Saldo</label>
             <input
-              type="number"
+              type="text"
               placeholder="Saldo da quantidade contratada"
               v-model="novoItem.saldo_quantidade_contratada"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
               required
+              v-money3="money"
             />
           </div>
 
@@ -208,81 +281,147 @@
             >
               Salvar
             </button>
-          </div>
+          </div> -->
         </form>
       </template>
-    </JetDialogModal>
+    </JetDialogModal>   
 
     <JetDialogModal
-      :show="exibirEditModal"
-      :withouHeader="false"
-      @close="closeEditModal"
-      :modalTitle="'Editar Item'"
-    >
-      <template #content>
-        <form @submit.prevent="saveEditModal">
-          <div class="mt-8 flex gap-2 items-center">
-            <label class="font-bold w-60">Título</label>
-            <input
-                required
-                type="text"
-                placeholder="Título do item"
-                v-model="editItem.titulo"
-                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
+    :show="exibirEditModal"
+    :withouHeader="false"
+    @close="closeEditModal"
+    :modalTitle="'Editar Item'"   
+     maxWidth="6xl"
+  >
+    <template #content>
+      <form @submit.prevent="saveEditModal">
+        <section class="flex flex-col gap-8">
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Título:</label>
+            <input               
+              v-model="editItem.titulo"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              maxlength="50"
+                placeholder="Titulo do item"
             />
           </div>
-          <div class="mt-8 flex gap-2 items-center">
-            <label class="font-bold w-60">Unidade de medida</label>
-            <select
-                required
-                v-model="editItem.unidade_medida"
-                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl h-14"
-            >
-              <option value="">Selecione a unidade de medida</option>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Unidade de Medida:</label>
+            <select              
+              v-model="editItem.unidade_medida"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              >
+              <option disabled hidden value="">Selecione a unidade de medida</option>
               <option>PF</option>
               <option>UST</option>
               <option>Funcionário</option>
             </select>
           </div>
-          <div class="mt-8 flex gap-2 items-center">
-            <label class="font-bold w-60">Valor unitário</label>
-            <input
-                required
-                type="text"
-                placeholder="Informe o valor do item"
-                v-model="editItem.valor_unitario"
-                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Valor Unitário:</label>
+            <input              
+              v-model="editItem.valor_unitario"
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              v-money3="money"
+               placeholder="Informe o valor do item"
+               maxlength="20"
             />
           </div>
-          <div class="mt-8 flex gap-2 items-center">
-            <label class="font-bold w-60">Saldo</label>
-            <input
-                required
-                type="text"
-                placeholder="Saldo da quantidade contratada"
-                v-model="editItem.saldo_quantidade_contratada"
-                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Saldo Quantidade Contratada:</label>
+            <input            
+              v-model="editItem.saldo_quantidade_contratada"
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              v-money3="money"
+              placeholder="Saldo da quantidade contratada"
             />
           </div>
+        </section>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            type="button"
+            @click="closeEditModal"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button              
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+          >
+            Salvar
+          </button>
+        </div>
+        <!-- <div class="mt-8 flex gap-2 items-center">
+          <label class="font-bold w-60">Título</label>
+          <input
+            type="text"
+            placeholder="Titulo do item"
+            v-model="novoItem.titulo"
+            maxlength="50"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
+            required
+          />
+        </div>
+        <div class="mt-8 flex gap-2 items-center">
+          <label class="font-bold w-60">Unidade de medida</label>
+          <select
+            v-model="novoItem.unidade_medida"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl h-14"
+            required
+          >
+            <option value="">Selecione a unidade de medida</option>
+            <option>PF</option>
+            <option>UST</option>
+            <option>Funcionário</option>
+          </select>
+        </div>
+        <div class="mt-8 flex gap-2 items-center">
+          <label class="font-bold w-60">Valor unitário</label>
+          <input
+            type="number"
+            placeholder="Informe o valor do item"
+            v-model="novoItem.valor_unitario"
+            min="0"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
+            required
+          />
+        </div>
+        <div class="mt-8 flex gap-2 items-center">
+          <label class="font-bold w-60">Saldo</label>
+          <input
+            type="text"
+            placeholder="Saldo da quantidade contratada"
+            v-model="novoItem.saldo_quantidade_contratada"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-3xl"
+            required
+            v-money3="money"
+          />
+        </div>
 
-          <div class="mt-9 flex justify-end gap-4">
-            <button
-              type="button"
-              @click="closeEditModal"
-              class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-            >
-              Fechar
-            </button>
-            <button
-              type="submit"
-              class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
-            >
-              Salvar
-            </button>
-          </div>
-        </form>
-      </template>
-    </JetDialogModal>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            @click="closeModal"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+          >
+            Salvar
+          </button>
+        </div> -->
+      </form>
+    </template>
+  </JetDialogModal>
 
 
 
@@ -298,6 +437,8 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
 import Swal from 'sweetalert2';
+import money from 'v-money3'
+
 
 const router = useRouter();
 const route = useRoute();

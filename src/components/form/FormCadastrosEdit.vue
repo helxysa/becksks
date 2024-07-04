@@ -16,6 +16,7 @@
             placeholder="Informe o nome do cliente"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.nomeCliente"
+             maxlength="120"
             required
           />
         </div>
@@ -33,10 +34,11 @@
           <label class="font-bold w-60">Saldo de contrato</label>
           <input
             required
-            type="number"
+            type="text"
             placeholder="Informe o saldo do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.saldoContrato"
+             v-money3="money"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -47,6 +49,7 @@
             placeholder="Informe o fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.fiscal"
+             maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -57,6 +60,7 @@
             placeholder="Informe o ponto focal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.pontoFocal"
+             maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -67,6 +71,7 @@
             placeholder="Informe a cidade do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.cidade"
+             maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -77,6 +82,7 @@
             placeholder="Informe o objeto do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.objetoContrato"
+             maxlength="120"
           />
         </div>
 
@@ -102,6 +108,7 @@ import { toast } from "vue3-toastify";
 import { api } from "@/services/api";
 import Swal from 'sweetalert2';
 import {format} from 'date-fns';
+import money from 'v-money3'
 
 const router = useRouter();
 const route = useRoute();
