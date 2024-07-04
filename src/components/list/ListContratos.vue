@@ -119,7 +119,6 @@ const fetchContratos = async () => {
   try {
     const response = await api.get('/contratos');
     contratos.value = response.data;
-    console.log(contratos.value, 'valor')
   } catch (error) {
     console.error('Erro ao buscar contratos:', error);
   }

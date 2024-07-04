@@ -472,10 +472,8 @@ let editItem = ref({
 
 onMounted(()=>{
   const contratoId = route.params.id;
-  console.log(contratoId, 'contratoId')
   if(contratoId){
       fetchContrato(contratoId)
-      console.log('edit')
   }
 })
 
@@ -486,9 +484,6 @@ const fetchContrato = async (id) => {
     contratoForm.value =  contratoEdit.value;
 
 
-    console.log(response.data, "form");
-    console.log(contratoEdit.value, 'formedit')
-    console.log(contratoForm.value, 'vaklor form')
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
