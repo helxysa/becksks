@@ -32,13 +32,13 @@
         </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Saldo de contrato</label>
-          <input
+          <money3
             required
             type="text"
             placeholder="Informe o saldo do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.saldoContrato"
-             v-money3="money"
+            v-bind="moneyConfig"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -108,11 +108,19 @@ import { toast } from "vue3-toastify";
 import { api } from "@/services/api";
 import Swal from 'sweetalert2';
 import {format} from 'date-fns';
-import money from 'v-money3'
+import { Money3Component } from 'v-money3'
 
 const router = useRouter();
 const route = useRoute();
 let contratoForm = ref({});
+
+const moneyConfig = {
+  precision: 2,
+  decimal: ',',
+  thousands: '.',
+  prefix: 'R$ ',  
+  masked: false
+};
 
 onMounted(async () => {
   const contratoId = route.params.id
