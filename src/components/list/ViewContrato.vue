@@ -49,7 +49,7 @@
   </section>
 
   <section class="flex flex-col gap-12 items-center justify-center text-center w-full my-10">
-      <h1 class="text-3xl"><strong>Saldo Contrato: </strong> <span class="underline underline-offset-4">{{ formatCurrency(contrato.saldoContrato) }}</span></h1>
+      <h1 class="text-3xl"><strong>Valor  Contratado: </strong> <span class="underline underline-offset-4">{{ formatCurrency(contrato.saldoContrato) }}</span></h1>
   </section>
 
   <section>
@@ -208,7 +208,7 @@
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Saldo do contrato:</label>
+          <label class="font-bold text-3xl">Valor contratado:</label>
           <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(contrato.saldoContrato)}}</span>
         </div>
         <div class="flex gap-4 justify-between items-center">
