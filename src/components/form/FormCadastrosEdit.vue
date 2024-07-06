@@ -31,7 +31,7 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Saldo de contrato</label>
+          <label class="font-bold w-60">Valor contratado</label>
           <money3
             required
             type="text"
