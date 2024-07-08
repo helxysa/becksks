@@ -124,7 +124,7 @@
           <th class="text-xl">Quantidade itens</th>
           <th class="text-xl">Saldo do Faturamento</th>
           <th class="text-xl">Situação</th>
-          <th class="text-xl">Saldo Atual do Contrato</th>
+          <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -152,7 +152,7 @@
           </div>
           </td>
           <!-- <td class="text-2xl">{{ formatCurrency(calcularSaldoAtualContrato()) }}</td> -->
-           <td class="text-2xl">{{formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
+           <!-- <td class="text-2xl">{{formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td> -->
           <td class="text-2xl">
            <div class="flex justify-center items-center gap-2">
               <span @click="openViewFaturamentoModal(faturamento)">
@@ -420,7 +420,7 @@ maxWidth="6xl"
             v-model="newItem.valor_unitario"
             type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required           
+            required
             v-bind="moneyConfig"
             placeholder="Informe o valor do item"
             maxlength="20"
@@ -434,7 +434,7 @@ maxWidth="6xl"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
             min="0"
-            
+
                 placeholder="Quantidade contratada"
           />
         </div>
@@ -500,8 +500,8 @@ maxWidth="6xl"
             v-model="editingItem.valorUnitario"
             type="text"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required   
-            v-bind="moneyConfig"          
+            required
+            v-bind="moneyConfig"
             placeholder="Informe o valor do item"
             maxlength="20"
           />
@@ -577,7 +577,7 @@ const moneyConfig = {
   precision: 2,
   decimal: ',',
   thousands: '.',
-  prefix: 'R$ ', 
+  prefix: 'R$ ',
   masked: false
 };
 

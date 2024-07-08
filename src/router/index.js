@@ -1,51 +1,71 @@
-import {  createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
-const HomePage = () => import("../pages/HomePage/HomePage.vue")
-const ContratosPage = ()=> import ("../pages/ContratosPage/ContratosPage.vue")
-const FormContratosPage = () => import("../components/form/FormCadastros.vue")
-const FormContratosEdit = ()=> import ("../components/form/FormCadastrosEdit.vue")
-const ViewContrato = () => import("../components/list/ViewContrato.vue")
+const HomePage = () => import("../pages/HomePage/HomePage.vue");
+const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
+const FormContratosPage = () => import("../components/form/FormCadastros.vue");
+const FormContratosEdit = () =>
+  import("../components/form/FormCadastrosEdit.vue");
+const ViewContrato = () => import("../components/list/ViewContrato.vue");
+import Register from "@/pages/Register.vue";
+import Login from "@/pages/Login.vue";
 
-const  routes = [
-    {
-        path: '/',
-        name: 'Home',
-        component: HomePage,
-    },
-
-    {
-    path: '/contratos',
-    name: 'Contratos',
+const routes = [
+  {
+    path: "/",
+    name: "Home",
+    component: HomePage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/login",
+    component: Login,
+  },
+  {
+    path: "/cadastro",
+    component: Register,
+  },
+  {
+    path: "/contratos",
+    name: "Contratos",
     component: ContratosPage,
-   },
-
-   {
-    path: '/cadastro/contratos',
-    name: 'Formulário Contratos',
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cadastro/contratos",
+    name: "Formulário Contratos",
     component: FormContratosPage,
-   },
-
-   {
-    path: '/cadastro/contratos/:id',
-    name: 'editarcontrato',
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cadastro/contratos/:id",
+    name: "editarcontrato",
     component: FormContratosEdit,
-    },
-
-    {
-        path: '/visualizar/contratos/:id',
-        name: 'visualizarContrato',
-        component: ViewContrato,
-        },
-
-   {
-    path: '/:pathMatch(.*)*',
-    redirect: {name: 'Home'}
-  }
-]
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/visualizar/contratos/:id",
+    name: "visualizarContrato",
+    component: ViewContrato,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    redirect: '{ name: "Home" }',
+  },
+];
 
 const router = createRouter({
-    history: createWebHistory('/'),
-    routes,
-})
+  history: createWebHistory("/"),
+  routes,
+});
 
-export  default router
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token");
+  if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
+    next("/login");
+  } else {
+    next();
+  }
+});
+
+export default router;
