@@ -4,9 +4,22 @@
       <Card style="width: 35rem; overflow: hidden" class="cursor-pointer hover:bg-slate-300">
         <template #title>
           <div class="flex justify-end ">
-            <span class="bg-green-500 text-white text-lg rounded-md p-2">Aguardando pagamento</span>
+            <div v-if="contrato?.faturamentos?.length">
+              <span class=" border-2 p-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center"
+              :class="{
+                'bg-green-200 border-green-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Faturamento Pago',
+                'bg-yellow-200 border-yellow-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Pagamento',
+                'bg-blue-200 border-blue-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Faturamento',
+              }">     
+              {{  contrato.faturamentos[contrato.faturamentos.length - 1].status  }}         
+              </span>
 
-            <!-- <Button>Aguardando pagamento</Button> -->
+            </div>
+            <div v-else class="mt-12">
+                <!-- <button class="hidden">Aguardando pagamento</button> -->
+            </div>
+
+          
           </div>
         </template>
 

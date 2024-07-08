@@ -1022,9 +1022,7 @@ const saveEditedFaturamento = async () => {
       type: "error",
     });
     return;
-  }
-
-  console.log(editingFaturamento.value.faturamentoItens ,'faturamento edit')
+  }  
 
   const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
 
