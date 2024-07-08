@@ -239,7 +239,7 @@
                 </td>
                 <td>
                   <span>
-                    {{ formatCurrency(item.saldoQuantidadeContratada)}}
+                    {{ item.saldoQuantidadeContratada}}
                   </span>
                 </td>
                 <td>
@@ -335,7 +335,7 @@ maxWidth="6xl"
             </td>
             <td>
               <span>
-                {{formatCurrency(item.saldoQuantidadeContratada)}}
+                {{item.saldoQuantidadeContratada}}
               </span>
             </td>
             <td>
@@ -661,11 +661,11 @@ const createFaturamento = async () => {
 
     const saldoMaiorQuantidadeContratada = contrato.value.contratoItens
     .some(item => {
-      return calcularSaldoItem(item) > item.saldoQuantidadeContratada;
+      return item.quantidadeItens > item.saldoQuantidadeContratada;
     })
 
     if (saldoMaiorQuantidadeContratada) {
-    toast.error('O saldo do item não pode ultrapassar a quantidade contratada.');
+    toast.error('A quantidade dos items não pode ultrapassar a quantidade contratada.');
     return;
   }
 
@@ -784,7 +784,7 @@ const calcularSaldoAtual = () => {
   let saldoTotal = calcularSaldoAtualContrato();
 
   contrato.value.contratoItens.forEach((item) => {
-    const valorTotalItem = item.quantidadeItens ? item.quantidadeItens * item.valorUnitario : 0;
+    const valorTotalItem = item.quantidadeItens ? item.quantidadeItens * item.valorUnitario  : 0;
 
     saldoTotal -= valorTotalItem;
   });
@@ -794,9 +794,9 @@ const calcularSaldoAtual = () => {
 
 const calcularSaldoAtualEditFaturamento = () => {
   let saldoTotal = contrato.value.saldoContrato;
-
+ 
   editingFaturamento.value.faturamentoItens.forEach((item) => {
-    const valorTotalItem = item.quantidadeItens ? item.quantidadeItens * item.valorUnitario : 0;
+    const valorTotalItem = item.quantidadeItens ? (item.quantidadeItens * item.valorUnitario) : 0;
 
     saldoTotal -= valorTotalItem;
   });
@@ -828,7 +828,7 @@ const saldoMaiorQueContratoEditFaturamento = (item) => {
 
 const calcularSaldoItem = (item) => {
   let valor = 0;
-  valor = item.valorUnitario * item.quantidadeItens;
+  valor = item.valorUnitario * item.quantidadeItens ;
 
   return valor
 }
@@ -1024,9 +1024,11 @@ const saveEditedFaturamento = async () => {
     return;
   }
 
-  const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return calcularSaldoItem(item) > item.saldoQuantidadeContratada})
+  console.log(editingFaturamento.value.faturamentoItens ,'faturamento edit')
 
-  if (saldoMaiorQuantidadeContratada) { toast.error('O saldo do item não pode ultrapassar a quantidade contratada.'); return;}
+  const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
+
+  if (saldoMaiorQuantidadeContratada) { toast.error('A quantidade  de items não pode ultrapassar a quantidade contratada.'); return;}
 
   let payload = {
     status: editingFaturamento.value.status,
