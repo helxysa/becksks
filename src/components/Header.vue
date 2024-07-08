@@ -19,10 +19,10 @@
                 </svg> -->
             </template>
             <template #item="{ item }">
-             
+
 
                 <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom
-                
+
                >
                  <div class="h-16 flex items-center justify-center mr-8 text-gray-900 rounded-lg  hover:bg-blue-50 hover:text-blue-500 ">
 
@@ -36,7 +36,7 @@
                   <span :class="item.icon" />
                   <span class="ml-2 text-3xl font-bold">{{ item.label }}</span>
               </a>
-             
+
                 <!-- <a v-if="item.root" v-ripple class="flex items-center cursor-pointer px-4 py-2 overflow-hidden relative font-semibold text-lg uppercase" style="border-radius: 2rem">
                     <span :class="item.icon" />
                     <span class="ml-2">{{ item.label }}</span>
@@ -57,8 +57,11 @@
                 </div> -->
             </template>
             <template #end>
-                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" size="xlarge"/>
-            </template>
+                <div class="flex items-center gap-4">
+                  <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" size="xlarge"/>
+                  <span @click="logout" class="mr-4 hover:underline hover:text-blue-400 cursor-pointer">Sair</span>
+                </div>
+              </template>
         </MegaMenu>
     </div>
         <!-- <div class="px-3 py-7 lg:px-5 lg:pl-3 ">
@@ -119,6 +122,9 @@
 import { ref } from 'vue';
 import MegaMenu from 'primevue/megamenu';
 import Avatar from 'primevue/avatar';
+import { useRouter } from "vue-router";
+import { isAuthenticated } from '@/state/auth';
+const router = useRouter();
 
 const  isOpenSidebar = ref(false);
 const toogleSidebar = () => {
@@ -130,15 +136,21 @@ const items = ref([
         label: 'Dashboard',
         root: true,
         route: '/',
-       
+
     },
     {
         label: 'Contratos',
         root: true,
         route: '/contratos',
     },
-   
+
 ]);
+
+const logout = () => {
+  localStorage.removeItem('token');
+  isAuthenticated.value = false;
+  router.push('/login');
+}
 
 </script>
 
