@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row-reverse h-screen">
+  <div class="flex flex-row h-screen">
     <section class="bg-blue-500 w-1/2 flex items-center justify-center animate-fadeinright">
       <div class="text-white w-full flex flex-col justify-center items-center bg-blue-600 p-8">
         <div

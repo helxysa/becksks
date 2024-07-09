@@ -36,7 +36,7 @@
           </div>
           <div class="flex gap-2">
             <span class="font-semibold">Valor aguard. faturamento:</span>
-            {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos)) }}
+            {{formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos)) }}
             <!-- <span>{{contrato.saldoContrato}}</span> -->
           </div>
           <div class="flex gap-2">
