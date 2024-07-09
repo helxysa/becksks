@@ -34,7 +34,7 @@
         <label for="password" class="block text-3xl mb-4 font-medium">Senha</label>
         <input
           v-model="password"
-          type="text"
+          type="password"
           id="password"
           class="border p-2 w-full"
           required
@@ -44,7 +44,7 @@
         <label for="password" class="block text-3xl mb-4 font-medium">Confirmar senha</label>
         <input
           v-model="confirmPassword"
-          type="text"
+          type="password"
           id="confirmPassword"
           class="border p-2 w-full"
           required
