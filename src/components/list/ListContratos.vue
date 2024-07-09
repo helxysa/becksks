@@ -36,6 +36,7 @@
           </div>
           <div class="flex gap-2">
             <span class="font-semibold">Valor aguard. faturamento:</span>
+            {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos)) }}
             <!-- <span>{{contrato.saldoContrato}}</span> -->
           </div>
           <div class="flex gap-2">
@@ -43,33 +44,10 @@
           </div>
         </template>
       </Card>
-    </router-link>
-
-    <!-- <div class="flex justify-end mt-2">
-      <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
-        <router-view>
-          <Icon icon="bx:edit" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer" />
-        </router-view>
-      </router-link>
-      <Icon icon="ph:trash" height="20" class="hover:text-blue-500 hover:rounded-md cursor-pointer" @click="openModalDeleteContrato(contrato)" />
-    </div> -->
+    </router-link>   
   </div>
 
-  <!-- <JetDialogModal :show="excluirModal" @close="closeModal" :withouHeader="true">
-    <template #content>
-      <div class="flex justify-center font-semibold">
-        <h1>Tem certeza de excluir esse contrato?</h1>
-      </div>
-      <div class="mt-9 flex justify-end gap-4">
-        <button @click="closeModal" class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40">
-          Não
-        </button>
-        <button type="button" class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40" @click="deleteContrato">
-          Sim
-        </button>
-      </div>
-    </template>
-  </JetDialogModal> -->
+ 
 </template>
 
 <script setup>
@@ -85,34 +63,26 @@ import Button from 'primevue/button';
 const router = useRouter();
 const contratos = ref([]);
 const contrato = ref({});
-// const excluirModal = ref(false);
 
-// const openModalDeleteContrato = (contratoExcluido) => {
-//   contrato.value = contratoExcluido;
-//   excluirModal.value = true;
-// };
 
-// const deleteContrato = () => {
-//   api.delete(`/contracts/${contrato.value.id}`).then((response) => {
-//     closeModal();
-//     toast("Contrato deletado com sucesso!", {
-//       theme: "colored",
-//       type: "success"
-//     });
-//     fetchContratos();
-//   }).catch((error) => {
-//     closeModal();
-//     toast("Não foi possível deletar o contrato!", {
-//       theme: "colored",
-//       type: "error"
-//     });
-//     console.error('Erro ao deletar contrato:', error);
-//   });
-// };
+const calcularSaldoFaturamentoItens = (faturamento) => {
+  console.log(faturamento,  'fat')
+  console.log(faturamento.faturamentoItens,  'itens')
+  let saldoTotal = 0;
 
-// const closeModal = () => {
-//   excluirModal.value = false;
-// };
+  faturamento?.faturamentoItens?.forEach(item => {
+    console.log(item,  'item')
+    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
+    const valorUnitario = parseFloat(item.valorUnitario) || 0;
+    const valorTotalItem = quantidadeItens * valorUnitario;
+   
+    saldoTotal += valorTotalItem;
+  });
+
+  console.log(saldoTotal, 'saldo')
+
+  return parseFloat(saldoTotal.toFixed(2));
+}
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat('pt-BR', {
