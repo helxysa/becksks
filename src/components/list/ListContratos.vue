@@ -49,14 +49,12 @@
             {{ contrato.nomeCliente }}
           </p>
           <div class="flex gap-2">
-            <span class="font-semibold">Data Início:</span>
-            12/04/2024
-            <!-- <span>{{ formatDate(contrato.vigencia) }}</span> -->
+            <span class="font-semibold">Data Início:</span>           
+            <span>{{ formatDate(contrato.dataInicio) }}</span>
           </div>
           <div class="flex gap-2">
-            <span class="font-semibold">Data Fim:</span>
-            12/06/2024
-            <!-- <span>{{ formatDate(contrato.vigencia) }}</span> -->
+            <span class="font-semibold">Data Fim:</span>          
+            <span>{{ formatDate(contrato.dataFim) }}</span>
           </div>
           <div class="flex gap-2">
             <span class="font-semibold">Saldo atual:</span>
@@ -101,22 +99,20 @@ const router = useRouter();
 const contratos = ref([]);
 const contrato = ref({});
 
-const calcularSaldoFaturamentoItens = (faturamento) => {
-  console.log(faturamento, "fat");
+const calcularSaldoFaturamentoItens = (faturamento) => {  
 
   let saldoTotal = 0;
   let valorAguardandoFaturamento = 0;
   let valorAguardandoPagamento = 0;
   let  valorPago = 0;
 
-  faturamento?.forEach((item) => {
-    console.log(item, "item");
+  faturamento?.forEach((item) => {  
     if (item.status === "Aguardando Faturamento") {
       item.faturamentoItens.forEach((subItem) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoFaturamento = valorTotalItem;
+        valorAguardandoFaturamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     } else if (item.status === "Aguardando Pagamento") {
@@ -124,7 +120,7 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoPagamento = valorTotalItem;
+        valorAguardandoPagamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     } else  if (item.status === "Faturamento Pago"){
@@ -132,13 +128,11 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorPago = valorTotalItem;
+        valorPago += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     }
-  });
-
-  console.log(saldoTotal, "saldo");
+  }); 
 
   return {
     aguardandoFaturamento:parseFloat(valorAguardandoFaturamento.toFixed(2)),
