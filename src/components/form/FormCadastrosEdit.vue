@@ -27,7 +27,7 @@
             type="date"
             placeholder="Digite o início do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.data_inicio"
+            v-model="contratoForm.dataInicio"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -37,7 +37,7 @@
             type="date"
             placeholder="Digite o fim do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.data_fim"
+            v-model="contratoForm.dataFim"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -141,12 +141,14 @@ onMounted(async () => {
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    const contratoData = response.data;
-    console.log(contratoData, 'contratoData')
-    contratoData.data_inicio = format(new Date(contratoData.data_inicio), 'yyyy-MM-dd');
-    contratoData.data_fim = format(new Date(contratoData.data_fim), 'yyyy-MM-dd');
+    const contratoData = response.data;   
+    // contratoData.dataInicio = new Date(contratoData.dataInicio), 'yyyy-MM-dd');
+    // contratoData.dataFim = format(new Date(contratoData.dataFim), 'yyyy-MM-dd');
+    console.log(new Date(contratoData.dataInicio),  'date')
+    console.log( contratoData.dataInicio, 'data inicio')
+    console.log( contratoData.dataFim, 'data fim')
     Object.assign(contratoForm.value, response.data);
-    console.log(contratoForm.value, 'contrato form')
+   
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
