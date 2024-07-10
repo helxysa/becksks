@@ -112,7 +112,7 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoFaturamento = valorTotalItem;
+        valorAguardandoFaturamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     } else if (item.status === "Aguardando Pagamento") {
@@ -120,7 +120,7 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoPagamento = valorTotalItem;
+        valorAguardandoPagamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     } else  if (item.status === "Faturamento Pago"){
@@ -128,7 +128,7 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorPago = valorTotalItem;
+        valorPago += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     }
