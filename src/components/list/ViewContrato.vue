@@ -22,16 +22,16 @@
   <section class="mb-20">
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Nome do cliente:</label>
+        <label class="font-semibold w-60 dark:text-white">Nome do cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
       </div>
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Data Início:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{  }}</span>
+        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}</span>
       </div>
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Data Fim:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{  }}</span>
+        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
       </div>
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Fiscal:</label>
