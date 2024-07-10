@@ -1,10 +1,10 @@
 <template>
   <div v-if="isAuthenticated" class="bg-blue-100">
-    <Header/>
+    <Header />
     <Sidebar />
   </div>
 
-  <div :class="{'p-20 sm:ml-80 mt-16': isAuthenticated, '': !isAuthenticated}">
+  <div :class="{'p-20 sm:ml-80': isAuthenticated, '': !isAuthenticated}">
       <slot/>
   </div>
 
