@@ -21,13 +21,23 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Vigência do contrato</label>
+          <label class="font-bold w-60">Data Início</label>
           <input
             required
             type="date"
-            placeholder="Digite a duração do contrato"
+            placeholder="Digite o início do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.vigencia"
+            v-model="contratoForm.data_inicio"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Data Fim</label>
+          <input
+            required
+            type="date"
+            placeholder="Digite o fim do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.data_fim"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -132,17 +142,22 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     const contratoData = response.data;
-    contratoData.vigencia = format(new Date(contratoData.vigencia), 'yyyy-MM-dd');
+    console.log(contratoData, 'contratoData')
+    contratoData.data_inicio = format(new Date(contratoData.data_inicio), 'yyyy-MM-dd');
+    contratoData.data_fim = format(new Date(contratoData.data_fim), 'yyyy-MM-dd');
     Object.assign(contratoForm.value, response.data);
+    console.log(contratoForm.value, 'contrato form')
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
 };
 
 async function saveContrato() {
+  console.log(contratoForm.value, 'contrato  body')
   const payload = {
     nome_cliente: contratoForm.value.nomeCliente,
-    vigencia: contratoForm.value.vigencia,
+    data_inicio: contratoForm.value.dataInicio,
+    data_fim: contratoForm.value.dataFim,
     saldo_contrato: contratoForm.value.saldoContrato,
     fiscal: contratoForm.value.fiscal,
     ponto_focal: contratoForm.value.pontoFocal,

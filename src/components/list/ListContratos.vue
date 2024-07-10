@@ -43,14 +43,20 @@
             alt="imagem representativa do contrato"
           />
           <ProgressBar :value="
-          calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2)
+          calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100
           " class="mt-4 progress-bar"></ProgressBar>
           <p class="flex justify-center font-semibold mt-2">
             {{ contrato.nomeCliente }}
           </p>
           <div class="flex gap-2">
-            <span class="font-semibold">Vigência:</span>
-            <span>{{ formatDate(contrato.vigencia) }}</span>
+            <span class="font-semibold">Data Início:</span>
+            12/04/2024
+            <!-- <span>{{ formatDate(contrato.vigencia) }}</span> -->
+          </div>
+          <div class="flex gap-2">
+            <span class="font-semibold">Data Fim:</span>
+            12/06/2024
+            <!-- <span>{{ formatDate(contrato.vigencia) }}</span> -->
           </div>
           <div class="flex gap-2">
             <span class="font-semibold">Saldo atual:</span>
