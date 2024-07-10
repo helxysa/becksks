@@ -21,13 +21,23 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Vigência do contrato</label>
+          <label class="font-bold w-60">Data Início</label>
           <input
             required
             type="date"
-            placeholder="Digite a duração do contrato"
+            placeholder="Digite o inicio do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.vigencia"
+            v-model="contratoForm.data_inicio"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Data Fim</label>
+          <input
+            required
+            type="date"
+            placeholder="Digite o fim do  contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.data_fim"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -336,7 +346,8 @@ const moneyConfig = {
 let editIndex = ref(-1);
 let contratoForm = reactive({
   nome_cliente: "",
-  vigencia: "",
+  data_inicio: "",
+  data_fim: "",
   saldo_contrato: "",
   fiscal: "",
   ponto_focal: "",

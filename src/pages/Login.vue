@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-row-reverse h-screen">
+  <div class="flex flex-row h-screen">
     <section class="bg-blue-500 w-1/2 flex items-center justify-center animate-fadeinright">
       <div class="text-white w-full flex flex-col justify-center items-center bg-blue-600 p-8">
         <div
           class="w-[30rem] h-[30rem] bg-white border-8 border-blue-300 rounded-full flex justify-center items-center text-center p-5 shadow-2xl"
         >
           <div class="flex flex-col items-center gap-8 transition-colors duration-300">
-            <span class="text-blue-500 font-bold">GESTÃO DE CONTRATOS</span>
+            <span class="text-blue-500 font-bold">BOSS</span>
             <span class="border border-blue-500 w-1/4"></span>
             <img
               src="../assets/imagens/logoMSB.png"
