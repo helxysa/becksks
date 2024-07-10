@@ -1,0 +1,529 @@
+<template>
+  <div>
+    <div class="flex items-center mt-12 gap-4">
+      <span @click="voltarListagem" class="cursor-pointer">
+        <Icon icon="ic:round-arrow-back" height="30" />
+      </span>
+      <h1 class="text-5xl font-medium">Formulário de Contrato</h1>
+    </div>
+
+    <section class="flex justify-center">
+      <form class="mt-12 form-contrato" @submit.prevent="saveContrato">
+        <div class="flex items-center justify-between">
+          <label class="font-bold w-60">Nome do cliente</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o nome do cliente"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.nome_cliente"
+            maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Data Início</label>
+          <input
+            required
+            type="date"
+            placeholder="Digite o inicio do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.data_inicio"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Data Fim</label>
+          <input
+            required
+            type="date"
+            placeholder="Digite o fim do  contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.data_fim"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Valor contratado</label>
+          <money3
+          required
+          type="text"
+          placeholder="Informe o valor contratado"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+          v-model="contratoForm.saldo_contrato"
+          v-bind="moneyConfig"
+        />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Fiscal do contrato</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o fiscal do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal"
+              maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Ponto focal</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o ponto focal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.ponto_focal"
+              maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Cidade</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe a cidade do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.cidade"
+              maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Objeto do contrato</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o objeto do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.objeto_contrato"
+              maxlength="120"
+          />
+        </div>
+        <div class="mt-14 flex justify-center">
+          <button
+            class="btn-contrato"
+            type="button"
+            @click="showExibirModalItems"
+          >
+            Adicionar Item
+          </button>
+        </div>
+        <table
+          class="mt-8 table-auto border border-slate-200 rounded-2xl w-full"
+        >
+          <thead class="h-24 bg-slate-100 border-1">
+            <tr class="">
+              <th class="text-2xl">Título</th>
+              <th class="text-2xl">Unidade de medida</th>
+              <th class="text-2xl">Valor unitário</th>
+              <th class="text-2xl">Quantidade  contratada</th>
+              <th class="text-2xl">Opções</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(item, index) in contratoForm.items"
+              :key="index"
+              class="text-center"
+            >
+              <td class="text-xl p-4">{{ item.titulo }}</td>
+              <td class="text-xl p-4">{{ item.unidade_medida }}</td>
+              <td class="text-xl p-4">{{ formatCurrency(item.valor_unitario) }}</td>
+              <td class="text-xl p-4">
+                {{ item.saldo_quantidade_contratada }}
+              </td>
+              <td>
+                <button type="button" @click="openEditModal(index)">
+                  <Icon
+                    icon="ph:pencil"
+                    height="20"
+                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  />
+                </button>
+                <button type="button" @click="removeItem(index)">
+                  <Icon
+                    icon="ph:trash"
+                    height="20"
+                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  />
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-8 flex gap-8 justify-end">
+          <span @click="voltarListagem" class="cursor-pointer">
+            <button class="btn-submit-contrato" type="submit">Voltar</button>
+          </span>
+          <button class="btn-submit-contrato" type="submit">
+            {{ route.params.id? 'Editar' : 'Salvar'}}
+
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <JetDialogModal
+      :show="exibirModal"
+      :withouHeader="false"
+      @close="closeModal"
+      :modalTitle="'Adicionar Item'"
+       maxWidth="6xl"
+    >
+      <template #content>
+        <form @submit.prevent="saveItem">
+          <section class="flex flex-col gap-8">
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Título:</label>
+              <input               
+                v-model="novoItem.titulo"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required
+                maxlength="50"
+                  placeholder="Titulo do item"
+              />
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Unidade de Medida:</label>
+              <select              
+                v-model="novoItem.unidade_medida"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required
+                >
+                <!-- <option disabled hidden value="">Selecione a unidade de medida</option> -->
+                <option>PF</option>
+                <option>UST</option>
+                <option>Funcionário</option>
+              </select>
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Valor Unitário:</label>
+              <money3              
+                v-model="novoItem.valor_unitario"
+                type="text"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required                
+                 placeholder="Informe o valor do item"
+                 maxlength="20"
+                 v-bind="moneyConfig"
+              />
+            </div>
+            <div class="flex gap-4 justify-between items-center">
+              <label class="font-bold text-3xl">Quantidade Contratada:</label>
+              <input            
+                v-model="novoItem.saldo_quantidade_contratada"
+                type="number"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                required               
+                placeholder="Quantidade contratada"
+                min="0"
+              />
+            </div>
+          </section>
+          <div class="mt-9 flex justify-end gap-4">
+            <button
+              type="button"
+              @click="closeModal"
+              class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+            >
+              Fechar
+            </button>
+            <button              
+              type="submit"
+              class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+            >
+              Salvar
+            </button>
+          </div>      
+        </form>
+      </template>
+    </JetDialogModal>   
+
+    <JetDialogModal
+    :show="exibirEditModal"
+    :withouHeader="false"
+    @close="closeEditModal"
+    :modalTitle="'Editar Item'"   
+     maxWidth="6xl"
+  >
+    <template #content>
+      <form @submit.prevent="saveEditModal">
+        <section class="flex flex-col gap-8">
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Título:</label>
+            <input               
+              v-model="editItem.titulo"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              maxlength="50"
+                placeholder="Titulo do item"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Unidade de Medida:</label>
+            <select              
+              v-model="editItem.unidade_medida"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              >
+              <option disabled hidden value="">Selecione a unidade de medida</option>
+              <option>PF</option>
+              <option>UST</option>
+              <option>Funcionário</option>
+            </select>
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Valor Unitário:</label>
+            <money3             
+              v-model="editItem.valor_unitario"
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+               v-bind="moneyConfig"
+               placeholder="Informe o valor do item"
+               maxlength="20"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Quantidade Contratada:</label>
+            <input            
+              v-model="editItem.saldo_quantidade_contratada"
+              type="number"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required            
+              placeholder="Quantidade contratada"
+              min="0"
+            />
+          </div>
+        </section>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            type="button"
+            @click="closeEditModal"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button              
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+          >
+            Salvar
+          </button>
+        </div>      
+      </form>
+    </template>
+  </JetDialogModal>
+
+
+
+  </div>
+</template>
+
+<script setup>
+import { reactive, ref, watch, onMounted } from "vue";
+import { Icon } from "@iconify/vue";
+import { useRouter, useRoute } from "vue-router";
+import { toast } from "vue3-toastify";
+import JetDialogModal from "@/components/modals/DialogModal.vue";
+import ListItems from "../list/ListItems.vue";
+import { api } from "@/services/api";
+import Swal from 'sweetalert2';
+import { Money3Component } from 'v-money3'
+
+
+
+const router = useRouter();
+const route = useRoute();
+const exibirModal = ref(false);
+const exibirEditModal = ref(false);
+const  contratoEdit = ref({})
+const moneyConfig = {
+  precision: 2,
+  decimal: ',',
+  thousands: '.',
+  prefix: 'R$ ',  
+  masked: false
+};
+
+
+let editIndex = ref(-1);
+let contratoForm = reactive({
+  nome_cliente: "",
+  data_inicio: "",
+  data_fim: "",
+  saldo_contrato: "",
+  fiscal: "",
+  ponto_focal: "",
+  cidade: "",
+  objeto_contrato: "",
+  items: []
+});
+let novoItem = ref({
+  titulo: "",
+  unidade_medida: "",
+  valor_unitario: "",
+  saldo_quantidade_contratada: "",
+});
+let editItem = ref({
+  titulo: "",
+  unidade_medida: "",
+  valor_unitario: "",
+  saldo_quantidade_contratada: "",
+});
+
+onMounted(()=>{
+  const contratoId = route.params.id;
+  if(contratoId){
+      fetchContrato(contratoId)
+  }
+})
+
+const fetchContrato = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}`);
+    contratoEdit.value = response.data;
+    contratoForm.value =  contratoEdit.value;
+
+
+  } catch (error) {
+    console.error("Erro ao buscar contrato:", error);
+  }
+};
+
+const showExibirModalItems = () => {
+  exibirModal.value = true;
+};
+const closeModal = () => {
+  exibirModal.value = false;
+};
+const closeEditModal = () => {
+  exibirEditModal.value = false;
+  editIndex.value = -1;
+};
+const saveEditModal = () => {
+  if (editIndex.value !== -1) {
+    contratoForm.items[editIndex.value] = { ...editItem.value };
+    closeEditModal();
+  } else {
+    console.error("Índice inválido para edição");
+  }
+};
+const openEditModal = (index) => {
+  editIndex.value = index;
+  editItem.value = { ...contratoForm.items[index] };
+  exibirEditModal.value = true;
+};
+const saveItem = () => {
+  contratoForm.items.push({ ...novoItem.value });
+  novoItem.value = {
+    titulo: "",
+    unidade_medida: "",
+    valor_unitario: "",
+    saldo_quantidade_contratada: "",
+  };
+  closeModal();
+};
+const removeItem = (index) => {
+    Swal.fire({
+        title: 'Confirmar exclusão',
+        text: 'Tem certeza que deseja excluir este item do contrato?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Excluir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if  (result.isConfirmed ){
+            contratoForm.items.splice(index, 1);
+        }
+    })
+};
+const saveContrato = () => {
+if (route.params.id){
+   api.put(`/contratos/${route.params.id}`, contratoForm)
+    .then((response) => {
+      toast("Contrato editado com sucesso!", {
+        theme: "colored",
+        type: "success",
+      });
+      router.push({ name: "Contratos" });
+    })
+    .catch((error) => {
+      toast("Não foi possível editar o contrato!", {
+        theme: "colored",
+        type: "error",
+      });
+      console.error("Erro ao editar contrato:", error);
+    });
+  router.push({ name: "Contratos" });
+} else {
+  api.post("/contratos", contratoForm)
+    .then((response) => {
+      toast("Contrato cadastrado com sucesso!", {
+        theme: "colored",
+        type: "success",
+      });
+      router.push({ name: "Contratos" });
+    })
+    .catch((error) => {
+      toast("Não foi possível cadastrar o contrato!", {
+        theme: "colored",
+        type: "error",
+      });
+      console.error("Erro ao cadastrar contrato:", error);
+    });
+  router.push({ name: "Contratos" });
+}
+
+};
+const voltarListagem = () => {
+    router.push({ name: 'Contratos' });
+}
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};
+
+</script>
+
+<style scoped>
+.form-contrato {
+  width: 70%;
+}
+
+.btn-contrato {
+  background-color: var(--bluePrimary);
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 100%;
+  height: 40px;
+}
+
+.btn-contrato:hover {
+  background-color: #0ea5e9;
+}
+
+.btn-item {
+  background-color: var(--bluePrimary);
+}
+
+.btn-item:hover {
+  background-color: #0ea5e9;
+}
+
+.btn-submit-contrato {
+  background-color: var(--bluePrimary);
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 160px;
+  height: 40px;
+}
+
+.btn-submit-contrato:hover {
+  background-color: #0ea5e9;
+}
+</style>

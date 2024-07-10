@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bluePrimary :#00AFEF;
+  --whiteLight :#F9F9F9;
+  --grayLight :#EAEAEA;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 62.5%;
+    font-family: 'Roboto', sans-serif;
+
+  }
+
+  body {
+    font-size: 1.6rem;
+  }
+
+  html, body, #app {
+    width: 100%;
+    height: 100%;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  img {
+     height: auto;
+     max-width: 100%;
+     display: block;
+  }
+
+  button {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
