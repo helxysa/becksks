@@ -97,12 +97,16 @@
         </div>
         <div class="mt-14 flex justify-center">
           <button
-            class="btn-contrato"
+            class="btn-contrato relative"
             type="button"
             @click="showExibirModalItems"
           >
-            Adicionar Item
-          </button>
+          Adicionar Item
+          <span class="absolute right-[10px]">
+            <Icon icon="material-symbols-light:add"   height="25"
+            class="text-zinc-50" />
+          </span>
+        </button>
         </div>
         <table
           class="mt-8 table-auto border border-slate-200 rounded-2xl w-full"
@@ -326,7 +330,6 @@ import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
 import Swal from 'sweetalert2';
 import { Money3Component } from 'v-money3'
-
 
 
 const router = useRouter();

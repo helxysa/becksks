@@ -61,9 +61,13 @@
       <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
       <button
         @click="openCreateItemModal"
-        class="btn-faturamento"
+        class="btn-item relative"
       >
         Adicionar Item
+        <span class="absolute right-[3px]">
+          <Icon icon="material-symbols-light:add"   height="25"
+          class="text-zinc-50" />
+        </span>
       </button>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
@@ -117,8 +121,12 @@
   <section>
     <div class="flex justify-between mt-12">
       <h1 class="text-4xl font-medium">Faturamentos</h1>
-      <button class="btn-faturamento" @click="ExibirModalFaturamento">
+      <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
         Novo Faturamento
+        <span class="absolute right-[3px]">
+          <Icon icon="material-symbols-light:add"   height="25"
+          class="text-zinc-50" />
+        </span>
       </button>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
@@ -1061,7 +1069,7 @@ const saveEditedFaturamento = async () => {
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
-  width: 160px;
+  width: 185px;
   height: 40px;
 }
 
@@ -1079,6 +1087,11 @@ const saveEditedFaturamento = async () => {
 
 .btn-item {
   background-color: var(--bluePrimary);
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 160px;
+  height: 40px;
 }
 
 .btn-item:hover {

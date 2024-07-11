@@ -81,6 +81,7 @@ import { ref, onMounted, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { api } from "@/services/api";
 
+
 const router = useRouter();
 const contratos = ref([]);
 
