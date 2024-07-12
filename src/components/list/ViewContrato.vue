@@ -83,10 +83,11 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th class="text-xl">Título</th>
-          <th class="text-xl">Unidade de medida</th>
-          <th class="text-xl">Valor Unitário</th>
+          <th class="text-xl">Item</th>
+          <th class="text-xl">U.M (Unidade de Medida)</th>
           <th class="text-xl">Quantidade Contratada</th>
+          <th class="text-xl">Valor Unitário</th>
+          <th class="text-xl">Valor Total (Item)</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -98,8 +99,9 @@
         >
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
-          <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
+          <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
+          <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
@@ -414,7 +416,7 @@ maxWidth="6xl"
     <form @submit.prevent="createNewItem">
       <section class="flex flex-col gap-8">
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Título:</label>
+          <label class="font-bold text-3xl">Item:</label>
           <input
             v-model="newItem.titulo"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -431,9 +433,9 @@ maxWidth="6xl"
             required
             >
             <option disabled hidden value="">Selecione a unidade  de medida</option>
-            <option>PF</option>
-            <option>UST</option>
-            <option>Funcionário</option>
+            <option>Pontos de Função</option>
+            <option>UST(Unidade de Serviço Técnico)</option>
+            <option>Horas</option>
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -492,7 +494,7 @@ maxWidth="6xl"
     <form @submit.prevent="saveEditedItem">
       <section class="flex flex-col gap-8">
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Título:</label>
+          <label class="font-bold text-3xl">Item:</label>
           <input
             :disabled="isItemViewModal"
             v-model="editingItem.titulo"
@@ -510,9 +512,9 @@ maxWidth="6xl"
             required
             >
             <option disabled hidden value="">Selecione a situação</option>
-            <option>PF</option>
-            <option>UST</option>
-            <option>Funcionário</option>
+            <option>Pontos de Função</option>
+            <option>UST(Unidade  de Serviço Técnico)</option>
+            <option>Horas</option>
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
