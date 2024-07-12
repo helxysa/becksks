@@ -46,15 +46,14 @@
           </section>
           <section class="p-6 flex flex-col gap-2 text-2xl">
             <div class="flex gap-2">
-              <span class="font-semibold">Data Início:</span>
+
+              <span class="font-semibold">Vigência:</span>
               <span>{{ formatDate(contrato.dataInicio) }}</span>
-            </div>
-            <div class="flex gap-2">
-              <span class="font-semibold">Data Fim:</span>
+              <span>até</span>
               <span>{{ formatDate(contrato.dataFim) }}</span>
-            </div>
+            </div>         
             <div class="flex gap-2">
-              <span class="font-semibold">Saldo atual:</span>
+              <span class="font-semibold">Valor contratado:</span>
               <span>{{ formatCurrency(contrato.saldoContrato) }}</span>
             </div>
             <div class="flex gap-2">

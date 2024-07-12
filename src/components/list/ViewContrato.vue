@@ -25,14 +25,24 @@
         <label class="font-semibold w-60 dark:text-white">Nome do cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
       </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Data Início:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}</span>
+      <div class="flex items-center gap-2">
+        <label class="font-semibold w-60">Vigência:</label>
+        <div class="grid grid-cols-1  md:grid-cols-3 justify-items-center">
+          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}
+          </span>
+          <span>até</span>
+          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
+          <!-- <div class="flex flex-wrap items-center content-normal">
+         
+
+          </div> -->
+
+        </div>
       </div>
-      <div class="flex items-center gap-4">
+      <!-- <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Data Fim:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
-      </div>
+      </div> -->
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
