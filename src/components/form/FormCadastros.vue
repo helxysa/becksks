@@ -20,26 +20,28 @@
             maxlength="120"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Data Início</label>
-          <input
+        <div class="mt-8 flex items-center justify-between ">
+          <label class="font-bold w-60">Vigência</label>
+          <div class="flex gap-4 items-center w-3/4">
+            <input
             required
             type="date"
             placeholder="Digite o inicio do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
             v-model="contratoForm.data_inicio"
-          />
-        </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Data Fim</label>
+          /> 
+          <span> até</span>
           <input
-            required
-            type="date"
-            placeholder="Digite o fim do  contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.data_fim"
-          />
+          required
+          type="date"
+          placeholder="Digite o fim do  contrato"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+          v-model="contratoForm.data_fim"
+        />
+          </div>
+       
         </div>
+      
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Valor contratado</label>
           <money3
