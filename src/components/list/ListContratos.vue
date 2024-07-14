@@ -68,6 +68,14 @@
                 <span class="font-semibold">Valor aguard. pagamento:</span>
                 {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
                 </div>
+                <div class="flex gap-2">
+                  <span class="font-semibold">Valor pago:</span>
+                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
+                  </div>
+                  <div class="flex gap-2">
+                    <span class="font-semibold">Saldo  disponível:</span>
+                    {{ formatCurrency(contrato.saldoContrato  - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
+                    </div>
           </section>
         </section>
       </div>
