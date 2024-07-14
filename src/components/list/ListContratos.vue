@@ -10,7 +10,7 @@
               <span
                 class="shadow-lg border-2 p-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center"
                 :class="{
-                  'bg-green-200 border-green-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Faturamento Pago',
+                  'bg-green-200 border-green-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Pago',
                   'bg-yellow-200 border-yellow-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Pagamento',
                   'bg-blue-200 border-blue-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Faturamento',
                 }"
@@ -115,7 +115,7 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         valorAguardandoPagamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
-    } else if (item.status === "Faturamento Pago") {
+    } else if (item.status === "Pago") {
       item.faturamentoItens.forEach((subItem) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;

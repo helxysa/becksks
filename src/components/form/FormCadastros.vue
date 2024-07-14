@@ -115,7 +115,7 @@
         >
           <thead class="h-24 bg-slate-100 border-1">
             <tr class="">
-              <th class="text-2xl">Título</th>
+              <th class="text-2xl">Item</th>
               <th class="text-2xl">Unidade de medida</th>
               <th class="text-2xl">Valor unitário</th>
               <th class="text-2xl">Quantidade  contratada</th>
@@ -176,7 +176,7 @@
         <form @submit.prevent="saveItem">
           <section class="flex flex-col gap-8">
             <div class="flex gap-4 justify-between items-center">
-              <label class="font-bold text-3xl">Título:</label>
+              <label class="font-bold text-3xl">Item:</label>
               <input               
                 v-model="novoItem.titulo"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -193,9 +193,9 @@
                 required
                 >
                 <!-- <option disabled hidden value="">Selecione a unidade de medida</option> -->
-                <option>PF</option>
-                <option>UST</option>
-                <option>Funcionário</option>
+                <option>Pontos  de Função</option>
+                <option>UST(Unidade de Serviço Técnico)</option>
+                <option>Horas</option>
               </select>
             </div>
             <div class="flex gap-4 justify-between items-center">
@@ -252,7 +252,7 @@
       <form @submit.prevent="saveEditModal">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Título:</label>
+            <label class="font-bold text-3xl">Item:</label>
             <input               
               v-model="editItem.titulo"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -269,9 +269,9 @@
               required
               >
               <option disabled hidden value="">Selecione a unidade de medida</option>
-              <option>PF</option>
-              <option>UST</option>
-              <option>Funcionário</option>
+              <option>Pontos  de  Função</option>
+              <option>UST(Unidade de Serviço Técnico)</option>
+              <option>Horas</option>
             </select>
           </div>
           <div class="flex gap-4 justify-between items-center">

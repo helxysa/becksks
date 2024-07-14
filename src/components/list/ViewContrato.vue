@@ -144,7 +144,9 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th class="text-xl">Faturado em</th>
+          <th class="text-xl">Data</th>
+          <th class="text-xl">Nota Fiscal</th>
+
           <th class="text-xl">Quantidade itens</th>
           <th class="text-xl">Saldo do Faturamento</th>
           <th class="text-xl">Situação</th>
@@ -159,6 +161,7 @@
           :key="faturamento.id"
         >
           <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
+          <td class="text-2xl"></td>
           <td class="text-2xl">{{(calcularQuantidadeItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl text-center">
@@ -166,7 +169,7 @@
               <span
               class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
-                  'bg-green-200 border-green-400': faturamento.status === 'Faturamento Pago',
+                  'bg-green-200 border-green-400': faturamento.status === 'Pago',
                   'bg-yellow-200 border-yellow-400': faturamento.status === 'Aguardando Pagamento',
                   'bg-blue-200 border-blue-400': faturamento.status === 'Aguardando Faturamento',
                 }"
@@ -228,7 +231,7 @@
             <option disabled hidden value="">Selecione a situação</option>
             <option>Aguardando Faturamento</option>
             <option>Aguardando Pagamento</option>
-            <option>Faturamento Pago</option>
+            <option>Pago</option>
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -328,7 +331,7 @@ maxWidth="6xl"
           <option disabled hidden value="">Selecione a situação</option>
           <option>Aguardando Faturamento</option>
           <option>Aguardando Pagamento</option>
-          <option>Faturamento Pago</option>
+          <option>Pago</option>
         </select>
       </div>
       <div class="flex gap-4 justify-between items-center">
