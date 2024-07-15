@@ -148,7 +148,7 @@
           <th class="text-xl">Nota Fiscal</th>
 
           <th class="text-xl">Quantidade itens</th>
-          <th class="text-xl">Saldo do Faturamento</th>
+          <th class="text-xl">Total do Faturamento</th>
           <th class="text-xl">Situação</th>
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
@@ -233,6 +233,11 @@
             <option>Aguardando Pagamento</option>
             <option>Pago</option>
           </select>
+        </div>        
+        <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
+         !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
+          <label class="font-bold text-3xl">Nota Fiscal:</label>
+          <input type="text" placeholder="Informe o código da nota  fiscal" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14">
         </div>
         <div class="flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Valor contratado:</label>
@@ -334,6 +339,11 @@ maxWidth="6xl"
           <option>Pago</option>
         </select>
       </div>
+      <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
+      !== 'Aguardando Faturamento' && editingFaturamento.status !== null">
+       <label class="font-bold text-3xl">Nota Fiscal:</label>
+       <input type="text" placeholder="Informe o código da nota  fiscal" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14">
+     </div>
       <div class="flex gap-4 justify-between items-center">
         <label class="font-bold text-3xl">Saldo atual do contrato:</label>
         <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtualEditFaturamento())}}</span>
