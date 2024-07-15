@@ -252,10 +252,11 @@
           <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
-                <th class="text-xl">Título</th>
+                <th class="text-xl">Data</th>
+                <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
-                <th class="text-xl">Quantidade de Itens</th>
+                <th class="text-xl">Quantidade a ser faturada</th>
                 <th class="text-xl">Saldo</th>
               </tr>
             </thead>
@@ -264,7 +265,8 @@
                 class="h-24 text-center"
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
-              >
+              >          
+              <td class="text-2xl">{{ formatDate(item.createdAt)}}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -353,10 +355,11 @@ maxWidth="6xl"
       <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
-            <th class="text-xl">Título</th>
+            <th class="text-xl">Data</th>
+            <th class="text-xl">Item</th>
             <th class="text-xl">Valor unitário</th>
             <th class="text-xl">Quantidade contratada</th>
-            <th class="text-xl">Quantidade de Itens</th>
+            <th class="text-xl">Quantidade a  ser  faturada</th>
             <th class="text-xl">Saldo</th>
           </tr>
         </thead>
@@ -366,6 +369,7 @@ maxWidth="6xl"
             v-for="item in editingFaturamento.faturamentoItens"
             :key="item.id"
           >
+          <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
             <td class="text-2xl">{{ item.titulo }}</td>
             <td class="text-2xl">
               {{ formatCurrency(item.valorUnitario) }}
