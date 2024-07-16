@@ -6,9 +6,8 @@
       </span>
       <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
     </div>
-   
+
     <div class="flex gap-4">
-    
       <button class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
       v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato
        || formatDate(contrato.dataFim) <= formatDate(new Date())">
@@ -40,7 +39,7 @@
           <span>até</span>
           <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
           <!-- <div class="flex flex-wrap items-center content-normal">
-         
+
 
           </div> -->
 
@@ -240,7 +239,7 @@
             <option>Aguardando Pagamento</option>
             <option>Pago</option>
           </select>
-        </div>        
+        </div>
         <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
          !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
           <label class="font-bold text-3xl">Nota Fiscal:</label>
@@ -272,7 +271,7 @@
                 class="h-24 text-center"
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
-              >                      
+              >
               <td class="text-2xl">{{ formatDate(item.createdAt)}}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
@@ -853,7 +852,7 @@ const calcularSaldoAtual = () => {
 
 const calcularSaldoAtualEditFaturamento = () => {
   let saldoTotal = contrato.value.saldoContrato;
- 
+
   editingFaturamento.value.faturamentoItens.forEach((item) => {
     const valorTotalItem = item.quantidadeItens ? (item.quantidadeItens * item.valorUnitario) : 0;
 
@@ -886,7 +885,7 @@ const saldoMaiorQueContratoEditFaturamento = (item) => {
 };
 
 // const calcularValorTotalFaturamento = (valor) => {
- 
+
 //   totalFaturado += valor
 //    return totalFaturado
 // }
@@ -896,13 +895,13 @@ const calcularSaldoItem = (item) => {
   if (!item.quantidadeItens){
      item.quantidadeItens = 0
   }
-  
+
   // console.log(item.valorUnitario, 'valor unitário')
   // console.log(item.quantidadeItens, 'quantidadeItems')
   valor = item.valorUnitario * item.quantidadeItens ;
   // totalFaturado = calcularValorTotalFaturamento(valor)
   // console.log(valor, 'valor')
- 
+
   // console.log(typeof totalFaturado,  'tipo total  faturado')
   // console.log( totalFaturado,  'total  faturado')
 
@@ -1140,7 +1139,7 @@ const saveEditedFaturamento = async () => {
       type: "error",
     });
     return;
-  }  
+  }
 
   const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
 
