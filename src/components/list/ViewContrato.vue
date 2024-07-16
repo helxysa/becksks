@@ -6,7 +6,14 @@
       </span>
       <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
     </div>
+   
     <div class="flex gap-4">
+    
+      <button class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
+      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato
+       || formatDate(contrato.dataFim) <= formatDate(new Date())">
+          Renovar
+      </button>
       <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
         <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
           <router-view>
@@ -349,9 +356,11 @@ maxWidth="6xl"
         </select>
       </div>
       <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
-      !== 'Aguardando Faturamento' && editingFaturamento.status !== null">
+      !== 'Aguardando Faturamento' && editingFaturamento.status !== null"
+     >
        <label class="font-bold text-3xl">Nota Fiscal:</label>
-       <input type="text" placeholder="Informe o código da nota  fiscal" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14">
+       <input type="text" placeholder="Informe o código da nota  fiscal" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14
+       "  :disabled="isFaturamentoViewModal">
      </div>
       <div class="flex gap-4 justify-between items-center">
         <label class="font-bold text-3xl">Saldo atual do contrato:</label>
@@ -767,6 +776,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    console.log(contrato.value, 'contrato')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -911,6 +921,48 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
 
   return parseFloat(saldoTotal.toFixed(2));
 }
+
+const calcularSaldoDisponivel = (faturamento) => {
+  let saldoTotal = 0;
+  let valorAguardandoFaturamento = 0;
+  let valorAguardandoPagamento = 0;
+  let valorPago = 0;
+
+  faturamento?.forEach((item) => {
+    if (item.status === "Aguardando Faturamento") {
+      item.faturamentoItens.forEach((subItem) => {
+        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+        const valorTotalItem = quantidadeItens * valorUnitario;
+        valorAguardandoFaturamento += valorTotalItem;
+        saldoTotal += valorTotalItem;
+      });
+    } else if (item.status === "Aguardando Pagamento") {
+      item.faturamentoItens.forEach((subItem) => {
+        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+        const valorTotalItem = quantidadeItens * valorUnitario;
+        valorAguardandoPagamento += valorTotalItem;
+        saldoTotal += valorTotalItem;
+      });
+    } else if (item.status === "Pago") {
+      item.faturamentoItens.forEach((subItem) => {
+        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+        const valorTotalItem = quantidadeItens * valorUnitario;
+        valorPago += valorTotalItem;
+        saldoTotal += valorTotalItem;
+      });
+    }
+  });
+
+  return {
+    aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
+    aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
+    totalUtilizado: parseFloat(saldoTotal.toFixed(2)),
+    valorPago: parseFloat(valorPago.toFixed(2)),
+  };
+};
 
 const calcularQuantidadeItens = (faturamentoItens) => {
   let saldoTotal = 0;
