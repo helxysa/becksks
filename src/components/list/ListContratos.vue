@@ -10,7 +10,7 @@
               <span
                 class="shadow-lg border-2 p-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center"
                 :class="{
-                  'bg-green-200 border-green-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Faturamento Pago',
+                  'bg-green-200 border-green-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Pago',
                   'bg-yellow-200 border-yellow-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Pagamento',
                   'bg-blue-200 border-blue-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Faturamento',
                 }"
@@ -46,15 +46,14 @@
           </section>
           <section class="p-6 flex flex-col gap-2 text-2xl">
             <div class="flex gap-2">
-              <span class="font-semibold">Data Início:</span>
+
+              <span class="font-semibold">Vigência:</span>
               <span>{{ formatDate(contrato.dataInicio) }}</span>
-            </div>
-            <div class="flex gap-2">
-              <span class="font-semibold">Data Fim:</span>
+              <span>até</span>
               <span>{{ formatDate(contrato.dataFim) }}</span>
-            </div>
+            </div>         
             <div class="flex gap-2">
-              <span class="font-semibold">Saldo atual:</span>
+              <span class="font-semibold">Valor contratado:</span>
               <span>{{ formatCurrency(contrato.saldoContrato) }}</span>
             </div>
             <div class="flex gap-2">
@@ -69,6 +68,14 @@
                 <span class="font-semibold">Valor aguard. pagamento:</span>
                 {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
                 </div>
+                <div class="flex gap-2">
+                  <span class="font-semibold">Valor pago:</span>
+                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
+                  </div>
+                  <div class="flex gap-2">
+                    <span class="font-semibold">Saldo  disponível:</span>
+                    {{ formatCurrency(contrato.saldoContrato  - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
+                    </div>
           </section>
         </section>
       </div>
@@ -80,6 +87,7 @@
 import { ref, onMounted, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { api } from "@/services/api";
+
 
 const router = useRouter();
 const contratos = ref([]);
@@ -107,7 +115,7 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
         valorAguardandoPagamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
-    } else if (item.status === "Faturamento Pago") {
+    } else if (item.status === "Pago") {
       item.faturamentoItens.forEach((subItem) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;

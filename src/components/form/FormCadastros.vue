@@ -20,26 +20,28 @@
             maxlength="120"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Data Início</label>
-          <input
+        <div class="mt-8 flex items-center justify-between ">
+          <label class="font-bold w-60">Vigência</label>
+          <div class="flex gap-4 items-center w-3/4">
+            <input
             required
             type="date"
             placeholder="Digite o inicio do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
             v-model="contratoForm.data_inicio"
-          />
-        </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Data Fim</label>
+          /> 
+          <span> até</span>
           <input
-            required
-            type="date"
-            placeholder="Digite o fim do  contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.data_fim"
-          />
+          required
+          type="date"
+          placeholder="Digite o fim do  contrato"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+          v-model="contratoForm.data_fim"
+        />
+          </div>
+       
         </div>
+      
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Valor contratado</label>
           <money3
@@ -97,19 +99,23 @@
         </div>
         <div class="mt-14 flex justify-center">
           <button
-            class="btn-contrato"
+            class="btn-contrato relative"
             type="button"
             @click="showExibirModalItems"
           >
-            Adicionar Item
-          </button>
+          Adicionar Item
+          <span class="absolute right-[10px]">
+            <Icon icon="material-symbols-light:add"   height="25"
+            class="text-zinc-50" />
+          </span>
+        </button>
         </div>
         <table
           class="mt-8 table-auto border border-slate-200 rounded-2xl w-full"
         >
           <thead class="h-24 bg-slate-100 border-1">
             <tr class="">
-              <th class="text-2xl">Título</th>
+              <th class="text-2xl">Item</th>
               <th class="text-2xl">Unidade de medida</th>
               <th class="text-2xl">Valor unitário</th>
               <th class="text-2xl">Quantidade  contratada</th>
@@ -170,7 +176,7 @@
         <form @submit.prevent="saveItem">
           <section class="flex flex-col gap-8">
             <div class="flex gap-4 justify-between items-center">
-              <label class="font-bold text-3xl">Título:</label>
+              <label class="font-bold text-3xl">Item:</label>
               <input               
                 v-model="novoItem.titulo"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -187,8 +193,8 @@
                 required
                 >
                 <!-- <option disabled hidden value="">Selecione a unidade de medida</option> -->
-                <option>PF</option>
-                <option>UST</option>
+                <option>Pontos  de Função</option>
+                <option>UST(Unidade de Serviço Técnico)</option>
                 <option>Funcionário</option>
               </select>
             </div>
@@ -246,7 +252,7 @@
       <form @submit.prevent="saveEditModal">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Título:</label>
+            <label class="font-bold text-3xl">Item:</label>
             <input               
               v-model="editItem.titulo"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -263,8 +269,8 @@
               required
               >
               <option disabled hidden value="">Selecione a unidade de medida</option>
-              <option>PF</option>
-              <option>UST</option>
+              <option>Pontos  de  Função</option>
+              <option>UST(Unidade de Serviço Técnico)</option>
               <option>Funcionário</option>
             </select>
           </div>
@@ -326,7 +332,6 @@ import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
 import Swal from 'sweetalert2';
 import { Money3Component } from 'v-money3'
-
 
 
 const router = useRouter();

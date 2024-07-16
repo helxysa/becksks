@@ -16,30 +16,31 @@
             placeholder="Informe o nome do cliente"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.nomeCliente"
-             maxlength="120"
+            maxlength="120"
             required
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Data Início</label>
-          <input
-            required
-            type="date"
-            placeholder="Digite o início do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.dataInicio"
-          />
+          <label class="font-bold w-60">Vigência</label>
+          <div class="flex gap-4 items-center w-3/4">
+            <input
+              required
+              type="date"
+              placeholder="Digite o inicio do contrato"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="contratoForm.dataInicio"
+            />
+            <span> até</span>
+            <input
+              required
+              type="date"
+              placeholder="Digite o fim do  contrato"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="contratoForm.dataFim"
+            />
+          </div>
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Data Fim</label>
-          <input
-            required
-            type="date"
-            placeholder="Digite o fim do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.dataFim"
-          />
-        </div>
+
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Valor contratado</label>
           <money3
@@ -59,7 +60,7 @@
             placeholder="Informe o fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.fiscal"
-             maxlength="120"
+            maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -70,7 +71,7 @@
             placeholder="Informe o ponto focal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.pontoFocal"
-             maxlength="120"
+            maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -81,7 +82,7 @@
             placeholder="Informe a cidade do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.cidade"
-             maxlength="120"
+            maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -92,7 +93,7 @@
             placeholder="Informe o objeto do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.objetoContrato"
-             maxlength="120"
+            maxlength="120"
           />
         </div>
 
@@ -101,12 +102,11 @@
             <button class="btn-submit-contrato" type="submit">Voltar</button>
           </span>
           <button class="btn-submit-contrato" type="submit">
-            {{ route.params.id? 'Editar' : 'Salvar'}}
+            {{ route.params.id ? "Editar" : "Salvar" }}
           </button>
         </div>
       </form>
     </section>
-
   </div>
 </template>
 
@@ -116,9 +116,9 @@ import { Icon } from "@iconify/vue";
 import { useRouter, useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
 import { api } from "@/services/api";
-import Swal from 'sweetalert2';
-import {format} from 'date-fns';
-import { Money3Component } from 'v-money3'
+import Swal from "sweetalert2";
+import { format } from "date-fns";
+import { Money3Component } from "v-money3";
 
 const router = useRouter();
 const route = useRoute();
@@ -126,36 +126,30 @@ let contratoForm = ref({});
 
 const moneyConfig = {
   precision: 2,
-  decimal: ',',
-  thousands: '.',
-  prefix: 'R$ ',  
-  masked: false
+  decimal: ",",
+  thousands: ".",
+  prefix: "R$ ",
+  masked: false,
 };
 
 onMounted(async () => {
-  const contratoId = route.params.id
+  const contratoId = route.params.id;
 
-  fetchContrato(contratoId)
+  fetchContrato(contratoId);
 });
 
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    const contratoData = response.data;   
-    // contratoData.dataInicio = new Date(contratoData.dataInicio), 'yyyy-MM-dd');
-    // contratoData.dataFim = format(new Date(contratoData.dataFim), 'yyyy-MM-dd');
-    console.log(new Date(contratoData.dataInicio),  'date')
-    console.log( contratoData.dataInicio, 'data inicio')
-    console.log( contratoData.dataFim, 'data fim')
+    const contratoData = response.data;
+
     Object.assign(contratoForm.value, response.data);
-   
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
 };
 
 async function saveContrato() {
-  console.log(contratoForm.value, 'contrato  body')
   const payload = {
     nome_cliente: contratoForm.value.nomeCliente,
     data_inicio: contratoForm.value.dataInicio,
@@ -167,23 +161,26 @@ async function saveContrato() {
     objeto_contrato: contratoForm.value.objetoContrato,
   };
   try {
-    const response = await api.put(`/contratos/${route.params.id}`, payload).then(response => {
-      toast("Contrato editado com sucesso!", {
-        theme: "colored",
-        type: "success",
+    const response = await api
+      .put(`/contratos/${route.params.id}`, payload)
+      .then((response) => {
+        toast("Contrato editado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+        voltarListagem();
       });
-      voltarListagem();
-
-    })
   } catch (error) {
-    toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", { position: "top-right" });
+    toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
+      position: "top-right",
+    });
   }
 }
 
 const voltarListagem = () => {
   const contratoId = route.params.id;
   router.push(`/visualizar/contratos/${contratoId}`);
-}
+};
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("pt-BR", {
@@ -192,7 +189,6 @@ const formatCurrency = (value) => {
     minimumFractionDigits: 2,
   }).format(value);
 };
-
 </script>
 
 <style scoped>

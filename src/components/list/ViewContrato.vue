@@ -6,7 +6,14 @@
       </span>
       <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
     </div>
+   
     <div class="flex gap-4">
+    
+      <button class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
+      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato
+       || formatDate(contrato.dataFim) <= formatDate(new Date())">
+          Renovar
+      </button>
       <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
         <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
           <router-view>
@@ -25,14 +32,24 @@
         <label class="font-semibold w-60 dark:text-white">Nome do cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
       </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Data Início:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}</span>
+      <div class="flex items-center gap-2">
+        <label class="font-semibold w-60">Vigência:</label>
+        <div class="grid grid-cols-1  md:grid-cols-3 justify-items-center">
+          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}
+          </span>
+          <span>até</span>
+          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
+          <!-- <div class="flex flex-wrap items-center content-normal">
+         
+
+          </div> -->
+
+        </div>
       </div>
-      <div class="flex items-center gap-4">
+      <!-- <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Data Fim:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
-      </div>
+      </div> -->
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
@@ -61,18 +78,23 @@
       <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
       <button
         @click="openCreateItemModal"
-        class="btn-faturamento"
+        class="btn-item relative"
       >
         Adicionar Item
+        <span class="absolute right-[3px]">
+          <Icon icon="material-symbols-light:add"   height="25"
+          class="text-zinc-50" />
+        </span>
       </button>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th class="text-xl">Título</th>
-          <th class="text-xl">Unidade de medida</th>
-          <th class="text-xl">Valor Unitário</th>
+          <th class="text-xl">Item</th>
+          <th class="text-xl">U.M (Unidade de Medida)</th>
           <th class="text-xl">Quantidade Contratada</th>
+          <th class="text-xl">Valor Unitário</th>
+          <th class="text-xl">Valor Total (Item)</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -84,8 +106,9 @@
         >
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
-          <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
+          <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
+          <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
@@ -117,16 +140,22 @@
   <section>
     <div class="flex justify-between mt-12">
       <h1 class="text-4xl font-medium">Faturamentos</h1>
-      <button class="btn-faturamento" @click="ExibirModalFaturamento">
+      <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
         Novo Faturamento
+        <span class="absolute right-[3px]">
+          <Icon icon="material-symbols-light:add"   height="25"
+          class="text-zinc-50" />
+        </span>
       </button>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th class="text-xl">Faturado em</th>
+          <th class="text-xl">Data</th>
+          <th class="text-xl">Nota Fiscal</th>
+
           <th class="text-xl">Quantidade itens</th>
-          <th class="text-xl">Saldo do Faturamento</th>
+          <th class="text-xl">Total do Faturamento</th>
           <th class="text-xl">Situação</th>
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
@@ -139,6 +168,7 @@
           :key="faturamento.id"
         >
           <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
+          <td class="text-2xl"></td>
           <td class="text-2xl">{{(calcularQuantidadeItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl text-center">
@@ -146,7 +176,7 @@
               <span
               class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
-                  'bg-green-200 border-green-400': faturamento.status === 'Faturamento Pago',
+                  'bg-green-200 border-green-400': faturamento.status === 'Pago',
                   'bg-yellow-200 border-yellow-400': faturamento.status === 'Aguardando Pagamento',
                   'bg-blue-200 border-blue-400': faturamento.status === 'Aguardando Faturamento',
                 }"
@@ -208,8 +238,13 @@
             <option disabled hidden value="">Selecione a situação</option>
             <option>Aguardando Faturamento</option>
             <option>Aguardando Pagamento</option>
-            <option>Faturamento Pago</option>
+            <option>Pago</option>
           </select>
+        </div>        
+        <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
+         !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
+          <label class="font-bold text-3xl">Nota Fiscal:</label>
+          <input type="text" placeholder="Informe o código da nota  fiscal" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14">
         </div>
         <div class="flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Valor contratado:</label>
@@ -224,11 +259,12 @@
           <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
-                <th class="text-xl">Título</th>
+                <th class="text-xl">Data</th>
+                <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
-                <th class="text-xl">Quantidade de Itens</th>
-                <th class="text-xl">Saldo</th>
+                <th class="text-xl">Quantidade a ser faturada</th>
+                <th class="text-xl">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -236,7 +272,8 @@
                 class="h-24 text-center"
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
-              >
+              >                      
+              <td class="text-2xl">{{ formatDate(item.createdAt)}}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -265,6 +302,13 @@
               </tr>
             </tbody>
           </table>
+          <!-- <div class="flex justify-end mt-2">
+            <div class="flex">
+                <p class="font-semibold">Total Faturado:</p>
+                <p>{{totalFaturado}}</p>
+            </div>
+
+          </div> -->
         </div>
 
         <div class="mt-9 flex justify-end gap-4">
@@ -308,9 +352,16 @@ maxWidth="6xl"
           <option disabled hidden value="">Selecione a situação</option>
           <option>Aguardando Faturamento</option>
           <option>Aguardando Pagamento</option>
-          <option>Faturamento Pago</option>
+          <option>Pago</option>
         </select>
       </div>
+      <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
+      !== 'Aguardando Faturamento' && editingFaturamento.status !== null"
+     >
+       <label class="font-bold text-3xl">Nota Fiscal:</label>
+       <input type="text" placeholder="Informe o código da nota  fiscal" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14
+       "  :disabled="isFaturamentoViewModal">
+     </div>
       <div class="flex gap-4 justify-between items-center">
         <label class="font-bold text-3xl">Saldo atual do contrato:</label>
         <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtualEditFaturamento())}}</span>
@@ -320,11 +371,12 @@ maxWidth="6xl"
       <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
-            <th class="text-xl">Título</th>
+            <th class="text-xl">Data</th>
+            <th class="text-xl">Item</th>
             <th class="text-xl">Valor unitário</th>
             <th class="text-xl">Quantidade contratada</th>
-            <th class="text-xl">Quantidade de Itens</th>
-            <th class="text-xl">Saldo</th>
+            <th class="text-xl">Quantidade a  ser  faturada</th>
+            <th class="text-xl">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -333,6 +385,7 @@ maxWidth="6xl"
             v-for="item in editingFaturamento.faturamentoItens"
             :key="item.id"
           >
+          <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
             <td class="text-2xl">{{ item.titulo }}</td>
             <td class="text-2xl">
               {{ formatCurrency(item.valorUnitario) }}
@@ -396,7 +449,7 @@ maxWidth="6xl"
     <form @submit.prevent="createNewItem">
       <section class="flex flex-col gap-8">
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Título:</label>
+          <label class="font-bold text-3xl">Item:</label>
           <input
             v-model="newItem.titulo"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -413,8 +466,8 @@ maxWidth="6xl"
             required
             >
             <option disabled hidden value="">Selecione a unidade  de medida</option>
-            <option>PF</option>
-            <option>UST</option>
+            <option>Pontos de Função</option>
+            <option>UST(Unidade de Serviço Técnico)</option>
             <option>Funcionário</option>
           </select>
         </div>
@@ -474,7 +527,7 @@ maxWidth="6xl"
     <form @submit.prevent="saveEditedItem">
       <section class="flex flex-col gap-8">
         <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Título:</label>
+          <label class="font-bold text-3xl">Item:</label>
           <input
             :disabled="isItemViewModal"
             v-model="editingItem.titulo"
@@ -492,8 +545,8 @@ maxWidth="6xl"
             required
             >
             <option disabled hidden value="">Selecione a situação</option>
-            <option>PF</option>
-            <option>UST</option>
+            <option>Pontos de Função</option>
+            <option>UST(Unidade  de Serviço Técnico)</option>
             <option>Funcionário</option>
           </select>
         </div>
@@ -564,6 +617,7 @@ const faturamentos = ref([]);
 const modalFaturamento = ref(false)
 const selectNovoFaturamento = ref(null)
 const modalCreateItem = ref(false);
+let totalFaturado = 0;
 const newItem = ref({
   titulo: '',
   unidadeMedida: '',
@@ -722,6 +776,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    console.log(contrato.value, 'contrato')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -830,9 +885,26 @@ const saldoMaiorQueContratoEditFaturamento = (item) => {
   return saldoAtual < 0;
 };
 
+// const calcularValorTotalFaturamento = (valor) => {
+ 
+//   totalFaturado += valor
+//    return totalFaturado
+// }
+
 const calcularSaldoItem = (item) => {
   let valor = 0;
+  if (!item.quantidadeItens){
+     item.quantidadeItens = 0
+  }
+  
+  // console.log(item.valorUnitario, 'valor unitário')
+  // console.log(item.quantidadeItens, 'quantidadeItems')
   valor = item.valorUnitario * item.quantidadeItens ;
+  // totalFaturado = calcularValorTotalFaturamento(valor)
+  // console.log(valor, 'valor')
+ 
+  // console.log(typeof totalFaturado,  'tipo total  faturado')
+  // console.log( totalFaturado,  'total  faturado')
 
   return valor
 }
@@ -849,6 +921,48 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
 
   return parseFloat(saldoTotal.toFixed(2));
 }
+
+const calcularSaldoDisponivel = (faturamento) => {
+  let saldoTotal = 0;
+  let valorAguardandoFaturamento = 0;
+  let valorAguardandoPagamento = 0;
+  let valorPago = 0;
+
+  faturamento?.forEach((item) => {
+    if (item.status === "Aguardando Faturamento") {
+      item.faturamentoItens.forEach((subItem) => {
+        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+        const valorTotalItem = quantidadeItens * valorUnitario;
+        valorAguardandoFaturamento += valorTotalItem;
+        saldoTotal += valorTotalItem;
+      });
+    } else if (item.status === "Aguardando Pagamento") {
+      item.faturamentoItens.forEach((subItem) => {
+        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+        const valorTotalItem = quantidadeItens * valorUnitario;
+        valorAguardandoPagamento += valorTotalItem;
+        saldoTotal += valorTotalItem;
+      });
+    } else if (item.status === "Pago") {
+      item.faturamentoItens.forEach((subItem) => {
+        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+        const valorTotalItem = quantidadeItens * valorUnitario;
+        valorPago += valorTotalItem;
+        saldoTotal += valorTotalItem;
+      });
+    }
+  });
+
+  return {
+    aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
+    aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
+    totalUtilizado: parseFloat(saldoTotal.toFixed(2)),
+    valorPago: parseFloat(valorPago.toFixed(2)),
+  };
+};
 
 const calcularQuantidadeItens = (faturamentoItens) => {
   let saldoTotal = 0;
@@ -1061,7 +1175,7 @@ const saveEditedFaturamento = async () => {
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
-  width: 160px;
+  width: 185px;
   height: 40px;
 }
 
@@ -1079,6 +1193,11 @@ const saveEditedFaturamento = async () => {
 
 .btn-item {
   background-color: var(--bluePrimary);
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 160px;
+  height: 40px;
 }
 
 .btn-item:hover {
