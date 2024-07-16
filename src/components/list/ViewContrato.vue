@@ -257,7 +257,7 @@
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Quantidade a ser faturada</th>
-                <th class="text-xl">Saldo</th>
+                <th class="text-xl">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -265,7 +265,7 @@
                 class="h-24 text-center"
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
-              >          
+              >                      
               <td class="text-2xl">{{ formatDate(item.createdAt)}}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
@@ -295,6 +295,13 @@
               </tr>
             </tbody>
           </table>
+          <!-- <div class="flex justify-end mt-2">
+            <div class="flex">
+                <p class="font-semibold">Total Faturado:</p>
+                <p>{{totalFaturado}}</p>
+            </div>
+
+          </div> -->
         </div>
 
         <div class="mt-9 flex justify-end gap-4">
@@ -360,7 +367,7 @@ maxWidth="6xl"
             <th class="text-xl">Valor unitário</th>
             <th class="text-xl">Quantidade contratada</th>
             <th class="text-xl">Quantidade a  ser  faturada</th>
-            <th class="text-xl">Saldo</th>
+            <th class="text-xl">Total</th>
           </tr>
         </thead>
         <tbody>
@@ -452,7 +459,7 @@ maxWidth="6xl"
             <option disabled hidden value="">Selecione a unidade  de medida</option>
             <option>Pontos de Função</option>
             <option>UST(Unidade de Serviço Técnico)</option>
-            <option>Horas</option>
+            <option>Funcionário</option>
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -531,7 +538,7 @@ maxWidth="6xl"
             <option disabled hidden value="">Selecione a situação</option>
             <option>Pontos de Função</option>
             <option>UST(Unidade  de Serviço Técnico)</option>
-            <option>Horas</option>
+            <option>Funcionário</option>
           </select>
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -601,6 +608,7 @@ const faturamentos = ref([]);
 const modalFaturamento = ref(false)
 const selectNovoFaturamento = ref(null)
 const modalCreateItem = ref(false);
+let totalFaturado = 0;
 const newItem = ref({
   titulo: '',
   unidadeMedida: '',
@@ -867,9 +875,26 @@ const saldoMaiorQueContratoEditFaturamento = (item) => {
   return saldoAtual < 0;
 };
 
+// const calcularValorTotalFaturamento = (valor) => {
+ 
+//   totalFaturado += valor
+//    return totalFaturado
+// }
+
 const calcularSaldoItem = (item) => {
   let valor = 0;
+  if (!item.quantidadeItens){
+     item.quantidadeItens = 0
+  }
+  
+  // console.log(item.valorUnitario, 'valor unitário')
+  // console.log(item.quantidadeItens, 'quantidadeItems')
   valor = item.valorUnitario * item.quantidadeItens ;
+  // totalFaturado = calcularValorTotalFaturamento(valor)
+  // console.log(valor, 'valor')
+ 
+  // console.log(typeof totalFaturado,  'tipo total  faturado')
+  // console.log( totalFaturado,  'total  faturado')
 
   return valor
 }
