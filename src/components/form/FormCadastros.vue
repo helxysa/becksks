@@ -195,7 +195,7 @@
                 <!-- <option disabled hidden value="">Selecione a unidade de medida</option> -->
                 <option>Pontos  de Função</option>
                 <option>UST(Unidade de Serviço Técnico)</option>
-                <option>Horas</option>
+                <option>Funcionário</option>
               </select>
             </div>
             <div class="flex gap-4 justify-between items-center">
@@ -271,7 +271,7 @@
               <option disabled hidden value="">Selecione a unidade de medida</option>
               <option>Pontos  de  Função</option>
               <option>UST(Unidade de Serviço Técnico)</option>
-              <option>Horas</option>
+              <option>Funcionário</option>
             </select>
           </div>
           <div class="flex gap-4 justify-between items-center">
