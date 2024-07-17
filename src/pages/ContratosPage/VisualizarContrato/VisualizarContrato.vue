@@ -140,7 +140,7 @@
     <div class="flex justify-between mt-12">
       <h1 class="text-4xl font-medium">Lançamentos</h1>
       <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
-        Novo Faturamento
+        Novo Lançamento
         <span class="absolute right-[3px]">
           <Icon icon="material-symbols-light:add"   height="25"
           class="text-zinc-50" />
@@ -154,7 +154,7 @@
           <th class="text-xl">Projeto</th>
 
           <th class="text-xl">Quantidade itens</th>
-          <th class="text-xl">Total do Faturamento</th>
+          <th class="text-xl">Total do Lançamento</th>
           <th class="text-xl">Situação</th>
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
@@ -222,7 +222,7 @@
     :withouHeader="false"
     @close="closeModalFaturamento"
     maxWidth="6xl"
-    :modalTitle="'Faturamento'"
+    :modalTitle="'Lançamento'"
   >
     <template #content>
       <form @submit.prevent="createFaturamento">
@@ -264,7 +264,7 @@
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
-                <th class="text-xl">Quantidade a ser faturada</th>
+                <th class="text-xl">Quantidade a ser lançada</th>
                 <th class="text-xl">Total</th>
               </tr>
             </thead>
@@ -337,7 +337,7 @@
 :withouHeader="false"
 @close="closeEditFaturamentoModal"
 maxWidth="6xl"
-:modalTitle="isFaturamentoViewModal ? 'Visualizar Faturamento' : 'Editar Faturamento'"
+:modalTitle="isFaturamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'"
 >
 <template #content>
   <form @submit.prevent="saveEditedFaturamento">
@@ -380,7 +380,7 @@ maxWidth="6xl"
             <th class="text-xl">Item</th>
             <th class="text-xl">Valor unitário</th>
             <th class="text-xl">Quantidade contratada</th>
-            <th class="text-xl">Quantidade a  ser  faturada</th>
+            <th class="text-xl">Quantidade a  ser  lançada</th>
             <th class="text-xl">Total</th>
           </tr>
         </thead>
@@ -1153,7 +1153,7 @@ const saveEditedFaturamento = async () => {
   const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
 
   if (saldoMaiorQuantidadeContratada) { toast.error('A quantidade  de items não pode ultrapassar a quantidade contratada.'); return;}
-  console.log(editingFaturamento.value.projetos, 'projetos')
+ 
   let payload = {
     status: editingFaturamento.value.status,
     itens: itensQuantidadePreenchida,
