@@ -243,7 +243,9 @@
         <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
          !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
           <label class="font-bold text-3xl">Projeto:</label>        
-          <input type="text" placeholder="Informe o nome do  projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14">
+          <input type="text" placeholder="Informe o nome do  projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          v-model="projeto"
+          >
         </div>
         <div class="flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Valor contratado:</label>
@@ -360,7 +362,9 @@ maxWidth="6xl"
        <label class="font-bold text-3xl">Projeto:</label>
      
        <input type="text" placeholder="Informe o nome do projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14
-       "  :disabled="isFaturamentoViewModal">
+
+       "  :disabled="isFaturamentoViewModal"
+       v-model="editingFaturamento.projetos">
      </div>
       <div class="flex gap-4 justify-between items-center">
         <label class="font-bold text-3xl">Saldo atual do contrato:</label>
@@ -630,6 +634,7 @@ const modalEditFaturamento = ref(false);
 const editingFaturamento = ref({});
 const isFaturamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
+const projetos = ref("");
 
 const moneyConfig = {
   precision: 2,
@@ -740,6 +745,8 @@ const createFaturamento = async () => {
   let payload = {
     status: selectNovoFaturamento.value,
     itens: itensQuantidadePreenchida,
+    projetos: projetos
+    
   };
   try {
     const response = await api.post(
@@ -1148,7 +1155,8 @@ const saveEditedFaturamento = async () => {
 
   let payload = {
     status: editingFaturamento.value.status,
-    itens: itensQuantidadePreenchida
+    itens: itensQuantidadePreenchida,
+    projetos: editingFaturamento.value.projetos
   };
 
   try {
