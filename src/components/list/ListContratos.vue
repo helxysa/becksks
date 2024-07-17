@@ -5,7 +5,7 @@
         <section class="relative">
           <img class="relative" src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" />
 
-          <div class="absolute top-0 right-0 mt-4 mr-4">
+          <!-- <div class="absolute top-0 right-0 mt-4 mr-4">
             <div v-if="contrato?.faturamentos?.length">
               <span
                 class="shadow-lg border-2 p-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center"
@@ -18,7 +18,7 @@
                 {{ contrato.faturamentos[contrato.faturamentos.length - 1].status }}
               </span>
             </div>
-          </div>
+          </div> -->
         </section>
 
         <section>
