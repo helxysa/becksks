@@ -1153,11 +1153,11 @@ const saveEditedFaturamento = async () => {
   const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
 
   if (saldoMaiorQuantidadeContratada) { toast.error('A quantidade  de items não pode ultrapassar a quantidade contratada.'); return;}
-
+  console.log(editingFaturamento.value.projetos, 'projetos')
   let payload = {
     status: editingFaturamento.value.status,
     itens: itensQuantidadePreenchida,
-    projetos: editingFaturamento.value.projetos.value
+    projetos: editingFaturamento.value.projetos
   };
 
   try {
