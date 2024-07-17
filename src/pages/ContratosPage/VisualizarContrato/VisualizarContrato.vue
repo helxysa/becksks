@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <section class="mb-20">
+  <section class="mb-4">
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60 dark:text-white">Nome do cliente:</label>
@@ -37,18 +37,11 @@
           <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}
           </span>
           <span>até</span>
-          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
-          <!-- <div class="flex flex-wrap items-center content-normal">
-
-
-          </div> -->
+          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>        
 
         </div>
       </div>
-      <!-- <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Data Fim:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
-      </div> -->
+    
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
@@ -68,8 +61,50 @@
     </div>
   </section>
 
-  <section class="flex flex-col gap-12 items-center justify-center text-center w-full my-10">
-      <h1 class="text-3xl"><strong>Valor  Contratado: </strong> <span class="underline underline-offset-4">{{ formatCurrency(contrato.saldoContrato) }}</span></h1>
+  <section class="flex items-center gap-4   ">
+    <label class="font-semibold ">Observações:</label>
+    <span class=" underline underline-offset-4 text-justify">{{ contrato.observacoes }}</span>  
+  </section>
+  <section class="flex gap-3 mt-6 flex-wrap">
+   <div class="shadow-lg rounded-lg overflow-hidden w-[250px] 2xl:w-1/5 h-[120px]">
+       <p class="w-full  bg-blue-800 h-4"></p>
+       <div class="flex flex-col items-center h-full justify-center">
+         <p class="text-4xl font-semibold">{{ formatCurrency(contrato.saldoContrato) }}</p>
+         <p>Valor contratado</p>
+
+       </div>
+   </div>
+   <div class="shadow-lg rounded-lg overflow-hidden   w-[250px] 2xl:w-1/5 h-[120px]"
+   >
+   <p class="w-full  bg-yellow-300 h-4"></p>
+     <div  class="flex flex-col  items-center h-full justify-center">
+       <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).aguardandoFaturamento)}}</p>
+       <p>Valor  aguardando  faturamento</p>
+     </div>
+  </div>
+   <div class="shadow-lg rounded-lg overflow-hidden   w-[250px] 2xl:w-1/5 h-[120px]">
+    <p class="w-full  bg-gray-300 h-4"></p>
+    <div  class="flex flex-col items-center h-full justify-center">
+      <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento)}}</p>
+      <p>Valor  aguardando  pagamento</p>
+
+    </div>
+   </div>
+   <div class="shadow-lg rounded-lg overflow-hidden   w-[250px] 2xl:w-1/5 h-[120px]">
+    <p class="w-full  bg-red-800 h-4"></p>
+    <div  class="flex flex-col items-center h-full justify-center">
+      <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).valorPago)}}</p>
+      <p>Valor pago</p>
+    </div>
+
+   </div>
+   <div class="shadow-lg rounded-lg overflow-hidden  w-[250px] 2xl:w-1/5 h-[120px]">
+    <p class="w-full  bg-green-600 h-4"></p>
+    <div  class="flex flex-col items-center h-full justify-center">
+      <p class="text-4xl font-semibold">{{formatCurrency(contrato.saldoContrato - calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado)}}</p>
+      <p>Saldo disponível</p>
+    </div>
+   </div>
   </section>
 
   <section>
