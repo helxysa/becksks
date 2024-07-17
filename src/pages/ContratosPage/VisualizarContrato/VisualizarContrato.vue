@@ -167,7 +167,7 @@
           :key="faturamento.id"
         >
           <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
-          <td class="text-2xl"></td>
+          <td class="text-2xl">{{ faturamento.projetos }}</td>
           <td class="text-2xl">{{(calcularQuantidadeItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl text-center">
@@ -355,7 +355,8 @@ maxWidth="6xl"
           <option>Aguardando Pagamento</option>
           <option>Pago</option>
         </select>
-      </div>
+      </div>      
+     
       <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
       !== 'Aguardando Faturamento' && editingFaturamento.status !== null"
      >
@@ -364,7 +365,7 @@ maxWidth="6xl"
        <input type="text" placeholder="Informe o nome do projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14
 
        "  :disabled="isFaturamentoViewModal"
-       v-model="editingFaturamento.projetos.value">
+       v-model="editingFaturamento.projetos">
      </div>
       <div class="flex gap-4 justify-between items-center">
         <label class="font-bold text-3xl">Saldo atual do contrato:</label>
