@@ -170,6 +170,7 @@ async function saveContrato() {
     ponto_focal: contratoForm.value.pontoFocal,
     cidade: contratoForm.value.cidade,
     objeto_contrato: contratoForm.value.objetoContrato,
+    observacoes: contratoForm.value.observacoes
   };
   try {
     const response = await api
