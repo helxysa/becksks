@@ -29,7 +29,7 @@
             placeholder="Digite o inicio do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
             v-model="contratoForm.data_inicio"
-          /> 
+          />
           <span> até</span>
           <input
           required
@@ -39,9 +39,9 @@
           v-model="contratoForm.data_fim"
         />
           </div>
-       
+
         </div>
-      
+
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Valor contratado</label>
           <money3
@@ -105,7 +105,7 @@
             rows="7"
             placeholder="observações"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
-                      
+
           />
         </div>
         <div class="mt-14 flex justify-center">
@@ -188,7 +188,7 @@
           <section class="flex flex-col gap-8">
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Item:</label>
-              <input               
+              <input
                 v-model="novoItem.titulo"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                 required
@@ -198,7 +198,7 @@
             </div>
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Unidade de Medida:</label>
-              <select              
+              <select
                 v-model="novoItem.unidade_medida"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                 required
@@ -211,11 +211,11 @@
             </div>
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Valor Unitário:</label>
-              <money3              
+              <money3
                 v-model="novoItem.valor_unitario"
                 type="text"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-                required                
+                required
                  placeholder="Informe o valor do item"
                  maxlength="20"
                  v-bind="moneyConfig"
@@ -223,11 +223,11 @@
             </div>
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Quantidade Contratada:</label>
-              <input            
+              <input
                 v-model="novoItem.saldo_quantidade_contratada"
                 type="number"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-                required               
+                required
                 placeholder="Quantidade contratada"
                 min="0"
               />
@@ -241,22 +241,22 @@
             >
               Fechar
             </button>
-            <button              
+            <button
               type="submit"
               class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
             >
               Salvar
             </button>
-          </div>      
+          </div>
         </form>
       </template>
-    </JetDialogModal>   
+    </JetDialogModal>
 
     <JetDialogModal
     :show="exibirEditModal"
     :withouHeader="false"
     @close="closeEditModal"
-    :modalTitle="'Editar Item'"   
+    :modalTitle="'Editar Item'"
      maxWidth="6xl"
   >
     <template #content>
@@ -264,7 +264,7 @@
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Item:</label>
-            <input               
+            <input
               v-model="editItem.titulo"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
@@ -274,7 +274,7 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Unidade de Medida:</label>
-            <select              
+            <select
               v-model="editItem.unidade_medida"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
@@ -287,7 +287,7 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
-            <money3             
+            <money3
               v-model="editItem.valor_unitario"
               type="text"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -299,11 +299,11 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Quantidade Contratada:</label>
-            <input            
+            <input
               v-model="editItem.saldo_quantidade_contratada"
               type="number"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required            
+              required
               placeholder="Quantidade contratada"
               min="0"
             />
@@ -317,13 +317,13 @@
           >
             Fechar
           </button>
-          <button              
+          <button
             type="submit"
             class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
           >
             Salvar
           </button>
-        </div>      
+        </div>
       </form>
     </template>
   </JetDialogModal>
@@ -354,7 +354,7 @@ const moneyConfig = {
   precision: 2,
   decimal: ',',
   thousands: '.',
-  prefix: 'R$ ',  
+  prefix: 'R$ ',
   masked: false
 };
 
@@ -461,7 +461,7 @@ if (route.params.id){
         theme: "colored",
         type: "success",
       });
-      router.push({ name: "Contratos" });
+      voltarListagem();
     })
     .catch((error) => {
       toast("Não foi possível editar o contrato!", {
@@ -470,7 +470,7 @@ if (route.params.id){
       });
       console.error("Erro ao editar contrato:", error);
     });
-  router.push({ name: "Contratos" });
+  voltarListagem();
 } else {
   api.post("/contratos", contratoForm)
     .then((response) => {
@@ -478,7 +478,7 @@ if (route.params.id){
         theme: "colored",
         type: "success",
       });
-      router.push({ name: "Contratos" });
+      voltarListagem();
     })
     .catch((error) => {
       toast("Não foi possível cadastrar o contrato!", {
@@ -487,12 +487,12 @@ if (route.params.id){
       });
       console.error("Erro ao cadastrar contrato:", error);
     });
-  router.push({ name: "Contratos" });
+  voltarListagem();
 }
 
 };
 const voltarListagem = () => {
-    router.push({ name: 'Contratos' });
+  router.push({ name: 'Contratos' });
 }
 
 const formatCurrency = (value) => {
