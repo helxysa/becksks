@@ -97,6 +97,17 @@
               maxlength="120"
           />
         </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Observações</label>
+          <textarea
+           v-model="contratoForm.observacoes"
+            required
+            rows="7"
+            placeholder="observações"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
+                      
+          />
+        </div>
         <div class="mt-14 flex justify-center">
           <button
             class="btn-contrato relative"
@@ -358,7 +369,8 @@ let contratoForm = reactive({
   ponto_focal: "",
   cidade: "",
   objeto_contrato: "",
-  items: []
+  items: [],
+  observacoes: "",
 });
 let novoItem = ref({
   titulo: "",
@@ -530,5 +542,9 @@ const formatCurrency = (value) => {
 
 .btn-submit-contrato:hover {
   background-color: #0ea5e9;
+}
+
+.text-observacoes {
+  resize: none;
 }
 </style>
