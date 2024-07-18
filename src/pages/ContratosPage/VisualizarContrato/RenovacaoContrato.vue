@@ -1,11 +1,20 @@
 <template>
-  <div class="">
-    <button
-      @click="showEditarRenovacao()"
-      class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-    >
-      Editar
-    </button>
+  <section>
+    <div class="flex items-center justify-end gap-4">
+      <button
+        @click="showEditarRenovacao()"
+        class="btn-renove bg-blue-500 hover:bg-blue-400 rounded-md text-white p-2 w-32"
+      >
+        Editar
+      </button>
+      <button
+        @click="deletarRenovacao()"
+        class="btn-renove bg-red-600 hover:bg-red-400 rounded-md text-white p-2 w-32"
+      >
+        Excluir
+      </button>
+    </div>
+
     <section class="p-8">
       <h1 class="font-bold text-4xl mb-4">{{ contrato.nomeCliente }}</h1>
       <div class="flex flex-col">
@@ -59,7 +68,7 @@
         </aside>
       </div>
     </section>
-  </div>
+  </section>
 
   <!-- Modal Renovação -->
   <JetDialogModal
@@ -126,7 +135,9 @@
           <button
             type="submit"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-blue-500 border border-gray-300 rounded-md font-bold text-xl text-white tracking-widest shadow-sm hover:text-slate-100 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-blue-400 h-14 w-40"
-          >Salvar</button>
+          >
+            Salvar
+          </button>
         </section>
       </form>
     </template>
@@ -136,10 +147,10 @@
 <script setup>
 import { defineProps, computed, onMounted, ref, defineEmits, watch } from "vue";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
-import { toast } from 'vue3-toastify';
-import { Icon } from '@iconify/vue';
-import { api } from '@/services/api';
-import Swal from 'sweetalert2';
+import { toast } from "vue3-toastify";
+import { Icon } from "@iconify/vue";
+import { api } from "@/services/api";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   renovacao: Object,
@@ -154,10 +165,14 @@ const renovacaoData = ref({
   tipo_renovacao: props.renovacao.tipoRenovacao,
   porcentagem_renovacao: props.renovacao.porcentagemRenovacao,
 });
-const emit = defineEmits(['renovacaoEditada'])
+const emit = defineEmits(["renovacaoEditada", "renovacaoDeletada"]);
 
 const showEditarRenovacao = () => {
   modalEditRenovacao.value = true;
+};
+
+const deletarRenovacao = () => {
+  emit("renovacaoDeletada", props.renovacao.id);
 };
 
 const closeEditRenovacao = () => {
@@ -171,31 +186,32 @@ const closeEditRenovacao = () => {
 };
 
 const editRenovacao = async () => {
-  const renovacaoId = props.renovacao.id
+  const renovacaoId = props.renovacao.id;
   let payload = {
     data_inicio: renovacaoData.value.data_inicio,
     data_fim: renovacaoData.value.data_fim,
     tipo_renovacao: renovacaoData.value.tipo_renovacao,
-    porcentagem_renovacao: renovacaoData.value.porcentagem_renovacao
-  }
+    porcentagem_renovacao: renovacaoData.value.porcentagem_renovacao,
+  };
   try {
-    const response = await api.put(`/renovacao/${renovacaoId}`, payload)
-    .then(response => {
-      toast("Renovação editada com sucesso!", {
-        theme: "colored",
-        type: "success",
+    const response = await api
+      .put(`/renovacao/${renovacaoId}`, payload)
+      .then((response) => {
+        toast("Renovação editada com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
       });
-    });
-    emit('renovacaoEditada');
-    closeEditRenovacao()
+    emit("renovacaoEditada");
+    closeEditRenovacao();
   } catch (error) {
     toast("Não foi possível editar a renovação!", {
-        theme: "colored",
-        type: "error",
-      });
+      theme: "colored",
+      type: "error",
+    });
     console.error("Erro ao editar renovação:", error);
   }
-}
+};
 
 const calcularValorContratadoRenovacao = () => {
   const valorContratado = parseInt(props.contrato.saldoContrato);

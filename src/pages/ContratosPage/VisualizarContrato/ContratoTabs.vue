@@ -21,7 +21,7 @@
     </div>
 
     <div v-else-if="selectedTab.startsWith('Renovação')" class="p-4">
-      <Renovacao :renovacao="selectedRenovacao" :contrato="contrato" @renovacaoEditada="handleRenovacaoEditada" />
+      <Renovacao :renovacao="selectedRenovacao" :contrato="contrato" @renovacaoEditada="handleRenovacaoEditada" @renovacaoDeletada="handleRenovacaoDeletada"/>
     </div>
   </div>
 </template>
@@ -33,6 +33,7 @@ import { useRoute, useRouter,RouterLink } from 'vue-router';
 import { Icon } from "@iconify/vue";
 import VisualizarContrato from './VisualizarContrato.vue'
 import Renovacao from './RenovacaoContrato.vue';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const route = useRoute();
@@ -84,6 +85,37 @@ const handleRenovacaoEditada = async () => {
   if (selectedTab.value.startsWith('Renovação')) {
     const renovacaoIndex = parseInt(selectedTab.value.split(' ')[1], 10) - 1;
     selectedRenovacao.value = contrato.value.renovacao[renovacaoIndex];
+  }
+};
+
+const handleRenovacaoDeletada = async (renovacaoId) => {
+  const result = await Swal.fire({
+    title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir esta renovação?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await api.delete(`/renovacao/${renovacaoId}`);
+      const contratoId = route.params.id;
+      await fetchContrato(contratoId);
+
+      if (selectedTab.value.startsWith('Renovação')) {
+        const renovacaoIndex = parseInt(selectedTab.value.split(' ')[1], 10) - 1;
+        selectedRenovacao.value = contrato.value.renovacao[renovacaoIndex] || null;
+        if (!selectedRenovacao.value) {
+          selectedTab.value = 'Contrato';
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao deletar renovação:', error);
+    }
   }
 };
 
