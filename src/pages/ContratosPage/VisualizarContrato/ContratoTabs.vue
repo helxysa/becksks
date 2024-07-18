@@ -6,7 +6,7 @@
         :key="index"
         @click="selectedTab = tab"
         :class="['py-2 px-4', { 'border-b-2 border-blue-500': selectedTab === tab }]"
-        class="focus:outline-none"
+        class="focus:outline-none hover:bg-blue-300 rounded-md"
       >
         {{ tab }}
       </button>
@@ -17,8 +17,7 @@
     </div>
 
     <div v-else-if="selectedTab.startsWith('Renovação')" class="p-4">
-      Renovação do contrato
-      <Renovacao :renovacao="selectedRenovacao" />
+      <Renovacao :renovacao="selectedRenovacao" :contrato="contrato" />
     </div>
   </div>
 </template>

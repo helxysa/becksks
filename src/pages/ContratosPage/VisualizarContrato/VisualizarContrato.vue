@@ -1,54 +1,36 @@
 <template>
-  <div class="flex items-center justify-between mb-20">
-    <div class="flex gap-4">
-      <span @click="voltarListagem" class="cursor-pointer">
-        <Icon icon="ic:round-arrow-back" height="30" />
-      </span>
-      <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
-    </div>
+  <div class="flex gap-4 mt-12 cursor-pointer" @click="voltarListagem">
+    <Icon icon="ic:round-arrow-back" height="30" />
+    <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
+  </div>
 
-    <div class="flex gap-4">
-      <button class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato
-       || formatDate(contrato.dataFim) <= formatDate(new Date())">
-          Renovar
-      </button>
-      <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
-        <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
-          <router-view>
-            Editar
-          </router-view>
-        </router-link>
-      </button>
-      <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
-      @click="deleteContrato(contrato)">Excluir</button>
-    </div>
+  <div class="flex justify-end gap-4 mb-20">
+    <button class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
+    v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato
+     || formatDate(contrato.dataFim) <= formatDate(new Date())">
+        Renovar
+    </button>
+    <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
+      <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
+        <router-view>
+          Editar
+        </router-view>
+      </router-link>
+    </button>
+    <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
+    @click="deleteContrato(contrato)">Excluir</button>
   </div>
 
   <section class="mb-20">
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60 dark:text-white">Nome do cliente:</label>
+        <label class="font-semibold w-60 dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
       </div>
       <div class="flex items-center gap-2">
         <label class="font-semibold w-60">Vigência:</label>
-        <div class="grid grid-cols-1  md:grid-cols-3 justify-items-center">
-          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}
-          </span>
-          <span>até</span>
-          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
-          <!-- <div class="flex flex-wrap items-center content-normal">
-
-
-          </div> -->
-
-        </div>
+        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }} <strong>até</strong> {{ formatDate(contrato.dataFim) }}</span>
       </div>
-      <!-- <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Data Fim:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>
-      </div> -->
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
