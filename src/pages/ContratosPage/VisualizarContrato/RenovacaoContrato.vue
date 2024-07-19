@@ -3,19 +3,25 @@
     <div class="flex items-center justify-end gap-4">
       <button
         @click="showEditarRenovacao()"
-        class="btn-renove bg-blue-500 hover:bg-blue-400 rounded-md text-white p-2 w-32"
+        class="btn-renove bg-blue-400 hover:bg-blue-300 rounded-md text-white p-2 w-32"
       >
         Editar
       </button>
       <button
         @click="deletarRenovacao()"
-        class="btn-renove bg-red-600 hover:bg-red-400 rounded-md text-white p-2 w-32"
+        class="btn-renove bg-red-500 hover:bg-red-400 rounded-md text-white p-2 w-32"
       >
         Excluir
       </button>
+      <button
+        @click="showAddItemModal()"
+        class="btn-renove bg-blue-400 hover:bg-blue-300 rounded-md text-white p-2 w-32"
+      >
+        Adicionar item
+    </button>
     </div>
 
-    <section class="p-8">
+    <!-- <section class="p-8">
       <h1 class="font-bold text-4xl mb-4">{{ contrato.nomeCliente }}</h1>
       <div class="flex flex-col">
         <div>
@@ -31,7 +37,7 @@
       <p><strong>Ponto Focal:</strong> {{ contrato.pontoFocal }}</p>
       <p><strong>Objeto do contrato:</strong> {{ contrato.objetoContrato }}</p>
       <p><strong>Valor Contratado:</strong> R$ {{ contrato.saldoContrato }}</p>
-    </section>
+    </section> -->
 
     <section class="p-8 text-[#63696e]">
       <h1 class="font-bold text-4xl mb-8">Renovação</h1>
@@ -70,7 +76,12 @@
     </section>
   </section>
 
-  <!-- Modal Renovação -->
+  <section>
+    Itens
+    {{renovacao.contratoItens}}
+  </section>
+
+  <!-- Modal Editar Renovação -->
   <JetDialogModal
     :show="modalEditRenovacao"
     :withouHeader="false"
@@ -142,6 +153,80 @@
       </form>
     </template>
   </JetDialogModal>
+
+  <!-- Modal Add Item Renovação -->
+  <JetDialogModal
+  :show="modalAddItem"
+  :withouHeader="false"
+  @close="closeAddItemModal"
+  maxWidth="6xl"
+  :modalTitle="'Adicionar item'"
+>
+  <template #content>
+    <form @submit.prevent="addItemRenovacao">
+      <section>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Título:</label>
+            <input
+              required
+              type="text"
+              placeholder="Digite o título do item"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="renovacaoItemData.titulo"
+            />
+        </div>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Unidade de medida:</label>
+          <select
+            v-model="renovacaoItemData.unidade_medida"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 pl-2 w-1/2 h-[4rem] border-gray-300 rounded-3xl"
+            required
+          >
+            <option disabled value="">Selecione a unidade de medida</option>
+            <option value="Acréscimo">Pontos de Função</option>
+            <option value="Acréscimo">UST(Unidade de Serviço Técnico)</option>
+            <option value="Acréscimo">Funcionário</option>
+          </select>
+        </div>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Valor unitário:</label>
+            <input
+              required
+              type="text"
+              placeholder="Digite o título do item"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="renovacaoItemData.valor_unitario"
+            />
+        </div>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Quantidade contratada</label>
+            <input
+              required
+              type="text"
+              placeholder="Digite o título do item"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="renovacaoItemData.saldo_quantidade_contratada"
+            />
+        </div>
+      </section>
+      <section class="mt-9 flex justify-end gap-4">
+        <button
+          type="button"
+          @click="closeAddItemModal"
+          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+        >
+          Fechar
+        </button>
+        <button
+          type="submit"
+          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-blue-500 border border-gray-300 rounded-md font-bold text-xl text-white tracking-widest shadow-sm hover:text-slate-100 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-blue-400 h-14 w-40"
+        >
+          Salvar
+        </button>
+      </section>
+    </form>
+  </template>
+</JetDialogModal>
 </template>
 
 <script setup>
@@ -156,6 +241,62 @@ const props = defineProps({
   renovacao: Object,
   contrato: Object,
 });
+
+// Modal Adicionar Item
+const modalAddItem = ref(false);
+const renovacaoItemData = ref({
+  titulo: "",
+  unidade_medida: "",
+  valor_unitario: "",
+  saldo_quantidade_contratada: ""
+})
+const showAddItemModal = () => {
+  modalAddItem.value = true;
+}
+
+const closeAddItemModal = () => {
+  modalAddItem.value = false;
+}
+
+const resetItemData = () => {
+  renovacaoItemData.value = {
+    titulo: "",
+    unidade_medida: "",
+    valor_unitario: "",
+    saldo_quantidade_contratada: ""
+  }
+}
+
+const addItemRenovacao = async () => {
+  const renovacaoId = props.renovacao.id;
+  let payload = {
+    contrato_itens: [
+      {
+        titulo: renovacaoItemData.value.titulo,
+        unidade_medida: renovacaoItemData.value.unidade_medida,
+        valor_unitario: renovacaoItemData.value.valor_unitario,
+        saldo_quantidade_contratada: renovacaoItemData.value.saldo_quantidade_contratada
+      }
+    ]
+  }
+  try {
+    const response = await api.post(`/renovacao/${renovacaoId}/item`, payload).then((response) => {
+      toast("Item adicionado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+    })
+    resetItemData();
+    emit("renovacaoEditada");
+    closeAddItemModal();
+  } catch (error) {
+    toast("Não foi possível adicionar item!", {
+      theme: "colored",
+      type: "error",
+    });
+    console.error("Erro ao adicionar item", error)
+  }
+}
 
 // Modal editar renovação
 const modalEditRenovacao = ref(false);
@@ -248,3 +389,15 @@ watch(
   { immediate: true }
 );
 </script>
+
+<style>
+select,
+select option {
+  color: #000000;
+}
+select:invalid,
+select option[value=""] {
+  font:bold;
+  color: #9ea5b1;
+}
+</style>
