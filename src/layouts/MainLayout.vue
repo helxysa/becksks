@@ -9,6 +9,9 @@
         </section>
       </div>
     </div>
+    <div v-if="!isAuthenticated">
+      <Login />
+    </div>
   </section>
 </template>
 
@@ -17,6 +20,8 @@ import { ref, onMounted, watch } from 'vue';
 import Header from '@/components/Header.vue';
 import Sidebar from '@/components/Sidebar.vue';
 import { isAuthenticated } from '@/state/auth';
+import Login from '../pages/Login.vue';
+import Register from '../pages/Register.vue';
 
 onMounted(() => {
   isAuthenticated.value = !!localStorage.getItem('token');
