@@ -1,47 +1,33 @@
 <template>
-  <div class="flex items-center justify-between mb-20">
-    <div class="flex gap-4">
-      <span @click="voltarListagem" class="cursor-pointer">
-        <Icon icon="ic:round-arrow-back" height="30" />
-      </span>
-      <h1 class="text-5xl font-medium">Visualizar Contrato</h1>
-    </div>
-
-    <div class="flex gap-4">
-      <button class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato
-       || formatDate(contrato.dataFim) <= formatDate(new Date())">
-          Renovar
-      </button>
-      <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
-        <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
-          <router-view>
-            Editar
-          </router-view>
-        </router-link>
-      </button>
-      <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
-      @click="deleteContrato(contrato)">Excluir</button>
-    </div>
+  <div class="flex justify-end gap-4 mb-20">
+    <button
+      @click="showRenovacaoModal()"
+      class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
+      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato || formatDate(contrato.dataFim) <= formatDate(new Date())"
+    >
+      Renovar
+    </button>
+    <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
+      <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
+        <router-view>
+          Editar
+        </router-view>
+      </router-link>
+    </button>
+    <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
+    @click="deleteContrato(contrato)">Excluir</button>
   </div>
 
   <section class="mb-4">
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60 dark:text-white">Nome do cliente:</label>
+        <label class="font-semibold w-60 dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
       </div>
       <div class="flex items-center gap-2">
-        <label class="font-semibold w-60">Vigência:</label>
-        <div class="grid grid-cols-1  md:grid-cols-3 justify-items-center">
-          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataInicio) }}
-          </span>
-          <span>até</span>
-          <span class="pl-4 p-2 underline underline-offset-4">{{ formatDate(contrato.dataFim) }}</span>        
-
-        </div>
+        <span class="underline underline-offset-4"><strong>Vigência:</strong> {{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
       </div>
-    
+
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
@@ -63,7 +49,7 @@
 
   <section class="flex items-center gap-4   ">
     <label class="font-semibold ">Observações:</label>
-    <span class=" underline underline-offset-4 text-justify">{{ contrato.observacoes }}</span>  
+    <span class=" underline underline-offset-4 text-justify">{{ contrato.observacoes }}</span>
   </section>
   <section class="flex gap-3 mt-6 flex-wrap">
    <div class="shadow-lg rounded-lg overflow-hidden w-[250px] 2xl:w-1/5 h-[120px]">
@@ -278,7 +264,7 @@
         </div>
         <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
          !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
-          <label class="font-bold text-3xl">Projeto:</label>        
+          <label class="font-bold text-3xl">Projeto:</label>
           <input type="text" placeholder="Informe o nome do  projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
           v-model="projetos"
           >
@@ -392,13 +378,13 @@ maxWidth="6xl"
           <option>Aguardando Pagamento</option>
           <option>Pago</option>
         </select>
-      </div>      
-     
+      </div>
+
       <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
       !== 'Aguardando Faturamento' && editingFaturamento.status !== null"
      >
        <label class="font-bold text-3xl">Projeto:</label>
-     
+
        <input type="text" placeholder="Informe o nome do projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14
 
        "  :disabled="isFaturamentoViewModal"
@@ -638,11 +624,83 @@ maxWidth="6xl"
   </template>
 </JetDialogModal>
 
+<!-- Modal Renovação -->
+<JetDialogModal
+  :show="modalRenovacao"
+  :withouHeader="false"
+  @close="closeModalRenovacao"
+  maxWidth="6xl"
+  :modalTitle="'Renovar contrato'"
+>
+<template #content>
+  <form @submit.prevent="createRenovacao">
+      <section>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Nova vigência:</label>
+          <div class="flex gap-4 items-center w-3/4">
+            <input
+              required
+              type="date"
+              placeholder="Digite o inicio do contrato"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="renovacaoData.data_inicio"
+            />
+            <span> até</span>
+            <input
+              required
+              type="date"
+              placeholder="Digite o fim do  contrato"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              v-model="renovacaoData.data_fim"
+            />
+          </div>
+        </div>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Tipo de renovação:</label>
+          <select
+            v-model="renovacaoData.tipo_renovacao"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            required
+          >
+            <option disabled value="">Selecione o tipo</option>
+            <option value="Acréscimo">Acréscimo</option>
+            <option value="Supressão">Supressão</option>
+          </select>
+        </div>
+        <div class="mt-8 flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Porcentagem de renovação:</label>
+        <input
+          type="number"
+          v-model="renovacaoData.porcentagem_renovacao"
+          :max="25"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          required
+        />
+      </div>
+      </section>
 
+    <section class="mt-9 flex justify-end gap-4">
+      <button
+        type="button"
+        @click="closeModalRenovacao"
+        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+      >
+        Fechar
+      </button>
+      <button
+        type="submit"
+        class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+      >
+        Salvar
+      </button>
+    </section>
+  </form>
+</template>
+</JetDialogModal>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, defineEmits } from 'vue';
 import { useRoute, useRouter,RouterLink } from 'vue-router';
 import { Icon } from '@iconify/vue';
 import { api } from '@/services/api';
@@ -650,7 +708,6 @@ import JetDialogModal from '@/components/modals/DialogModal.vue';
 import { toast } from 'vue3-toastify';
 import Swal from 'sweetalert2';
 import { Money3Component } from 'v-money3'
-
 
 const router = useRouter();
 const route = useRoute();
@@ -673,6 +730,52 @@ const editingFaturamento = ref({});
 const isFaturamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
 const projetos = ref("");
+
+// Renovação de contrato
+const modalRenovacao = ref(false)
+const renovacaoData = ref({
+  data_inicio: '',
+  data_fim: '',
+  tipo_renovacao: '',
+  porcentagem_renovacao: ''
+});
+const emit = defineEmits(['renovacaoCriada'])
+
+const showRenovacaoModal = () => {
+  modalRenovacao.value = true;
+}
+
+const closeModalRenovacao = () => {
+  modalRenovacao.value = false;
+  renovacaoData.value = {  data_inicio: '', data_fim: '', tipo_renovacao: '', porcentagem_renovacao: ''};
+};
+
+const createRenovacao = async () => {
+  const contratoId = route.params.id;
+  let payload = {
+    data_inicio: renovacaoData.value.data_inicio,
+    data_fim: renovacaoData.value.data_fim,
+    tipo_renovacao: renovacaoData.value.tipo_renovacao,
+    porcentagem_renovacao: renovacaoData.value.porcentagem_renovacao
+  }
+  try {
+    const response = await api.post(`/contratos/${contratoId}/renovar`, payload)
+    .then(response => {
+      toast("Renovação criada com sucesso!", {
+        theme: "colored",
+        type: "success",
+      });
+    });
+    emit('renovacaoCriada');
+    closeModalRenovacao()
+  } catch (error) {
+    toast("Não foi possível criar a renovação!", {
+        theme: "colored",
+        type: "error",
+      });
+    console.error("Erro ao criar renovação:", error);
+  }
+}
 
 const moneyConfig = {
   precision: 2,
@@ -784,7 +887,7 @@ const createFaturamento = async () => {
     status: selectNovoFaturamento.value,
     itens: itensQuantidadePreenchida,
     projetos: projetos.value
-    
+
   };
   try {
     const response = await api.post(
@@ -821,7 +924,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
-    console.log(contrato.value, 'contrato')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -1190,7 +1292,7 @@ const saveEditedFaturamento = async () => {
   const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
 
   if (saldoMaiorQuantidadeContratada) { toast.error('A quantidade  de items não pode ultrapassar a quantidade contratada.'); return;}
- 
+
   let payload = {
     status: editingFaturamento.value.status,
     itens: itensQuantidadePreenchida,
