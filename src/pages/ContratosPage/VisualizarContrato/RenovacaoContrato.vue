@@ -3,19 +3,19 @@
     <div class="flex items-center justify-end gap-4">
       <button
         @click="showEditarRenovacao()"
-        class="btn-renove bg-blue-500 hover:bg-blue-400 rounded-md text-white p-2 w-32"
+        class="btn-renove bg-blue-400 hover:bg-blue-300 rounded-md text-white p-2 w-32"
       >
         Editar
       </button>
       <button
         @click="deletarRenovacao()"
-        class="btn-renove bg-red-600 hover:bg-red-400 rounded-md text-white p-2 w-32"
+        class="btn-renove bg-red-500 hover:bg-red-400 rounded-md text-white p-2 w-32"
       >
         Excluir
       </button>
     </div>
 
-    <section class="p-8">
+    <!-- <section class="p-8">
       <h1 class="font-bold text-4xl mb-4">{{ contrato.nomeCliente }}</h1>
       <div class="flex flex-col">
         <div>
@@ -31,7 +31,7 @@
       <p><strong>Ponto Focal:</strong> {{ contrato.pontoFocal }}</p>
       <p><strong>Objeto do contrato:</strong> {{ contrato.objetoContrato }}</p>
       <p><strong>Valor Contratado:</strong> R$ {{ contrato.saldoContrato }}</p>
-    </section>
+    </section> -->
 
     <section class="p-8 text-[#63696e]">
       <h1 class="font-bold text-4xl mb-8">Renovação</h1>
@@ -70,7 +70,7 @@
     </section>
   </section>
 
-  <!-- Modal Renovação -->
+  <!-- Modal Editar Renovação -->
   <JetDialogModal
     :show="modalEditRenovacao"
     :withouHeader="false"

@@ -1,15 +1,24 @@
 <template>
-   <aside id="logo-sidebar" class="fixed top-0 left-0 z-10 w-72 h-screen pt-20 mt-16 transition-transform -translate-x-full bg-white border-r-[12px] border-blue-200 sm:translate-x-0" aria-label="Sidebar">
-     <div class="h-full pt-12 overflow-y-auto bg-white flex justify-center w-full">
+  <aside id="logo-sidebar" class="bg-white rounded-md">
+    <section class="flex flex-col items-center justify-center bg-white">
+       <img
+         class="h-22 m-10"
+         src="../assets/imagens/logoMSB.png"
+         alt="MSB Logo"
+       />
+       <div class="border-b w-[90%] border-blue-300"></div>
+     </section>
+
+     <div class="pt-12 overflow-y-auto bg-white flex justify-center">
        <ul class="space-y-8">
          <li>
-           <router-link to="/" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-500 group">
+           <router-link to="/" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group">
              <Icon icon="mdi:graph-pie" height="20"/>
              <span class="ms-3 text-3xl font-bold">Dashboard</span>
            </router-link>
          </li>
          <li>
-           <router-link to="/contratos" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-500 group">
+           <router-link to="/contratos" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group">
              <Icon icon="eos-icons:project" height="20"/>
              <span class="ms-3 text-3xl font-bold">Contratos</span>
            </router-link>
