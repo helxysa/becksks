@@ -51,8 +51,8 @@
     <label class="font-semibold ">Observações:</label>
     <span class=" underline underline-offset-4 text-justify">{{ contrato.observacoes }}</span>
   </section>
-  <section class="flex gap-3 mt-6 flex-wrap">
-   <div class="shadow-lg rounded-lg overflow-hidden w-[250px] 2xl:w-1/5 h-[120px]">
+  <section class="flex gap-3 mt-6 flex-wrap 2xl:gap-x-24">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]">
        <p class="w-full  bg-blue-800 h-4"></p>
        <div class="flex flex-col items-center h-full justify-center">
          <p class="text-4xl font-semibold">{{ formatCurrency(contrato.saldoContrato) }}</p>
@@ -60,7 +60,7 @@
 
        </div>
    </div>
-   <div class="shadow-lg rounded-lg overflow-hidden   w-[250px] 2xl:w-1/5 h-[120px]"
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]   h-[120px]"
    >
    <p class="w-full  bg-yellow-300 h-4"></p>
      <div  class="flex flex-col  items-center h-full justify-center">
@@ -68,7 +68,7 @@
        <p>Valor  aguardando  faturamento</p>
      </div>
   </div>
-   <div class="shadow-lg rounded-lg overflow-hidden   w-[250px] 2xl:w-1/5 h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]  h-[120px]">
     <p class="w-full  bg-gray-300 h-4"></p>
     <div  class="flex flex-col items-center h-full justify-center">
       <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento)}}</p>
@@ -76,7 +76,7 @@
 
     </div>
    </div>
-   <div class="shadow-lg rounded-lg overflow-hidden   w-[250px] 2xl:w-1/5 h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]  h-[120px]">
     <p class="w-full  bg-red-800 h-4"></p>
     <div  class="flex flex-col items-center h-full justify-center">
       <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).valorPago)}}</p>
@@ -84,7 +84,7 @@
     </div>
 
    </div>
-   <div class="shadow-lg rounded-lg overflow-hidden  w-[250px] 2xl:w-1/5 h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]   h-[120px]">
     <p class="w-full  bg-green-600 h-4"></p>
     <div  class="flex flex-col items-center h-full justify-center">
       <p class="text-4xl font-semibold">{{formatCurrency(contrato.saldoContrato - calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado)}}</p>
