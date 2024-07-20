@@ -115,20 +115,25 @@
           <th class="text-xl">Quantidade Contratada</th>
           <th class="text-xl">Valor Unitário</th>
           <th class="text-xl">Valor Total (Item)</th>
+          <th class="text-xl">Quantidade items disponíveis</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
       <tbody>
+      
         <tr
           class="h-24 text-center"
           v-for="item in contrato.contratoItens"
           :key="item.id"
         >
+         
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
+         <!-- {{ (contrato?.faturamentos?.faturamentoItens) }} -->
+          <td class="text-2xl">{{ calcularQuantidadeItens(contrato?.faturamentos?.faturamentoItens)}}</td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
@@ -176,7 +181,7 @@
 
           <th class="text-xl">Quantidade itens</th>
           <th class="text-xl">Total do Lançamento</th>
-          <th class="text-xl">Itens disponíveis</th>
+          <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
@@ -192,8 +197,8 @@
           <td class="text-2xl">{{ faturamento.projetos }}</td>
           <td class="text-2xl">{{(calcularQuantidadeItens(faturamento.faturamentoItens))}}</td>
           <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
-          <td class="text-2xl text-center">
-            <!-- <div class="flex justify-center">
+           <!-- <td class="text-2xl text-center">
+            <div class="flex justify-center">
               <span
               class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
@@ -204,8 +209,8 @@
                 >
                 {{ faturamento.status }}
             </span>
-          </div> -->
-          </td>
+          </div>
+          </td> -->
           <!-- <td class="text-2xl">{{ formatCurrency(calcularSaldoAtualContrato()) }}</td> -->
            <!-- <td class="text-2xl">{{formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td> -->
           <td class="text-2xl">
@@ -312,6 +317,7 @@
                     v-model="item.quantidadeItens"
                     class="border-2 text-center max-w-60"
                     min="0"
+                    max="Number(item.saldoQuantidadeContratada)"
                   />
               
                 </td>
@@ -745,6 +751,8 @@ const showRenovacaoModal = () => {
   modalRenovacao.value = true;
 }
 
+console.log(contrato, 'contrato')
+
 const closeModalRenovacao = () => {
   modalRenovacao.value = false;
   renovacaoData.value = {  data_inicio: '', data_fim: '', tipo_renovacao: '', porcentagem_renovacao: ''};
@@ -1112,15 +1120,20 @@ const calcularSaldoDisponivel = (faturamento) => {
 };
 
 const calcularQuantidadeItens = (faturamentoItens) => {
-  let saldoTotal = 0;
+  console.log(faturamentoItens, 'faturamento  items')
+  let saldoTotal = 0; 
+  if (faturamentoItens) {
 
-  faturamentoItens.forEach(item => {
-    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
-    saldoTotal += quantidadeItens;
-  });
+    faturamentoItens.forEach(item => {
+      const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
+      saldoTotal += quantidadeItens;
+    });
+    return parseFloat(saldoTotal.toFixed(2));
+  } else {
+    return 0
+  }
 
-  return parseFloat(saldoTotal.toFixed(2));
-}
+  }
 
 // Editar Item do contrato
 
