@@ -1,15 +1,6 @@
 <template>
-  <header class="bg-white p-8 flex justify-between items-center z-50 relative border-b-[12px] border-b-blue-200">
-    <div class="flex items-center">
-      <img
-        class="h-20 mr-3"
-        src="../assets/imagens/logoMSB.png"
-        alt="MSB Logo"
-      />
-      <nav class="flex gap-4">
-      </nav>
-    </div>
-    <div class="flex items-center gap-4">
+  <header class="bg-white flex justify-between items-center relative border-b border-blue-300 rounded-md">
+    <div class="flex items-center gap-4 justify-end w-full pb-6 mr-12">
       <div>
         <Icon icon="carbon:user-avatar" width="2.5rem" height="2.5rem" style="color: #60a5fa" />
       </div>
