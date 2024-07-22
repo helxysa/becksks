@@ -120,13 +120,13 @@
         </tr>
       </thead>
       <tbody>
-      
+
         <tr
           class="h-24 text-center"
           v-for="item in contrato.contratoItens"
           :key="item.id"
         >
-         
+
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
@@ -318,7 +318,7 @@
                     min="0"
                     max="Number(item.saldoQuantidadeContratada)"
                   />
-              
+
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
@@ -578,7 +578,7 @@ maxWidth="6xl"
             >
             <option disabled hidden value="">Selecione a situação</option>
             <option>Pontos de Função</option>
-            <option>UST(Unidade  de Serviço Técnico)</option>
+            <option>UST(Unidade de Serviço Técnico)</option>
             <option>Funcionário</option>
           </select>
         </div>
@@ -749,7 +749,7 @@ const showRenovacaoModal = () => {
   modalRenovacao.value = true;
 }
 
-console.log(contrato, 'contrato')
+// console.log(contrato, 'contrato')
 
 const closeModalRenovacao = () => {
   modalRenovacao.value = false;
@@ -1121,14 +1121,14 @@ const calcularSaldoDisponivel = (faturamento) => {
 const calcularItensRestantes  = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0
   let quantidadeRestante = 0
-   
+
   contrato.value.faturamentos.forEach((faturamento)=> {
        faturamento.faturamentoItens.forEach((faturamentoItem)=>{
           if (idItem === faturamentoItem.contratoItemId){
              quantidadeUtilizada += parseFloat(faturamentoItem.quantidadeItens)
           }
        })
-    
+
 
   })
   quantidadeRestante = parseFloat(quantidadeContratada) -  quantidadeUtilizada
@@ -1137,14 +1137,14 @@ const calcularItensRestantes  = (idItem, quantidadeContratada) => {
 
 const calcularQuantidadeItens = (faturamentoItens) => {
   console.log(faturamentoItens, 'faturamento  items')
-  let saldoTotal = 0; 
-  
+  let saldoTotal = 0;
+
 
     faturamentoItens.forEach(item => {
       const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
       saldoTotal += quantidadeItens;
     });
-    return parseFloat(saldoTotal.toFixed(2)); 
+    return parseFloat(saldoTotal.toFixed(2));
 
   }
 
