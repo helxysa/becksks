@@ -580,7 +580,7 @@ maxWidth="6xl"
             >
             <option disabled hidden value="">Selecione a situação</option>
             <option>Pontos de Função</option>
-            <option>UST(Unidade  de Serviço Técnico)</option>
+            <option>UST(Unidade de Serviço Técnico)</option>
             <option>Funcionário</option>
           </select>
         </div>
@@ -751,7 +751,7 @@ const showRenovacaoModal = () => {
   modalRenovacao.value = true;
 }
 
-console.log(contrato, 'contrato')
+// console.log(contrato, 'contrato')
 
 const closeModalRenovacao = () => {
   modalRenovacao.value = false;
@@ -1120,7 +1120,7 @@ const calcularSaldoDisponivel = (faturamento) => {
 };
 
 const calcularQuantidadeItens = (faturamentoItens) => {
-  console.log(faturamentoItens, 'faturamento  items')
+  // console.log(faturamentoItens, 'faturamento  items')
   let saldoTotal = 0;
   if (faturamentoItens) {
 
