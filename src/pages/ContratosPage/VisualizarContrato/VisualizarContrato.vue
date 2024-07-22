@@ -267,8 +267,7 @@
             <option>Pago</option>
           </select>
         </div>
-        <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
-         !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
+        <div class="flex gap-4 justify-between items-center" >
           <label class="font-bold text-3xl">Projeto:</label>
           <input type="text" placeholder="Informe o nome do  projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
           v-model="projetos"
@@ -386,8 +385,7 @@ maxWidth="6xl"
         </select>
       </div>
 
-      <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
-      !== 'Aguardando Faturamento' && editingFaturamento.status !== null"
+      <div class="flex gap-4 justify-between items-center"
      >
        <label class="font-bold text-3xl">Projeto:</label>
 
