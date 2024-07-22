@@ -79,6 +79,36 @@
   <section>
     Itens
     {{renovacao.contratoItens}}
+    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+      <thead class="h-20 bg-slate-100 border-1">
+        <th class="text-xl">Item</th>
+        <th class="text-xl">U.M (Unidade de Medida)</th>
+        <th class="text-xl">Quantidade Contratada</th>
+        <th class="text-xl">Valor Unitário</th>
+        <th class="text-xl">Valor Total (Item)</th>
+        <th class="text-xl">Ações</th>
+      </thead>
+      <tbody>
+        <tr class="h-20 text-center" v-for="item in renovacao.contratoItens" :key="item.id">
+          <td>{{ item.titulo }}</td>
+          <td class="text-2xl">{{ item.unidadeMedida }}</td>
+          <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
+          <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
+          <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
+          <td class="flex justify-center mt-6 gap-2">
+            <button type="button" @click="openItemViewModal(item)">
+              <Icon icon="ph:eye"height="20"class="hover:text-red-500 hover:rounded-md cursor-pointer"/>
+            </button>
+            <button type="button" @click="openItemEditModal(item)">
+              <Icon icon="bx:edit"height="20"class="hover:text-red-500 hover:rounded-md cursor-pointer"/>
+            </button>
+            <button type="button" @click="deleteItem(item.id)">
+              <Icon icon="ph:trash"height="20"class="hover:text-red-500 hover:rounded-md cursor-pointer"/>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </section>
 
   <!-- Modal Editar Renovação -->
@@ -374,6 +404,13 @@ const formatDate = (dateString) => {
   return isNaN(date)
     ? ""
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
+};
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
 };
 
 watch(

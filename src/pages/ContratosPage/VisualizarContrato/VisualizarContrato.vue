@@ -129,7 +129,7 @@
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
-          <td class="flex justify-center mt-4 gap-2">
+          <td class="flex justify-center mt-6 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
                 icon="ph:eye"
@@ -313,7 +313,7 @@
                     class="border-2 text-center max-w-60"
                     min="0"
                   />
-              
+
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
