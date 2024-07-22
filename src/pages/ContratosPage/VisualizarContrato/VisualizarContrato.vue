@@ -133,7 +133,7 @@
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
          <!-- {{ (contrato?.faturamentos?.faturamentoItens) }} -->
-          <td class="text-2xl">{{ calcularQuantidadeItens(contrato?.faturamentos?.faturamentoItens)}}</td>
+          <td class="text-2xl">{{ calcularItensRestantes(item.id, item.saldoQuantidadeContratada )}}</td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
@@ -267,8 +267,7 @@
             <option>Pago</option>
           </select>
         </div>
-        <div class="flex gap-4 justify-between items-center" v-if=" selectNovoFaturamento
-         !== 'Aguardando Faturamento' && selectNovoFaturamento !== null">
+        <div class="flex gap-4 justify-between items-center" >
           <label class="font-bold text-3xl">Projeto:</label>
           <input type="text" placeholder="Informe o nome do  projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
           v-model="projetos"
@@ -386,8 +385,7 @@ maxWidth="6xl"
         </select>
       </div>
 
-      <div class="flex gap-4 justify-between items-center" v-if=" editingFaturamento.status
-      !== 'Aguardando Faturamento' && editingFaturamento.status !== null"
+      <div class="flex gap-4 justify-between items-center"
      >
        <label class="font-bold text-3xl">Projeto:</label>
 
@@ -1119,19 +1117,33 @@ const calcularSaldoDisponivel = (faturamento) => {
   };
 };
 
+const calcularItensRestantes  = (idItem, quantidadeContratada) => {
+  let quantidadeUtilizada = 0
+  let quantidadeRestante = 0
+
+  contrato.value.faturamentos.forEach((faturamento)=> {
+       faturamento.faturamentoItens.forEach((faturamentoItem)=>{
+          if (idItem === faturamentoItem.contratoItemId){
+             quantidadeUtilizada += parseFloat(faturamentoItem.quantidadeItens)
+          }
+       })
+
+
+  })
+  quantidadeRestante = parseFloat(quantidadeContratada) -  quantidadeUtilizada
+  return quantidadeRestante
+}
+
 const calcularQuantidadeItens = (faturamentoItens) => {
-  // console.log(faturamentoItens, 'faturamento  items')
+  console.log(faturamentoItens, 'faturamento  items')
   let saldoTotal = 0;
-  if (faturamentoItens) {
+
 
     faturamentoItens.forEach(item => {
       const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
       saldoTotal += quantidadeItens;
     });
     return parseFloat(saldoTotal.toFixed(2));
-  } else {
-    return 0
-  }
 
   }
 
