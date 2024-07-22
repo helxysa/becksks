@@ -249,7 +249,7 @@
     :withouHeader="false"
     @close="closeModalFaturamento"
     maxWidth="6xl"
-    :modalTitle="'Lançamento'"
+    :modalTitle="' Criar Lançamento'"
   >
     <template #content>
       <form @submit.prevent="createFaturamento">
@@ -851,6 +851,7 @@ const resetForm = () => {
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
   });
+  projetos.value = "";
   closeModalFaturamento();
 };
 
@@ -1252,12 +1253,20 @@ const closeModalCreateItem = () => {
 
 const createNewItem = async () => {
   //Verificar para que a soma não ultrapasse o saldo do contrato
-  let totalItensQuantidadeContratada = 0;
-  contrato.value.contratoItens.forEach(item => totalItensQuantidadeContratada += parseInt(item.saldoQuantidadeContratada))
+  let valorTotalItems = 0;
+  console.log(contrato.value.contratoItens, 'contratoItems')
+  contrato.value.contratoItens.forEach(item => valorTotalItems += parseFloat(item.saldoQuantidadeContratada) * parseFloat(item.valorUnitario) )
+  
+  console.log(valorTotalItems, 'total contratada')
+  console.log( contrato.value.saldoContrato,  'saldo contrato')
 
-  const saldoContratoRestante = contrato.value.saldoContrato - totalItensQuantidadeContratada;
+  const saldoContratoRestante =  valorTotalItems;
+  console.log(saldoContratoRestante, 'saldo  restante')
+  console.log(newItem.value.saldoQuantidadeContratada)
+  console.log(newItem.value.valorUnitario)
+  // console.log(newItem.value.saldoQuantidadeContratada  * newItem.value.valorUnitario, 'valor faltando')
 
-  if (saldoContratoRestante < newItem.value.saldo_quantidade_contratada) {
+  if (contrato.value.saldoContrato < valorTotalItems) {
     toast.error(`Saldo contratado excedido. Saldo restante: ${saldoContratoRestante}`);
     return;
   }
