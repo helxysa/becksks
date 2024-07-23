@@ -19,40 +19,40 @@
   </div>
 
   <section class="mb-4">
-    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60 dark:text-white">Cliente:</label>
+        <label class="font-semibold  dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="underline underline-offset-4"><strong>Vigência:</strong> {{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
+      <div class="flex items-center gap-4">
+        <span><strong>Vigência:</strong> <span class="underline underline-offset-4">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span></span>
       </div>
 
-      <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Fiscal:</label>
+      <div class="flex items-center gap-4 ">
+        <label class="font-semibold ">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Ponto Focal:</label>
+        <label class="font-semibold ">Ponto Focal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.pontoFocal }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Cidade:</label>
+        <label class="font-semibold ">Cidade:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.cidade }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Objeto do Contrato:</label>
+        <label class="font-semibold ">Objeto do Contrato:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.objetoContrato }}</span>
       </div>
     </div>
   </section>
 
-  <section class="flex items-center gap-4   ">
+  <section class="flex items-center gap-4  ">
     <label class="font-semibold ">Observações:</label>
     <span class=" underline underline-offset-4 text-justify">{{ contrato.observacoes }}</span>
   </section>
   <section class="flex gap-3 mt-6 flex-wrap 2xl:gap-x-24">
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]">
        <p class="w-full  bg-blue-800 h-4"></p>
        <div class="flex flex-col items-center h-full justify-center">
          <p class="text-4xl font-semibold">{{ formatCurrency(contrato.saldoContrato) }}</p>
@@ -60,7 +60,7 @@
 
        </div>
    </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]   h-[120px]"
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]   h-[120px]"
    >
    <p class="w-full  bg-yellow-300 h-4"></p>
      <div  class="flex flex-col  items-center h-full justify-center">
@@ -68,7 +68,7 @@
        <p>Valor  aguardando  faturamento</p>
      </div>
   </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]  h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]  h-[120px]">
     <p class="w-full  bg-gray-300 h-4"></p>
     <div  class="flex flex-col items-center h-full justify-center">
       <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento)}}</p>
@@ -76,7 +76,7 @@
 
     </div>
    </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]  h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]  h-[120px]">
     <p class="w-full  bg-red-800 h-4"></p>
     <div  class="flex flex-col items-center h-full justify-center">
       <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).valorPago)}}</p>
@@ -84,7 +84,7 @@
     </div>
 
    </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px]   h-[120px]">
+   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]   h-[120px]">
     <p class="w-full  bg-green-600 h-4"></p>
     <div  class="flex flex-col items-center h-full justify-center">
       <p class="text-4xl font-semibold">{{formatCurrency(contrato.saldoContrato - calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado)}}</p>
@@ -839,6 +839,8 @@ const ExibirModalFaturamento = () => {
 };
 
 const isSaldoNegativo = computed(() => {
+  console.log(calcularSaldoAtual(), 'saldo')
+  console.log( contrato.value.contratoItens, 'itens')
   return contrato.value.contratoItens.some(item => calcularSaldoAtual(item) < 0);
 });
 
