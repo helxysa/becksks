@@ -5,13 +5,13 @@
     <div class="flex items-center justify-end gap-4">
       <button
         @click="showEditarRenovacao()"
-        class="bg-blue-400 hover:bg-blue-300 rounded-md text-white p-2 w-32"
+        class="bg-blue-400 hover:bg-blue-500 rounded-md text-white p-2 w-32"
       >
         Editar
       </button>
       <button
         @click="deletarRenovacao()"
-        class="bg-red-500 hover:bg-red-400 rounded-md text-white p-2 w-32"
+        class="bg-red-500 hover:bg-red-600 rounded-md text-white p-2 w-32"
       >
         Excluir
       </button>
@@ -76,7 +76,7 @@
       <h1 class="font-bold text-4xl mb-8">Itens de contrato</h1>
       <button
         @click="showAddItemModal()"
-        class="btn-renove bg-blue-400 hover:bg-blue-300 rounded-md text-white p-4 flex items-center gap-2"
+        class="bg-blue-400 hover:bg-blue-500 rounded-md text-white p-4 flex items-center gap-2"
       >
         <span class="text-4xl">+</span> Adicionar item
       </button>
@@ -139,8 +139,8 @@
     <div class="flex justify-between items-center">
       <h1 class="font-bold text-4xl mb-8">Lançamentos</h1>
       <button
-        @click="showAddItemModal()"
-        class="bg-blue-400 hover:bg-blue-300 rounded-md text-white p-4 flex items-center gap-2"
+        @click="showAddFaturamentoModal()"
+        class="bg-blue-400 hover:bg-blue-500 rounded-md text-white p-4 flex items-center gap-2"
       >
         <span class="text-4xl">+</span>Novo Lançamento
       </button>
@@ -151,36 +151,34 @@
         <th class="text-xl">Projeto</th>
         <th class="text-xl">Quantidade itens</th>
         <th class="text-xl">Total do lançamento</th>
-        <th class="text-xl">Itens disponíveis</th>
         <th class="text-xl">Ações</th>
       </thead>
       <tbody>
         <tr
           class="h-20 text-center"
-          v-for="lançamento in renovacao.faturamentos"
-          :key="lançamento.id"
+          v-for="lancamento in renovacao.faturamentos"
+          :key="lancamento.id"
         >
-          <td>data</td>
-          <td class="text-2xl">projeto</td>
-          <td class="text-2xl">quantidade itens</td>
-          <td class="text-2xl">total do lançamento</td>
-          <td class="text-2xl">itens disponiveis</td>
+          <td>{{formatDate(lancamento.createdAt)}}</td>
+          <td class="text-2xl">{{lancamento.projetos}}</td>
+          <td class="text-2xl">{{calcularQuantidadeItens(lancamento.faturamentoItens)}}</td>
+          <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(lancamento.faturamentoItens))}}</td>
           <td class="flex justify-center mt-6 gap-2">
-            <button type="button" @click="openItemViewModal(item)">
+            <button type="button" @click="showViewFaturamentoModal(lancamento)">
               <Icon
                 icon="ph:eye"
                 height="20"
                 class="hover:text-red-500 hover:rounded-md cursor-pointer"
               />
             </button>
-            <button type="button" @click="openItemEditModal(item)">
+            <!-- <button type="button" @click="openItemEditModal(item)">
               <Icon
                 icon="bx:edit"
                 height="20"
                 class="hover:text-red-500 hover:rounded-md cursor-pointer"
               />
-            </button>
-            <button type="button" @click="deleteLancamento(item.id)">
+            </button> -->
+            <button type="button" @click="deleteFaturamento(lancamento.id)">
               <Icon
                 icon="ph:trash"
                 height="20"
@@ -422,6 +420,259 @@
       </form>
     </template>
   </JetDialogModal>
+
+<!-- Modal criar lançamento -->
+  <JetDialogModal
+  :show="modalAddFaturamento"
+  :withouHeader="false"
+  @close="closeAddFaturamentoModal"
+  maxWidth="6xl"
+  :modalTitle="'Criar Lançamento'"
+>
+  <template #content>
+    <form @submit.prevent="addFaturamentoRenovacao">
+      <section class="flex flex-col gap-8">
+        <div class="mt-8 flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Situação:</label>
+          <select
+            v-model="renovacaoFaturamentoData.status"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            required
+          >
+            <option disabled hidden value="">Selecione a situação</option>
+            <option>Aguardando Faturamento</option>
+            <option>Aguardando Pagamento</option>
+            <option>Pago</option>
+          </select>
+        </div>
+        <div class="flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Projeto:</label>
+          <input
+            type="text"
+            placeholder="Informe o nome do  projeto"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            v-model="renovacaoFaturamentoData.projetos"
+          />
+        </div>
+        <div class="flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Valor contratado:</label>
+          <span
+            class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+            >R$ {{ calcularValorContratadoRenovacao() }}</span
+          >
+        </div>
+        <!-- <div class="flex gap-4 justify-between items-center">
+          <label class="font-bold text-3xl">Saldo atual:</label>
+          <span
+            class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+            >{{ formatCurrency(calcularSaldoAtual()) }}</span
+          >
+        </div> -->
+      </section>
+      <div class="mt-8">
+        <table
+          class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+        >
+          <thead class="h-20 bg-slate-100 border-1">
+            <tr>
+              <th class="text-xl">Data</th>
+              <th class="text-xl">Item</th>
+              <th class="text-xl">Valor unitário</th>
+              <th class="text-xl">Quantidade contratada</th>
+              <!-- <th class="text-xl">Quantidade disponível</th> -->
+              <th class="text-xl">Quantidade a ser lançada</th>
+              <!-- <th class="text-xl">Total</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="h-24 text-center"
+              v-for="item in renovacao.contratoItens"
+              :key="item.id"
+            >
+              <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+              <td class="text-2xl">{{ item.titulo }}</td>
+              <td class="text-2xl">
+                {{ formatCurrency(item.valorUnitario) }}
+              </td>
+              <td>
+                <span>
+                  {{ item.saldoQuantidadeContratada }}
+                </span>
+              </td>
+              <!-- <td>
+               {{
+                  calcularItensRestante(
+                    item.id,
+                    item.saldoQuantidadeContratada
+                  )
+                }}
+              </td> -->
+              <td>
+                <input
+                  type="number"
+                  v-model="item.quantidadeItens"
+                  class="border-2 text-center max-w-60"
+                />
+              </td>
+              <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                <!-- <span
+                  class="max-w-60"
+                  :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
+                >
+                  {{ formatCurrency(calcularSaldoItem(item) || 0) }}
+                </span> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-9 flex justify-end gap-4">
+        <button
+          @click="closeAddFaturamentoModal"
+          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+        >
+          Fechar
+        </button>
+        <button
+          type="submit"
+          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-blue-500 border border-gray-300 rounded-md font-bold text-xl text-white tracking-widest shadow-sm hover:text-slate-100 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-blue-400 h-14 w-40"
+        >
+          Salvar
+        </button>
+      </div>
+    </form>
+  </template>
+</JetDialogModal>
+
+<!-- Modal visualizar lançamento -->
+<JetDialogModal
+:show="modalViewFaturamento"
+:withouHeader="false"
+@close="closeViewFaturamentoModal"
+maxWidth="6xl"
+:modalTitle="'Criar Lançamento'"
+>
+<template #content>
+  <form @submit.prevent="">
+    <section class="flex flex-col gap-8">
+      <div class="mt-8 flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Situação:</label>
+        <select
+          disabled
+          v-model="renovacaoFaturamentoData.status"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          required
+        >
+          <option disabled hidden value="">Selecione a situação</option>
+          <option>Aguardando Faturamento</option>
+          <option>Aguardando Pagamento</option>
+          <option>Pago</option>
+        </select>
+      </div>
+      <div class="flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Projeto:</label>
+        <input
+          disabled
+          type="text"
+          placeholder="Informe o nome do  projeto"
+          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          v-model="renovacaoFaturamentoData.projetos"
+        />
+      </div>
+      <div class="flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Valor contratado:</label>
+        <span
+          class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+          >R$ {{ calcularValorContratadoRenovacao() }}</span
+        >
+      </div>
+      <!-- <div class="flex gap-4 justify-between items-center">
+        <label class="font-bold text-3xl">Saldo atual:</label>
+        <span
+          class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+          >{{ formatCurrency(calcularSaldoAtual()) }}</span
+        >
+      </div> -->
+    </section>
+    <div class="mt-8">
+      <table
+        class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+      >
+        <thead class="h-20 bg-slate-100 border-1">
+          <tr>
+            <th class="text-xl">Data</th>
+            <th class="text-xl">Item</th>
+            <th class="text-xl">Valor unitário</th>
+            <th class="text-xl">Quantidade contratada</th>
+            <!-- <th class="text-xl">Quantidade disponível</th> -->
+            <th class="text-xl">Quantidade a ser lançada</th>
+            <!-- <th class="text-xl">Total</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="h-24 text-center"
+            v-for="item in renovacaoFaturamentoData.faturamentoItens"
+            :key="item.id"
+          >
+            <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+            <td class="text-2xl">{{ item.titulo }}</td>
+            <td class="text-2xl">
+              {{ formatCurrency(item.valorUnitario) }}
+            </td>
+            <td>
+              <span>
+                {{ item.saldoQuantidadeContratada }}
+              </span>
+            </td>
+            <!-- <td>
+             {{
+                calcularItensRestante(
+                  item.id,
+                  item.saldoQuantidadeContratada
+                )
+              }}
+            </td> -->
+            <td>
+              <input
+                disabled
+                type="number"
+                v-model="item.quantidadeItens"
+                class="border-2 text-center max-w-60"
+              />
+            </td>
+            <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+              <!-- <span
+                class="max-w-60"
+                :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
+              >
+                {{ formatCurrency(calcularSaldoItem(item) || 0) }}
+              </span> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-9 flex justify-end gap-4">
+      <button
+        @click="closeViewFaturamentoModal"
+        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+      >
+        Fechar
+      </button>
+      <!-- <button
+        type="submit"
+        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-blue-500 border border-gray-300 rounded-md font-bold text-xl text-white tracking-widest shadow-sm hover:text-slate-100 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-blue-400 h-14 w-40"
+      >
+        Salvar
+      </button> -->
+    </div>
+  </form>
+</template>
+</JetDialogModal>
 </template>
 
 <script setup>
@@ -444,6 +695,123 @@ const moneyConfig = {
   prefix: "R$ ",
   masked: false,
 };
+//Modal adicionar faturamento
+const modalAddFaturamento = ref(false);
+const modalViewFaturamento = ref(false);
+const renovacaoFaturamentoData = ref({
+  status: "",
+  itens: [{}],
+  projetos: "",
+  data_pagamento: "",
+})
+
+const showAddFaturamentoModal = () => {
+  modalAddFaturamento.value = true;
+  props.renovacao.contratoItens.forEach((item) => {
+    item.quantidadeItens = 0;
+  });
+}
+
+const showViewFaturamentoModal = (faturamento) => {
+  modalViewFaturamento.value = true;
+  renovacaoFaturamentoData.value = {
+    status: faturamento.status,
+    projetos: faturamento.projetos,
+    faturamentoItens: faturamento.faturamentoItens
+  }
+}
+
+const closeViewFaturamentoModal = () => {
+  modalViewFaturamento.value = false;
+  renovacaoFaturamentoData.value = {
+    status: "",
+    itens: [{}],
+    projetos: "",
+    data_pagamento: "",
+  }
+  props.renovacao.contratoItens.forEach((item) => {
+    item.quantidadeItens = 0;
+  });
+};
+
+const closeAddFaturamentoModal = () => {
+  modalAddFaturamento.value = false;
+  renovacaoFaturamentoData.value = {
+    status: "",
+    itens: [{}],
+    projetos: "",
+    data_pagamento: "",
+  }
+  props.renovacao.contratoItens.forEach((item) => {
+    item.quantidadeItens = 0;
+  });
+}
+
+const addFaturamentoRenovacao = async () => {
+  const renovacaoId = props.renovacao.id;
+  let itensQuantidadePreenchida = props.renovacao.contratoItens
+    .map((item) => ({
+      id_item: item.id,
+      quantidade_itens: item.quantidadeItens,
+    }));
+
+    if (itensQuantidadePreenchida.length === 0) {
+    toast("Adicione pelo menos um item para criar o faturamento.", {
+      theme: "colored",
+      type: "error",
+    });
+    return;
+  }
+
+  let payload = {
+      status: renovacaoFaturamentoData.value.status,
+      itens: itensQuantidadePreenchida,
+      projetos: renovacaoFaturamentoData.value.projetos,
+  };
+  try {
+    const response = await api
+      .post(`/renovacoes/${renovacaoId}/faturamentos`, payload)
+      .then((response) => {
+        toast("Faturamento adicionado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+      });
+    resetItemData();
+    emit("renovacaoEditada");
+    closeAddFaturamentoModal();
+  } catch (error) {
+    toast("Não foi possível adicionar faturamento!", {
+      theme: "colored",
+      type: "error",
+    });
+    console.error("Erro ao adicionar faturamento", error);
+  }
+};
+
+
+const deleteFaturamento = async (itemId) => {
+  const faturamentoId = itemId
+  const result = await Swal.fire({
+    title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir este faturamento?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  });
+  if (result.isConfirmed) {
+    try {
+      await api.delete(`/faturamentos/${faturamentoId}`);
+      emit("renovacaoEditada");
+    } catch (error) {
+      console.error('Erro ao deletar faturamento:', error);
+    }
+  }
+}
+
 
 // Modal visualizar item
 const modalViewItem = ref(false);
@@ -637,6 +1005,28 @@ const editRenovacao = async () => {
     console.error("Erro ao editar renovação:", error);
   }
 };
+// Calculos
+
+const calcularQuantidadeItens = (faturamentoItens) => {
+  let saldoTotal = 0;
+
+  faturamentoItens.forEach((item) => {
+    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
+    saldoTotal += quantidadeItens;
+  });
+  return parseFloat(saldoTotal.toFixed(2));
+};
+
+const calcularSaldoFaturamentoItens = (faturamento) => {
+  let saldoTotal = 0;
+  faturamento.forEach(item => {
+    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
+    const valorUnitario = parseFloat(item.valorUnitario) || 0;
+    const valorTotalItem = quantidadeItens * valorUnitario;
+    saldoTotal += valorTotalItem;
+  });
+  return saldoTotal;
+}
 
 const calcularValorContratadoRenovacao = () => {
   const valorContratado = parseInt(props.contrato.saldoContrato);

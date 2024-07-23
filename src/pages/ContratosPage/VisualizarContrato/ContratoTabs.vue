@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-4 cursor-pointer mb-12" @click="voltarListagem">
+  <div class="flex gap-4 cursor-pointer mb-12 hover:text-gray-500 ease-out" @click="voltarListagem">
     <Icon icon="ic:round-arrow-back" height="20" />
     <h1 class="text-3xl font-medium">Visualizar Contrato</h1>
   </div>
@@ -117,6 +117,10 @@ const handleRenovacaoDeletada = async (renovacaoId) => {
       console.error('Erro ao deletar renovação:', error);
     }
   }
+};
+
+const voltarListagem = () => {
+  router.push({ name: "Contratos" });
 };
 
 </script>

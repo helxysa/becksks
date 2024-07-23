@@ -8,102 +8,155 @@
       Renovar
     </button>
     <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
-      <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
-        <router-view>
-          Editar
-        </router-view>
+      <router-link
+        :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
+      >
+        <router-view> Editar </router-view>
       </router-link>
     </button>
-    <button class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
-    @click="deleteContrato(contrato)">Excluir</button>
+    <button
+      class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
+      @click="deleteContrato(contrato)"
+    >
+      Excluir
+    </button>
   </div>
 
   <section class="mb-4">
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
       <div class="flex items-center gap-4">
-        <label class="font-semibold  dark:text-white">Cliente:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.nomeCliente }}</span>
+        <label class="font-semibold w-60 dark:text-white">Cliente:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.nomeCliente
+        }}</span>
       </div>
-      <div class="flex items-center gap-4">
-        <span><strong>Vigência:</strong> <span class="underline underline-offset-4">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span></span>
+      <div class="flex items-center gap-2">
+        <span class="underline underline-offset-4"
+          ><strong>Vigência:</strong> {{ formatDate(contrato.dataInicio) }} até
+          {{ formatDate(contrato.dataFim) }}</span
+        >
       </div>
 
-      <div class="flex items-center gap-4 ">
-        <label class="font-semibold ">Fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.fiscal }}</span>
+      <div class="flex items-center gap-4">
+        <label class="font-semibold w-60">Fiscal:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.fiscal
+        }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold ">Ponto Focal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.pontoFocal }}</span>
+        <label class="font-semibold w-60">Ponto Focal:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.pontoFocal
+        }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold ">Cidade:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.cidade }}</span>
+        <label class="font-semibold w-60">Cidade:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.cidade
+        }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold ">Objeto do Contrato:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{ contrato.objetoContrato }}</span>
+        <label class="font-semibold w-60">Objeto do Contrato:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.objetoContrato
+        }}</span>
       </div>
     </div>
   </section>
 
-  <section class="flex items-center gap-4  ">
-    <label class="font-semibold ">Observações:</label>
-    <span class=" underline underline-offset-4 text-justify">{{ contrato.observacoes }}</span>
+  <section class="flex items-center gap-4">
+    <label class="font-semibold">Observações:</label>
+    <span class="underline underline-offset-4 text-justify">{{
+      contrato.observacoes
+    }}</span>
   </section>
   <section class="flex gap-3 mt-6 flex-wrap 2xl:gap-x-24">
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]">
-       <p class="w-full  bg-blue-800 h-4"></p>
-       <div class="flex flex-col items-center h-full justify-center">
-         <p class="text-4xl font-semibold">{{ formatCurrency(contrato.saldoContrato) }}</p>
-         <p>Valor contratado</p>
-
-       </div>
-   </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]   h-[120px]"
-   >
-   <p class="w-full  bg-yellow-300 h-4"></p>
-     <div  class="flex flex-col  items-center h-full justify-center">
-       <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).aguardandoFaturamento)}}</p>
-       <p>Valor  aguardando  faturamento</p>
-     </div>
-  </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]  h-[120px]">
-    <p class="w-full  bg-gray-300 h-4"></p>
-    <div  class="flex flex-col items-center h-full justify-center">
-      <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento)}}</p>
-      <p>Valor  aguardando  pagamento</p>
-
+    <div
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+    >
+      <p class="w-full bg-blue-800 h-4"></p>
+      <div class="flex flex-col items-center h-full justify-center">
+        <p class="text-4xl font-semibold">
+          {{ formatCurrency(contrato.saldoContrato) }}
+        </p>
+        <p>Valor contratado</p>
+      </div>
     </div>
-   </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]  h-[120px]">
-    <p class="w-full  bg-red-800 h-4"></p>
-    <div  class="flex flex-col items-center h-full justify-center">
-      <p class="text-4xl font-semibold">{{formatCurrency(calcularSaldoDisponivel(contrato.faturamentos).valorPago)}}</p>
-      <p>Valor pago</p>
+    <div
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+    >
+      <p class="w-full bg-yellow-300 h-4"></p>
+      <div class="flex flex-col items-center h-full justify-center">
+        <p class="text-4xl font-semibold">
+          {{
+            formatCurrency(
+              calcularSaldoDisponivel(contrato.faturamentos)
+                .aguardandoFaturamento
+            )
+          }}
+        </p>
+        <p>Valor aguardando faturamento</p>
+      </div>
     </div>
-
-   </div>
-   <div class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px]   h-[120px]">
-    <p class="w-full  bg-green-600 h-4"></p>
-    <div  class="flex flex-col items-center h-full justify-center">
-      <p class="text-4xl font-semibold">{{formatCurrency(contrato.saldoContrato - calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado)}}</p>
-      <p>Saldo disponível</p>
+    <div
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+    >
+      <p class="w-full bg-gray-300 h-4"></p>
+      <div class="flex flex-col items-center h-full justify-center">
+        <p class="text-4xl font-semibold">
+          {{
+            formatCurrency(
+              calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento
+            )
+          }}
+        </p>
+        <p>Valor aguardando pagamento</p>
+      </div>
     </div>
-   </div>
+    <div
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+    >
+      <p class="w-full bg-red-800 h-4"></p>
+      <div class="flex flex-col items-center h-full justify-center">
+        <p class="text-4xl font-semibold">
+          {{
+            formatCurrency(
+              calcularSaldoDisponivel(contrato.faturamentos).valorPago
+            )
+          }}
+        </p>
+        <p>Valor pago</p>
+      </div>
+    </div>
+    <div
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+    >
+      <p class="w-full bg-green-600 h-4"></p>
+      <div class="flex flex-col items-center h-full justify-center">
+        <p class="text-4xl font-semibold">
+          {{
+            formatCurrency(
+              contrato.saldoContrato -
+                calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado
+            )
+          }}
+        </p>
+        <p>Saldo disponível</p>
+      </div>
+    </div>
   </section>
 
   <section>
     <div class="flex justify-between items-center">
       <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
-      <button
-        @click="openCreateItemModal"
-        class="btn-item relative"
-      >
+      <button @click="openCreateItemModal" class="btn-item relative">
         Adicionar Item
         <span class="absolute right-[3px]">
-          <Icon icon="material-symbols-light:add"   height="25"
-          class="text-zinc-50" />
+          <Icon
+            icon="material-symbols-light:add"
+            height="25"
+            class="text-zinc-50"
+          />
         </span>
       </button>
     </div>
@@ -115,25 +168,33 @@
           <th class="text-xl">Quantidade Contratada</th>
           <th class="text-xl">Valor Unitário</th>
           <th class="text-xl">Valor Total (Item)</th>
-          <th class="text-xl">Quantidade items disponíveis</th>
+          <th class="text-xl">Quantidade de itens disponíveis</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
       <tbody>
-
         <tr
           class="h-24 text-center"
           v-for="item in contrato.contratoItens"
           :key="item.id"
         >
-
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
-          <td class="text-2xl">{{ formatCurrency(item.valorUnitario * item.saldoQuantidadeContratada ) }}</td>
-         <!-- {{ (contrato?.faturamentos?.faturamentoItens) }} -->
-          <td class="text-2xl">{{ calcularItensRestantes(item.id, item.saldoQuantidadeContratada )}}</td>
+          <td class="text-2xl">
+            {{
+              formatCurrency(
+                item.valorUnitario * item.saldoQuantidadeContratada
+              )
+            }}
+          </td>
+          <!-- {{ (contrato?.faturamentos?.faturamentoItens) }} -->
+          <td class="text-2xl">
+            {{
+              calcularItensRestante(item.id, item.saldoQuantidadeContratada)
+            }}
+          </td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
               <Icon
@@ -142,20 +203,20 @@
                 class="hover:text-red-500 hover:rounded-md cursor-pointer"
               />
             </button>
-              <button type="button" @click="openItemEditModal(item)">
-                <Icon
-                  icon="bx:edit"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </button>
-              <button type="button" @click="deleteItem(item.id)">
-                <Icon
-                  icon="ph:trash"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </button>
+            <button type="button" @click="openItemEditModal(item)">
+              <Icon
+                icon="bx:edit"
+                height="20"
+                class="hover:text-red-500 hover:rounded-md cursor-pointer"
+              />
+            </button>
+            <button type="button" @click="deleteItem(item.id)">
+              <Icon
+                icon="ph:trash"
+                height="20"
+                class="hover:text-red-500 hover:rounded-md cursor-pointer"
+              />
+            </button>
           </td>
         </tr>
       </tbody>
@@ -168,8 +229,11 @@
       <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
         Novo Lançamento
         <span class="absolute right-[3px]">
-          <Icon icon="material-symbols-light:add"   height="25"
-          class="text-zinc-50" />
+          <Icon
+            icon="material-symbols-light:add"
+            height="25"
+            class="text-zinc-50"
+          />
         </span>
       </button>
     </div>
@@ -195,26 +259,18 @@
         >
           <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
           <td class="text-2xl">{{ faturamento.projetos }}</td>
-          <td class="text-2xl">{{(calcularQuantidadeItens(faturamento.faturamentoItens))}}</td>
-          <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td>
-           <!-- <td class="text-2xl text-center">
-            <div class="flex justify-center">
-              <span
-              class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
-                :class="{
-                  'bg-green-200 border-green-400': faturamento.status === 'Pago',
-                  'bg-yellow-200 border-yellow-400': faturamento.status === 'Aguardando Pagamento',
-                  'bg-blue-200 border-blue-400': faturamento.status === 'Aguardando Faturamento',
-                }"
-                >
-                {{ faturamento.status }}
-            </span>
-          </div>
-          </td> -->
-          <!-- <td class="text-2xl">{{ formatCurrency(calcularSaldoAtualContrato()) }}</td> -->
-           <!-- <td class="text-2xl">{{formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(faturamento.faturamentoItens))}}</td> -->
           <td class="text-2xl">
-           <div class="flex justify-center items-center gap-2">
+            {{ calcularQuantidadeItens(faturamento.faturamentoItens) }}
+          </td>
+          <td class="text-2xl">
+            {{
+              formatCurrency(
+                calcularSaldoFaturamentoItens(faturamento.faturamentoItens)
+              )
+            }}
+          </td>
+          <td class="text-2xl">
+            <div class="flex justify-center items-center gap-2">
               <span @click="openViewFaturamentoModal(faturamento)">
                 <Icon
                   icon="ph:eye"
@@ -236,7 +292,7 @@
                   class="hover:text-red-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-           </div>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -257,39 +313,51 @@
           <div class="mt-8 flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
             <select
-            v-model="selectNovoFaturamento"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
+              v-model="selectNovoFaturamento"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
             >
-            <option disabled hidden value="">Selecione a situação</option>
-            <option>Aguardando Faturamento</option>
-            <option>Aguardando Pagamento</option>
-            <option>Pago</option>
-          </select>
-        </div>
-        <div class="flex gap-4 justify-between items-center" >
-          <label class="font-bold text-3xl">Projeto:</label>
-          <input type="text" placeholder="Informe o nome do  projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-          v-model="projetos"
-          >
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Valor contratado:</label>
-          <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(contrato.saldoContrato)}}</span>
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Saldo atual:</label>
-          <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtual())}}</span>
-        </div>
-      </section>
+              <option disabled hidden value="">Selecione a situação</option>
+              <option>Aguardando Faturamento</option>
+              <option>Aguardando Pagamento</option>
+              <option>Pago</option>
+            </select>
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Projeto:</label>
+            <input
+              type="text"
+              placeholder="Informe o nome do  projeto"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="projetos"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Valor contratado:</label>
+            <span
+              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+              >{{ formatCurrency(contrato.saldoContrato) }}</span
+            >
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Saldo atual:</label>
+            <span
+              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+              >{{ formatCurrency(calcularSaldoAtual()) }}</span
+            >
+          </div>
+        </section>
         <div class="mt-8">
-          <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+          <table
+            class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+          >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">Data</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
+                <th class="text-xl">Quantidade disponível</th>
                 <th class="text-xl">Quantidade a ser lançada</th>
                 <th class="text-xl">Total</th>
               </tr>
@@ -300,15 +368,23 @@
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
               >
-              <td class="text-2xl">{{ formatDate(item.createdAt)}}</td>
+                <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
                 </td>
                 <td>
                   <span>
-                    {{ item.saldoQuantidadeContratada}}
+                    {{ item.saldoQuantidadeContratada }}
                   </span>
+                </td>
+                <td>
+                  {{
+                    calcularItensRestante(
+                      item.id,
+                      item.saldoQuantidadeContratada
+                    )
+                  }}
                 </td>
                 <td>
                   <input
@@ -318,14 +394,13 @@
                     min="0"
                     max="Number(item.saldoQuantidadeContratada)"
                   />
-
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
                     class="max-w-60"
-                    :class="{'text-red-500': saldoMaiorQueContrato(item)}"
+                    :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
                   >
-                  {{ formatCurrency(calcularSaldoItem(item) || 0) }}
+                    {{ formatCurrency(calcularSaldoItem(item) || 0) }}
                   </span>
                 </td>
               </tr>
@@ -354,378 +429,401 @@
           >
             Salvar
           </button>
-      </div>
-  </form>
-</template>
-</JetDialogModal>
+        </div>
+      </form>
+    </template>
+  </JetDialogModal>
 
-<!-- Modal editar faturamento-->
-<JetDialogModal
-:show="modalEditFaturamento"
-:withouHeader="false"
-@close="closeEditFaturamentoModal"
-maxWidth="6xl"
-:modalTitle="isFaturamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'"
->
-<template #content>
-  <form @submit.prevent="saveEditedFaturamento">
-    <section class="flex flex-col gap-8">
-      <div class="mt-8 flex gap-4 justify-between items-center">
-        <label class="font-bold text-3xl">Situação:</label>
-        <select
-          :disabled="isFaturamentoViewModal"
-          v-model="editingFaturamento.status"
-          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-          required
-        >
-          <option disabled hidden value="">Selecione a situação</option>
-          <option>Aguardando Faturamento</option>
-          <option>Aguardando Pagamento</option>
-          <option>Pago</option>
-        </select>
-      </div>
-
-      <div class="flex gap-4 justify-between items-center"
-     >
-       <label class="font-bold text-3xl">Projeto:</label>
-
-       <input type="text" placeholder="Informe o nome do projeto" class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14
-
-       "  :disabled="isFaturamentoViewModal"
-       v-model="editingFaturamento.projetos">
-     </div>
-      <div class="flex gap-4 justify-between items-center">
-        <label class="font-bold text-3xl">Saldo atual do contrato:</label>
-        <span class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center">{{formatCurrency(calcularSaldoAtualEditFaturamento())}}</span>
-      </div>
-    </section>
-    <div class="mt-8">
-      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
-        <thead class="h-20 bg-slate-100 border-1">
-          <tr>
-            <th class="text-xl">Data</th>
-            <th class="text-xl">Item</th>
-            <th class="text-xl">Valor unitário</th>
-            <th class="text-xl">Quantidade contratada</th>
-            <th class="text-xl">Quantidade a  ser  lançada</th>
-            <th class="text-xl">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="h-24 text-center"
-            v-for="item in editingFaturamento.faturamentoItens"
-            :key="item.id"
-          >
-          <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
-            <td class="text-2xl">{{ item.titulo }}</td>
-            <td class="text-2xl">
-              {{ formatCurrency(item.valorUnitario) }}
-            </td>
-            <td>
-              <span>
-                {{item.saldoQuantidadeContratada}}
-              </span>
-            </td>
-            <td>
-              <input
-                :disabled="isFaturamentoViewModal"
-                type="number"
-                v-model="item.quantidadeItens"
-                class="border-2 text-center max-w-60"
-                min="0"
-              />
-            </td>
-            <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
-              <span
-                class="max-w-60"
-                :class="{'text-red-500': saldoMaiorQueContratoEditFaturamento(item)}"
-              >
-              {{ formatCurrency(calcularSaldoItem(item) || 0) }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="mt-9 flex justify-end gap-4">
-      <button
-        @click="closeEditFaturamentoModal"
-        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-      >
-        Fechar
-      </button>
-      <button
-        v-if="!isFaturamentoViewModal"
-        type="submit"
-        :disabled="isSaldoNegativo"
-        class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
-      >
-        Salvar
-      </button>
-    </div>
-  </form>
-</template>
-</JetDialogModal>
-
-<!-- Modal criar item -->
+  <!-- Modal editar faturamento-->
   <JetDialogModal
-  :show="modalCreateItem"
-  :withouHeader="false"
-  @close="closeModalCreateItem"
-  maxWidth="6xl"
-  :modalTitle="'Criar Novo Item do Contrato'"
->
-  <template #content>
-    <form @submit.prevent="createNewItem">
-      <section class="flex flex-col gap-8">
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Item:</label>
-          <input
-            v-model="newItem.titulo"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            maxlength="50"
-              placeholder="Titulo do item"
-          />
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Unidade de Medida:</label>
-          <select
-            v-model="newItem.unidade_medida"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            >
-            <option disabled hidden value="">Selecione a unidade  de medida</option>
-            <option>Pontos de Função</option>
-            <option>UST(Unidade de Serviço Técnico)</option>
-            <option>Funcionário</option>
-          </select>
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Valor Unitário:</label>
-          <money3
-            v-model="newItem.valor_unitario"
-            type="text"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            v-bind="moneyConfig"
-            placeholder="Informe o valor do item"
-            maxlength="20"
-          />
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Quantidade Contratada:</label>
-          <input
-            v-model="newItem.saldo_quantidade_contratada"
-            type="number"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            min="0"
-
-                placeholder="Quantidade contratada"
-          />
-        </div>
-      </section>
-      <div class="mt-9 flex justify-end gap-4">
-        <button
-          type="button"
-          @click="closeModalCreateItem"
-          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-        >
-          Fechar
-        </button>
-        <button
-          type="submit"
-          class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
-        >
-          Criar
-        </button>
-      </div>
-    </form>
-  </template>
-</JetDialogModal>
-
-<!-- Modal editar item -->
-  <JetDialogModal
-  :show="modalEditItem"
-  :withouHeader="false"
-  @close="closeModalEditItem"
-  maxWidth="6xl"
-  :modalTitle="isItemViewModal ? 'Visualizar Item' : 'Editar Item'"
->
-  <template #content>
-    <form @submit.prevent="saveEditedItem">
-      <section class="flex flex-col gap-8">
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Item:</label>
-          <input
-            :disabled="isItemViewModal"
-            v-model="editingItem.titulo"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            maxlength="50"
-          />
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Unidade de Medida:</label>
-          <select
-            :disabled="isItemViewModal"
-            v-model="editingItem.unidadeMedida"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            >
-            <option disabled hidden value="">Selecione a situação</option>
-            <option>Pontos de Função</option>
-            <option>UST(Unidade de Serviço Técnico)</option>
-            <option>Funcionário</option>
-          </select>
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Valor Unitário:</label>
-          <money3
-            :disabled="isItemViewModal"
-            v-model="editingItem.valorUnitario"
-            type="text"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            v-bind="moneyConfig"
-            placeholder="Informe o valor do item"
-            maxlength="20"
-          />
-        </div>
-        <div class="flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Quantidade Contratada:</label>
-          <input
-          :disabled="isItemViewModal"
-            v-model="editingItem.saldoQuantidadeContratada"
-            type="number"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
-            min="0"
-                placeholder="Saldo da quantidade contratada"
-          />
-        </div>
-      </section>
-      <div class="mt-9 flex justify-end gap-4">
-        <button
-          type="button"
-          @click="closeModalEditItem"
-          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-        >
-          Fechar
-        </button>
-        <button
-          v-if="!isItemViewModal"
-          type="submit"
-          class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
-        >
-          Salvar
-        </button>
-      </div>
-    </form>
-  </template>
-</JetDialogModal>
-
-<!-- Modal Renovação -->
-<JetDialogModal
-  :show="modalRenovacao"
-  :withouHeader="false"
-  @close="closeModalRenovacao"
-  maxWidth="6xl"
-  :modalTitle="'Renovar contrato'"
->
-<template #content>
-  <form @submit.prevent="createRenovacao">
-      <section>
-        <div class="mt-8 flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Nova vigência:</label>
-          <div class="flex gap-4 items-center w-3/4">
-            <input
+    :show="modalEditFaturamento"
+    :withouHeader="false"
+    @close="closeEditFaturamentoModal"
+    maxWidth="6xl"
+    :modalTitle="
+      isFaturamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
+    "
+  >
+    <template #content>
+      <form @submit.prevent="saveEditedFaturamento">
+        <section class="flex flex-col gap-8">
+          <div class="mt-8 flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Situação:</label>
+            <select
+              :disabled="isFaturamentoViewModal"
+              v-model="editingFaturamento.status"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
-              type="date"
-              placeholder="Digite o inicio do contrato"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
-              v-model="renovacaoData.data_inicio"
-            />
-            <span> até</span>
+            >
+              <option disabled hidden value="">Selecione a situação</option>
+              <option>Aguardando Faturamento</option>
+              <option>Aguardando Pagamento</option>
+              <option>Pago</option>
+            </select>
+          </div>
+
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Projeto:</label>
             <input
-              required
-              type="date"
-              placeholder="Digite o fim do  contrato"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
-              v-model="renovacaoData.data_fim"
+              type="text"
+              placeholder="Informe o nome do projeto"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              :disabled="isFaturamentoViewModal"
+              v-model="editingFaturamento.projetos"
             />
           </div>
-        </div>
-        <div class="mt-8 flex gap-4 justify-between items-center">
-          <label class="font-bold text-3xl">Tipo de renovação:</label>
-          <select
-            v-model="renovacaoData.tipo_renovacao"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            required
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Valor contratado:</label>
+            <span
+              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+              >{{ formatCurrency(contrato.saldoContrato) }}</span
+            >
+          </div>
+           <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Saldo atual:</label>
+            <span
+              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
+              >{{ formatCurrency(calcularSaldoAtual()) }}</span
+            >
+          </div>
+        </section>
+        <div class="mt-8">
+          <table
+            class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
-            <option disabled value="">Selecione o tipo</option>
-            <option value="Acréscimo">Acréscimo</option>
-            <option value="Supressão">Supressão</option>
-          </select>
+            <thead class="h-20 bg-slate-100 border-1">
+              <tr>
+                <th class="text-xl">Data</th>
+                <th class="text-xl">Item</th>
+                <th class="text-xl">Valor unitário</th>
+                <th class="text-xl">Quantidade contratada</th>
+                <th class="text-xl">Disponível</th>
+                <th class="text-xl">Quantidade a ser lançada</th>
+                <th class="text-xl">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="h-24 text-center"
+                v-for="item in editingFaturamento.faturamentoItens"
+                :key="item.id"
+              >
+                <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+                <td class="text-2xl">{{ item.titulo }}</td>
+                <td class="text-2xl">
+                  {{ formatCurrency(item.valorUnitario) }}
+                </td>
+                <td>
+                  <span>
+                    {{ item.saldoQuantidadeContratada }}
+                  </span>
+                </td>
+                <td>
+                  {{ calcularItensRestante(item.contratoItemId, item.saldoQuantidadeContratada ) }}
+                </td>
+                <td>
+                  <input
+                    :disabled="isFaturamentoViewModal"
+                    type="number"
+                    v-model="item.quantidadeItens"
+                    class="border-2 text-center max-w-60"
+                    min="0"
+                  />
+                </td>
+                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                  <span
+                    class="max-w-60"
+                    :class="{
+                      'text-red-500':
+                        saldoMaiorQueContratoEditFaturamento(item),
+                    }"
+                  >
+                    {{ formatCurrency(calcularSaldoItem(item) || 0) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="mt-8 flex gap-4 justify-between items-center">
-        <label class="font-bold text-3xl">Porcentagem de renovação:</label>
-        <input
-          type="number"
-          v-model="renovacaoData.porcentagem_renovacao"
-          :max="25"
-          class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-          required
-        />
-      </div>
-      </section>
 
-    <section class="mt-9 flex justify-end gap-4">
-      <button
-        type="button"
-        @click="closeModalRenovacao"
-        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-      >
-        Fechar
-      </button>
-      <button
-        type="submit"
-        class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
-      >
-        Salvar
-      </button>
-    </section>
-  </form>
-</template>
-</JetDialogModal>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            @click="closeEditFaturamentoModal"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            v-if="!isFaturamentoViewModal"
+            type="submit"
+            :disabled="isSaldoNegativo"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+          >
+            Salvar
+          </button>
+        </div>
+      </form>
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal criar item -->
+  <JetDialogModal
+    :show="modalCreateItem"
+    :withouHeader="false"
+    @close="closeModalCreateItem"
+    maxWidth="6xl"
+    :modalTitle="'Criar Novo Item do Contrato'"
+  >
+    <template #content>
+      <form @submit.prevent="createNewItem">
+        <section class="flex flex-col gap-8">
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Item:</label>
+            <input
+              v-model="newItem.titulo"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              maxlength="50"
+              placeholder="Titulo do item"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Unidade de Medida:</label>
+            <select
+              v-model="newItem.unidade_medida"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled hidden value="">
+                Selecione a unidade de medida
+              </option>
+              <option>Pontos de Função</option>
+              <option>UST(Unidade de Serviço Técnico)</option>
+              <option>Funcionário</option>
+            </select>
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Valor Unitário:</label>
+            <money3
+              v-model="newItem.valor_unitario"
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              v-bind="moneyConfig"
+              placeholder="Informe o valor do item"
+              maxlength="20"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Quantidade Contratada:</label>
+            <input
+              v-model="newItem.saldo_quantidade_contratada"
+              type="number"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              min="0"
+              placeholder="Quantidade contratada"
+            />
+          </div>
+        </section>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            type="button"
+            @click="closeModalCreateItem"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+          >
+            Criar
+          </button>
+        </div>
+      </form>
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal editar item -->
+  <JetDialogModal
+    :show="modalEditItem"
+    :withouHeader="false"
+    @close="closeModalEditItem"
+    maxWidth="6xl"
+    :modalTitle="isItemViewModal ? 'Visualizar Item' : 'Editar Item'"
+  >
+    <template #content>
+      <form @submit.prevent="saveEditedItem">
+        <section class="flex flex-col gap-8">
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Item:</label>
+            <input
+              :disabled="isItemViewModal"
+              v-model="editingItem.titulo"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              maxlength="50"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Unidade de Medida:</label>
+            <select
+              :disabled="isItemViewModal"
+              v-model="editingItem.unidadeMedida"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled hidden value="">Selecione a situação</option>
+              <option>Pontos de Função</option>
+              <option>UST(Unidade de Serviço Técnico)</option>
+              <option>Funcionário</option>
+            </select>
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Valor Unitário:</label>
+            <money3
+              :disabled="isItemViewModal"
+              v-model="editingItem.valorUnitario"
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              v-bind="moneyConfig"
+              placeholder="Informe o valor do item"
+              maxlength="20"
+            />
+          </div>
+          <div class="flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Quantidade Contratada:</label>
+            <input
+              :disabled="isItemViewModal"
+              v-model="editingItem.saldoQuantidadeContratada"
+              type="number"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              min="0"
+              placeholder="Saldo da quantidade contratada"
+            />
+          </div>
+        </section>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            type="button"
+            @click="closeModalEditItem"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            v-if="!isItemViewModal"
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+          >
+            Salvar
+          </button>
+        </div>
+      </form>
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal Renovação -->
+  <JetDialogModal
+    :show="modalRenovacao"
+    :withouHeader="false"
+    @close="closeModalRenovacao"
+    maxWidth="6xl"
+    :modalTitle="'Renovar contrato'"
+  >
+    <template #content>
+      <form @submit.prevent="createRenovacao">
+        <section>
+          <div class="mt-8 flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Nova vigência:</label>
+            <div class="flex gap-4 items-center w-3/4">
+              <input
+                required
+                type="date"
+                placeholder="Digite o inicio do contrato"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+                v-model="renovacaoData.data_inicio"
+              />
+              <span> até</span>
+              <input
+                required
+                type="date"
+                placeholder="Digite o fim do  contrato"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+                v-model="renovacaoData.data_fim"
+              />
+            </div>
+          </div>
+          <div class="mt-8 flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Tipo de renovação:</label>
+            <select
+              v-model="renovacaoData.tipo_renovacao"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled value="">Selecione o tipo</option>
+              <option value="Acréscimo">Acréscimo</option>
+              <option value="Supressão">Supressão</option>
+            </select>
+          </div>
+          <div class="mt-8 flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Porcentagem de renovação:</label>
+            <input
+              type="number"
+              v-model="renovacaoData.porcentagem_renovacao"
+              :max="25"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            />
+          </div>
+        </section>
+
+        <section class="mt-9 flex justify-end gap-4">
+          <button
+            type="button"
+            @click="closeModalRenovacao"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+          >
+            Salvar
+          </button>
+        </section>
+      </form>
+    </template>
+  </JetDialogModal>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, defineEmits } from 'vue';
-import { useRoute, useRouter,RouterLink } from 'vue-router';
-import { Icon } from '@iconify/vue';
-import { api } from '@/services/api';
-import JetDialogModal from '@/components/modals/DialogModal.vue';
-import { toast } from 'vue3-toastify';
-import Swal from 'sweetalert2';
-import { Money3Component } from 'v-money3'
+import { ref, onMounted, computed, defineEmits } from "vue";
+import { useRoute, useRouter, RouterLink } from "vue-router";
+import { Icon } from "@iconify/vue";
+import { api } from "@/services/api";
+import JetDialogModal from "@/components/modals/DialogModal.vue";
+import { toast } from "vue3-toastify";
+import Swal from "sweetalert2";
+import { Money3Component } from "v-money3";
 
 const router = useRouter();
 const route = useRoute();
 const contrato = ref({});
 const faturamentos = ref([]);
-const modalFaturamento = ref(false)
-const selectNovoFaturamento = ref(null)
+const modalFaturamento = ref(false);
+const selectNovoFaturamento = ref(null);
 const modalCreateItem = ref(false);
 let totalFaturado = 0;
 const newItem = ref({
-  titulo: '',
-  unidadeMedida: '',
-  valorUnitario: '',
-  saldoQuantidadeContratada: '',
+  titulo: "",
+  unidadeMedida: "",
+  valorUnitario: "",
+  saldoQuantidadeContratada: "",
 });
 const modalEditItem = ref(false);
 const editingItem = ref({});
@@ -736,24 +834,27 @@ const isItemViewModal = ref(false);
 const projetos = ref("");
 
 // Renovação de contrato
-const modalRenovacao = ref(false)
+const modalRenovacao = ref(false);
 const renovacaoData = ref({
-  data_inicio: '',
-  data_fim: '',
-  tipo_renovacao: '',
-  porcentagem_renovacao: ''
+  data_inicio: "",
+  data_fim: "",
+  tipo_renovacao: "",
+  porcentagem_renovacao: "",
 });
-const emit = defineEmits(['renovacaoCriada'])
+const emit = defineEmits(["renovacaoCriada"]);
 
 const showRenovacaoModal = () => {
   modalRenovacao.value = true;
-}
-
-// console.log(contrato, 'contrato')
+};
 
 const closeModalRenovacao = () => {
   modalRenovacao.value = false;
-  renovacaoData.value = {  data_inicio: '', data_fim: '', tipo_renovacao: '', porcentagem_renovacao: ''};
+  renovacaoData.value = {
+    data_inicio: "",
+    data_fim: "",
+    tipo_renovacao: "",
+    porcentagem_renovacao: "",
+  };
 };
 
 const createRenovacao = async () => {
@@ -762,33 +863,34 @@ const createRenovacao = async () => {
     data_inicio: renovacaoData.value.data_inicio,
     data_fim: renovacaoData.value.data_fim,
     tipo_renovacao: renovacaoData.value.tipo_renovacao,
-    porcentagem_renovacao: renovacaoData.value.porcentagem_renovacao
-  }
+    porcentagem_renovacao: renovacaoData.value.porcentagem_renovacao,
+  };
   try {
-    const response = await api.post(`/contratos/${contratoId}/renovar`, payload)
-    .then(response => {
-      toast("Renovação criada com sucesso!", {
-        theme: "colored",
-        type: "success",
+    const response = await api
+      .post(`/contratos/${contratoId}/renovar`, payload)
+      .then((response) => {
+        toast("Renovação criada com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
       });
-    });
-    emit('renovacaoCriada');
-    closeModalRenovacao()
+    emit("renovacaoCriada");
+    closeModalRenovacao();
   } catch (error) {
     toast("Não foi possível criar a renovação!", {
-        theme: "colored",
-        type: "error",
-      });
+      theme: "colored",
+      type: "error",
+    });
     console.error("Erro ao criar renovação:", error);
   }
-}
+};
 
 const moneyConfig = {
   precision: 2,
-  decimal: ',',
-  thousands: '.',
-  prefix: 'R$ ',
-  masked: false
+  decimal: ",",
+  thousands: ".",
+  prefix: "R$ ",
+  masked: false,
 };
 
 const deleteContrato = (contratoAtual) => {
@@ -829,19 +931,22 @@ const closeModal = () => {
 
 const ExibirModalFaturamento = () => {
   if (contrato.value.contratoItens.length === 0) {
-    toast("Não é possível adicionar um novo faturamento. Não há itens no contrato.", {
-      theme: "colored",
-      type: "error",
-    });
+    toast(
+      "Não é possível adicionar um novo faturamento. Não há itens no contrato.",
+      {
+        theme: "colored",
+        type: "error",
+      }
+    );
     return;
   }
   modalFaturamento.value = true;
 };
 
 const isSaldoNegativo = computed(() => {
-  console.log(calcularSaldoAtual(), 'saldo')
-  console.log( contrato.value.contratoItens, 'itens')
-  return contrato.value.contratoItens.some(item => calcularSaldoAtual(item) < 0);
+  return contrato.value.contratoItens.some(
+    (item) => calcularSaldoAtual(item) < 0
+  );
 });
 
 const closeModalFaturamento = () => {
@@ -859,11 +964,11 @@ const resetForm = () => {
 
 const createFaturamento = async () => {
   let itensQuantidadePreenchida = contrato.value.contratoItens
-    .filter((item) => item.quantidadeItens)
+    // .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
-  }));
+    }));
   if (itensQuantidadePreenchida.length === 0) {
     toast("Adicione pelo menos um item para criar o faturamento.", {
       theme: "colored",
@@ -872,17 +977,32 @@ const createFaturamento = async () => {
     return;
   }
 
-    const saldoMaiorQuantidadeContratada = contrato.value.contratoItens
-    .some(item => {
+  const saldoMaiorQuantidadeContratada = contrato.value.contratoItens.some(
+    (item) => {
       return item.quantidadeItens > item.saldoQuantidadeContratada;
-    })
+    }
+  );
 
-    if (saldoMaiorQuantidadeContratada) {
-    toast.error('A quantidade dos items não pode ultrapassar a quantidade contratada.');
+  if (saldoMaiorQuantidadeContratada) {
+    toast.error(
+      "A quantidade dos items não pode ultrapassar a quantidade contratada."
+    );
     return;
   }
 
-  let novoSaldoContrato = calcularSaldoAtualContrato() - calcularSaldoFaturamentoItens(itensQuantidadePreenchida);
+  const quantidadeExcedida = contrato.value.contratoItens.some(item => {
+    const quantidadeRestante = calcularItensRestante(item.id, item.saldoQuantidadeContratada);
+    return item.quantidadeItens > quantidadeRestante;
+  });
+
+  if (quantidadeExcedida) {
+    toast.error('A quantidade dos itens não pode ultrapassar a quantidade disponível.');
+    return;
+  }
+
+  let novoSaldoContrato =
+    calcularSaldoAtualContrato() -
+    calcularSaldoFaturamentoItens(itensQuantidadePreenchida);
 
   if (novoSaldoContrato < 0) {
     toast("O saldo contratado não pode ser excedido.", {
@@ -895,19 +1015,17 @@ const createFaturamento = async () => {
   let payload = {
     status: selectNovoFaturamento.value,
     itens: itensQuantidadePreenchida,
-    projetos: projetos.value
-
+    projetos: projetos.value,
   };
   try {
-    const response = await api.post(
-      `/contratos/${contrato.value.id}/faturamentos`,
-      payload
-    ).then(response => {
-      toast("Faturamento criado com sucesso!", {
-        theme: "colored",
-        type: "success",
+    const response = await api
+      .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
+      .then((response) => {
+        toast("Faturamento criado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
       });
-    });
     resetForm();
     fetchContrato(route.params.id);
   } catch (error) {
@@ -923,10 +1041,10 @@ onMounted(() => {
   const contratoId = route.params.id;
   fetchContrato(contratoId);
   window.scroll({
-  top: 0,
-  // left: 100,
-  // behavior: "smooth",
-});
+    top: 0,
+    // left: 100,
+    // behavior: "smooth",
+  });
 });
 
 const fetchContrato = async (id) => {
@@ -1041,41 +1159,26 @@ const saldoMaiorQueContratoEditFaturamento = (item) => {
   return saldoAtual < 0;
 };
 
-// const calcularValorTotalFaturamento = (valor) => {
-
-//   totalFaturado += valor
-//    return totalFaturado
-// }
-
 const calcularSaldoItem = (item) => {
   let valor = 0;
-  if (!item.quantidadeItens){
-     item.quantidadeItens = 0
+  if (!item.quantidadeItens) {
+    item.quantidadeItens = 0;
   }
 
-  // console.log(item.valorUnitario, 'valor unitário')
-  // console.log(item.quantidadeItens, 'quantidadeItems')
-  valor = item.valorUnitario * item.quantidadeItens ;
-  // totalFaturado = calcularValorTotalFaturamento(valor)
-  // console.log(valor, 'valor')
+  valor = item.valorUnitario * item.quantidadeItens;
 
-  // console.log(typeof totalFaturado,  'tipo total  faturado')
-  // console.log( totalFaturado,  'total  faturado')
-
-  return valor
-}
+  return valor;
+};
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
-
   faturamento.forEach(item => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
     const valorTotalItem = quantidadeItens * valorUnitario;
     saldoTotal += valorTotalItem;
   });
-
-  return parseFloat(saldoTotal.toFixed(2));
+  return saldoTotal;
 }
 
 const calcularSaldoDisponivel = (faturamento) => {
@@ -1120,35 +1223,30 @@ const calcularSaldoDisponivel = (faturamento) => {
   };
 };
 
-const calcularItensRestantes  = (idItem, quantidadeContratada) => {
-  let quantidadeUtilizada = 0
-  let quantidadeRestante = 0
+const calcularItensRestante = (idItem, quantidadeContratada) => {
+  let quantidadeUtilizada = 0;
+  let quantidadeRestante = 0;
 
-  contrato.value.faturamentos.forEach((faturamento)=> {
-       faturamento.faturamentoItens.forEach((faturamentoItem)=>{
-          if (idItem === faturamentoItem.contratoItemId){
-             quantidadeUtilizada += parseFloat(faturamentoItem.quantidadeItens)
-          }
-       })
-
-
-  })
-  quantidadeRestante = parseFloat(quantidadeContratada) -  quantidadeUtilizada
-  return quantidadeRestante
-}
+  contrato.value.faturamentos.forEach((faturamento) => {
+    faturamento.faturamentoItens.forEach((faturamentoItem) => {
+      if (idItem === faturamentoItem.contratoItemId) {
+        quantidadeUtilizada += parseFloat(faturamentoItem.quantidadeItens);
+      }
+    });
+  });
+  quantidadeRestante = parseFloat(quantidadeContratada) - quantidadeUtilizada;
+  return quantidadeRestante;
+};
 
 const calcularQuantidadeItens = (faturamentoItens) => {
-  console.log(faturamentoItens, 'faturamento  items')
   let saldoTotal = 0;
 
-
-    faturamentoItens.forEach(item => {
-      const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
-      saldoTotal += quantidadeItens;
-    });
-    return parseFloat(saldoTotal.toFixed(2));
-
-  }
+  faturamentoItens.forEach((item) => {
+    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
+    saldoTotal += quantidadeItens;
+  });
+  return parseFloat(saldoTotal.toFixed(2));
+};
 
 // Editar Item do contrato
 
@@ -1169,46 +1267,73 @@ const closeModalEditItem = () => {
 };
 
 const saveEditedItem = async () => {
-  const itemIndex = contrato.value.contratoItens.findIndex((i) => i.id === editingItem.value.id);
+  const contratoId = route.params.id;
+  const itemIndex = contrato.value.contratoItens.findIndex(
+    (i) => i.id === editingItem.value.id
+  );
   let itemEditado = { ...editingItem.value };
 
-  let totalItensQuantidadeContratada = 0;
-  contrato.value.contratoItens.forEach(item => {
-    if (item.id !== itemEditado.id) {
-      totalItensQuantidadeContratada += parseInt(item.saldoQuantidadeContratada);
-    }
-  });
+  let valorTotalItens = 0;
+  let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
 
-  const saldoContratoRestante = contrato.value.saldoContrato - totalItensQuantidadeContratada;
+  if (contrato.value.contratoItens) {
+    contrato.value.contratoItens.forEach((item) => {
+      if (item.id !== itemEditado.id) {
+        valorTotalItens +=
+          parseFloat(item.saldoQuantidadeContratada) *
+          parseFloat(item.valorUnitario);
+      }
+    });
+  } else {
+    console.warn("Itens de contrato não definidos.");
+  }
 
-  if (saldoContratoRestante < itemEditado.saldoQuantidadeContratada) {
-    toast.error(`Saldo contratado excedido. Saldo restante: ${saldoContratoRestante}`);
+  let itemEditadoQuantidade = parseFloat(itemEditado.saldoQuantidadeContratada);
+  let itemEditadoValorUnitario = parseFloat(itemEditado.valorUnitario);
+
+  valorTotalItens += itemEditadoQuantidade * itemEditadoValorUnitario;
+
+  if (valorTotalItens > valorContratado) {
+    toast.error(
+      `Valor total do item excedendo o valor contratado em R$ ${
+        valorTotalItens - valorContratado
+      }`
+    );
     return;
   }
 
-  let obj_editado = {
+  if (itemEditado.saldoQuantidadeContratada == 0) {
+    toast.error(`quantidade contratada não pode ser zero.`);
+    return;
+  } else if (itemEditado.valorUnitario == 0) {
+    toast.error(`Valor unitário não pode ser zero.`);
+    return;
+  }
+
+  let objEditado = {
     titulo: itemEditado.titulo,
     unidade_medida: itemEditado.unidadeMedida,
     valor_unitario: itemEditado.valorUnitario,
-    saldo_quantidade_contratada: itemEditado.saldoQuantidadeContratada
-  }
+    saldo_quantidade_contratada: itemEditado.saldoQuantidadeContratada,
+  };
 
   try {
-    const response = await api.put(`/contratos/items/${itemEditado.id}`, obj_editado);
-
+    const response = await api.put(
+      `/contratos/items/${itemEditado.id}`,
+      objEditado
+    );
     toast("Item alterado com sucesso!", {
       theme: "colored",
       type: "success",
     });
-
-    fetchContrato(route.params.id);
+    fetchContrato(contratoId);
     closeModalEditItem();
   } catch (error) {
     toast("Não foi possível alterar o item!", {
       theme: "colored",
       type: "error",
     });
-    console.error('Erro ao alterar item', error);
+    console.error("Erro ao alterar item", error);
   }
 };
 
@@ -1228,7 +1353,10 @@ const deleteItem = async (itemId) => {
       try {
         const response = await api.delete(`/contratos/items/${itemId}`);
         fetchContrato(route.params.id);
-        toast("Item deletado com sucesso!", { theme: "colored", type: "success" });
+        toast("Item deletado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
       } catch (error) {
         toast("Erro ao deletar item!", { theme: "colored", type: "error" });
         console.error("Erro ao deletar item:", error);
@@ -1246,40 +1374,60 @@ const openCreateItemModal = () => {
 const closeModalCreateItem = () => {
   modalCreateItem.value = false;
   newItem.value = {
-    titulo: '',
-    unidadeMedida: '',
-    valorUnitario: '',
-    saldoQuantidadeContratada: '',
+    titulo: "",
+    unidadeMedida: "",
+    valorUnitario: "",
+    saldoQuantidadeContratada: "",
   };
 };
 
 const createNewItem = async () => {
-  //Verificar para que a soma não ultrapasse o saldo do contrato
-  let valorTotalItems = 0;
-  console.log(contrato.value.contratoItens, 'contratoItems')
-  contrato.value.contratoItens.forEach(item => valorTotalItems += parseFloat(item.saldoQuantidadeContratada) * parseFloat(item.valorUnitario) )
-  
-  console.log(valorTotalItems, 'total contratada')
-  console.log( contrato.value.saldoContrato,  'saldo contrato')
+  const contratoId = route.params.id;
+  let valorTotalItens = 0;
+  let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
 
-  const saldoContratoRestante =  valorTotalItems;
-  console.log(saldoContratoRestante, 'saldo  restante')
-  console.log(newItem.value.saldoQuantidadeContratada)
-  console.log(newItem.value.valorUnitario)
-  // console.log(newItem.value.saldoQuantidadeContratada  * newItem.value.valorUnitario, 'valor faltando')
+  if (contrato.value.contratoItens) {
+    contrato.value.contratoItens.map((item) => {
+      valorTotalItens +=
+        parseFloat(item.saldoQuantidadeContratada) *
+        parseFloat(item.valorUnitario);
+    });
+  } else {
+    console.warn("itens de contrato não definidos.");
+  }
 
-  if (contrato.value.saldoContrato < valorTotalItems) {
-    toast.error(`Saldo contratado excedido. Saldo restante: ${saldoContratoRestante}`);
+  let novoItemQuantidade = newItem.value.saldo_quantidade_contratada;
+  let novoItemValorUnitario = newItem.value.valor_unitario;
+
+  valorTotalItens += novoItemQuantidade * novoItemValorUnitario;
+
+  if (valorTotalItens > valorContratado) {
+    toast.error(
+      `Valor total do item excedendo o valor contratado em R$ ${
+        valorTotalItens - valorContratado
+      }`
+    );
+    return;
+  }
+
+  if (newItem.saldoQuantidadeContratada == 0) {
+    toast.error(`quantidade contratada não pode ser zero.`);
+    return;
+  } else if (newItem.valorUnitario == 0) {
+    toast.error(`Valor unitário não pode ser zero.`);
     return;
   }
 
   try {
-    const response = await api.post(`/contratos/${route.params.id}/items`, newItem.value);
+    const response = await api.post(
+      `/contratos/${route.params.id}/items`,
+      newItem.value
+    );
     toast("Item criado com sucesso!", {
       theme: "colored",
       type: "success",
     });
-    fetchContrato(route.params.id)
+    fetchContrato(contratoId);
     closeModalCreateItem();
   } catch (error) {
     toast("Erro ao criar item!", {
@@ -1311,41 +1459,67 @@ const closeEditFaturamentoModal = () => {
 
 const saveEditedFaturamento = async () => {
   let itensQuantidadePreenchida = editingFaturamento.value.faturamentoItens
-    .filter(item => item.quantidadeItens)
-    .map(item => ({
+    // .filter((item) => item.quantidadeItens)
+    .map((item) => ({
       id: item.id,
-      quantidade_itens: item.quantidadeItens.toString()
+      quantidade_itens: item.quantidadeItens.toString(),
     }));
 
-  if (itensQuantidadePreenchida.length === 0){
-    toast("Adicione pelo menos um item para criar o faturamento.", {
+    const todosQuantidadeZero = itensQuantidadePreenchida.every(item => item.quantidade_itens === '0');
+
+    if (todosQuantidadeZero) {
+      toast.error("Adicione pelo menos um item ao faturamento.");
+      return;
+}
+
+  if (itensQuantidadePreenchida.length === 0) {
+    toast("Adicione pelo menos um item para editar o faturamento.", {
       theme: "colored",
       type: "error",
     });
     return;
   }
 
-  const saldoMaiorQuantidadeContratada = editingFaturamento.value.faturamentoItens.some(item => { return item.quantidadeItens > item.saldoQuantidadeContratada})
+  const saldoMaiorQuantidadeContratada =
+    editingFaturamento.value.faturamentoItens.some((item) => {
+      return item.quantidadeItens > item.saldoQuantidadeContratada;
+    });
 
-  if (saldoMaiorQuantidadeContratada) { toast.error('A quantidade  de items não pode ultrapassar a quantidade contratada.'); return;}
+  if (saldoMaiorQuantidadeContratada) {
+    toast.error(
+      "A quantidade a ser lançada não pode ultrapassar a quantidade contratada."
+    );
+    return;
+  }
+
+  const quantidadeExcedida = editingFaturamento.value.faturamentoItens.some(item => {
+    const quantidadeRestante = calcularItensRestante(item.id, item.saldoQuantidadeContratada);
+    return item.quantidadeItens > quantidadeRestante;
+  });
+
+  if (quantidadeExcedida) {
+    toast.error('A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item.');
+    return;
+  }
 
   let payload = {
     status: editingFaturamento.value.status,
     itens: itensQuantidadePreenchida,
-    projetos: editingFaturamento.value.projetos
+    projetos: editingFaturamento.value.projetos,
   };
 
   try {
-    const response = await api.put(`/faturamentos/${editingFaturamento.value.id}`, payload)
-    .then((response) => {
-      Object.assign(editingFaturamento.value);
-      toast("Faturamento atualizado com sucesso!", {
-        theme: "colored",
-        type: "success",
+    const response = await api
+      .put(`/faturamentos/${editingFaturamento.value.id}`, payload)
+      .then((response) => {
+        Object.assign(editingFaturamento.value);
+        toast("Faturamento atualizado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+        modalEditFaturamento.value = false;
+        fetchContrato(route.params.id);
       });
-      modalEditFaturamento.value = false;
-      fetchContrato(route.params.id);
-    })
   } catch (error) {
     console.error(error);
   }
@@ -1387,6 +1561,4 @@ const saveEditedFaturamento = async () => {
 .btn-item:hover {
   background-color: #0ea5e9;
 }
-
-
 </style>
