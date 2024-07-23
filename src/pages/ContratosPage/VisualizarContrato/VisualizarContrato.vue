@@ -308,7 +308,7 @@
     :show="modalFaturamento"
     :withouHeader="false"
     @close="closeModalFaturamento"
-    maxWidth="6xl"
+    maxWidth="7xl"
     :modalTitle="' Criar Lançamento'"
   >
     <template #content>
@@ -361,7 +361,7 @@
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
-                <th class="text-xl">Quantidade disponível</th>
+                <th class="text-xl">Disponível</th>
                 <th class="text-xl">Quantidade a ser lançada</th>
                 <th class="text-xl">Total</th>
               </tr>
@@ -443,7 +443,7 @@
     :show="modalEditFaturamento"
     :withouHeader="false"
     @close="closeEditFaturamentoModal"
-    maxWidth="6xl"
+    maxWidth="7xl"
     :modalTitle="
       isFaturamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
     "
