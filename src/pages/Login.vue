@@ -62,6 +62,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { api } from "@/services/api";
 import { isAuthenticated } from "@/state/auth";
+import { toast } from 'vue3-toastify';
 
 const email = ref("");
 const password = ref("");
@@ -78,6 +79,10 @@ const login = async () => {
     router.push("/");
   } catch (error) {
     console.error(error);
+    toast("Email ou Senha incorretos!", {
+        theme: "colored",
+        type: "error",
+      });
   }
 };
 

@@ -5,7 +5,8 @@ const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
 const FormContratosEdit = () =>
   import("../components/form/FormCadastrosEdit.vue");
-const ViewContrato = () => import("../components/list/ViewContrato.vue");
+// const ViewContrato = () => import("../components/list/ViewContrato.vue");
+const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
 import Register from "@/pages/Register.vue";
 import Login from "@/pages/Login.vue";
 
@@ -45,7 +46,7 @@ const routes = [
   {
     path: "/visualizar/contratos/:id",
     name: "visualizarContrato",
-    component: ViewContrato,
+    component: ViewContratoTabs,
     meta: { requiresAuth: true },
   },
   {

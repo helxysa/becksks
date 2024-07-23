@@ -4,21 +4,6 @@
       <div class="shadow-lg rounded-lg overflow-hidden cursor-pointer hover:bg-slate-300 mt-12">
         <section class="relative">
           <img class="relative" src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" />
-
-          <div class="absolute top-0 right-0 mt-4 mr-4">
-            <div v-if="contrato?.faturamentos?.length">
-              <span
-                class="shadow-lg border-2 p-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center"
-                :class="{
-                  'bg-green-200 border-green-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Pago',
-                  'bg-yellow-200 border-yellow-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Pagamento',
-                  'bg-blue-200 border-blue-400': contrato.faturamentos[contrato.faturamentos.length - 1].status === 'Aguardando Faturamento',
-                }"
-              >
-                {{ contrato.faturamentos[contrato.faturamentos.length - 1].status }}
-              </span>
-            </div>
-          </div>
         </section>
 
         <section>
@@ -38,9 +23,6 @@
                   class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 relative"
                 >
               </div>
-              <!-- <span class="text-black text-center text-2xl absolute inset-0 flex items-center justify-center">
-                {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
-              </span> -->
               </div>
             </div>
           </section>
@@ -51,7 +33,7 @@
               <span>{{ formatDate(contrato.dataInicio) }}</span>
               <span>até</span>
               <span>{{ formatDate(contrato.dataFim) }}</span>
-            </div>         
+            </div>
             <div class="flex gap-2">
               <span class="font-semibold">Valor contratado:</span>
               <span>{{ formatCurrency(contrato.saldoContrato) }}</span>
@@ -84,11 +66,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, watch,  } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { api } from "@/services/api";
 
-
+const route = useRoute();
 const router = useRouter();
 const contratos = ref([]);
 
@@ -155,7 +137,6 @@ const fetchContratos = async () => {
     const response = await api.get("/contratos");
     contratos.value = response.data;
     contratos.value.reverse();
-    console.log(contratos.value, "contratos");
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
@@ -165,7 +146,11 @@ onMounted(() => {
   fetchContratos();
 });
 
-watchEffect(() => {
-  fetchContratos();
-});
+watch(
+  fetchContratos()
+);
+
+// watchEffect(() => {
+//   fetchContratos();
+// });
 </script>
