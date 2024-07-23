@@ -1,9 +1,9 @@
-<template>
+<template>  
   <div class="flex justify-end gap-4 mb-20">
     <button
       @click="showRenovacaoModal()"
       class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato || formatDate(contrato.dataFim) <= formatDate(new Date())"
+      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato || formatDate(contrato.dataFim) <= new Date()"
     >
       Renovar
     </button>
