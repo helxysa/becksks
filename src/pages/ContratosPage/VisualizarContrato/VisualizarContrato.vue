@@ -27,7 +27,7 @@
   </div>
 
   <section class="mb-4">
-    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
       <div class="flex items-center gap-4">
         <label class="font-semibold w-60 dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
