@@ -1,9 +1,12 @@
-<template>  
+<template>
   <div class="flex justify-end gap-4 mb-20">
     <button
       @click="showRenovacaoModal()"
       class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >= contrato.saldoContrato || formatDate(contrato.dataFim) <= new Date()"
+      v-if="
+        calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >=
+          contrato.saldoContrato || formatDate(contrato.dataFim) <= new Date()
+      "
     >
       Renovar
     </button>
@@ -23,40 +26,43 @@
   </div>
 
   <section class="mb-4">
-    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
+    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60 dark:text-white">Cliente:</label>
+        <label class="font-semibold dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
           contrato.nomeCliente
         }}</span>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="underline underline-offset-4"
-          ><strong>Vigência:</strong> {{ formatDate(contrato.dataInicio) }} até
-          {{ formatDate(contrato.dataFim) }}</span
+      <div class="flex items-center gap-4">
+        <span
+          ><strong>Vigência:</strong>
+          <span class="underline underline-offset-4 pl-4"
+            >{{ formatDate(contrato.dataInicio) }} até
+            {{ formatDate(contrato.dataFim) }}</span
+          ></span
         >
       </div>
 
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Fiscal:</label>
+        <label class="font-semibold ">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
           contrato.fiscal
         }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Ponto Focal:</label>
+        <label class="font-semibold ">Ponto Focal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
           contrato.pontoFocal
         }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Cidade:</label>
+        <label class="font-semibold">Cidade:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
           contrato.cidade
         }}</span>
       </div>
       <div class="flex items-center gap-4">
-        <label class="font-semibold w-60">Objeto do Contrato:</label>
+        <label class="font-semibold">Objeto do Contrato:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
           contrato.objetoContrato
         }}</span>
@@ -72,7 +78,7 @@
   </section>
   <section class="flex gap-3 mt-6 flex-wrap 2xl:gap-x-24">
     <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
     >
       <p class="w-full bg-blue-800 h-4"></p>
       <div class="flex flex-col items-center h-full justify-center">
@@ -83,7 +89,7 @@
       </div>
     </div>
     <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
     >
       <p class="w-full bg-yellow-300 h-4"></p>
       <div class="flex flex-col items-center h-full justify-center">
@@ -99,7 +105,7 @@
       </div>
     </div>
     <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
     >
       <p class="w-full bg-gray-300 h-4"></p>
       <div class="flex flex-col items-center h-full justify-center">
@@ -114,7 +120,7 @@
       </div>
     </div>
     <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
     >
       <p class="w-full bg-red-800 h-4"></p>
       <div class="flex flex-col items-center h-full justify-center">
@@ -129,7 +135,7 @@
       </div>
     </div>
     <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[250px] h-[120px]"
+      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
     >
       <p class="w-full bg-green-600 h-4"></p>
       <div class="flex flex-col items-center h-full justify-center">
@@ -191,9 +197,7 @@
           </td>
           <!-- {{ (contrato?.faturamentos?.faturamentoItens) }} -->
           <td class="text-2xl">
-            {{
-              calcularItensRestante(item.id, item.saldoQuantidadeContratada)
-            }}
+            {{ calcularItensRestante(item.id, item.saldoQuantidadeContratada) }}
           </td>
           <td class="flex justify-center mt-4 gap-2">
             <button type="button" @click="openItemViewModal(item)">
@@ -479,7 +483,7 @@
               >{{ formatCurrency(contrato.saldoContrato) }}</span
             >
           </div>
-           <div class="flex gap-4 justify-between items-center">
+          <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Saldo atual:</label>
             <span
               class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
@@ -519,7 +523,12 @@
                   </span>
                 </td>
                 <td>
-                  {{ calcularItensRestante(item.contratoItemId, item.saldoQuantidadeContratada ) }}
+                  {{
+                    calcularItensRestante(
+                      item.contratoItemId,
+                      item.saldoQuantidadeContratada
+                    )
+                  }}
                 </td>
                 <td>
                   <input
@@ -791,7 +800,7 @@
           </button>
           <button
             type="submit"
-            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-item w-40"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
           >
             Salvar
           </button>
@@ -944,6 +953,9 @@ const ExibirModalFaturamento = () => {
 };
 
 const isSaldoNegativo = computed(() => {
+  console.log(calcularSaldoAtual(), 'saldo')
+  console.log( contrato.value.contratoItens, 'itens')
+
   return contrato.value.contratoItens.some(
     (item) => calcularSaldoAtual(item) < 0
   );
@@ -990,13 +1002,18 @@ const createFaturamento = async () => {
     return;
   }
 
-  const quantidadeExcedida = contrato.value.contratoItens.some(item => {
-    const quantidadeRestante = calcularItensRestante(item.id, item.saldoQuantidadeContratada);
+  const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
+    const quantidadeRestante = calcularItensRestante(
+      item.id,
+      item.saldoQuantidadeContratada
+    );
     return item.quantidadeItens > quantidadeRestante;
   });
 
   if (quantidadeExcedida) {
-    toast.error('A quantidade dos itens não pode ultrapassar a quantidade disponível.');
+    toast.error(
+      "A quantidade dos itens não pode ultrapassar a quantidade disponível."
+    );
     return;
   }
 
@@ -1117,7 +1134,9 @@ const calcularSaldoAtual = () => {
   let saldoTotal = calcularSaldoAtualContrato();
 
   contrato.value.contratoItens.forEach((item) => {
-    const valorTotalItem = item.quantidadeItens ? item.quantidadeItens * item.valorUnitario  : 0;
+    const valorTotalItem = item.quantidadeItens
+      ? item.quantidadeItens * item.valorUnitario
+      : 0;
 
     saldoTotal -= valorTotalItem;
   });
@@ -1129,7 +1148,9 @@ const calcularSaldoAtualEditFaturamento = () => {
   let saldoTotal = contrato.value.saldoContrato;
 
   editingFaturamento.value.faturamentoItens.forEach((item) => {
-    const valorTotalItem = item.quantidadeItens ? (item.quantidadeItens * item.valorUnitario) : 0;
+    const valorTotalItem = item.quantidadeItens
+      ? item.quantidadeItens * item.valorUnitario
+      : 0;
 
     saldoTotal -= valorTotalItem;
   });
@@ -1172,14 +1193,14 @@ const calcularSaldoItem = (item) => {
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
-  faturamento.forEach(item => {
+  faturamento.forEach((item) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
     const valorTotalItem = quantidadeItens * valorUnitario;
     saldoTotal += valorTotalItem;
   });
   return saldoTotal;
-}
+};
 
 const calcularSaldoDisponivel = (faturamento) => {
   let saldoTotal = 0;
@@ -1465,12 +1486,14 @@ const saveEditedFaturamento = async () => {
       quantidade_itens: item.quantidadeItens.toString(),
     }));
 
-    const todosQuantidadeZero = itensQuantidadePreenchida.every(item => item.quantidade_itens === '0');
+  const todosQuantidadeZero = itensQuantidadePreenchida.every(
+    (item) => item.quantidade_itens === "0"
+  );
 
-    if (todosQuantidadeZero) {
-      toast.error("Adicione pelo menos um item ao faturamento.");
-      return;
-}
+  if (todosQuantidadeZero) {
+    toast.error("Adicione pelo menos um item ao faturamento.");
+    return;
+  }
 
   if (itensQuantidadePreenchida.length === 0) {
     toast("Adicione pelo menos um item para editar o faturamento.", {
@@ -1492,13 +1515,20 @@ const saveEditedFaturamento = async () => {
     return;
   }
 
-  const quantidadeExcedida = editingFaturamento.value.faturamentoItens.some(item => {
-    const quantidadeRestante = calcularItensRestante(item.id, item.saldoQuantidadeContratada);
-    return item.quantidadeItens > quantidadeRestante;
-  });
+  const quantidadeExcedida = editingFaturamento.value.faturamentoItens.some(
+    (item) => {
+      const quantidadeRestante = calcularItensRestante(
+        item.id,
+        item.saldoQuantidadeContratada
+      );
+      return item.quantidadeItens > quantidadeRestante;
+    }
+  );
 
   if (quantidadeExcedida) {
-    toast.error('A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item.');
+    toast.error(
+      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item."
+    );
     return;
   }
 
@@ -1524,7 +1554,6 @@ const saveEditedFaturamento = async () => {
     console.error(error);
   }
 };
-
 </script>
 
 <style scoped>
