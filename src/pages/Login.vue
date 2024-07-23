@@ -79,7 +79,7 @@ const login = async () => {
     router.push("/");
   } catch (error) {
     console.error(error);
-    toast("Email ou  Senha incorretos!", {
+    toast("Email ou Senha incorretos!", {
         theme: "colored",
         type: "error",
       });
