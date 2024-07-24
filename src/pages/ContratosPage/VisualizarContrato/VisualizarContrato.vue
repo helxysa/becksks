@@ -247,7 +247,7 @@
           <th class="text-xl">Data</th>
           <th class="text-xl">Projeto</th>
 
-          <th class="text-xl">Quantidade itens</th>
+          <!-- <th class="text-xl">Quantidade itens</th> -->
           <th class="text-xl">Total do Lançamento</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
@@ -263,9 +263,9 @@
         >
           <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
           <td class="text-2xl">{{ faturamento.projetos }}</td>
-          <td class="text-2xl">
+          <!-- <td class="text-2xl">
             {{ calcularQuantidadeItens(faturamento.faturamentoItens) }}
-          </td>
+          </td> -->
           <td class="text-2xl">
             {{
               formatCurrency(
@@ -302,6 +302,90 @@
       </tbody>
     </table>
   </section>
+  <section>
+    <div class="flex justify-between mt-12">
+      <h1 class="text-4xl font-medium">Faturamentos</h1>
+      <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
+        Novo Faturamento
+        <span class="absolute right-[3px]">
+          <Icon
+            icon="material-symbols-light:add"
+            height="25"
+            class="text-zinc-50"
+          />
+        </span>
+      </button>
+    </div>
+    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+      <thead class="h-20 bg-slate-100 border-1">
+        <tr>
+          <th class="text-xl">Data</th>
+          <th class="text-xl">Nota Fiscal</th>         
+          <th class="text-xl">Total do Faturamento</th>         
+          <th class="text-xl">Situação</th>      
+          <th class="text-xl">Ações</th>
+        </tr>
+      </thead>
+      <tbody v-if="contrato.faturamentos">
+        <tr
+          class="h-28 text-center"
+          v-for="faturamento in faturamentosOrdenados"
+          :key="faturamento.id"
+        >
+          <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
+          <td class="text-2xl">{{  }}</td>
+          
+          <td class="text-2xl">
+            {{
+              formatCurrency(
+                calcularSaldoFaturamentoItens(faturamento.faturamentoItens)
+              )
+            }}
+          </td>
+          <td class="text-2xl text-center">
+            <!-- <div class="flex justify-center">
+              <span
+              class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                :class="{
+                  'bg-green-200 border-green-400': faturamento.status === 'Pago',
+                  'bg-yellow-200 border-yellow-400': faturamento.status === 'Aguardando Pagamento',
+                  'bg-blue-200 border-blue-400': faturamento.status === 'Aguardando Faturamento',
+                }"
+                >
+                {{ faturamento.status }}
+            </span>
+          </div> -->
+          </td>
+
+          <td class="text-2xl">
+            <div class="flex justify-center items-center gap-2">
+              <span @click="openViewFaturamentoModal(faturamento)">
+                <Icon
+                  icon="ph:eye"
+                  height="20"
+                  class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+              <span @click="openEditFaturamentoModal(faturamento)">
+                <Icon
+                  icon="bx:edit"
+                  height="20"
+                  class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+              <span @click="deleteFaturamento(faturamento.id)">
+                <Icon
+                  icon="ph:trash"
+                  height="20"
+                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
   <!-- Modal criar Faturamento -->
   <JetDialogModal
@@ -309,12 +393,12 @@
     :withouHeader="false"
     @close="closeModalFaturamento"
     maxWidth="7xl"
-    :modalTitle="' Criar Lançamento'"
+    :modalTitle="' Criar Faturamento'"
   >
     <template #content>
       <form @submit.prevent="createFaturamento">
         <section class="flex flex-col gap-8">
-          <div class="mt-8 flex gap-4 justify-between items-center">
+          <!-- <div class="mt-8 flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
             <select
               v-model="selectNovoFaturamento"
@@ -326,7 +410,7 @@
               <option>Aguardando Pagamento</option>
               <option>Pago</option>
             </select>
-          </div>
+          </div> -->
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Projeto:</label>
             <input
@@ -336,7 +420,7 @@
               v-model="projetos"
             />
           </div>
-          <div class="flex gap-4 justify-between items-center">
+          <!-- <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor contratado:</label>
             <span
               class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
@@ -349,7 +433,7 @@
               class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
               >{{ formatCurrency(calcularSaldoAtual()) }}</span
             >
-          </div>
+          </div> -->
         </section>
         <div class="mt-8">
           <table
@@ -445,13 +529,13 @@
     @close="closeEditFaturamentoModal"
     maxWidth="7xl"
     :modalTitle="
-      isFaturamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
+      isFaturamentoViewModal ? 'Visualizar Faturamento' : 'Editar Faturamento'
     "
   >
     <template #content>
       <form @submit.prevent="saveEditedFaturamento">
         <section class="flex flex-col gap-8">
-          <div class="mt-8 flex gap-4 justify-between items-center">
+          <!-- <div class="mt-8 flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
             <select
               :disabled="isFaturamentoViewModal"
@@ -464,7 +548,7 @@
               <option>Aguardando Pagamento</option>
               <option>Pago</option>
             </select>
-          </div>
+          </div> -->
 
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Projeto:</label>
@@ -476,7 +560,7 @@
               v-model="editingFaturamento.projetos"
             />
           </div>
-          <div class="flex gap-4 justify-between items-center">
+          <!-- <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor contratado:</label>
             <span
               class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
@@ -489,7 +573,7 @@
               class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
               >{{ formatCurrency(calcularSaldoAtual()) }}</span
             >
-          </div>
+          </div> -->
         </section>
         <div class="mt-8">
           <table
