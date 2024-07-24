@@ -230,16 +230,22 @@
   <section>
     <div class="flex justify-between mt-12">
       <h1 class="text-4xl font-medium">Lançamentos</h1>
-      <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
-        Novo Lançamento
-        <span class="absolute right-[3px]">
-          <Icon
-            icon="material-symbols-light:add"
-            height="25"
-            class="text-zinc-50"
-          />
-        </span>
-      </button>
+      <div class="flex gap-4">
+        <button class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]">
+          Novo pedido faturamento
+        </button>
+        <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
+          Novo Lançamento
+          <span class="absolute right-[3px]">
+            <Icon
+              icon="material-symbols-light:add"
+              height="25"
+              class="text-zinc-50"
+            />
+          </span>
+        </button>
+
+      </div>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
