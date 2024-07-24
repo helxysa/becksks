@@ -231,7 +231,8 @@
     <div class="flex justify-between mt-12">
       <h1 class="text-4xl font-medium">Lançamentos</h1>
       <div class="flex gap-4">
-        <button class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]">
+        <button class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]"
+        @click="ExibirModalPedidoFaturamento">
           Novo pedido faturamento
         </button>
         <button class="btn-faturamento relative" @click="ExibirModalFaturamento">
@@ -417,8 +418,8 @@
               <option>Pago</option>
             </select>
           </div> -->
-          <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Projeto:</label>
+          <div class="flex gap-4  items-center">
+            <label class="font-bold text-3xl ">Projeto:</label>
             <input
               type="text"
               placeholder="Informe o nome do  projeto"
@@ -556,7 +557,7 @@
             </select>
           </div> -->
 
-          <div class="flex gap-4 justify-between items-center">
+          <div class="flex gap-4  items-center">
             <label class="font-bold text-3xl">Projeto:</label>
             <input
               type="text"
@@ -898,6 +899,94 @@
       </form>
     </template>
   </JetDialogModal>
+
+  <!--Modal novo pedido de faturamento-->
+  <JetDialogModal
+   :show="modalPedidoFaturamento"
+    :withouHeader="false"
+    @close="closeModalPedidoFaturamento"
+    maxWidth="6xl"
+    :modalTitle="' Criar Pedido de Faturamento'"
+  >
+  <template #content>
+      <form @submit.prevent="createFaturamento">
+        <section class="flex flex-col gap-8">      
+          <div class="flex gap-4  items-center">
+            <label class="font-bold text-3xl">Valor Total:</label>
+             <span>0</span>
+          </div>  
+          <div  class="flex gap-4 items-center">
+              <label class="font-bold text-3xl w-[180px]">Nota  Fiscal:</label>
+              <input
+              type="text"
+              placeholder="Informe o código da  nota fiscal"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            
+            />
+          </div> 
+          <div  class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[180px]">Encaminhado em:</label>
+            <input
+            type="date"
+            placeholder="Informe a  data do pedido  de faturamento"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+             
+          />
+        </div>      
+        </section>
+        <div class="font-bold text-3xl mt-8">
+          Descrição  da nota:
+        </div>
+        <div >
+          <table
+            class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+          >
+            <thead class="h-20 bg-slate-100 border-1">
+              <tr>
+                <th class="text-xl">Projeto</th>
+                <th class="text-xl">Unidade de medida</th>
+                <th class="text-xl">Quantidade</th>
+                <th class="text-xl">Valor do  lançamento</th>             
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="h-24 text-center"
+                v-for="item in contrato.contratoItens"
+                :key="item.id"
+              >              
+              
+              </tr>
+            </tbody>
+          </table>
+          <!-- <div class="flex justify-end mt-2">
+            <div class="flex">
+                <p class="font-semibold">Total Faturado:</p>
+                <p>{{totalFaturado}}</p>
+            </div>
+
+          </div> -->
+        </div>
+
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            @click="closeModalPedidoFaturamento"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"           
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+          >
+            Salvar
+          </button>
+        </div>
+      </form>
+
+  </template>
+
+  </JetDialogModal>
 </template>
 
 <script setup>
@@ -915,6 +1004,7 @@ const route = useRoute();
 const contrato = ref({});
 const faturamentos = ref([]);
 const modalFaturamento = ref(false);
+const modalPedidoFaturamento = ref(false);
 const selectNovoFaturamento = ref(null);
 const modalCreateItem = ref(false);
 let totalFaturado = 0;
@@ -1042,10 +1132,12 @@ const ExibirModalFaturamento = () => {
   modalFaturamento.value = true;
 };
 
-const isSaldoNegativo = computed(() => {
-  console.log(calcularSaldoAtual(), 'saldo')
-  console.log( contrato.value.contratoItens, 'itens')
+const ExibirModalPedidoFaturamento = () => { 
+  modalPedidoFaturamento.value = true;
+};
 
+const isSaldoNegativo = computed(() => {
+ 
   return contrato.value.contratoItens.some(
     (item) => calcularSaldoAtual(item) < 0
   );
@@ -1054,6 +1146,10 @@ const isSaldoNegativo = computed(() => {
 const closeModalFaturamento = () => {
   modalFaturamento.value = false;
 };
+
+const closeModalPedidoFaturamento = () => {
+  modalPedidoFaturamento.value = false;
+}
 
 const resetForm = () => {
   selectNovoFaturamento.value = "";
