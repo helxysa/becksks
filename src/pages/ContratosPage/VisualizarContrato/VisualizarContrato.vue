@@ -248,9 +248,11 @@
         </button>
       </div>
     </div>
+    <p>  {{pedidosFaturamento.value}}</p>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
+          <th></th>
           <th class="text-xl">Data</th>
           <th class="text-xl">Projeto</th>
 
@@ -263,11 +265,16 @@
         </tr>
       </thead>
       <tbody v-if="contrato.lancamentos">
+       
         <tr
           class="h-28 text-center"
           v-for="lancamento in lancamentosOrdenados"
           :key="lancamento.id"
-        >
+        >      
+          <td>          
+            <input type="checkbox" class="w-8 h-8" v-model="pedidosFaturamento" :value="lancamento"
+            @change="changePedido"/>
+          </td>
           <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <!-- <td class="text-2xl">
@@ -309,6 +316,7 @@
       </tbody>
     </table>
   </section>
+ 
 
   <!-- Tabela Faturamentos-->
   <section>
@@ -1005,6 +1013,13 @@ const editingLancamento = ref({});
 const isLancamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
 const projetos = ref("");
+const pedidosFaturamento =  ref([]);
+
+
+const  changePedido = (e) => {
+   console.log(e.target._value, 'event')
+   console.log(pedidosFaturamento.value, 'pedidos faturamento')
+}
 
 // Faturamento
 const ExibirModalPedidoFaturamento = () => {
