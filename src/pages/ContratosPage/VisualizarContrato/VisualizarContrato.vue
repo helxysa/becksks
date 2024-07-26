@@ -406,7 +406,7 @@
         <section class="flex flex-col gap-8">      
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
-            <span class="font-medium">R$ 0,00</span>
+            <!-- <span class="font-medium">{{calcularTotalLancamento(contrato.lancamentos)}}</span> -->
           </div>
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
@@ -443,9 +443,9 @@
           </thead>
           <tbody>
             <tr
-              class="h-24 text-center"
-              v-for="item in contrato.lancamentos"
+              class="h-24 text-center"            
               :key="item.id"
+               v-for="item in contrato.lancamentos.filter(lancamento => pedidosFaturamento.includes(lancamento.id))"
             >
               <td>{{ item.projetos }}</td>
               <td>
@@ -488,11 +488,11 @@
 >
   <template #content>
     <form @submit.prevent="saveEditedFaturamento">
-      <section class="flex flex-col gap-8">
-        {{editingFaturamento.dataFaturamento}}
+      <section class="flex flex-col gap-8">        
         <div class="flex gap-4 items-center justify-between text-center">
+         
           <label class="font-bold text-3xl">Valor total:</label>
-          <span class="font-medium">R$ 0,00</span>
+          <span class="font-medium">{{formatCurrency(calcularTotalFaturamento(editingFaturamento))}}</span>
         </div>
         <div class="flex gap-4 items-center justify-between">
           <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
@@ -530,10 +530,10 @@
             <th class="text-xl">Valor do lançamento</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody>        
           <tr
             class="h-24 text-center"
-            v-for="item in contrato.lancamentos"
+             v-for="item in editingFaturamento.faturamentoItens.map((subItem)=> subItem.lancamento)"
             :key="item.id"
           >
             <td>{{ item.projetos }}</td>
@@ -551,7 +551,7 @@
       </table>
       <div class="mt-9 flex justify-end gap-4">
         <button
-          @click="closeModalPedidoFaturamento"
+          @click="closeEditFaturamentoModal"
           class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
         >
           Fechar
@@ -1083,6 +1083,7 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
+import { format } from "date-fns";
 
 const router = useRouter();
 const route = useRoute();
@@ -1129,6 +1130,7 @@ const  changePedido = (e) => {
 // Faturamento
 const ExibirModalPedidoFaturamento = () => {
   modalPedidoFaturamento.value = true;
+ 
 };
 const closeModalPedidoFaturamento = () => {
   modalPedidoFaturamento.value = false;
@@ -1136,23 +1138,30 @@ const closeModalPedidoFaturamento = () => {
     nota_fiscal: "",
     data_faturamento: "",
     descricao_nota: [],
-
   }
+
+  pedidosFaturamento.value = []
 };
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
   console.log(faturamento, 'faturamento')
   // editingFaturamento.value = { ...faturamento };
-  editingFaturamento.value = {...faturamento, dataFaturamento: formatDate(faturamento.dataFaturamento)}
+  const dataFormatada = format(new Date(faturamento.dataFaturamento), 'yyyy-MM-dd');
+  editingFaturamento.value = {...faturamento, dataFaturamento: dataFormatada}
   // editingFaturamento.value = JSON.parse(JSON.stringify(faturamento));
+ 
+  
   modalEditFaturamento.value = true;
+  
 };
 
 const openViewFaturamentoModal = (faturamento) => {
   isFaturamentoViewModal.value = true;
-  editingFaturamento.value = { ...faturamento };
+  const dataFormatada = format(new Date(faturamento.dataFaturamento), 'yyyy-MM-dd');
+  editingFaturamento.value = { ...faturamento, dataFaturamento: dataFormatada };
   modalEditFaturamento.value = true;
+  
   
 };
 
@@ -1238,6 +1247,30 @@ const createFaturamento = async () => {
     console.error("Erro ao criar faturamento:", error);
   }
 };
+// const calcularTotalLancamento = (lancamentos) => {
+//   console.log(lancamentos,' lancamentos')
+//   let total = 0;
+//   const lancamentoFiltrado = lancamentos.filter(lancamento => pedidosFaturamento.value.includes(lancamento.id))
+//  console.log(lancamentoFiltrado,  'filtro')
+//   lancamentoFiltrado.lancamentoItens.forEach(faturamentoItem => {
+//     faturamentoItem.lancamento.lancamentoItens.forEach(lancamentoItem => {
+//       total += parseFloat(lancamentoItem.valorUnitario) * parseInt(lancamentoItem.quantidadeItens);
+//     });
+//   });
+//   return total;
+// };
+
+const calcularTotalFaturamento = (faturamento) => {
+  let total = 0;
+
+  faturamento.faturamentoItens.forEach(faturamentoItem => {
+    faturamentoItem.lancamento.lancamentoItens.forEach(lancamentoItem => {
+      total += parseFloat(lancamentoItem.valorUnitario) * parseInt(lancamentoItem.quantidadeItens);
+    });
+  });
+  return total;
+};
+
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
@@ -1255,15 +1288,13 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
 };
 
 
-const createPedidoFaturamento = async() => {
-  console.log(pedidoFaturamentoData.value, 'PEDIDO')
+const createPedidoFaturamento = async() => {  
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
   };
-
-  console.log(payload, 'payload')
+ 
   try {
     const response = await api
       .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
@@ -1319,13 +1350,11 @@ const deleteFaturamento = (faturamentoId) => {
 }
 
 const saveEditedFaturamento = async () => {
-
   let payload = {
     nota_fiscal: editingFaturamento.value.notaFiscal,
     data_faturamento: editingFaturamento.value.dataFaturamento,   
-  };
-
-  console.log(payload, 'payloadEdit')
+    descricao_nota: editingFaturamento.value.descricao_nota
+  }; 
 
   try {
     let contratoId = route.params.id
