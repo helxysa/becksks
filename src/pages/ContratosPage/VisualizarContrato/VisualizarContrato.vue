@@ -403,7 +403,7 @@
     :modalTitle="'Criar Pedido de Faturamento'"
   >
     <template #content>
-      <form @submit.prevent="createFaturamento">
+      <form @submit.prevent="createPedidoFaturamento">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
@@ -413,6 +413,7 @@
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
             <input
               type="text"
+              v-model="pedidoFaturamentoData.nota_fiscal"
               placeholder="Informe o código da  nota fiscal"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -421,6 +422,7 @@
             <label class="font-bold text-3xl w-[180px]">Encaminhado em:</label>
             <input
               type="date"
+              v-model="pedidoFaturamentoData.data_faturamento"
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1014,11 +1016,18 @@ const isLancamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
 const projetos = ref("");
 const pedidosFaturamento =  ref([]);
+const arrayIds = ref([])
+const pedidoFaturamentoData = ref({
+  nota_fiscal: '',
+  data_faturamento: '',
+  descricao_nota: [],
+})
 
 
 const  changePedido = (e) => {
    console.log(e.target._value, 'event')
    console.log(pedidosFaturamento.value, 'pedidos faturamento')
+   
 }
 
 // Faturamento
@@ -1027,6 +1036,12 @@ const ExibirModalPedidoFaturamento = () => {
 };
 const closeModalPedidoFaturamento = () => {
   modalPedidoFaturamento.value = false;
+  pedidoFaturamentoData.value = {
+    nota_fiscal: "",
+    data_faturamento: "",
+    descricao_nota: [],
+
+  }
 };
 
 const createFaturamento = async () => {
@@ -1104,6 +1119,66 @@ const createFaturamento = async () => {
     console.error("Erro ao criar faturamento:", error);
   }
 };
+
+const createPedidoFaturamento = async() => {
+  let payload = {
+    nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
+    data_faturamento: pedidoFaturamentoData.value.data_faturamento,
+    descricao_nota: pedidoFaturamentoData.value.descricao_nota,
+  };
+  try {
+    const response = await api
+      .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
+      .then((response) => {
+        toast("Faturamento criado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+        closeModalPedidoFaturamento()
+      });
+    
+    fetchContrato(route.params.id);
+  } catch (error) {
+    toast("Não foi possível criar o  pedido  de faturamento!", {
+      theme: "colored",
+      type: "error",
+    });
+    console.error("Erro ao criar faturamento:", error);
+  }
+
+} 
+
+const deleteFaturamento = (faturamentoId) => {
+  Swal.fire({
+    title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir este faturamento?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      api
+        .delete(`/faturamentos/${faturamentoId}`)
+        .then((response) => {
+          toast("Faturamento deletado com sucesso!", {
+            theme: "colored",
+            type: "success",
+          });
+          fetchContrato(route.params.id);
+        })
+        .catch((error) => {
+          toast("Não foi possível deletar o faturamento!", {
+            theme: "colored",
+            type: "error",
+          });
+          console.error("Erro ao deletar faturamento:", error);
+        });
+    }
+  });
+}
 
 // Renovação de contrato
 const modalRenovacao = ref(false);
