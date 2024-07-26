@@ -247,8 +247,7 @@
           </span>
         </button>
       </div>
-    </div>
-    <p>  {{pedidosFaturamento.value}}</p>
+    </div>    
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
@@ -270,11 +269,11 @@
           class="h-28 text-center"
           v-for="lancamento in lancamentosOrdenados"
           :key="lancamento.id"
-        >      
+        >         
           <td>          
-            <input type="checkbox" class="w-8 h-8" v-model="pedidosFaturamento" :value="lancamento"
+            <input type="checkbox" class="w-8 h-8" v-model="pedidosFaturamento" :value="lancamento.id"
             @change="changePedido"/>
-          </td>
+          </td>         
           <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <!-- <td class="text-2xl">
@@ -329,7 +328,7 @@
           <th class="text-xl">Data</th>
           <th class="text-xl">Nota Fiscal</th>
           <th class="text-xl">Total do Faturamento</th>
-          <th class="text-xl">Situação</th>
+          <!-- <th class="text-xl">Situação</th> -->
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -339,8 +338,8 @@
           v-for="faturamento in faturamentosOrdenados"
           :key="faturamento.id"
         >
-          <td class="text-2xl">{{ formatDate(faturamento.createdAt) }}</td>
-          <td class="text-2xl">{{}}</td>
+          <td class="text-2xl">{{ formatDate(faturamento.dataFaturamento) }}</td>
+          <td class="text-2xl">{{faturamento.notaFiscal}}</td>
 
           <td class="text-2xl">
             {{
@@ -349,8 +348,8 @@
               )
             }}
           </td>
-          <td class="text-2xl text-center">
-            <!-- <div class="flex justify-center">
+          <!-- <td class="text-2xl text-center">
+            <div class="flex justify-center">
             <span
             class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
               :class="{
@@ -361,8 +360,8 @@
               >
               {{ faturamento.status }}
           </span>
-        </div> -->
-          </td>
+        </div>
+          </td> -->
 
           <td class="text-2xl">
             <div class="flex justify-center items-center gap-2">
@@ -404,7 +403,7 @@
   >
     <template #content>
       <form @submit.prevent="createPedidoFaturamento">
-        <section class="flex flex-col gap-8">
+        <section class="flex flex-col gap-8">      
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
             <span class="font-medium">R$ 0,00</span>
@@ -414,6 +413,7 @@
             <input
               type="text"
               v-model="pedidoFaturamentoData.nota_fiscal"
+              required
               placeholder="Informe o código da  nota fiscal"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -423,6 +423,7 @@
             <input
               type="date"
               v-model="pedidoFaturamentoData.data_faturamento"
+              required
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -476,6 +477,96 @@
       </form>
     </template>
   </JetDialogModal>
+
+  <!-- Modal editar  pedido de  faturamento -->
+  <JetDialogModal
+  :show="modalEditFaturamento"
+  :withouHeader="false"
+  @close="closeEditFaturamentoModal"
+  maxWidth="6xl"
+  :modalTitle=" isFaturamentoViewModal ? 'Visualizar Faturamento' : 'Editar Faturamento'"
+>
+  <template #content>
+    <form @submit.prevent="saveEditedFaturamento">
+      <section class="flex flex-col gap-8">
+        {{editingFaturamento.dataFaturamento}}
+        <div class="flex gap-4 items-center justify-between text-center">
+          <label class="font-bold text-3xl">Valor total:</label>
+          <span class="font-medium">R$ 0,00</span>
+        </div>
+        <div class="flex gap-4 items-center justify-between">
+          <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
+          <input
+            :disabled="isFaturamentoViewModal"
+            type="text"
+            v-model="editingFaturamento.notaFiscal"
+            required
+            placeholder="Informe o código da  nota fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          />
+        </div>
+        <div class="flex gap-4 items-center justify-between">
+         
+          <label class="font-bold text-3xl w-[180px]">Encaminhado em:</label>
+          <input
+            type="date"
+             :disabled="isFaturamentoViewModal"
+            v-model="editingFaturamento.dataFaturamento"
+            required
+            placeholder="Informe a  data do pedido  de faturamento"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          />
+        </div>
+      </section>
+      <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
+      <table
+        class="table-auto border border-slate-200 rounded-2xl w-full mt-8"
+      >
+        <thead class="h-20 bg-slate-100 border-1">
+          <tr>
+            <th class="text-xl">Projeto</th>
+            <th class="text-xl">Unidade de medida</th>
+            <th class="text-xl">Quantidade</th>
+            <th class="text-xl">Valor do lançamento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="h-24 text-center"
+            v-for="item in contrato.lancamentos"
+            :key="item.id"
+          >
+            <td>{{ item.projetos }}</td>
+            <td>
+              <span class="flex justify-center" v-for="unidade in [...new Set(item.lancamentoItens.map(subitem => subitem.unidadeMedida))]" :key="unidade">
+                {{ unidade }}
+              </span>
+            </td>
+            <td>
+              {{ item.lancamentoItens.reduce((total, subitem) => total + parseInt(subitem.quantidadeItens), 0) }}
+            </td>
+            <td>{{formatCurrency(calcularSaldoLancamentoItens(item.lancamentoItens))}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="mt-9 flex justify-end gap-4">
+        <button
+          @click="closeModalPedidoFaturamento"
+          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+        >
+          Fechar
+        </button>
+        <button
+            v-if="!isFaturamentoViewModal"
+          type="submit"
+          class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+        >
+          Salvar
+        </button>
+      </div>
+    </form>
+  </template>
+</JetDialogModal>
 
   <!-- Modal criar Lancamento -->
   <JetDialogModal
@@ -1011,9 +1102,13 @@ const newItem = ref({
 const modalEditItem = ref(false);
 const editingItem = ref({});
 const modalEditLancamento = ref(false);
+const modalEditFaturamento = ref(false);
 const editingLancamento = ref({});
 const isLancamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
+const isFaturamentoViewModal = ref(false);
+const editingFaturamento = ref({});
+
 const projetos = ref("");
 const pedidosFaturamento =  ref([]);
 const arrayIds = ref([])
@@ -1023,10 +1118,11 @@ const pedidoFaturamentoData = ref({
   descricao_nota: [],
 })
 
-
 const  changePedido = (e) => {
    console.log(e.target._value, 'event')
    console.log(pedidosFaturamento.value, 'pedidos faturamento')
+   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value
+   console.log( pedidoFaturamentoData.value.descricao_nota, 'faturamento data')
    
 }
 
@@ -1042,6 +1138,29 @@ const closeModalPedidoFaturamento = () => {
     descricao_nota: [],
 
   }
+};
+
+// Editar faturamento do contrato
+const openEditFaturamentoModal = (faturamento) => {
+  console.log(faturamento, 'faturamento')
+  // editingFaturamento.value = { ...faturamento };
+  editingFaturamento.value = {...faturamento, dataFaturamento: formatDate(faturamento.dataFaturamento)}
+  // editingFaturamento.value = JSON.parse(JSON.stringify(faturamento));
+  modalEditFaturamento.value = true;
+};
+
+const openViewFaturamentoModal = (faturamento) => {
+  isFaturamentoViewModal.value = true;
+  editingFaturamento.value = { ...faturamento };
+  modalEditFaturamento.value = true;
+  
+};
+
+const closeEditFaturamentoModal = () => {
+  isFaturamentoViewModal.value = false;
+  editingFaturamento.value = {};
+  // closeModalPedidoFaturamento()
+  modalEditFaturamento.value = false;
 };
 
 const createFaturamento = async () => {
@@ -1120,12 +1239,31 @@ const createFaturamento = async () => {
   }
 };
 
+const calcularSaldoFaturamentoItens = (faturamento) => {
+  let saldoTotal = 0;
+  faturamento.forEach((item) => {
+    item.lancamento.lancamentoItens.forEach((subItem)=>{
+        
+      const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
+      const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
+      const valorTotalItem = quantidadeItens * valorUnitario;
+      saldoTotal += valorTotalItem;
+    })
+
+  });
+  return saldoTotal;
+};
+
+
 const createPedidoFaturamento = async() => {
+  console.log(pedidoFaturamentoData.value, 'PEDIDO')
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
   };
+
+  console.log(payload, 'payload')
   try {
     const response = await api
       .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
@@ -1178,6 +1316,33 @@ const deleteFaturamento = (faturamentoId) => {
         });
     }
   });
+}
+
+const saveEditedFaturamento = async () => {
+
+  let payload = {
+    nota_fiscal: editingFaturamento.value.notaFiscal,
+    data_faturamento: editingFaturamento.value.dataFaturamento,   
+  };
+
+  console.log(payload, 'payloadEdit')
+
+  try {
+    let contratoId = route.params.id
+    const response = await api
+      .put(`/faturamentos/${editingFaturamento.value.id}`, payload)
+      .then((response) => {
+        Object.assign(editingFaturamento.value);
+        toast("Faturamento atualizado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+        closeEditFaturamentoModal()
+        fetchContrato(contratoId);
+      });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // Renovação de contrato
@@ -1407,6 +1572,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    console.log(response.data, 'resposta')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -1464,6 +1630,12 @@ const formatDate = (dateString) => {
 
 const lancamentosOrdenados = computed(() => {
   return contrato.value.lancamentos.slice().sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+});
+
+const faturamentosOrdenados = computed(() => {
+  return contrato.value.faturamentos.slice().sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
