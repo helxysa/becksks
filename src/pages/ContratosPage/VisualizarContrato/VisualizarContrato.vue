@@ -270,11 +270,11 @@
           class="h-28 text-center"
           v-for="lancamento in lancamentosOrdenados"
           :key="lancamento.id"
-        >      
+        >         
           <td>          
-            <input type="checkbox" class="w-8 h-8" v-model="pedidosFaturamento" :value="lancamento"
+            <input type="checkbox" class="w-8 h-8" v-model="pedidosFaturamento" :value="lancamento.id"
             @change="changePedido"/>
-          </td>
+          </td>         
           <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <!-- <td class="text-2xl">
@@ -414,6 +414,7 @@
             <input
               type="text"
               v-model="pedidoFaturamentoData.nota_fiscal"
+              required
               placeholder="Informe o código da  nota fiscal"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -423,6 +424,7 @@
             <input
               type="date"
               v-model="pedidoFaturamentoData.data_faturamento"
+              required
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1020,7 +1022,7 @@ const arrayIds = ref([])
 const pedidoFaturamentoData = ref({
   nota_fiscal: '',
   data_faturamento: '',
-  descricao_nota: [],
+  descricao_nota: pedidosFaturamento.value,
 })
 
 
