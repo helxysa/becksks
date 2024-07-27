@@ -151,7 +151,7 @@
     </div>
   </section>
 
-  <section>
+  <section class="mt-16">
     <div class="flex justify-between items-center">
       <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
       <button @click="openCreateItemModal" class="btn-item relative">
@@ -198,28 +198,30 @@
           <td class="text-2xl">
             {{ calcularItensRestante(item.id, item.saldoQuantidadeContratada) }}
           </td>
-          <td class="flex justify-center mt-4 gap-2">
-            <button type="button" @click="openItemViewModal(item)">
-              <Icon
-                icon="ph:eye"
-                height="20"
-                class="hover:text-red-500 hover:rounded-md cursor-pointer"
-              />
-            </button>
-            <button type="button" @click="openItemEditModal(item)">
-              <Icon
-                icon="bx:edit"
-                height="20"
-                class="hover:text-red-500 hover:rounded-md cursor-pointer"
-              />
-            </button>
-            <button type="button" @click="deleteItem(item.id)">
-              <Icon
-                icon="ph:trash"
-                height="20"
-                class="hover:text-red-500 hover:rounded-md cursor-pointer"
-              />
-            </button>
+          <td>
+            <div class="flex justify-center items-center gap-2">
+              <span @click="openItemViewModal(item)">
+                <Icon
+                  icon="ph:eye"
+                  height="20"
+                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+              <span @click="openItemEditModal(item)">
+                <Icon
+                  icon="bx:edit"
+                  height="20"
+                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+              <span @click="deleteItem(item.id)">
+                <Icon
+                  icon="ph:trash"
+                  height="20"
+                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -247,14 +249,20 @@
           </span>
         </button>
       </div>
-    </div>    
+    </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th></th>
+          <th>
+            <input
+              type="checkbox"
+              class="w-6 h-6"
+              :checked="areAllSelected"
+              @change="toggleSelectAll"
+            />
+          </th>
           <th class="text-xl">Data</th>
           <th class="text-xl">Projeto</th>
-
           <!-- <th class="text-xl">Quantidade itens</th> -->
           <th class="text-xl">Total do Lançamento</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
@@ -264,16 +272,20 @@
         </tr>
       </thead>
       <tbody v-if="contrato.lancamentos">
-       
         <tr
-          class="h-28 text-center"
+          class="h-24 text-center"
           v-for="lancamento in lancamentosOrdenados"
           :key="lancamento.id"
-        >         
-          <td>          
-            <input type="checkbox" class="w-8 h-8" v-model="pedidosFaturamento" :value="lancamento.id"
-            @change="changePedido"/>
-          </td>         
+        >
+          <td>
+            <input
+              type="checkbox"
+              class="w-6 h-6"
+              v-model="pedidosFaturamento"
+              :value="lancamento.id"
+              @change="changePedido"
+            />
+          </td>
           <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <!-- <td class="text-2xl">
@@ -315,7 +327,6 @@
       </tbody>
     </table>
   </section>
- 
 
   <!-- Tabela Faturamentos-->
   <section>
@@ -338,8 +349,11 @@
           v-for="faturamento in faturamentosOrdenados"
           :key="faturamento.id"
         >
-          <td class="text-2xl">{{ formatDate(faturamento.dataFaturamento) }}</td>
-          <td class="text-2xl">{{faturamento.notaFiscal}}</td>
+          <td class="text-2xl">
+            <!-- {{ faturamento.dataFaturamento}} -->
+            {{ formatDatePTBR(faturamento.dataFaturamento) }}
+          </td>
+          <td class="text-2xl">{{ faturamento.notaFiscal }}</td>
 
           <td class="text-2xl">
             {{
@@ -403,10 +417,12 @@
   >
     <template #content>
       <form @submit.prevent="createPedidoFaturamento">
-        <section class="flex flex-col gap-8">      
+        <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
-            <!-- <span class="font-medium">{{calcularTotalLancamento(contrato.lancamentos)}}</span> -->
+            <span class="font-medium text-3xl">{{
+              formatCurrency(calcularTotalLancamento(contrato.lancamentos))
+            }}</span>
           </div>
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
@@ -443,20 +459,86 @@
           </thead>
           <tbody>
             <tr
-              class="h-24 text-center"            
+              class="h-24 text-center"
               :key="item.id"
-               v-for="item in contrato.lancamentos.filter(lancamento => pedidosFaturamento.includes(lancamento.id))"
+              v-for="(item, index) in contrato.lancamentos.filter(
+                (lancamento) => pedidosFaturamento.includes(lancamento.id)
+              )"
             >
               <td>{{ item.projetos }}</td>
               <td>
-                <span class="flex justify-center" v-for="unidade in [...new Set(item.lancamentoItens.map(subitem => subitem.unidadeMedida))]" :key="unidade">
-                  {{ unidade }}
-                </span>
+                <div
+                  v-for="unidade in [
+                    ...new Set(
+                      item.lancamentoItens.map(
+                        (subitem) => subitem.unidadeMedida
+                      )
+                    ),
+                  ]"
+                  :key="unidade"
+                >
+                  <template
+                    v-if="
+                      item.lancamentoItens
+                        .filter((subitem) => subitem.unidadeMedida === unidade)
+                        .reduce(
+                          (total, subitem) =>
+                            total + parseInt(subitem.quantidadeItens),
+                          0
+                        ) > 0
+                    "
+                  >
+                    <span class="flex justify-center">
+                      {{ unidade }}
+                    </span>
+                  </template>
+                </div>
               </td>
               <td>
-                {{ item.lancamentoItens.reduce((total, subitem) => total + parseInt(subitem.quantidadeItens), 0) }}
+                <div
+                  v-for="unidade in [
+                    ...new Set(
+                      item.lancamentoItens.map(
+                        (subitem) => subitem.unidadeMedida
+                      )
+                    ),
+                  ]"
+                  :key="unidade"
+                >
+                  <template
+                    v-if="
+                      item.lancamentoItens
+                        .filter((subitem) => subitem.unidadeMedida === unidade)
+                        .reduce(
+                          (total, subitem) =>
+                            total + parseInt(subitem.quantidadeItens),
+                          0
+                        ) > 0
+                    "
+                  >
+                    <span class="flex justify-center">
+                      {{
+                        item.lancamentoItens
+                          .filter(
+                            (subitem) => subitem.unidadeMedida === unidade
+                          )
+                          .reduce(
+                            (total, subitem) =>
+                              total + parseInt(subitem.quantidadeItens),
+                            0
+                          )
+                      }}
+                    </span>
+                  </template>
+                </div>
               </td>
-              <td>{{formatCurrency(calcularSaldoLancamentoItens(item.lancamentoItens))}}</td>
+              <td>
+                {{
+                  formatCurrency(
+                    calcularSaldoLancamentoItens(item.lancamentoItens)
+                  )
+                }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -480,93 +562,121 @@
 
   <!-- Modal editar  pedido de  faturamento -->
   <JetDialogModal
-  :show="modalEditFaturamento"
-  :withouHeader="false"
-  @close="closeEditFaturamentoModal"
-  maxWidth="6xl"
-  :modalTitle=" isFaturamentoViewModal ? 'Visualizar Faturamento' : 'Editar Faturamento'"
->
-  <template #content>
-    <form @submit.prevent="saveEditedFaturamento">
-      <section class="flex flex-col gap-8">        
-        <div class="flex gap-4 items-center justify-between text-center">
-         
-          <label class="font-bold text-3xl">Valor total:</label>
-          <span class="font-medium">{{formatCurrency(calcularTotalFaturamento(editingFaturamento))}}</span>
-        </div>
-        <div class="flex gap-4 items-center justify-between">
-          <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
-          <input
-            :disabled="isFaturamentoViewModal"
-            type="text"
-            v-model="editingFaturamento.notaFiscal"
-            required
-            placeholder="Informe o código da  nota fiscal"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-          />
-        </div>
-        <div class="flex gap-4 items-center justify-between">
-         
-          <label class="font-bold text-3xl w-[180px]">Encaminhado em:</label>
-          <input
-            type="date"
-             :disabled="isFaturamentoViewModal"
-            v-model="editingFaturamento.dataFaturamento"
-            required
-            placeholder="Informe a  data do pedido  de faturamento"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-          />
-        </div>
-      </section>
-      <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
-      <table
-        class="table-auto border border-slate-200 rounded-2xl w-full mt-8"
-      >
-        <thead class="h-20 bg-slate-100 border-1">
-          <tr>
-            <th class="text-xl">Projeto</th>
-            <th class="text-xl">Unidade de medida</th>
-            <th class="text-xl">Quantidade</th>
-            <th class="text-xl">Valor do lançamento</th>
-          </tr>
-        </thead>
-        <tbody>        
-          <tr
-            class="h-24 text-center"
-             v-for="item in editingFaturamento.faturamentoItens.map((subItem)=> subItem.lancamento)"
-            :key="item.id"
+    :show="modalEditFaturamento"
+    :withouHeader="false"
+    @close="closeEditFaturamentoModal"
+    maxWidth="6xl"
+    :modalTitle="
+      isFaturamentoViewModal ? 'Visualizar Faturamento' : 'Editar Faturamento'
+    "
+  >
+    <template #content>
+      <form @submit.prevent="saveEditedFaturamento">
+        <section class="flex flex-col gap-8">
+          <div class="flex justify-between items-center gap-4">
+            <label class="font-bold text-3xl w-[180px]">Valor total:</label>
+            <span class="font-medium text-3xl">{{
+              formatCurrency(calcularTotalFaturamento(editingFaturamento))
+            }}</span>
+          </div>
+          <div class="flex gap-4 items-center justify-between">
+            <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
+            <input
+              :disabled="isFaturamentoViewModal"
+              :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+              type="text"
+              v-model="editingFaturamento.notaFiscal"
+              required
+              placeholder="Informe o código da  nota fiscal"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class="flex gap-4 items-center justify-between">
+            <label class="font-bold text-3xl w-[180px]">Encaminhado em:</label>
+            <input
+              type="date"
+              :disabled="isFaturamentoViewModal"
+              :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+              v-model="editingFaturamento.dataFaturamento"
+              required
+              placeholder="Informe a  data do pedido  de faturamento"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+        </section>
+        <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
+        <table
+          class="table-auto border border-slate-200 rounded-2xl w-full mt-8"
+        >
+          <thead class="h-20 bg-slate-100 border-1">
+            <tr>
+              <th class="text-xl">Projeto</th>
+              <th class="text-xl">Unidade de medida</th>
+              <th class="text-xl">Quantidade</th>
+              <th class="text-xl">Valor do lançamento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="h-24 text-center"
+              v-for="item in editingFaturamento.faturamentoItens.map(
+                (subItem) => subItem.lancamento
+              )"
+              :key="item.id"
+            >
+              <td>{{ item.projetos }}</td>
+              <td>
+                <span
+                  class="flex justify-center"
+                  v-for="unidade in [
+                    ...new Set(
+                      item.lancamentoItens.map(
+                        (subitem) => subitem.unidadeMedida
+                      )
+                    ),
+                  ]"
+                  :key="unidade"
+                >
+                  {{ unidade }}
+                </span>
+              </td>
+              <td>
+                {{
+                  item.lancamentoItens.reduce(
+                    (total, subitem) =>
+                      total + parseInt(subitem.quantidadeItens),
+                    0
+                  )
+                }}
+              </td>
+              <td>
+                {{
+                  formatCurrency(
+                    calcularSaldoLancamentoItens(item.lancamentoItens)
+                  )
+                }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-9 flex justify-end gap-4">
+          <button
+            @click="closeEditFaturamentoModal"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
           >
-            <td>{{ item.projetos }}</td>
-            <td>
-              <span class="flex justify-center" v-for="unidade in [...new Set(item.lancamentoItens.map(subitem => subitem.unidadeMedida))]" :key="unidade">
-                {{ unidade }}
-              </span>
-            </td>
-            <td>
-              {{ item.lancamentoItens.reduce((total, subitem) => total + parseInt(subitem.quantidadeItens), 0) }}
-            </td>
-            <td>{{formatCurrency(calcularSaldoLancamentoItens(item.lancamentoItens))}}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="mt-9 flex justify-end gap-4">
-        <button
-          @click="closeEditFaturamentoModal"
-          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
-        >
-          Fechar
-        </button>
-        <button
+            Fechar
+          </button>
+          <button
             v-if="!isFaturamentoViewModal"
-          type="submit"
-          class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
-        >
-          Salvar
-        </button>
-      </div>
-    </form>
-  </template>
-</JetDialogModal>
+            type="submit"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
+          >
+            Salvar
+          </button>
+        </div>
+      </form>
+    </template>
+  </JetDialogModal>
 
   <!-- Modal criar Lancamento -->
   <JetDialogModal
@@ -738,6 +848,7 @@
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
+              :class="{ 'border-none bg-white': isLancamentoViewModal }"
               v-model="editingLancamento.projetos"
             />
           </div>
@@ -798,6 +909,7 @@
                 <td>
                   <input
                     :disabled="isLancamentoViewModal"
+                    :class="{ 'border-none bg-white': isLancamentoViewModal }"
                     type="number"
                     v-model="item.quantidadeItens"
                     class="border-2 text-center max-w-60"
@@ -1083,7 +1195,7 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
-import { format } from "date-fns";
+import { format, formatISO, startOfDay } from "date-fns";
 
 const router = useRouter();
 const route = useRoute();
@@ -1111,26 +1223,39 @@ const isFaturamentoViewModal = ref(false);
 const editingFaturamento = ref({});
 
 const projetos = ref("");
-const pedidosFaturamento =  ref([]);
-const arrayIds = ref([])
+const pedidosFaturamento = ref([]);
+const arrayIds = ref([]);
 const pedidoFaturamentoData = ref({
-  nota_fiscal: '',
-  data_faturamento: '',
+  nota_fiscal: "",
+  data_faturamento: "",
   descricao_nota: [],
-})
+});
 
-const  changePedido = (e) => {
-   console.log(e.target._value, 'event')
-   console.log(pedidosFaturamento.value, 'pedidos faturamento')
-   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value
-   console.log( pedidoFaturamentoData.value.descricao_nota, 'faturamento data')
-   
-}
+const changePedido = (e) => {
+  pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
+};
+
+const areAllSelected = computed(() => {
+  return (
+    pedidosFaturamento.value.length === lancamentosOrdenados.value.length &&
+    lancamentosOrdenados.value.length > 0
+  );
+});
+
+const toggleSelectAll = () => {
+  if (areAllSelected.value) {
+    pedidosFaturamento.value = [];
+  } else {
+    pedidosFaturamento.value = lancamentosOrdenados.value.map(
+      (lancamento) => lancamento.id
+    );
+  }
+  changePedido();
+};
 
 // Faturamento
 const ExibirModalPedidoFaturamento = () => {
   modalPedidoFaturamento.value = true;
- 
 };
 const closeModalPedidoFaturamento = () => {
   modalPedidoFaturamento.value = false;
@@ -1138,31 +1263,29 @@ const closeModalPedidoFaturamento = () => {
     nota_fiscal: "",
     data_faturamento: "",
     descricao_nota: [],
-  }
+  };
 
-  pedidosFaturamento.value = []
+  pedidosFaturamento.value = [];
 };
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  console.log(faturamento, 'faturamento')
-  // editingFaturamento.value = { ...faturamento };
-  const dataFormatada = format(new Date(faturamento.dataFaturamento), 'yyyy-MM-dd');
-  editingFaturamento.value = {...faturamento, dataFaturamento: dataFormatada}
-  // editingFaturamento.value = JSON.parse(JSON.stringify(faturamento));
- 
-  
+  const dataFormatada = format(
+    new Date(faturamento.dataFaturamento),
+    "yyyy-MM-dd"
+  );
+  editingFaturamento.value = { ...faturamento, dataFaturamento: dataFormatada };
   modalEditFaturamento.value = true;
-  
 };
 
 const openViewFaturamentoModal = (faturamento) => {
   isFaturamentoViewModal.value = true;
-  const dataFormatada = format(new Date(faturamento.dataFaturamento), 'yyyy-MM-dd');
+  const dataFormatada = format(
+    new Date(faturamento.dataFaturamento),
+    "yyyy-MM-dd"
+  );
   editingFaturamento.value = { ...faturamento, dataFaturamento: dataFormatada };
   modalEditFaturamento.value = true;
-  
-  
 };
 
 const closeEditFaturamentoModal = () => {
@@ -1172,130 +1295,75 @@ const closeEditFaturamentoModal = () => {
   modalEditFaturamento.value = false;
 };
 
-const createFaturamento = async () => {
-  let itensQuantidadePreenchida = contrato.value.contratoItens
-    // .filter((item) => item.quantidadeItens)
-    .map((item) => ({
-      id_item: item.id,
-      quantidade_itens: item.quantidadeItens,
-    }));
-  if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item para criar o faturamento.", {
-      theme: "colored",
-      type: "error",
-    });
-    return;
-  }
+const calcularTotalLancamento = (lancamentos) => {
+  let total = 0;
 
-  const saldoMaiorQuantidadeContratada = contrato.value.contratoItens.some(
-    (item) => {
-      return item.quantidadeItens > item.saldoQuantidadeContratada;
-    }
+  const lancamentosFiltrados = lancamentos.filter((lancamento) =>
+    pedidosFaturamento.value.includes(lancamento.id)
   );
 
-  if (saldoMaiorQuantidadeContratada) {
-    toast.error(
-      "A quantidade dos items não pode ultrapassar a quantidade contratada."
-    );
-    return;
-  }
-
-  const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
-    const quantidadeRestante = calcularItensRestante(
-      item.id,
-      item.saldoQuantidadeContratada
-    );
-    return item.quantidadeItens > quantidadeRestante;
+  lancamentosFiltrados.forEach((lancamento) => {
+    lancamento.lancamentoItens.forEach((lancamentoItem) => {
+      total +=
+        parseFloat(lancamentoItem.valorUnitario) *
+        parseInt(lancamentoItem.quantidadeItens);
+    });
   });
 
-  if (quantidadeExcedida) {
-    toast.error(
-      "A quantidade dos itens não pode ultrapassar a quantidade disponível."
-    );
-    return;
-  }
-
-  let novoSaldoContrato =
-    calcularSaldoAtualContrato() -
-    calcularSaldoFaturamentoItens(itensQuantidadePreenchida);
-
-  if (novoSaldoContrato < 0) {
-    toast("O saldo contratado não pode ser excedido.", {
-      theme: "colored",
-      type: "error",
-    });
-    return;
-  }
-
-  let payload = {
-    status: selectNovoFaturamento.value,
-    itens: itensQuantidadePreenchida,
-    projetos: projetos.value,
-  };
-  try {
-    const response = await api
-      .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
-      .then((response) => {
-        toast("Faturamento criado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-      });
-    resetForm();
-    fetchContrato(route.params.id);
-  } catch (error) {
-    console.error("Erro ao criar faturamento:", error);
-  }
+  return total;
 };
-// const calcularTotalLancamento = (lancamentos) => {
-//   console.log(lancamentos,' lancamentos')
-//   let total = 0;
-//   const lancamentoFiltrado = lancamentos.filter(lancamento => pedidosFaturamento.value.includes(lancamento.id))
-//  console.log(lancamentoFiltrado,  'filtro')
-//   lancamentoFiltrado.lancamentoItens.forEach(faturamentoItem => {
-//     faturamentoItem.lancamento.lancamentoItens.forEach(lancamentoItem => {
-//       total += parseFloat(lancamentoItem.valorUnitario) * parseInt(lancamentoItem.quantidadeItens);
-//     });
-//   });
-//   return total;
-// };
 
 const calcularTotalFaturamento = (faturamento) => {
   let total = 0;
 
-  faturamento.faturamentoItens.forEach(faturamentoItem => {
-    faturamentoItem.lancamento.lancamentoItens.forEach(lancamentoItem => {
-      total += parseFloat(lancamentoItem.valorUnitario) * parseInt(lancamentoItem.quantidadeItens);
+  faturamento.faturamentoItens.forEach((faturamentoItem) => {
+    faturamentoItem.lancamento.lancamentoItens.forEach((lancamentoItem) => {
+      total +=
+        parseFloat(lancamentoItem.valorUnitario) *
+        parseInt(lancamentoItem.quantidadeItens);
     });
   });
   return total;
 };
 
-
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
   faturamento.forEach((item) => {
-    item.lancamento.lancamentoItens.forEach((subItem)=>{
-        
+    item.lancamento.lancamentoItens.forEach((subItem) => {
       const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
       const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
       const valorTotalItem = quantidadeItens * valorUnitario;
       saldoTotal += valorTotalItem;
-    })
-
+    });
   });
   return saldoTotal;
 };
 
+const formatDatePTBR = (isoString) => {
+  const [datePart] = isoString.split("T");
 
-const createPedidoFaturamento = async() => {  
+  const [ano, mes, dia] = datePart.split("-");
+
+  return `${dia}/${mes}/${ano}`;
+};
+
+const createPedidoFaturamento = async () => {
+  // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
+  // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
+
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
   };
- 
+
+  if (payload.descricao_nota.length <= 0) {
+    toast.error("Selecione pelo menos um lançamento para gerar o faturamento.");
+    return;
+  }
+
   try {
+    const contratoId = route.params.id;
     const response = await api
       .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
       .then((response) => {
@@ -1303,21 +1371,20 @@ const createPedidoFaturamento = async() => {
           theme: "colored",
           type: "success",
         });
-        closeModalPedidoFaturamento()
+        closeModalPedidoFaturamento();
       });
-    
-    fetchContrato(route.params.id);
+    fetchContrato(contratoId);
   } catch (error) {
     toast("Não foi possível criar o  pedido  de faturamento!", {
       theme: "colored",
       type: "error",
     });
-    console.error("Erro ao criar faturamento:", error);
   }
-
-} 
+};
 
 const deleteFaturamento = (faturamentoId) => {
+  const contratoId = route.params.id;
+
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este faturamento?",
@@ -1336,7 +1403,7 @@ const deleteFaturamento = (faturamentoId) => {
             theme: "colored",
             type: "success",
           });
-          fetchContrato(route.params.id);
+          fetchContrato(contratoId);
         })
         .catch((error) => {
           toast("Não foi possível deletar o faturamento!", {
@@ -1347,17 +1414,17 @@ const deleteFaturamento = (faturamentoId) => {
         });
     }
   });
-}
+};
 
 const saveEditedFaturamento = async () => {
   let payload = {
     nota_fiscal: editingFaturamento.value.notaFiscal,
-    data_faturamento: editingFaturamento.value.dataFaturamento,   
-    descricao_nota: editingFaturamento.value.descricao_nota
-  }; 
+    data_faturamento: editingFaturamento.value.dataFaturamento,
+    descricao_nota: editingFaturamento.value.descricao_nota,
+  };
 
   try {
-    let contratoId = route.params.id
+    let contratoId = route.params.id;
     const response = await api
       .put(`/faturamentos/${editingFaturamento.value.id}`, payload)
       .then((response) => {
@@ -1366,13 +1433,13 @@ const saveEditedFaturamento = async () => {
           theme: "colored",
           type: "success",
         });
-        closeEditFaturamentoModal()
+        closeEditFaturamentoModal();
         fetchContrato(contratoId);
       });
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 // Renovação de contrato
 const modalRenovacao = ref(false);
@@ -1508,6 +1575,13 @@ const resetForm = () => {
 };
 
 const createLancamento = async () => {
+  if (!projetos.value || projetos.value == null) {
+    toast("Insira o nome do projeto", {
+      theme: "colored",
+      type: "error",
+    });
+    return;
+  }
   let itensQuantidadePreenchida = contrato.value.contratoItens
     // .filter((item) => item.quantidadeItens)
     .map((item) => ({
@@ -1522,19 +1596,6 @@ const createLancamento = async () => {
     return;
   }
 
-  const saldoMaiorQuantidadeContratada = contrato.value.contratoItens.some(
-    (item) => {
-      return item.quantidadeItens > item.saldoQuantidadeContratada;
-    }
-  );
-
-  if (saldoMaiorQuantidadeContratada) {
-    toast.error(
-      "A quantidade dos items não pode ultrapassar a quantidade contratada."
-    );
-    return;
-  }
-
   const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
       item.id,
@@ -1545,7 +1606,7 @@ const createLancamento = async () => {
 
   if (quantidadeExcedida) {
     toast.error(
-      "A quantidade dos itens não pode ultrapassar a quantidade disponível."
+      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
     );
     return;
   }
@@ -1568,6 +1629,8 @@ const createLancamento = async () => {
     projetos: projetos.value,
   };
   try {
+    const contratoId = route.params.id;
+
     const response = await api
       .post(`/contratos/${contrato.value.id}/lancamentos`, payload)
       .then((response) => {
@@ -1577,7 +1640,7 @@ const createLancamento = async () => {
         });
       });
     resetForm();
-    fetchContrato(route.params.id);
+    fetchContrato(contratoId);
   } catch (error) {
     console.error("Erro ao criar lancamento:", error);
   }
@@ -1601,7 +1664,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
-    console.log(response.data, 'resposta')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -1610,6 +1672,7 @@ const fetchContrato = async (id) => {
 };
 
 const deleteLancamento = (lancamentoId) => {
+  const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este lançamento?",
@@ -1628,7 +1691,7 @@ const deleteLancamento = (lancamentoId) => {
             theme: "colored",
             type: "success",
           });
-          fetchContrato(route.params.id);
+          fetchContrato(contratoId);
         })
         .catch((error) => {
           toast("Não foi possível deletar o lancamento!", {
@@ -1658,6 +1721,9 @@ const formatDate = (dateString) => {
 };
 
 const lancamentosOrdenados = computed(() => {
+  if (!contrato.value || !contrato.value.lancamentos) {
+    return [];
+  }
   return contrato.value.lancamentos.slice().sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
@@ -1900,6 +1966,7 @@ const saveEditedItem = async () => {
 
 // Deletar Item do contrato
 const deleteItem = async (itemId) => {
+  const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este item?",
@@ -1913,7 +1980,7 @@ const deleteItem = async (itemId) => {
     if (result.isConfirmed) {
       try {
         const response = await api.delete(`/contratos/items/${itemId}`);
-        fetchContrato(route.params.id);
+        fetchContrato(contratoId);
         toast("Item deletado com sucesso!", {
           theme: "colored",
           type: "success",
@@ -1954,7 +2021,7 @@ const createNewItem = async () => {
         parseFloat(item.valorUnitario);
     });
   } else {
-    console.warn("itens de contrato não definidos.");
+    console.error("itens de contrato não definidos.");
   }
 
   let novoItemQuantidade = newItem.value.saldo_quantidade_contratada;
@@ -2000,29 +2067,53 @@ const createNewItem = async () => {
 };
 
 // Editar lancamento do contrato
+const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
-  // editingLancamento.value = { ...lancamento };
-  editingLancamento.value = JSON.parse(JSON.stringify(lancamento));
+  editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
+  editingLancamento.value = lancamento;
   modalEditLancamento.value = true;
 };
 
 const openViewLancamentoModal = (lancamento) => {
   isLancamentoViewModal.value = true;
-  editingLancamento.value = { ...lancamento };
+  const itensComQuantidade = lancamento.lancamentoItens.filter(
+    (item) => item.quantidadeItens > 0
+  );
+  editingLancamento.value = {
+    ...lancamento,
+    lancamentoItens: itensComQuantidade,
+  };
   modalEditLancamento.value = true;
 };
 
 const closeEditLancamentoModal = () => {
+  if (editingLancamentoBackup.value) {
+    Object.assign(editingLancamento.value, editingLancamentoBackup.value);
+    editingLancamentoBackup.value = null;
+  }
   isLancamentoViewModal.value = false;
   editingLancamento.value = {};
   modalEditLancamento.value = false;
+  projetos.value = "";
 };
 
 const saveEditedLancamento = async () => {
+  if (
+    !editingLancamento.value.projetos ||
+    editingLancamento.value.projetos === null
+  ) {
+    toast.error("Adicione o nome do projeto.", {
+      theme: "colored",
+      type: "error",
+    });
+    return;
+  }
   let itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
     // .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id: item.id,
+      contrato_item_id: item.contratoItemId,
+      saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
     }));
 
@@ -2031,7 +2122,10 @@ const saveEditedLancamento = async () => {
   );
 
   if (todosQuantidadeZero) {
-    toast.error("Adicione pelo menos um item ao lancamento.");
+    toast.error("Adicione pelo menos um item ao lancamento.", {
+      theme: "colored",
+      type: "error",
+    });
     return;
   }
 
@@ -2043,42 +2137,57 @@ const saveEditedLancamento = async () => {
     return;
   }
 
-  const saldoMaiorQuantidadeContratada =
-    editingLancamento.value.lancamentoItens.some((item) => {
-      return item.quantidadeItens > item.saldoQuantidadeContratada;
-    });
-
-  if (saldoMaiorQuantidadeContratada) {
-    toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade contratada."
+  const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
+    let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
+      (total, lancamento) => {
+        return (
+          total +
+          lancamento.lancamentoItens.reduce((subTotal, lancamentoItem) => {
+            if (
+              lancamentoItem.contratoItemId === item.contrato_item_id &&
+              lancamentoItem.id !== item.id
+            ) {
+              return subTotal + parseFloat(lancamentoItem.quantidadeItens);
+            }
+            return subTotal;
+          }, 0)
+        );
+      },
+      0
     );
-    return;
-  }
 
-  const quantidadeExcedida = editingLancamento.value.lancamentoItens.some(
-    (item) => {
-      const quantidadeRestante = calcularItensRestante(
-        item.id,
-        item.saldoQuantidadeContratada
-      );
-      return item.quantidadeItens > quantidadeRestante;
-    }
-  );
+    const saldoQuantidadeContratada = parseFloat(
+      item.saldo_quantidade_contratada
+    );
+    const quantidadeItens = parseFloat(item.quantidade_itens);
+    const quantidadeDisponivel =
+      saldoQuantidadeContratada - quantidadeTotalLançada;
+
+    return quantidadeItens > quantidadeDisponivel;
+  });
 
   if (quantidadeExcedida) {
     toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item."
+      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item.",
+      {
+        theme: "colored",
+        type: "error",
+      }
     );
     return;
   }
 
   let payload = {
-    status: editingLancamento.value.status,
-    itens: itensQuantidadePreenchida,
+    // status: editingLancamento.value.status,
+    status: "sem situação",
+    itens: itensQuantidadePreenchida.map((item) => ({
+      id: item.id,
+      quantidade_itens: item.quantidade_itens,
+    })),
     projetos: editingLancamento.value.projetos,
   };
-
   try {
+    const contratoId = route.params.id;
     const response = await api
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
       .then((response) => {
@@ -2088,7 +2197,8 @@ const saveEditedLancamento = async () => {
           type: "success",
         });
         modalEditLancamento.value = false;
-        fetchContrato(route.params.id);
+        editingLancamentoBackup.value = null;
+        fetchContrato(contratoId);
       });
   } catch (error) {
     console.error(error);
