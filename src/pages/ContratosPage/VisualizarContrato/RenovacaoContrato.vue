@@ -139,7 +139,7 @@
     <div class="flex justify-between items-center">
       <h1 class="font-bold text-4xl mb-8">Lançamentos</h1>
       <button
-        @click="showAddFaturamentoModal()"
+        @click="showAddLancamentoModal()"
         class="bg-blue-400 hover:bg-blue-500 rounded-md text-white p-4 flex items-center gap-2"
       >
         <span class="text-4xl">+</span>Novo Lançamento
@@ -156,15 +156,15 @@
       <tbody>
         <tr
           class="h-20 text-center"
-          v-for="lancamento in renovacao.faturamentos"
+          v-for="lancamento in renovacao.lancamentos"
           :key="lancamento.id"
         >
           <td>{{formatDate(lancamento.createdAt)}}</td>
           <td class="text-2xl">{{lancamento.projetos}}</td>
-          <td class="text-2xl">{{calcularQuantidadeItens(lancamento.faturamentoItens)}}</td>
-          <td class="text-2xl">{{formatCurrency(calcularSaldoFaturamentoItens(lancamento.faturamentoItens))}}</td>
+          <td class="text-2xl">{{calcularQuantidadeItens(lancamento.lancamentoItens)}}</td>
+          <td class="text-2xl">{{formatCurrency(calcularSaldoLancamentoItens(lancamento.lancamentoItens))}}</td>
           <td class="flex justify-center mt-6 gap-2">
-            <button type="button" @click="showViewFaturamentoModal(lancamento)">
+            <button type="button" @click="showViewLancamentoModal(lancamento)">
               <Icon
                 icon="ph:eye"
                 height="20"
@@ -178,7 +178,7 @@
                 class="hover:text-red-500 hover:rounded-md cursor-pointer"
               />
             </button> -->
-            <button type="button" @click="deleteFaturamento(lancamento.id)">
+            <button type="button" @click="deleteLancamento(lancamento.id)">
               <Icon
                 icon="ph:trash"
                 height="20"
@@ -423,24 +423,24 @@
 
 <!-- Modal criar lançamento -->
   <JetDialogModal
-  :show="modalAddFaturamento"
+  :show="modalAddLancamento"
   :withouHeader="false"
-  @close="closeAddFaturamentoModal"
+  @close="closeAddLancamentoModal"
   maxWidth="6xl"
   :modalTitle="'Criar Lançamento'"
 >
   <template #content>
-    <form @submit.prevent="addFaturamentoRenovacao">
+    <form @submit.prevent="addLancamentoRenovacao">
       <section class="flex flex-col gap-8">
         <div class="mt-8 flex gap-4 justify-between items-center">
           <label class="font-bold text-3xl">Situação:</label>
           <select
-            v-model="renovacaoFaturamentoData.status"
+            v-model="renovacaoLancamentoData.status"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
           >
             <option disabled hidden value="">Selecione a situação</option>
-            <option>Aguardando Faturamento</option>
+            <option>Aguardando Lancamento</option>
             <option>Aguardando Pagamento</option>
             <option>Pago</option>
           </select>
@@ -451,7 +451,7 @@
             type="text"
             placeholder="Informe o nome do  projeto"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            v-model="renovacaoFaturamentoData.projetos"
+            v-model="renovacaoLancamentoData.projetos"
           />
         </div>
         <div class="flex gap-4 justify-between items-center">
@@ -530,7 +530,7 @@
 
       <div class="mt-9 flex justify-end gap-4">
         <button
-          @click="closeAddFaturamentoModal"
+          @click="closeAddLancamentoModal"
           class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
         >
           Fechar
@@ -548,9 +548,9 @@
 
 <!-- Modal visualizar lançamento -->
 <JetDialogModal
-:show="modalViewFaturamento"
+:show="modalViewLancamento"
 :withouHeader="false"
-@close="closeViewFaturamentoModal"
+@close="closeViewLancamentoModal"
 maxWidth="6xl"
 :modalTitle="'Criar Lançamento'"
 >
@@ -561,12 +561,12 @@ maxWidth="6xl"
         <label class="font-bold text-3xl">Situação:</label>
         <select
           disabled
-          v-model="renovacaoFaturamentoData.status"
+          v-model="renovacaoLancamentoData.status"
           class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
           required
         >
           <option disabled hidden value="">Selecione a situação</option>
-          <option>Aguardando Faturamento</option>
+          <option>Aguardando Lancamento</option>
           <option>Aguardando Pagamento</option>
           <option>Pago</option>
         </select>
@@ -578,7 +578,7 @@ maxWidth="6xl"
           type="text"
           placeholder="Informe o nome do  projeto"
           class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-          v-model="renovacaoFaturamentoData.projetos"
+          v-model="renovacaoLancamentoData.projetos"
         />
       </div>
       <div class="flex gap-4 justify-between items-center">
@@ -614,7 +614,7 @@ maxWidth="6xl"
         <tbody>
           <tr
             class="h-24 text-center"
-            v-for="item in renovacaoFaturamentoData.faturamentoItens"
+            v-for="item in renovacaoLancamentoData.lancamentoItens"
             :key="item.id"
           >
             <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
@@ -658,7 +658,7 @@ maxWidth="6xl"
 
     <div class="mt-9 flex justify-end gap-4">
       <button
-        @click="closeViewFaturamentoModal"
+        @click="closeViewLancamentoModal"
         class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
       >
         Fechar
@@ -695,35 +695,35 @@ const moneyConfig = {
   prefix: "R$ ",
   masked: false,
 };
-//Modal adicionar faturamento
-const modalAddFaturamento = ref(false);
-const modalViewFaturamento = ref(false);
-const renovacaoFaturamentoData = ref({
+//Modal adicionar lancamento
+const modalAddLancamento = ref(false);
+const modalViewLancamento = ref(false);
+const renovacaoLancamentoData = ref({
   status: "",
   itens: [{}],
   projetos: "",
   data_pagamento: "",
 })
 
-const showAddFaturamentoModal = () => {
-  modalAddFaturamento.value = true;
+const showAddLancamentoModal = () => {
+  modalAddLancamento.value = true;
   props.renovacao.contratoItens.forEach((item) => {
     item.quantidadeItens = 0;
   });
 }
 
-const showViewFaturamentoModal = (faturamento) => {
-  modalViewFaturamento.value = true;
-  renovacaoFaturamentoData.value = {
-    status: faturamento.status,
-    projetos: faturamento.projetos,
-    faturamentoItens: faturamento.faturamentoItens
+const showViewLancamentoModal = (lancamento) => {
+  modalViewLancamento.value = true;
+  renovacaoLancamentoData.value = {
+    status: lancamento.status,
+    projetos: lancamento.projetos,
+    lancamentoItens: lancamento.lancamentoItens
   }
 }
 
-const closeViewFaturamentoModal = () => {
-  modalViewFaturamento.value = false;
-  renovacaoFaturamentoData.value = {
+const closeViewLancamentoModal = () => {
+  modalViewLancamento.value = false;
+  renovacaoLancamentoData.value = {
     status: "",
     itens: [{}],
     projetos: "",
@@ -734,9 +734,9 @@ const closeViewFaturamentoModal = () => {
   });
 };
 
-const closeAddFaturamentoModal = () => {
-  modalAddFaturamento.value = false;
-  renovacaoFaturamentoData.value = {
+const closeAddLancamentoModal = () => {
+  modalAddLancamento.value = false;
+  renovacaoLancamentoData.value = {
     status: "",
     itens: [{}],
     projetos: "",
@@ -747,7 +747,7 @@ const closeAddFaturamentoModal = () => {
   });
 }
 
-const addFaturamentoRenovacao = async () => {
+const addLancamentoRenovacao = async () => {
   const renovacaoId = props.renovacao.id;
   let itensQuantidadePreenchida = props.renovacao.contratoItens
     .map((item) => ({
@@ -756,7 +756,7 @@ const addFaturamentoRenovacao = async () => {
     }));
 
     if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item para criar o faturamento.", {
+    toast("Adicione pelo menos um item para criar o lancamento.", {
       theme: "colored",
       type: "error",
     });
@@ -764,37 +764,37 @@ const addFaturamentoRenovacao = async () => {
   }
 
   let payload = {
-      status: renovacaoFaturamentoData.value.status,
+      status: renovacaoLancamentoData.value.status,
       itens: itensQuantidadePreenchida,
-      projetos: renovacaoFaturamentoData.value.projetos,
+      projetos: renovacaoLancamentoData.value.projetos,
   };
   try {
     const response = await api
-      .post(`/renovacoes/${renovacaoId}/faturamentos`, payload)
+      .post(`/renovacoes/${renovacaoId}/lancamentos`, payload)
       .then((response) => {
-        toast("Faturamento adicionado com sucesso!", {
+        toast("Lancamento adicionado com sucesso!", {
           theme: "colored",
           type: "success",
         });
       });
     resetItemData();
     emit("renovacaoEditada");
-    closeAddFaturamentoModal();
+    closeAddLancamentoModal();
   } catch (error) {
-    toast("Não foi possível adicionar faturamento!", {
+    toast("Não foi possível adicionar lancamento!", {
       theme: "colored",
       type: "error",
     });
-    console.error("Erro ao adicionar faturamento", error);
+    console.error("Erro ao adicionar lancamento", error);
   }
 };
 
 
-const deleteFaturamento = async (itemId) => {
-  const faturamentoId = itemId
+const deleteLancamento = async (itemId) => {
+  const lancamentoId = itemId
   const result = await Swal.fire({
     title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este faturamento?",
+    text: "Tem certeza que deseja excluir este lancamento?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -804,10 +804,10 @@ const deleteFaturamento = async (itemId) => {
   });
   if (result.isConfirmed) {
     try {
-      await api.delete(`/faturamentos/${faturamentoId}`);
+      await api.delete(`/lancamentos/${lancamentoId}`);
       emit("renovacaoEditada");
     } catch (error) {
-      console.error('Erro ao deletar faturamento:', error);
+      console.error('Erro ao deletar lancamento:', error);
     }
   }
 }
@@ -1007,19 +1007,19 @@ const editRenovacao = async () => {
 };
 // Calculos
 
-const calcularQuantidadeItens = (faturamentoItens) => {
+const calcularQuantidadeItens = (lancamentoItens) => {
   let saldoTotal = 0;
 
-  faturamentoItens.forEach((item) => {
+  lancamentoItens.forEach((item) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     saldoTotal += quantidadeItens;
   });
   return parseFloat(saldoTotal.toFixed(2));
 };
 
-const calcularSaldoFaturamentoItens = (faturamento) => {
+const calcularSaldoLancamentoItens = (lancamento) => {
   let saldoTotal = 0;
-  faturamento.forEach(item => {
+  lancamento.forEach(item => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
     const valorTotalItem = quantidadeItens * valorUnitario;
