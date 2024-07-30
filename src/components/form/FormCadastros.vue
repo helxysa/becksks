@@ -223,14 +223,15 @@
             </div>
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Quantidade Contratada:</label>
-              <input
-                v-model="novoItem.saldo_quantidade_contratada"
-                type="number"
-                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-                required
-                placeholder="Quantidade contratada"
-                min="0"
-              />
+              <money3
+              v-model="novoItem.saldo_quantidade_contratada"
+              type="number"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              min="0"
+              v-bind="decimalConfig"
+              placeholder="Quantidade contratada"
+            />
             </div>
           </section>
           <div class="mt-9 flex justify-end gap-4">
@@ -299,14 +300,15 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Quantidade Contratada:</label>
-            <input
-              v-model="editItem.saldo_quantidade_contratada"
-              type="number"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required
-              placeholder="Quantidade contratada"
-              min="0"
-            />
+            <money3
+            v-model="editItem.saldo_quantidade_contratada"
+            type="number"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            required
+            min="0"
+            v-bind="decimalConfig"
+            placeholder="Quantidade contratada"
+          />
           </div>
         </section>
         <div class="mt-9 flex justify-end gap-4">
@@ -355,6 +357,14 @@ const moneyConfig = {
   decimal: ',',
   thousands: '.',
   prefix: 'R$ ',
+  masked: false
+};
+
+const decimalConfig = {
+  precision: 2,
+  decimal: ',',
+  thousands: '.',
+  prefix: '',
   masked: false
 };
 
