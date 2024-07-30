@@ -196,7 +196,7 @@
           </td>
           <!-- {{ (contrato?.lancamentos?.lancamentoItens) }} -->
           <td class="text-2xl">
-            {{ calcularItensRestante(item.id, item.saldoQuantidadeContratada) }}
+            {{ calcularItensRestante(item.id, item.saldoQuantidadeContratada).toFixed(2)}}
           </td>
           <td>
             <div class="flex justify-center items-center gap-2">
@@ -232,12 +232,6 @@
     <div class="flex justify-between mt-12">
       <h1 class="text-4xl font-medium">Lançamentos</h1>
       <div class="flex gap-4">
-        <button
-          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]"
-          @click="ExibirModalPedidoFaturamento"
-        >
-          Novo pedido faturamento
-        </button>
         <button class="btn-lancamento relative" @click="ExibirModalLancamento">
           Novo Lançamento
           <span class="absolute right-[3px]">
@@ -248,6 +242,13 @@
             />
           </span>
         </button>
+        <button
+          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]"
+          @click="ExibirModalPedidoFaturamento"
+        >
+          Novo pedido faturamento
+        </button>
+    
       </div>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
@@ -524,7 +525,7 @@
                           )
                           .reduce(
                             (total, subitem) =>
-                              total + parseInt(subitem.quantidadeItens),
+                              total + parseFloat(subitem.quantidadeItens),
                             0
                           )
                       }}
@@ -641,13 +642,42 @@
                 </span>
               </td>
               <td>
-                {{
-                  item.lancamentoItens.reduce(
-                    (total, subitem) =>
-                      total + parseInt(subitem.quantidadeItens),
-                    0
-                  )
-                }}
+                <div
+                v-for="unidade in [
+                  ...new Set(
+                    item.lancamentoItens.map(
+                      (subitem) => subitem.unidadeMedida
+                    )
+                  ),
+                ]"
+                :key="unidade"
+              >
+                <template
+                  v-if="
+                    item.lancamentoItens
+                      .filter((subitem) => subitem.unidadeMedida === unidade)
+                      .reduce(
+                        (total, subitem) =>
+                          total + parseInt(subitem.quantidadeItens),
+                        0
+                      ) > 0
+                  "
+                >
+                  <span class="flex justify-center">
+                    {{
+                      item.lancamentoItens
+                        .filter(
+                          (subitem) => subitem.unidadeMedida === unidade
+                        )
+                        .reduce(
+                          (total, subitem) =>
+                            total + parseFloat(subitem.quantidadeItens),
+                          0
+                        )
+                    }}
+                  </span>
+                </template>
+              </div>
               </td>
               <td>
                 {{
@@ -762,17 +792,20 @@
                     calcularItensRestante(
                       item.id,
                       item.saldoQuantidadeContratada
-                    )
+                    ).toFixed(2)
                   }}
                 </td>
                 <td>
-                  <input
-                    type="number"
-                    v-model="item.quantidadeItens"
-                    class="border-2 text-center max-w-60"
-                    min="0"
-                    max="Number(item.saldoQuantidadeContratada)"
-                  />
+                  <money3
+                  v-model="item.quantidadeItens"
+                  type="number"
+                  class="border-2 text-center max-w-60"                 
+                  min="0"
+                  :max="Number(item.saldoQuantidadeContratada)"
+                  v-bind="decimalConfig"
+                  
+                />
+                
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
@@ -903,18 +936,21 @@
                     calcularItensRestante(
                       item.contratoItemId,
                       item.saldoQuantidadeContratada
-                    )
+                    ).toFixed(2)
                   }}
                 </td>
                 <td>
-                  <input
-                    :disabled="isLancamentoViewModal"
-                    :class="{ 'border-none bg-white': isLancamentoViewModal }"
-                    type="number"
-                    v-model="item.quantidadeItens"
-                    class="border-2 text-center max-w-60"
-                    min="0"
-                  />
+                  <money3
+                  v-model="item.quantidadeItens"
+                  type="number"
+                  :disabled="isLancamentoViewModal"
+                  :class="{ 'border-none bg-white': isLancamentoViewModal }"   
+                  class="border-2 text-center max-w-60"              
+                  min="0"
+                  :max="Number(item.saldoQuantidadeContratada)"
+                  v-bind="decimalConfig"
+                  
+                />             
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
@@ -1001,14 +1037,15 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Quantidade Contratada:</label>
-            <input
-              v-model="newItem.saldo_quantidade_contratada"
-              type="number"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required
-              min="0"
-              placeholder="Quantidade contratada"
-            />
+            <money3
+            v-model="newItem.saldo_quantidade_contratada"            
+            type="number"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            required
+            min="0"
+            v-bind="decimalConfig"
+            placeholder="Quantidade contratada"
+          />           
           </div>
         </section>
         <div class="mt-9 flex justify-end gap-4">
@@ -1080,15 +1117,16 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Quantidade Contratada:</label>
-            <input
-              :disabled="isItemViewModal"
-              v-model="editingItem.saldoQuantidadeContratada"
-              type="number"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required
-              min="0"
-              placeholder="Saldo da quantidade contratada"
-            />
+            <money3
+            v-model="editingItem.saldoQuantidadeContratada"
+             :disabled="isItemViewModal"
+            type="number"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            required
+            min="0"
+            v-bind="decimalConfig"
+            placeholder="Quantidade contratada"
+          />           
           </div>
         </section>
         <div class="mt-9 flex justify-end gap-4">
@@ -1297,18 +1335,18 @@ const closeEditFaturamentoModal = () => {
 
 const calcularTotalLancamento = (lancamentos) => {
   let total = 0;
-
+ 
   const lancamentosFiltrados = lancamentos.filter((lancamento) =>
     pedidosFaturamento.value.includes(lancamento.id)
   );
-
+  
   lancamentosFiltrados.forEach((lancamento) => {
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
       total +=
         parseFloat(lancamentoItem.valorUnitario) *
-        parseInt(lancamentoItem.quantidadeItens);
+        parseFloat(lancamentoItem.quantidadeItens);
     });
-  });
+  });  
 
   return total;
 };
@@ -1320,7 +1358,7 @@ const calcularTotalFaturamento = (faturamento) => {
     faturamentoItem.lancamento.lancamentoItens.forEach((lancamentoItem) => {
       total +=
         parseFloat(lancamentoItem.valorUnitario) *
-        parseInt(lancamentoItem.quantidadeItens);
+        parseFloat(lancamentoItem.quantidadeItens);
     });
   });
   return total;
@@ -1499,6 +1537,14 @@ const moneyConfig = {
   thousands: ".",
   prefix: "R$ ",
   masked: false,
+}; 
+
+const decimalConfig = {
+  precision: 2,
+  decimal: ',',
+  thousands: '.',
+  prefix: '',
+  masked: false
 };
 
 const deleteContrato = (contratoAtual) => {
@@ -1664,6 +1710,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    console.log(response.data, 'response')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
