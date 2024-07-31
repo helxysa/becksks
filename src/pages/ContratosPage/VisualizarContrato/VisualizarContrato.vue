@@ -1710,7 +1710,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
-    console.log(response.data, 'response')
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -1741,11 +1740,11 @@ const deleteLancamento = (lancamentoId) => {
           fetchContrato(contratoId);
         })
         .catch((error) => {
-          toast(error.response.data.message, {
+          toast('Não foi possível deletar lançamento', {
             theme: "colored",
             type: "error",
           });
-          console.error("Erro ao deletar lancamento:", error);
+          console.error("Erro ao deletar lancamento:", error.message);
         });
     }
   });
