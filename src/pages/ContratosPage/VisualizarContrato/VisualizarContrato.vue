@@ -658,7 +658,7 @@
                       .filter((subitem) => subitem.unidadeMedida === unidade)
                       .reduce(
                         (total, subitem) =>
-                          total + parseInt(subitem.quantidadeItens),
+                          total + parseFloat(subitem.quantidadeItens),
                         0
                       ) > 0
                   "
