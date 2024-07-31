@@ -248,7 +248,7 @@
         >
           Novo pedido faturamento
         </button>
-    
+
       </div>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
@@ -799,13 +799,13 @@
                   <money3
                   v-model="item.quantidadeItens"
                   type="number"
-                  class="border-2 text-center max-w-60"                 
+                  class="border-2 text-center max-w-60"
                   min="0"
                   :max="Number(item.saldoQuantidadeContratada)"
                   v-bind="decimalConfig"
-                  
+
                 />
-                
+
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
@@ -944,13 +944,13 @@
                   v-model="item.quantidadeItens"
                   type="number"
                   :disabled="isLancamentoViewModal"
-                  :class="{ 'border-none bg-white': isLancamentoViewModal }"   
-                  class="border-2 text-center max-w-60"              
+                  :class="{ 'border-none bg-white': isLancamentoViewModal }"
+                  class="border-2 text-center max-w-60"
                   min="0"
                   :max="Number(item.saldoQuantidadeContratada)"
                   v-bind="decimalConfig"
-                  
-                />             
+
+                />
                 </td>
                 <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
@@ -1038,14 +1038,14 @@
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Quantidade Contratada:</label>
             <money3
-            v-model="newItem.saldo_quantidade_contratada"            
+            v-model="newItem.saldo_quantidade_contratada"
             type="number"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             required
             min="0"
             v-bind="decimalConfig"
             placeholder="Quantidade contratada"
-          />           
+          />
           </div>
         </section>
         <div class="mt-9 flex justify-end gap-4">
@@ -1126,7 +1126,7 @@
             min="0"
             v-bind="decimalConfig"
             placeholder="Quantidade contratada"
-          />           
+          />
           </div>
         </section>
         <div class="mt-9 flex justify-end gap-4">
@@ -1335,18 +1335,18 @@ const closeEditFaturamentoModal = () => {
 
 const calcularTotalLancamento = (lancamentos) => {
   let total = 0;
- 
+
   const lancamentosFiltrados = lancamentos.filter((lancamento) =>
     pedidosFaturamento.value.includes(lancamento.id)
   );
-  
+
   lancamentosFiltrados.forEach((lancamento) => {
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
       total +=
         parseFloat(lancamentoItem.valorUnitario) *
         parseFloat(lancamentoItem.quantidadeItens);
     });
-  });  
+  });
 
   return total;
 };
@@ -1537,7 +1537,7 @@ const moneyConfig = {
   thousands: ".",
   prefix: "R$ ",
   masked: false,
-}; 
+};
 
 const decimalConfig = {
   precision: 2,
@@ -1741,7 +1741,7 @@ const deleteLancamento = (lancamentoId) => {
           fetchContrato(contratoId);
         })
         .catch((error) => {
-          toast("Não foi possível deletar o lancamento!", {
+          toast(error.response.data.message, {
             theme: "colored",
             type: "error",
           });
