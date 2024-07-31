@@ -100,7 +100,7 @@
             )
           }}
         </p>
-        <p>Valor aguardando lancamento</p>
+        <p>Valor aguardando lançamento</p>
       </div>
     </div>
     <div
@@ -684,7 +684,7 @@
     :withouHeader="false"
     @close="closeModalLancamento"
     maxWidth="7xl"
-    :modalTitle="' Criar Lancamento'"
+    :modalTitle="'Criar Lançamento'"
   >
     <template #content>
       <form @submit.prevent="createLancamento">
