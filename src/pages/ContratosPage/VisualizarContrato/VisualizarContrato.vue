@@ -714,7 +714,7 @@
     :withouHeader="false"
     @close="closeModalLancamento"
     maxWidth="7xl"
-    :modalTitle="' Criar Lancamento'"
+    :modalTitle="'Criar Lançamento'"
   >
     <template #content>
       <form @submit.prevent="createLancamento">
