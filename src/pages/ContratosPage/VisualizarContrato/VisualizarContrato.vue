@@ -425,6 +425,19 @@
               formatCurrency(calcularTotalLancamento(contrato.lancamentos))
             }}</span>
           </div>
+            <div class=" flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Situação:</label>
+            <select
+              v-model="selectNovoFaturamento"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled hidden value="">Selecione a situação</option>
+              <option>Aguardando Lancamento</option>
+              <option>Aguardando Pagamento</option>
+              <option>Pago</option>
+            </select>
+          </div>
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
             <input
@@ -443,6 +456,16 @@
               required
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class=" gap-4 flex items-center justify-between">
+            <label class="font-bold  text-3xl w-[180px]">Observações</label>
+            <textarea
+             v-model="pedidoFaturamentoData.observacoes"          
+              rows="7"
+              placeholder="observações"             
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
+  
             />
           </div>
         </section>
@@ -579,6 +602,20 @@
             <span class="font-medium text-3xl">{{
               formatCurrency(calcularTotalFaturamento(editingFaturamento))
             }}</span>
+          </div>        
+           <div class=" flex gap-4 justify-between items-center">
+            <label class="font-bold text-3xl">Situação:</label>
+            <select
+              :disabled="isFaturamentoViewModal"
+              v-model="editingFaturamento.status"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled hidden value="">Selecione a situação</option>
+              <option>Aguardando Lancamento</option>
+              <option>Aguardando Pagamento</option>
+              <option>Pago</option>
+            </select>
           </div>
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
@@ -602,6 +639,16 @@
               required
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class=" gap-4 flex items-center justify-between">
+            <label class="font-bold  text-3xl w-[180px]">Observações</label>
+            <textarea
+             v-model="editingFaturamento.observacoes"          
+              rows="7"
+              placeholder="observações"             
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
+  
             />
           </div>
         </section>
@@ -718,20 +765,7 @@
   >
     <template #content>
       <form @submit.prevent="createLancamento">
-        <section class="flex flex-col gap-8">
-          <!-- <div class="mt-8 flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Situação:</label>
-            <select
-              v-model="selectNovoLancamento"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required
-            >
-              <option disabled hidden value="">Selecione a situação</option>
-              <option>Aguardando Lancamento</option>
-              <option>Aguardando Pagamento</option>
-              <option>Pago</option>
-            </select>
-          </div> -->
+        <section class="flex flex-col gap-8">       
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl">Projeto:</label>
             <input
@@ -740,21 +774,7 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="projetos"
             />
-          </div>
-          <!-- <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Valor contratado:</label>
-            <span
-              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
-              >{{ formatCurrency(contrato.saldoContrato) }}</span
-            >
-          </div>
-          <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Saldo atual:</label>
-            <span
-              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
-              >{{ formatCurrency(calcularSaldoAtual()) }}</span
-            >
-          </div> -->
+          </div>         
         </section>
         <div class="mt-8">
           <table
@@ -817,16 +837,8 @@
                 </td>
               </tr>
             </tbody>
-          </table>
-          <!-- <div class="flex justify-end mt-2">
-            <div class="flex">
-                <p class="font-semibold">Total Faturado:</p>
-                <p>{{totalFaturado}}</p>
-            </div>
-
-          </div> -->
+          </table>       
         </div>
-
         <div class="mt-9 flex justify-end gap-4">
           <button
             @click="closeModalLancamento"
@@ -858,21 +870,7 @@
   >
     <template #content>
       <form @submit.prevent="saveEditedLancamento">
-        <section class="flex flex-col gap-8">
-          <!-- <div class="mt-8 flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Situação:</label>
-            <select
-              :disabled="isLancamentoViewModal"
-              v-model="editingLancamento.status"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              required
-            >
-              <option disabled hidden value="">Selecione a situação</option>
-              <option>Aguardando Lancamento</option>
-              <option>Aguardando Pagamento</option>
-              <option>Pago</option>
-            </select>
-          </div> -->
+        <section class="flex flex-col gap-8"> 
 
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl">Projeto:</label>
@@ -884,21 +882,7 @@
               :class="{ 'border-none bg-white': isLancamentoViewModal }"
               v-model="editingLancamento.projetos"
             />
-          </div>
-          <!-- <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Valor contratado:</label>
-            <span
-              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
-              >{{ formatCurrency(contrato.saldoContrato) }}</span
-            >
-          </div>
-          <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Saldo atual:</label>
-            <span
-              class="ml-2 border bg-slate-100 w-[50%] p-4 rounded-lg text-center"
-              >{{ formatCurrency(calcularSaldoAtual()) }}</span
-            >
-          </div> -->
+          </div>      
         </section>
         <div class="mt-8">
           <table
@@ -1241,6 +1225,7 @@ const contrato = ref({});
 const lancamentos = ref([]);
 const modalLancamento = ref(false);
 const selectNovoLancamento = ref(null);
+const selectNovoFaturamento = ref(null);
 const modalPedidoFaturamento = ref(false);
 const modalCreateItem = ref(false);
 let totalFaturado = 0;
@@ -1267,6 +1252,7 @@ const pedidoFaturamentoData = ref({
   nota_fiscal: "",
   data_faturamento: "",
   descricao_nota: [],
+  observacoes: ''
 });
 
 const changePedido = (e) => {
@@ -1297,10 +1283,13 @@ const ExibirModalPedidoFaturamento = () => {
 };
 const closeModalPedidoFaturamento = () => {
   modalPedidoFaturamento.value = false;
+   selectNovoFaturamento.value = ""
   pedidoFaturamentoData.value = {
     nota_fiscal: "",
     data_faturamento: "",
     descricao_nota: [],
+    observacoes: ""
+    
   };
 
   pedidosFaturamento.value = [];
@@ -1327,6 +1316,7 @@ const openViewFaturamentoModal = (faturamento) => {
 };
 
 const closeEditFaturamentoModal = () => {
+  selectNovoFaturamento.value = ""
   isFaturamentoViewModal.value = false;
   editingFaturamento.value = {};
   // closeModalPedidoFaturamento()
@@ -1459,6 +1449,7 @@ const saveEditedFaturamento = async () => {
     nota_fiscal: editingFaturamento.value.notaFiscal,
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
+    status: editingFaturamento.value.status,
   };
 
   try {
@@ -2289,5 +2280,9 @@ const saveEditedLancamento = async () => {
 
 .btn-item:hover {
   background-color: #0ea5e9;
+}
+
+.text-observacoes {
+  resize: none;
 }
 </style>
