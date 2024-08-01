@@ -100,7 +100,7 @@
             )
           }}
         </p>
-        <p>Valor aguardando lancamento</p>
+        <p>Valor aguardando faturamento</p>
       </div>
     </div>
     <div
@@ -168,21 +168,23 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
+          <th class="text-xl px-2">Id</th>
           <th class="text-xl">Item</th>
           <th class="text-xl">U.M (Unidade de Medida)</th>
           <th class="text-xl">Quantidade Contratada</th>
           <th class="text-xl">Valor Unitário</th>
           <th class="text-xl">Valor Total (Item)</th>
-          <th class="text-xl">Quantidade de itens disponíveis</th>
+          <th class="text-xl min-w-44">Quantidade de itens disponíveis</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
       <tbody>
         <tr
           class="h-24 text-center"
-          v-for="item in contrato.contratoItens"
+          v-for="(item , index) in contrato.contratoItens"
           :key="item.id"
         >
+          <td class="text-2xl px-2">{{ index + 1 }}</td>
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
@@ -262,6 +264,7 @@
               @change="toggleSelectAll"
             />
           </th>
+          <th class="text-xl">Id</th>
           <th class="text-xl">Data</th>
           <th class="text-xl">Projeto</th>
           <!-- <th class="text-xl">Quantidade itens</th> -->
@@ -275,7 +278,7 @@
       <tbody v-if="contrato.lancamentos">
         <tr
           class="h-24 text-center"
-          v-for="lancamento in lancamentosOrdenados"
+          v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
         >
           <td>
@@ -287,6 +290,7 @@
               @change="changePedido"
             />
           </td>
+          <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <!-- <td class="text-2xl">
@@ -337,6 +341,7 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
+          <th class="text-xl">Id</th>
           <th class="text-xl">Data</th>
           <th class="text-xl">Nota Fiscal</th>
           <th class="text-xl">Total do Faturamento</th>
@@ -347,9 +352,10 @@
       <tbody v-if="contrato.faturamentos">
         <tr
           class="h-28 text-center"
-          v-for="faturamento in faturamentosOrdenados"
+          v-for="(faturamento , index) in faturamentosOrdenados"
           :key="faturamento.id"
         >
+          <td class="text-2xl">{{ index + 1}}</td>
           <td class="text-2xl">
             <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
@@ -1700,7 +1706,7 @@ onMounted(() => {
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    contrato.value = response.data;
+    contrato.value = response.data;    
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
