@@ -25,8 +25,14 @@
     </button>
   </div>
 
-  <section class="mb-4">
+  <section class="mb-4"> 
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div class="flex items-center gap-4">
+        <label class="font-semibold dark:text-white">Contrato:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.nomeContrato
+        }}</span>
+      </div>
       <div class="flex items-center gap-4">
         <label class="font-semibold dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
@@ -46,7 +52,19 @@
       <div class="flex items-center gap-4">
         <label class="font-semibold">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.fiscal
+           contrato?.fiscal?.nome
+        }}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <label class="font-semibold">Telefone fiscal:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+         contrato?.fiscal?.telefone
+        }}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <label class="font-semibold">E-mail fiscal:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+           contrato?.fiscal?.email
         }}</span>
       </div>
       <div class="flex items-center gap-4">
@@ -174,7 +192,7 @@
           <th class="text-xl">Quantidade Contratada</th>
           <th class="text-xl">Valor Unitário</th>
           <th class="text-xl">Valor Total (Item)</th>
-          <th class="text-xl min-w-44">Quantidade de itens disponíveis</th>
+          <th class="text-xl min-w-44">Quantidade itens disponíveis</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>

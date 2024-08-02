@@ -87,7 +87,7 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Email do fiscal</label>
+          <label class="font-bold w-60">E-mail do fiscal</label>
           <input
             required
             type="email"
@@ -129,6 +129,26 @@
             v-model="contratoForm.objeto_contrato"
               maxlength="120"
           />
+        </div>
+        <div class=" flex  justify-between items-center mt-8">
+          <label class="font-bold w-60">Lembrete vencimento:</label>
+          <select
+            v-model="contratoForm.lembrete_vencimento"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl h-14"
+            required
+          >
+            <option disabled hidden value="">Selecione quantidade de dias para receber a  notificação </option>
+            <option>5</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+            <option>25</option>
+            <option>30</option>
+            <option>45</option>
+            <option>60</option>
+            <option>90</option>
+            <option>120</option>           
+          </select>
         </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Observações</label>
@@ -418,6 +438,7 @@ let contratoForm = reactive({
   items: [],
   observacoes: "",
   nome_contrato: "",
+  lembrete_vencimento: "",
 });
 let novoItem = ref({
   titulo: "",
