@@ -82,8 +82,9 @@
             type="tel"
             placeholder="Informe o telefone do  fiscal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-              v-model="contratoForm.fiscal.telefone"
+            v-model="contratoForm.fiscal.telefone"
             maxlength="15"
+            @keyup="handlePhone"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -246,7 +247,8 @@ async function saveContrato() {
     cidade: contratoForm.value.cidade,
     objeto_contrato: contratoForm.value.objetoContrato,
     observacoes: contratoForm.value.observacoes,
-    lembrete_vencimento: contratoForm.value.lembreteVencimento
+    lembrete_vencimento: contratoForm.value.lembreteVencimento,
+    nome_contrato: contratoForm.value.nomeContrato,
    
   };
   try {
@@ -278,6 +280,19 @@ const formatCurrency = (value) => {
     minimumFractionDigits: 2,
   }).format(value);
 };
+
+const handlePhone = (event) => { 
+  let input = event.target
+  input.value = phoneMask(input.value)
+}
+
+const phoneMask = (value) => {
+  if (!value) return ""
+  value = value.replace(/\D/g,'')
+  value = value.replace(/(\d{2})(\d)/,"($1) $2")
+  value = value.replace(/(\d)(\d{4})$/,"$1-$2")
+  return value
+}
 </script>
 
 <style scoped>
