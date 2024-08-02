@@ -25,8 +25,14 @@
     </button>
   </div>
 
-  <section class="mb-4">
+  <section class="mb-4"> 
     <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div class="flex items-center gap-4">
+        <label class="font-semibold dark:text-white">Contrato:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+          contrato.nomeContrato
+        }}</span>
+      </div>
       <div class="flex items-center gap-4">
         <label class="font-semibold dark:text-white">Cliente:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
@@ -46,7 +52,19 @@
       <div class="flex items-center gap-4">
         <label class="font-semibold">Fiscal:</label>
         <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.fiscal
+           contrato?.fiscal?.nome
+        }}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <label class="font-semibold">Telefone fiscal:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+         contrato?.fiscal?.telefone
+        }}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <label class="font-semibold">E-mail fiscal:</label>
+        <span class="pl-4 p-2 underline underline-offset-4">{{
+           contrato?.fiscal?.email
         }}</span>
       </div>
       <div class="flex items-center gap-4">
@@ -96,7 +114,7 @@
         <p class="text-4xl font-semibold">
           {{
             formatCurrency(
-              calcularSaldoDisponivel(contrato.lancamentos).aguardandoLancamento
+              calcularSaldoDisponivel(contrato.lancamentos).aguardandoFaturamento
             )
           }}
         </p>
@@ -174,7 +192,7 @@
           <th class="text-xl">Quantidade Contratada</th>
           <th class="text-xl">Valor Unitário</th>
           <th class="text-xl">Valor Total (Item)</th>
-          <th class="text-xl min-w-44">Quantidade de itens disponíveis</th>
+          <th class="text-xl min-w-44">Quantidade itens disponíveis</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -345,7 +363,7 @@
           <th class="text-xl">Data</th>
           <th class="text-xl">Nota Fiscal</th>
           <th class="text-xl">Total do Faturamento</th>
-          <!-- <th class="text-xl">Situação</th> -->
+          <th class="text-xl">Situação</th>
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
@@ -369,7 +387,7 @@
               )
             }}
           </td>
-          <!-- <td class="text-2xl text-center">
+          <td class="text-2xl text-center">
             <div class="flex justify-center">
             <span
             class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
@@ -382,7 +400,7 @@
               {{ faturamento.status }}
           </span>
         </div>
-          </td> -->
+          </td>
 
           <td class="text-2xl">
             <div class="flex justify-center items-center gap-2">
@@ -434,12 +452,12 @@
             <div class=" flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
             <select
-              v-model="selectNovoFaturamento"
+              v-model="pedidoFaturamentoData.status"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
             >
               <option disabled hidden value="">Selecione a situação</option>
-              <option>Aguardando Lancamento</option>
+              <option>Aguardando Faturamento</option>
               <option>Aguardando Pagamento</option>
               <option>Pago</option>
             </select>
@@ -608,7 +626,7 @@
             <span class="font-medium text-3xl">{{
               formatCurrency(calcularTotalFaturamento(editingFaturamento))
             }}</span>
-          </div>        
+          </div>              
            <div class=" flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
             <select
@@ -618,7 +636,7 @@
               required
             >
               <option disabled hidden value="">Selecione a situação</option>
-              <option>Aguardando Lancamento</option>
+              <option>Aguardando Faturamento</option>
               <option>Aguardando Pagamento</option>
               <option>Pago</option>
             </select>
@@ -1258,6 +1276,7 @@ const pedidoFaturamentoData = ref({
   nota_fiscal: "",
   data_faturamento: "",
   descricao_nota: [],
+  status: '',
   observacoes: ''
 });
 
@@ -1294,7 +1313,8 @@ const closeModalPedidoFaturamento = () => {
     nota_fiscal: "",
     data_faturamento: "",
     descricao_nota: [],
-    observacoes: ""
+    observacoes: "",
+    status: "",
     
   };
 
@@ -1389,6 +1409,7 @@ const createPedidoFaturamento = async () => {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
+    status:  pedidoFaturamentoData.value.status
   };
 
   if (payload.descricao_nota.length <= 0) {
@@ -1706,7 +1727,8 @@ onMounted(() => {
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    contrato.value = response.data;    
+    contrato.value = response.data;   
+    console.log(contrato.value, 'contrato') 
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
@@ -1853,17 +1875,17 @@ const calcularSaldoLancamentoItens = (lancamento) => {
 
 const calcularSaldoDisponivel = (lancamento) => {
   let saldoTotal = 0;
-  let valorAguardandoLancamento = 0;
+  let valorAguardandoFaturamento = 0;
   let valorAguardandoPagamento = 0;
   let valorPago = 0;
 
   lancamento?.forEach((item) => {
-    if (item.status === "Aguardando Lancamento") {
+    if (item.status === "Aguardando Faturamento") {
       item.lancamentoItens.forEach((subItem) => {
         const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
         const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
         const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoLancamento += valorTotalItem;
+        valorAguardandoFaturamento += valorTotalItem;
         saldoTotal += valorTotalItem;
       });
     } else if (item.status === "Aguardando Pagamento") {
@@ -1886,7 +1908,7 @@ const calcularSaldoDisponivel = (lancamento) => {
   });
 
   return {
-    aguardandoLancamento: parseFloat(valorAguardandoLancamento.toFixed(2)),
+    aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
     aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
     totalUtilizado: parseFloat(saldoTotal.toFixed(2)),
     valorPago: parseFloat(valorPago.toFixed(2)),
