@@ -7,7 +7,7 @@
         </section>
 
         <section>
-          <p class="flex justify-center font-semibold text-3xl mt-6">{{ contrato.nomeCliente }}</p>
+          <p class="flex justify-center font-semibold text-3xl mt-6 max-w-[330px] px-2 ">{{ contrato.nomeCliente }}</p>
 
           <section class="px-8">
             <div class="relative">
