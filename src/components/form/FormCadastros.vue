@@ -10,6 +10,17 @@
     <section class="flex justify-center">
       <form class="mt-12 form-contrato" @submit.prevent="saveContrato">
         <div class="flex items-center justify-between">
+          <label class="font-bold w-60">Nome do contrato</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o nome do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.nome_contrato"
+            maxlength="120"
+          />
+        </div>
+        <div class="flex items-center justify-between mt-8">
           <label class="font-bold w-60">Nome do cliente</label>
           <input
             required
@@ -60,8 +71,30 @@
             type="text"
             placeholder="Informe o fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.fiscal"
-              maxlength="120"
+            v-model="contratoForm.fiscal.nome"
+            maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Telefone do fiscal</label>
+          <input
+            required
+            type="tel"
+            placeholder="Informe o telefone do  fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal.telefone"
+            maxlength="15"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Email do fiscal</label>
+          <input
+            required
+            type="email"
+            placeholder="Informe o email do  fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal.email"
+            maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -374,12 +407,17 @@ let contratoForm = reactive({
   data_inicio: "",
   data_fim: "",
   saldo_contrato: "",
-  fiscal: "",
+  fiscal: {
+    nome: "",
+    telefone: "",
+    email: "",
+  },
   ponto_focal: "",
   cidade: "",
   objeto_contrato: "",
   items: [],
   observacoes: "",
+  nome_contrato: "",
 });
 let novoItem = ref({
   titulo: "",
