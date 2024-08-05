@@ -7,7 +7,7 @@
         </section>
 
         <section>
-          <p class="flex justify-center font-semibold text-3xl mt-6 max-w-[330px] px-2 ">{{ contrato.nomeCliente }}</p>
+          <p class="flex justify-center font-semibold text-3xl mt-6 max-w-[330px] px-2 ">{{ contrato.nomeContrato }}</p>
 
           <section class="px-8">
             <div class="relative">
@@ -27,6 +27,10 @@
             </div>
           </section>
           <section class="p-6 flex flex-col gap-2 text-2xl">
+            <div class="flex gap-2 max-w-[300px]">
+              <span class="font-semibold">Nome cliente:</span>
+              <span >{{ contrato.nomeCliente }}</span>
+            </div>
             <div class="flex gap-2">
 
               <span class="font-semibold">Vigência:</span>
@@ -83,27 +87,36 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
   faturamento?.forEach((item) => {
     if (item.status === "Aguardando Faturamento") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoFaturamento += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorAguardandoFaturamento += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     } else if (item.status === "Aguardando Pagamento") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoPagamento += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorAguardandoPagamento += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     } else if (item.status === "Pago") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorPago += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorPago += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     }
   });
