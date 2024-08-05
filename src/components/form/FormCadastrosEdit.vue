@@ -283,7 +283,7 @@ const formatCurrency = (value) => {
 
 const handlePhone = (event) => { 
   let input = event.target
-  input.value = phoneMask(input.value)
+  contratoForm.value.fiscal.telefone = phoneMask(input.value)
 }
 
 const phoneMask = (value) => {

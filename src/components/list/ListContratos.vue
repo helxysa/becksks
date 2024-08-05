@@ -83,27 +83,36 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
   faturamento?.forEach((item) => {
     if (item.status === "Aguardando Faturamento") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoFaturamento += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorAguardandoFaturamento += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     } else if (item.status === "Aguardando Pagamento") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoPagamento += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorAguardandoPagamento += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     } else if (item.status === "Pago") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorPago += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorPago += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     }
   });
