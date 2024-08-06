@@ -1,15 +1,12 @@
 <template>
   <div class="flex justify-end gap-4 mb-20">
-    <button
+    <!-- <button
       @click="showRenovacaoModal()"
       class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="
-        calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado >=
-          contrato.saldoContrato || formatDate(contrato.dataFim) <= new Date()
-      "
+      v-if="podeRenovar"
     >
       Renovar
-    </button>
+    </button> -->
     <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
       <router-link
         :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
@@ -1270,7 +1267,7 @@ const isLancamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
 const isFaturamentoViewModal = ref(false);
 const editingFaturamento = ref({});
-
+const podeRenovar = ref(false);
 const projetos = ref("");
 const pedidosFaturamento = ref([]);
 const arrayIds = ref([]);
@@ -1731,6 +1728,8 @@ const fetchContrato = async (id) => {
     contrato.value = response.data;
     if (!contrato.value.quantidadeItens) {
     }
+
+    podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
@@ -2278,6 +2277,15 @@ const saveEditedLancamento = async () => {
   } catch (error) {
     console.error(error);
   }
+};
+
+const calcularPodeRenovar = () => {
+  const totalUtilizado = calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado;
+  const saldoContrato = contrato.value.saldoContrato;
+  const dataFimContrato = formatDate(contrato.value.dataFim);
+  const dataAtual = formatDate(new Date());
+
+  return totalUtilizado >= saldoContrato || dataFimContrato <= dataAtual;
 };
 </script>
 
