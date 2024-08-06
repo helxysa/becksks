@@ -64,12 +64,11 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Fiscal do contrato</label>
-          <!-- {{ contratoForm.fiscal.nome }} -->
+          <label class="font-bold w-60">Nome do Fiscal</label>
           <input
             required
             type="text"
-            placeholder="Informe o fiscal do contrato"
+            placeholder="Informe o nome do fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.fiscal.nome"
             maxlength="120"
@@ -80,7 +79,7 @@
           <input
             required
             type="tel"
-            placeholder="Informe o telefone do  fiscal"
+            placeholder="Informe o telefone do fiscal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.fiscal.telefone"
             maxlength="15"
@@ -92,7 +91,7 @@
           <input
             required
             type="email"
-            placeholder="Informe o email do  fiscal"
+            placeholder="Informe o email do fiscal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
             v-model="contratoForm.fiscal.email"
             maxlength="120"
@@ -131,14 +130,14 @@
             maxlength="120"
           />
         </div>
-        <div class=" flex  justify-between items-center mt-8">       
+        <div class=" flex  justify-between items-center mt-8">
           <label class="font-bold w-60">Lembrete vencimento:</label>
           <select
             v-model="contratoForm.lembreteVencimento"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl h-14"
             required
           >
-            <option disabled hidden value="">Selecione quantidade de dias para receber a  notificação </option>
+            <option disabled value="">Selecione a notificação do vencimento</option>
             <option>5</option>
             <option>10</option>
             <option>15</option>
@@ -148,17 +147,17 @@
             <option>45</option>
             <option>60</option>
             <option>90</option>
-            <option>120</option>           
+            <option>120</option>
           </select>
         </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Observações</label>
           <textarea
-           v-model="contratoForm.observacoes"          
+           v-model="contratoForm.observacoes"
             rows="7"
             placeholder="observações"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
-                      
+
           />
         </div>
 
@@ -224,7 +223,15 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     const contratoData = response.data;
-    console.log(contratoData, 'contrato data')
+
+    if (contratoData.fiscal === null) {
+      contratoData.fiscal = {
+        nome: '',
+        telefone: '',
+        email: ''
+      };
+    }
+
     Object.assign(contratoForm.value, response.data);
 
   } catch (error) {
@@ -249,7 +256,7 @@ async function saveContrato() {
     observacoes: contratoForm.value.observacoes,
     lembrete_vencimento: contratoForm.value.lembreteVencimento,
     nome_contrato: contratoForm.value.nomeContrato,
-   
+
   };
   try {
     const response = await api
@@ -281,7 +288,7 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
-const handlePhone = (event) => { 
+const handlePhone = (event) => {
   let input = event.target
   contratoForm.value.fiscal.telefone = phoneMask(input.value)
 }

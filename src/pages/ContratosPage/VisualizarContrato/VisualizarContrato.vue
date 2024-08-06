@@ -1729,7 +1729,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
-    console.log(contrato.value, "contrato");
     if (!contrato.value.quantidadeItens) {
     }
   } catch (error) {
