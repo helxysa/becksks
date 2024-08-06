@@ -240,6 +240,15 @@ const fetchContrato = async (id) => {
 };
 
 async function saveContrato() {
+
+  if (contratoForm.value.fiscal.telefone.length < 15) {
+    toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
+        theme: "colored",
+        type: "error",
+      });
+    return
+  }
+
   const payload = {
     nome_cliente: contratoForm.value.nomeCliente,
     data_inicio: contratoForm.value.dataInicio,
