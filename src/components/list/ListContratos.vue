@@ -73,6 +73,7 @@
 import { ref, onMounted, watch,  } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "@/services/api";
+import { toast } from "vue3-toastify";
 
 const route = useRoute();
 const router = useRouter();
@@ -149,20 +150,47 @@ const fetchContratos = async () => {
   try {
     const response = await api.get("/contratos");
     contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    verificarVencimentoContratos();
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
+};
+
+const verificarVencimentoContratos = () => {
+  const hoje = new Date();
+  contratos.value.forEach((contrato) => {
+    const dataFim = new Date(contrato.dataFim);
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
+    const diasParaVencimento = Math.ceil(
+      (dataFim - hoje) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diasParaVencimento == 0) {
+      toast.error(`O contrato ${contrato.nomeContrato} vence hoje.`, {
+        theme: "colored",
+        timeout: 10000
+      });
+    } else if (diasParaVencimento < 0) {
+      toast.error(`O contrato ${contrato.nomeContrato} expirou.`, {
+        theme: "colored",
+        timeout: 10000
+      });
+    } else if (diasParaVencimento <= lembreteVencimento) {
+      toast.warning(`O contrato ${contrato.nomeContrato} está prestes a vencer em ${diasParaVencimento} dias.`, {
+          theme: "colored",
+          type: "success",
+          timeout: 10000
+        });
+    }
+  });
 };
 
 onMounted(() => {
   fetchContratos();
 });
 
-watch(
-  fetchContratos()
-);
+// watch(
+//   fetchContratos()
+// );
 
-// watchEffect(() => {
-//   fetchContratos();
-// });
 </script>
