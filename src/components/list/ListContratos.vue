@@ -148,8 +148,7 @@ const formatDate = (dateString) => {
 const fetchContratos = async () => {
   try {
     const response = await api.get("/contratos");
-    contratos.value = response.data;
-    contratos.value.reverse();
+    contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
