@@ -7,7 +7,7 @@
         </section>
 
         <section>
-          <p class="flex justify-center font-semibold text-3xl mt-6">{{ contrato.nomeCliente }}</p>
+          <p class="flex justify-center font-semibold text-3xl mt-6 max-w-[330px] px-2 ">{{ contrato.nomeContrato }}</p>
 
           <section class="px-8">
             <div class="relative">
@@ -27,6 +27,10 @@
             </div>
           </section>
           <section class="p-6 flex flex-col gap-2 text-2xl">
+            <div class="flex gap-2 max-w-[300px]">
+              <span class="font-semibold">Nome cliente:</span>
+              <span >{{ contrato.nomeCliente }}</span>
+            </div>
             <div class="flex gap-2">
 
               <span class="font-semibold">Vigência:</span>
@@ -69,6 +73,7 @@
 import { ref, onMounted, watch,  } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "@/services/api";
+import { toast } from "vue3-toastify";
 
 const route = useRoute();
 const router = useRouter();
@@ -83,27 +88,36 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
   faturamento?.forEach((item) => {
     if (item.status === "Aguardando Faturamento") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoFaturamento += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorAguardandoFaturamento += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     } else if (item.status === "Aguardando Pagamento") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorAguardandoPagamento += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorAguardandoPagamento += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     } else if (item.status === "Pago") {
       item.faturamentoItens.forEach((subItem) => {
-        const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-        const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-        const valorTotalItem = quantidadeItens * valorUnitario;
-        valorPago += valorTotalItem;
-        saldoTotal += valorTotalItem;
+        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+          const quantidadeItens =
+            parseFloat(itemLancamento.quantidadeItens) || 0;
+          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+          const valorTotalItem = quantidadeItens * valorUnitario;
+          valorPago += valorTotalItem;
+          saldoTotal += valorTotalItem;
+        });
       });
     }
   });
@@ -135,22 +149,48 @@ const formatDate = (dateString) => {
 const fetchContratos = async () => {
   try {
     const response = await api.get("/contratos");
-    contratos.value = response.data;
-    contratos.value.reverse();
+    contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    verificarVencimentoContratos();
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
+};
+
+const verificarVencimentoContratos = () => {
+  const hoje = new Date();
+  contratos.value.forEach((contrato) => {
+    const dataFim = new Date(contrato.dataFim);
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
+    const diasParaVencimento = Math.ceil(
+      (dataFim - hoje) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diasParaVencimento == 0) {
+      toast.error(`O contrato ${contrato.nomeContrato} vence hoje.`, {
+        theme: "colored",
+        timeout: 10000
+      });
+    } else if (diasParaVencimento < 0) {
+      toast.error(`O contrato ${contrato.nomeContrato} expirou.`, {
+        theme: "colored",
+        timeout: 10000
+      });
+    } else if (diasParaVencimento <= lembreteVencimento) {
+      toast.warning(`O contrato ${contrato.nomeContrato} está prestes a vencer em ${diasParaVencimento} dias.`, {
+          theme: "colored",
+          type: "success",
+          timeout: 10000
+        });
+    }
+  });
 };
 
 onMounted(() => {
   fetchContratos();
 });
 
-watch(
-  fetchContratos()
-);
+// watch(
+//   fetchContratos()
+// );
 
-// watchEffect(() => {
-//   fetchContratos();
-// });
 </script>

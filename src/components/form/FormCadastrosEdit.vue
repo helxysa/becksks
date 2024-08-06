@@ -10,6 +10,17 @@
     <section class="flex justify-center">
       <form class="mt-12 form-contrato" @submit.prevent="saveContrato">
         <div class="flex items-center justify-between">
+          <label class="font-bold w-60">Nome do contrato</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o nome do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.nomeContrato"
+            maxlength="120"
+          />
+        </div>
+        <div class="flex items-center justify-between mt-8">
           <label class="font-bold w-60">Nome do cliente</label>
           <input
             type="text"
@@ -53,13 +64,36 @@
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Fiscal do contrato</label>
+          <label class="font-bold w-60">Nome do Fiscal</label>
           <input
             required
             type="text"
-            placeholder="Informe o fiscal do contrato"
+            placeholder="Informe o nome do fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.fiscal"
+            v-model="contratoForm.fiscal.nome"
+            maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Telefone do fiscal</label>
+          <input
+            required
+            type="tel"
+            placeholder="Informe o telefone do fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal.telefone"
+            maxlength="15"
+            @keyup="handlePhone"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">E-mail do fiscal</label>
+          <input
+            required
+            type="email"
+            placeholder="Informe o email do fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal.email"
             maxlength="120"
           />
         </div>
@@ -96,15 +130,34 @@
             maxlength="120"
           />
         </div>
+        <div class=" flex  justify-between items-center mt-8">
+          <label class="font-bold w-60">Lembrete vencimento:</label>
+          <select
+            v-model="contratoForm.lembreteVencimento"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl h-14"
+            required
+          >
+            <option disabled value="">Selecione a notificação do vencimento</option>
+            <option>5</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+            <option>25</option>
+            <option>30</option>
+            <option>45</option>
+            <option>60</option>
+            <option>90</option>
+            <option>120</option>
+          </select>
+        </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Observações</label>
           <textarea
            v-model="contratoForm.observacoes"
-            required
             rows="7"
             placeholder="observações"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
-                      
+
           />
         </div>
 
@@ -133,7 +186,24 @@ import { Money3Component } from "v-money3";
 
 const router = useRouter();
 const route = useRoute();
-let contratoForm = ref({});
+// let contratoForm = ref({});
+let contratoForm = ref({
+  nomeContrato: '',
+  nomeCliente: '',
+  dataInicio: '',
+  dataFim: '',
+  saldoContrato: '',
+  fiscal: {
+    nome: '',
+    telefone: '',
+    email: ''
+  },
+  pontoFocal: '',
+  cidade: '',
+  objetoContrato: '',
+  observacoes: '',
+  lembreteVencimento:'',
+});
 
 const moneyConfig = {
   precision: 2,
@@ -154,23 +224,48 @@ const fetchContrato = async (id) => {
     const response = await api.get(`/contratos/${id}`);
     const contratoData = response.data;
 
+    if (contratoData.fiscal === null) {
+      contratoData.fiscal = {
+        nome: '',
+        telefone: '',
+        email: ''
+      };
+    }
+
     Object.assign(contratoForm.value, response.data);
+
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
 };
 
 async function saveContrato() {
+
+  if (contratoForm.value.fiscal.telefone.length < 15) {
+    toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
+        theme: "colored",
+        type: "error",
+      });
+    return
+  }
+
   const payload = {
     nome_cliente: contratoForm.value.nomeCliente,
     data_inicio: contratoForm.value.dataInicio,
     data_fim: contratoForm.value.dataFim,
     saldo_contrato: contratoForm.value.saldoContrato,
-    fiscal: contratoForm.value.fiscal,
+    fiscal: {
+      nome: contratoForm.value.fiscal.nome,
+      telefone: contratoForm.value.fiscal.telefone,
+      email: contratoForm.value.fiscal.email,
+    },
     ponto_focal: contratoForm.value.pontoFocal,
     cidade: contratoForm.value.cidade,
     objeto_contrato: contratoForm.value.objetoContrato,
-    observacoes: contratoForm.value.observacoes
+    observacoes: contratoForm.value.observacoes,
+    lembrete_vencimento: contratoForm.value.lembreteVencimento,
+    nome_contrato: contratoForm.value.nomeContrato,
+
   };
   try {
     const response = await api
@@ -201,6 +296,19 @@ const formatCurrency = (value) => {
     minimumFractionDigits: 2,
   }).format(value);
 };
+
+const handlePhone = (event) => {
+  let input = event.target
+  contratoForm.value.fiscal.telefone = phoneMask(input.value)
+}
+
+const phoneMask = (value) => {
+  if (!value) return ""
+  value = value.replace(/\D/g,'')
+  value = value.replace(/(\d{2})(\d)/,"($1) $2")
+  value = value.replace(/(\d)(\d{4})$/,"$1-$2")
+  return value
+}
 </script>
 
 <style scoped>

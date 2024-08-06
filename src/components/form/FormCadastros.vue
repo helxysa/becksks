@@ -10,6 +10,17 @@
     <section class="flex justify-center">
       <form class="mt-12 form-contrato" @submit.prevent="saveContrato">
         <div class="flex items-center justify-between">
+          <label class="font-bold w-60">Nome do contrato</label>
+          <input
+            required
+            type="text"
+            placeholder="Informe o nome do contrato"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.nome_contrato"
+            maxlength="120"
+          />
+        </div>
+        <div class="flex items-center justify-between mt-8">
           <label class="font-bold w-60">Nome do cliente</label>
           <input
             required
@@ -60,8 +71,31 @@
             type="text"
             placeholder="Informe o fiscal do contrato"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
-            v-model="contratoForm.fiscal"
-              maxlength="120"
+            v-model="contratoForm.fiscal.nome"
+            maxlength="120"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">Telefone do fiscal</label>
+          <input
+            required
+            type="tel"
+            placeholder="Informe o telefone do  fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal.telefone"
+            maxlength="15"
+            @keyup="handlePhone"
+          />
+        </div>
+        <div class="mt-8 flex items-center justify-between">
+          <label class="font-bold w-60">E-mail do fiscal</label>
+          <input
+            required
+            type="email"
+            placeholder="Informe o email do  fiscal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            v-model="contratoForm.fiscal.email"
+            maxlength="120"
           />
         </div>
         <div class="mt-8 flex items-center justify-between">
@@ -97,11 +131,30 @@
               maxlength="120"
           />
         </div>
+        <div class=" flex  justify-between items-center mt-8">
+          <label class="font-bold w-60">Lembrete vencimento:</label>
+          <select
+            v-model="contratoForm.lembrete_vencimento"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl h-14"
+            required
+          >
+            <option disabled hidden value="">Selecione quantidade de dias para receber a  notificação </option>
+            <option>5</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+            <option>25</option>
+            <option>30</option>
+            <option>45</option>
+            <option>60</option>
+            <option>90</option>
+            <option>120</option>
+          </select>
+        </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Observações</label>
           <textarea
            v-model="contratoForm.observacoes"
-            required
             rows="7"
             placeholder="observações"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
@@ -375,12 +428,18 @@ let contratoForm = reactive({
   data_inicio: "",
   data_fim: "",
   saldo_contrato: "",
-  fiscal: "",
+  fiscal: {
+    nome: "",
+    telefone: "",
+    email: "",
+  },
   ponto_focal: "",
   cidade: "",
   objeto_contrato: "",
   items: [],
   observacoes: "",
+  nome_contrato: "",
+  lembrete_vencimento: "",
 });
 let novoItem = ref({
   titulo: "",
@@ -464,6 +523,14 @@ const removeItem = (index) => {
     })
 };
 const saveContrato = () => {
+  if (contratoForm.fiscal.telefone.length < 15) {
+    toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
+        theme: "colored",
+        type: "error",
+      });
+    return
+  }
+
 if (route.params.id){
    api.put(`/contratos/${route.params.id}`, contratoForm)
     .then((response) => {
@@ -512,6 +579,19 @@ const formatCurrency = (value) => {
     minimumFractionDigits: 2,
   }).format(value);
 };
+
+const handlePhone = (event) => {
+  let input = event.target
+  contratoForm.fiscal.telefone = phoneMask(input.value)
+}
+
+const phoneMask = (value) => {
+  if (!value) return ""
+  value = value.replace(/\D/g,'')
+  value = value.replace(/(\d{2})(\d)/,"($1) $2")
+  value = value.replace(/(\d)(\d{4})$/,"$1-$2")
+  return value
+}
 
 </script>
 
