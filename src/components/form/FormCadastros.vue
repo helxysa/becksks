@@ -148,13 +148,13 @@
             <option>45</option>
             <option>60</option>
             <option>90</option>
-            <option>120</option>           
+            <option>120</option>
           </select>
         </div>
         <div class="mt-8 flex items-center justify-between">
           <label class="font-bold w-60">Observações</label>
           <textarea
-           v-model="contratoForm.observacoes"          
+           v-model="contratoForm.observacoes"
             rows="7"
             placeholder="observações"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
@@ -523,6 +523,14 @@ const removeItem = (index) => {
     })
 };
 const saveContrato = () => {
+  if (contratoForm.fiscal.telefone.length < 15) {
+    toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
+        theme: "colored",
+        type: "error",
+      });
+    return
+  }
+
 if (route.params.id){
    api.put(`/contratos/${route.params.id}`, contratoForm)
     .then((response) => {
@@ -572,7 +580,7 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
-const handlePhone = (event) => { 
+const handlePhone = (event) => {
   let input = event.target
   contratoForm.fiscal.telefone = phoneMask(input.value)
 }
