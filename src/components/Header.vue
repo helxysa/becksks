@@ -90,8 +90,8 @@ const redirecionarParaContrato = (id) => {
 
 const verificarVencimentoContratos = () => {
   const hoje = new Date();
-  const contratos = JSON.parse(localStorage.getItem("notifications"));
-
+  const contratos = JSON.parse(localStorage.getItem("notifications")) || [];
+  
   mensagens.value = contratos
     .map((contrato) => {
       if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) {
