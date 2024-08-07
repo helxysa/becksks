@@ -94,6 +94,10 @@ const verificarVencimentoContratos = () => {
 
   mensagens.value = contratos
     .map((contrato) => {
+      if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) {
+        return {};
+      }
+
       const dataFim = new Date(contrato.dataFim);
       const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
       const diasParaVencimento = Math.ceil(
