@@ -95,7 +95,7 @@ const verificarVencimentoContratos = () => {
   mensagens.value = contratos
     .map((contrato) => {
       if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) {
-        return {};
+        return { id: contrato.id, texto: "" };
       }
 
       const dataFim = new Date(contrato.dataFim);
