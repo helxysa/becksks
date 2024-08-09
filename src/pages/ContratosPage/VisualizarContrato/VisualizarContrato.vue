@@ -380,7 +380,12 @@
             <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
-          <td class="text-2xl">{{ faturamento.notaFiscal }}</td>
+          <td class="text-2xl" v-if="  faturamento.status !== 'Aguardando Faturamento'">
+            {{ faturamento.notaFiscal }}
+          </td>
+          <td v-else>
+             -
+          </td>
 
           <td class="text-2xl">
             {{
@@ -467,7 +472,13 @@
               <option>Pago</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center justify-between">
+          <div
+            class="flex gap-4 items-center justify-between"
+            v-if="
+              pedidoFaturamentoData.status !== 'Aguardando Faturamento' &&
+              pedidoFaturamentoData.status !== ''
+            "
+          >
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
             <input
               type="text"
@@ -645,7 +656,13 @@
               <option>Pago</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center justify-between">
+          <div
+            class="flex gap-4 items-center justify-between"
+            v-if="
+              editingFaturamento.status !== 'Aguardando Faturamento' &&
+              editingFaturamento.status !== ''
+            "
+          >
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
             <input
               :disabled="isFaturamentoViewModal"
@@ -787,7 +804,7 @@
     :show="modalLancamento"
     :withouHeader="false"
     @close="closeModalLancamento"
-    maxWidth="7xl"
+    maxWidth="8xl" 
     :modalTitle="'Criar Lançamento'"
   >
     <template #content>
@@ -824,7 +841,14 @@
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+                <td class="text-2xl">
+                  <input
+                  v-model="item.data"
+                  type="date"
+                  class="border-2 text-center max-w-60"               
+                />
+               
+                </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -888,7 +912,7 @@
     :show="modalEditLancamento"
     :withouHeader="false"
     @close="closeEditLancamentoModal"
-    maxWidth="7xl"
+    maxWidth="8xl"
     :modalTitle="
       isLancamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
     "
@@ -929,7 +953,13 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+                <td class="text-2xl">
+                  <input
+                  v-model="item.data"
+                  type="date"
+                  class="border-2 text-center max-w-60"               
+                />
+                </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -1649,6 +1679,7 @@ const createLancamento = async () => {
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
+      data: formatDate(item.data),
     }));
   if (itensQuantidadePreenchida.length === 0) {
     toast("Adicione pelo menos um item para criar o lancamento.", {
@@ -1873,7 +1904,6 @@ const calcularSaldoLancamentoItens = (lancamento) => {
 };
 
 const calcularSaldoDisponivel = (faturamento) => {
-
   let saldoTotal = 0;
   let valorAguardandoFaturamento = 0;
   let valorAguardandoPagamento = 0;
@@ -2189,6 +2219,7 @@ const saveEditedLancamento = async () => {
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
+      data: formatDate(item.data)
     }));
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
@@ -2257,6 +2288,7 @@ const saveEditedLancamento = async () => {
     itens: itensQuantidadePreenchida.map((item) => ({
       id: item.id,
       quantidade_itens: item.quantidade_itens,
+      data: item.data,
     })),
     projetos: editingLancamento.value.projetos,
   };
@@ -2280,7 +2312,9 @@ const saveEditedLancamento = async () => {
 };
 
 const calcularPodeRenovar = () => {
-  const totalUtilizado = calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado;
+  const totalUtilizado = calcularSaldoDisponivel(
+    contrato.value.faturamentos
+  ).totalUtilizado;
   const saldoContrato = contrato.value.saldoContrato;
   const dataFimContrato = formatDate(contrato.value.dataFim);
   const dataAtual = formatDate(new Date());
