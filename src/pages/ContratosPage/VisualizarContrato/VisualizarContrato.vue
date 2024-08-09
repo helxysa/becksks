@@ -804,7 +804,7 @@
     :show="modalLancamento"
     :withouHeader="false"
     @close="closeModalLancamento"
-    maxWidth="8xl" 
+    maxWidth="8xl"
     :modalTitle="'Criar Lançamento'"
   >
     <template #content>
@@ -845,9 +845,9 @@
                   <input
                   v-model="item.data"
                   type="date"
-                  class="border-2 text-center max-w-60"               
+                  class="border-2 text-center max-w-60"
                 />
-               
+
                 </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
@@ -954,11 +954,13 @@
                 :key="item.id"
               >
                 <td class="text-2xl">
+                  <span v-if="isLancamentoViewModal">{{formatDate(item.data)}}</span>
                   <input
-                  v-model="item.data"
-                  type="date"
-                  class="border-2 text-center max-w-60"               
-                />
+                    v-if="!isLancamentoViewModal"
+                    v-model="item.data"
+                    type="date"
+                    class="border-2 text-center max-w-60"
+                  />
                 </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
@@ -1674,15 +1676,18 @@ const createLancamento = async () => {
     });
     return;
   }
+
   let itensQuantidadePreenchida = contrato.value.contratoItens
-    // .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
-      data: formatDate(item.data),
-    }));
+      data: item.data,
+    }))
+    .filter(item => item.data && item.quantidade_itens && parseFloat(item.quantidade_itens) > 0);
+
+
   if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item para criar o lancamento.", {
+    toast("Adicione pelo menos um item com data e quantidade para criar o lançamento.", {
       theme: "colored",
       type: "error",
     });
@@ -1698,9 +1703,7 @@ const createLancamento = async () => {
   });
 
   if (quantidadeExcedida) {
-    toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
-    );
+    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
   }
 
@@ -1736,6 +1739,7 @@ const createLancamento = async () => {
     fetchContrato(contratoId);
   } catch (error) {
     console.error("Erro ao criar lancamento:", error);
+    toast.error("Não foi possível criar o lançamento", error);
   }
 };
 
@@ -2219,7 +2223,7 @@ const saveEditedLancamento = async () => {
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
-      data: formatDate(item.data)
+      data: item.data
     }));
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
@@ -2286,7 +2290,7 @@ const saveEditedLancamento = async () => {
     // status: editingLancamento.value.status,
     status: "sem situação",
     itens: itensQuantidadePreenchida.map((item) => ({
-      id: item.id,
+      id_item: item.id,
       quantidade_itens: item.quantidade_itens,
       data: item.data,
     })),
