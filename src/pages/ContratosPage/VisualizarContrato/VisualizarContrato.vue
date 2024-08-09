@@ -1654,8 +1654,9 @@ const isSaldoNegativo = computed(() => {
 const closeModalLancamento = () => {
   modalLancamento.value = false;
   projetos.value = "";
-  contrato.value.contratoItens.forEach((item) => {
-    item.quantidadeItens = null;
+  contrato.value.contratoItens.forEach((item) => {  
+    item.data =  null;
+    item.quantidadeItens = null;    
   });
 };
 
