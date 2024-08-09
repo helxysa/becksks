@@ -841,7 +841,14 @@
                 v-for="item in contrato.contratoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+                <td class="text-2xl">
+                  <input
+                  v-model="item.data"
+                  type="date"
+                  class="border-2 text-center max-w-60"               
+                />
+               
+                </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -905,7 +912,7 @@
     :show="modalEditLancamento"
     :withouHeader="false"
     @close="closeEditLancamentoModal"
-    maxWidth="7xl"
+    maxWidth="8xl"
     :modalTitle="
       isLancamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
     "
@@ -946,7 +953,13 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ formatDate(item.createdAt) }}</td>
+                <td class="text-2xl">
+                  <input
+                  v-model="item.data"
+                  type="date"
+                  class="border-2 text-center max-w-60"               
+                />
+                </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -1666,6 +1679,7 @@ const createLancamento = async () => {
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
+      data: formatDate(item.data),
     }));
   if (itensQuantidadePreenchida.length === 0) {
     toast("Adicione pelo menos um item para criar o lancamento.", {
@@ -2205,6 +2219,7 @@ const saveEditedLancamento = async () => {
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
+      data: formatDate(item.data)
     }));
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
@@ -2273,6 +2288,7 @@ const saveEditedLancamento = async () => {
     itens: itensQuantidadePreenchida.map((item) => ({
       id: item.id,
       quantidade_itens: item.quantidade_itens,
+      data: item.data,
     })),
     projetos: editingLancamento.value.projetos,
   };
