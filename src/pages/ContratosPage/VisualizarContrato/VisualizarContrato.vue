@@ -380,7 +380,12 @@
             <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
-          <td class="text-2xl">{{ faturamento.notaFiscal }}</td>
+          <td class="text-2xl" v-if="  faturamento.status !== 'Aguardando Faturamento'">
+            {{ faturamento.notaFiscal }}
+          </td>
+          <td v-else>
+             -
+          </td>
 
           <td class="text-2xl">
             {{
@@ -467,7 +472,13 @@
               <option>Pago</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center justify-between">
+          <div
+            class="flex gap-4 items-center justify-between"
+            v-if="
+              pedidoFaturamentoData.status !== 'Aguardando Faturamento' &&
+              pedidoFaturamentoData.status !== ''
+            "
+          >
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
             <input
               type="text"
@@ -645,7 +656,13 @@
               <option>Pago</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center justify-between">
+          <div
+            class="flex gap-4 items-center justify-between"
+            v-if="
+              editingFaturamento.status !== 'Aguardando Faturamento' &&
+              editingFaturamento.status !== ''
+            "
+          >
             <label class="font-bold text-3xl w-[180px]">Nota fiscal:</label>
             <input
               :disabled="isFaturamentoViewModal"
@@ -787,7 +804,7 @@
     :show="modalLancamento"
     :withouHeader="false"
     @close="closeModalLancamento"
-    maxWidth="7xl"
+    maxWidth="8xl" 
     :modalTitle="'Criar Lançamento'"
   >
     <template #content>
@@ -1873,7 +1890,6 @@ const calcularSaldoLancamentoItens = (lancamento) => {
 };
 
 const calcularSaldoDisponivel = (faturamento) => {
-
   let saldoTotal = 0;
   let valorAguardandoFaturamento = 0;
   let valorAguardandoPagamento = 0;
@@ -2280,7 +2296,9 @@ const saveEditedLancamento = async () => {
 };
 
 const calcularPodeRenovar = () => {
-  const totalUtilizado = calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado;
+  const totalUtilizado = calcularSaldoDisponivel(
+    contrato.value.faturamentos
+  ).totalUtilizado;
   const saldoContrato = contrato.value.saldoContrato;
   const dataFimContrato = formatDate(contrato.value.dataFim);
   const dataAtual = formatDate(new Date());
