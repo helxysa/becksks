@@ -1,7 +1,7 @@
 <template>
-  <div v-for="contrato in contratos" :key="contrato.id" class="flex flex-col">
+  <div v-for="contrato in contratos" :key="contrato.id" class="flex flex-col ">
     <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
-      <div class="shadow-lg rounded-lg overflow-hidden cursor-pointer hover:bg-slate-300 mt-12">
+      <div class="shadow-lg rounded-lg overflow-hidden cursor-pointer hover:bg-slate-300 mt-12 h-[650px]">
         <section class="relative">
           <img class="relative" src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" />
         </section>
