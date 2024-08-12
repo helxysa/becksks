@@ -116,7 +116,7 @@ const props = defineProps({
     },
     maxWidth: {
         type: String,
-        default: "2xl",
+        default: "2xl",       
 
     },
     closeable: {
@@ -179,6 +179,8 @@ const maxWidthClass = computed(() => {
         "5xl": "sm:max-w-5xl",
         "6xl": "sm:max-w-6xl",
         "7xl": "sm:max-w-7xl",
+        "8xl": "sm:max-w-[1100px]",   
+
     }[props.maxWidth]
 })
 
