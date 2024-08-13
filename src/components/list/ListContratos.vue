@@ -150,15 +150,6 @@ const fetchContratos = async () => {
   try {
     const response = await api.get("/contratos");
     contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    const notificationsContratosData = contratos.value.map(contrato => ({
-      id: contrato.id,
-      nomeContrato: contrato.nomeContrato,
-      dataFim: contrato.dataFim,
-      lembreteVencimento: contrato.lembreteVencimento,
-    }))
-
-    localStorage.setItem("notifications", JSON.stringify(notificationsContratosData))
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
