@@ -276,8 +276,7 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th>
-          </th>
+          <th></th>
           <th class="text-xl">Id</th>
           <th class="text-xl">Data da medição</th>
           <th class="text-xl">Projeto</th>
@@ -1059,8 +1058,6 @@
               <option>Não Autorizada</option>
               <option>Cancelada</option>
             </select>
-          </div>
-          {{ editingLancamento.dataMedicao }}
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
@@ -1885,7 +1882,7 @@ const createLancamento = async () => {
     });
     return;
   }
- 
+
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -2464,7 +2461,6 @@ const saveEditedLancamento = async () => {
     );
     return;
   }
-  console.log(editingLancamento.value, 'eidt')
 
   let payload = {
     data_medicao: formatDate(editingLancamento.value.dataMedicao),
