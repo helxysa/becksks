@@ -904,6 +904,22 @@
               v-model="medicaoData.data_medicao"
             />
           </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Item:</label
+            >
+            <select
+              v-model="medicaoData.itens"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o  item da  medição
+              </option>
+              <option v-for="item in contrato.contratoItens" :value="item.titulo" :key="item.id">
+                {{ item.titulo }}
+              </option>
+            </select>
+          </div>
         </section>
         <div class="mt-8">
           <table
@@ -920,10 +936,11 @@
                 <th class="text-xl">Total</th>
               </tr>
             </thead>
-            <tbody>
+            {{medicaoData.itens}}
+            <tbody v-if="medicaoData.itens">
               <tr
                 class="h-24 text-center"
-                v-for="item in contrato.contratoItens"
+                v-for="item in medicaoData.itens"
                 :key="item.id"
               >
                 <td class="text-2xl">
@@ -1457,6 +1474,7 @@ const medicaoData = ref({
   tipo_medicao: "",
   status: "",
   data_medicao: "",
+  itens: [],
 });
 
 const changePedido = (e) => {
@@ -1807,6 +1825,7 @@ const closeModalLancamento = () => {
     status: "",
     tipo_medicao: "",
     data_medicao: "",
+    itens: [],
   };
   contrato.value.contratoItens.forEach((item) => {
     item.data = null;
