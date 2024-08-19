@@ -1,26 +1,19 @@
 <template>
   <div>
-    <div class="flex justify-between mt-12 ">
+    <div class="flex justify-between mt-12 px-6">
       <h1 class="text-5xl font-medium">Contratos</h1>
       <button class="btn-cadastro relative">
         <router-link to="cadastro/contratos">
           <router-view >
             Novo contrato
-          
           </router-view>
         </router-link>
         <span class="absolute right-[5px] top-[8px]">
-          <Icon icon="material-symbols-light:add"   
-          class="text-zinc-50"
-          height="25" />
+          <Icon icon="material-symbols-light:add" class="text-zinc-50" height="25" />
         </span>
       </button>
     </div>
-    <div class="flex gap-8 flex-wrap">
-      <ListContratos/>
-
-    </div>
-  
+    <ListContratos/>
   </div>
 </template>
 
