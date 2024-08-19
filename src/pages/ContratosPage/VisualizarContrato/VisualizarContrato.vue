@@ -316,7 +316,7 @@
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
-          <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
+          <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <td class="text-2xl">{{lancamento.tarefaMedicao}}</td>
           <td class="text-2xl">
@@ -328,7 +328,7 @@
                     lancamento.tipoMedicao === 'Estimada',
                   'bg-blue-200 border-blue-400 text-blue-400':
                     lancamento.tipoMedicao === 'Detalhada',
-                 
+
                 }"
               >
                 {{ lancamento.tipoMedicao }}
@@ -346,7 +346,7 @@
                     lancamento.status === 'Autorizada',
                     'bg-red-200 border-red-400 text-red-400':
                     lancamento.status === 'Cancelada',
-                 
+
                 }"
               >
                 {{ lancamento.status }}
@@ -1018,7 +1018,7 @@
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
-          
+
               v-model="editingLancamento.projetos"
             />
           </div>
@@ -1065,8 +1065,8 @@
               <option>Não Autorizada</option>
               <option>Cancelada</option>
             </select>
-          </div>  
-          {{ editingLancamento.dataMedicao }}      
+          </div>
+          {{ editingLancamento.dataMedicao }}
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
@@ -1890,7 +1890,6 @@ const createLancamento = async () => {
     });
     return;
   }
-  console.log(medicaoData.value, 'medicao')
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -1936,7 +1935,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
-    console.log(contrato.value, 'value')
     if (!contrato.value.quantidadeItens) {
     }
 
@@ -2355,11 +2353,8 @@ const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
   // editingLancamento.value = lancamento;
-  const dataFormatada = format(
-    new Date(lancamento.dataMedicao),
-    "yyyy-MM-dd"
-  );
-  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };  
+  const dataFormatada = lancamento.dataMedicao.split('T')[0];
+  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
 };
 
@@ -2374,10 +2369,10 @@ const openViewLancamentoModal = (lancamento) => {
   );
   editingLancamento.value = {
     ...lancamento,
-    lancamentoItens: itensComQuantidade,  
+    lancamentoItens: itensComQuantidade,
     dataMedicao: dataFormatada,
   };
- 
+
   modalEditLancamento.value = true;
 };
 
@@ -2472,10 +2467,8 @@ const saveEditedLancamento = async () => {
     );
     return;
   }
-  console.log(editingLancamento.value, 'eidt')
-  
+
   let payload = {
-    // status: editingLancamento.value.status,
     data_medicao: formatDate(editingLancamento.value.dataMedicao),
     tarefa_medicao:editingLancamento.value.tarefaMedicao,
     tipo_medicao: editingLancamento.value.tipoMedicao,
