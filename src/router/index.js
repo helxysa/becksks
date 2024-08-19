@@ -7,7 +7,7 @@ const FormContratosEdit = () =>
   import("../components/form/FormCadastrosEdit.vue");
 // const ViewContrato = () => import("../components/list/ViewContrato.vue");
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
-import Register from "@/pages/Register.vue";
+// import Register from "@/pages/Register.vue";
 import Login from "@/pages/Login.vue";
 
 const routes = [
@@ -21,10 +21,10 @@ const routes = [
     path: "/login",
     component: Login,
   },
-  {
-    path: "/cadastro",
-    component: Register,
-  },
+  // {
+  //   path: "/cadastro",
+  //   component: Register,
+  // },
   {
     path: "/contratos",
     name: "Contratos",

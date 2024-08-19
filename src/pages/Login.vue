@@ -44,10 +44,10 @@
           />
         </div>
         <div class="flex flex-col items-center gap-4">
-          <div class="self-end">
+          <!-- <div class="self-end">
             <span class="text-2xl text-slate-500">Ainda não tem uma conta? </span>
             <span @click="goRegister" class="hover:text-blue-600 text-blue-400 hover:underline cursor-pointer">Cadastre-se</span>
-        </div>
+        </div> -->
           <button type="submit" class="bg-blue-500 text-white p-2 w-full rounded-md hover:bg-blue-600 mt-4">
             Login
           </button>
