@@ -277,12 +277,6 @@
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
           <th>
-            <input
-              type="checkbox"
-              class="w-6 h-6"
-              :checked="areAllSelected"
-              @change="toggleSelectAll"
-            />
           </th>
           <th class="text-xl">Id</th>
           <th class="text-xl">Data da medição</th>
@@ -1067,6 +1061,7 @@
             </select>
           </div>
           {{ editingLancamento.dataMedicao }}
+          </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
@@ -1890,6 +1885,7 @@ const createLancamento = async () => {
     });
     return;
   }
+ 
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -1935,6 +1931,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+
     if (!contrato.value.quantidadeItens) {
     }
 
@@ -2467,6 +2464,7 @@ const saveEditedLancamento = async () => {
     );
     return;
   }
+  console.log(editingLancamento.value, 'eidt')
 
   let payload = {
     data_medicao: formatDate(editingLancamento.value.dataMedicao),
