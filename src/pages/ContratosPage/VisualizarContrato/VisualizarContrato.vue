@@ -1059,8 +1059,7 @@
               <option>Não Autorizada</option>
               <option>Cancelada</option>
             </select>
-          </div>  
-          {{ editingLancamento.dataMedicao }}      
+          </div>                
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
