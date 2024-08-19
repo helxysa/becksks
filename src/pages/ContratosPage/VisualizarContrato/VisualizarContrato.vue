@@ -1,175 +1,213 @@
 <template>
-  <div class="flex justify-end gap-4 mb-20">
-    <!-- <button
-      @click="showRenovacaoModal()"
-      class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="podeRenovar"
-    >
-      Renovar
-    </button> -->
-    <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
-      <router-link
-        :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
-      >
-        <router-view> Editar </router-view>
-      </router-link>
-    </button>
-    <button
-      class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
-      @click="deleteContrato(contrato)"
-    >
-      Excluir
-    </button>
-  </div>
+  <!-- Detalhes do contrato -->
+    <section>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Detalhes do Contrato</h1>
+        <div class="flex flex-wrap gap-3">
+          <button class="btn-edit bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center">
+            <i class="fas fa-edit mr-2"></i>
+            <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
+              Editar
+            </router-link>
+          </button>
+          <button @click="deleteContrato(contrato)" class="btn-delete bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center">
+            <i class="fas fa-trash-alt mr-2"></i>Excluir
+          </button>
+        </div>
+      </div>
 
-  <section class="mb-4">
-    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      <div class="flex items-center gap-4">
-        <label class="font-semibold dark:text-white">Contrato:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.nomeContrato
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold dark:text-white">Cliente:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.nomeCliente
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <span
-          ><strong>Vigência:</strong>
-          <span class="underline underline-offset-4 pl-4"
-            >{{ formatDate(contrato.dataInicio) }} até
-            {{ formatDate(contrato.dataFim) }}</span
-          ></span
+      <!-- Detalhes do contrato -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
+          <h3 class="text-2xl font-semibold text-gray-800 mb-4">Informações do Contrato</h3>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
+                <i class="fas fa-file-contract"></i>
+                <Icon
+                  icon="fa6-solid:file-contract"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-blue-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Contrato</p>
+                <p class="font-medium text-gray-700">{{ contrato.nomeContrato }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
+                <i class="fas fa-user"></i>
+                <Icon
+                  icon="fa-solid:user"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-green-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Cliente</p>
+                <p class="font-medium text-gray-700">{{ contrato.nomeCliente }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
+                <i class="fas fa-calendar-alt"></i>
+                <Icon
+                  icon="fa-solid:calendar-alt"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-purple-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Vigência</p>
+                <p class="font-medium text-gray-700">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
+          <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
+                <i class="fas fa-user-tie"></i>
+                <Icon
+                  icon="fa-solid:user-tie"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-indigo-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Nome</p>
+                <p class="font-medium text-gray-700">{{ contrato?.fiscal?.nome }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
+                <i class="fas fa-phone"></i>
+                <Icon
+                  icon="fa:phone"
+                  width="1.5rem"
+                  class="text-yellow-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Contato</p>
+                <p class="font-medium text-gray-700">{{ contrato?.fiscal?.telefone }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
+                <Icon
+                  icon="fa:envelope"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-red-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">E-mail</p>
+                <p class="font-medium text-gray-700">{{ contrato?.fiscal?.email }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
+          <h3 class="text-2xl font-semibold text-gray-800 mb-4">Detalhes Adicionais</h3>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
+                <Icon
+                  icon="fa-solid:bullseye"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-teal-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Ponto Focal</p>
+                <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+                <Icon
+                  icon="fa6-solid:city"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-pink-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Cidade</p>
+                <p class="font-medium text-gray-700">{{ contrato.cidade }}</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
+                <Icon
+                  icon="fa-solid:file-alt"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-orange-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Objeto do Contrato</p>
+                <p class="font-medium text-gray-700">{{ contrato.objetoContrato }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- Financial Summary Cards -->
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+        <div
+          v-for="(item, index) in financialSummary" :key="index"
+          :class="`bg-gradient-to-br ${item.bgColor} rounded-xl shadow-lg p-6 text-white transition duration-300 ease-in-out hover:shadow-xl`"
         >
-      </div>
+          <section class="flex flex-col h-full justify-between">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+              <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+            </div>
+            <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
+          </section>
+        </div>
+      </section>
 
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato?.fiscal?.nome
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Telefone fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato?.fiscal?.telefone
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">E-mail fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato?.fiscal?.email
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Ponto Focal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.pontoFocal
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Cidade:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.cidade
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Objeto do Contrato:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.objetoContrato
-        }}</span>
-      </div>
-    </div>
-  </section>
+      <!-- Observações Section -->
+      <section class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Observações</h3>
+        <div class="flex items-center">
+          <div class="bg-gray-100 text-gray-500 rounded-full p-3 mr-3">
+            <Icon
+              icon="fa-solid:comment-alt"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-gray-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Detalhes adicionais</p>
+            <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+          </div>
+        </div>
+      </section>
+    </section>
 
-  <section class="flex items-center gap-4">
-    <label class="font-semibold">Observações:</label>
-    <span class="underline underline-offset-4 text-justify">{{
-      contrato.observacoes
-    }}</span>
-  </section>
-  <section class="flex gap-3 mt-6 flex-wrap 2xl:gap-x-24">
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-blue-800 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{ formatCurrency(contrato.saldoContrato) }}
-        </p>
-        <p>Valor contratado</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-yellow-300 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              calcularSaldoDisponivel(contrato.faturamentos)
-                .aguardandoFaturamento
-            )
-          }}
-        </p>
-        <p>Valor aguardando faturamento</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-gray-300 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento
-            )
-          }}
-        </p>
-        <p>Valor aguardando pagamento</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-red-800 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              calcularSaldoDisponivel(contrato.faturamentos).valorPago
-            )
-          }}
-        </p>
-        <p>Valor pago</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-green-600 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              contrato.saldoContrato -
-                calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado
-            )
-          }}
-        </p>
-        <p>Saldo disponível</p>
-      </div>
-    </div>
-  </section>
-
+  <!-- Tabela itens do contrato-->
   <section class="mt-16">
     <div class="flex justify-between items-center">
-      <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Itens do Contrato</h1>
       <button @click="openCreateItemModal" class="btn-item relative">
         Adicionar Item
         <span class="absolute right-[3px]">
@@ -251,9 +289,10 @@
     </table>
   </section>
 
+  <!-- Tabela Medições-->
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="text-4xl font-medium">Medição</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Medição</h1>
       <div class="flex gap-4">
         <button class="btn-lancamento relative" @click="ExibirModalLancamento">
           Nova Medição
@@ -389,7 +428,7 @@
   <!-- Tabela Faturamentos-->
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="text-4xl font-medium">Faturamentos</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Faturamentos</h1>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
@@ -1415,6 +1454,38 @@ import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay } from "date-fns";
 
+const financialSummary = computed(() => [
+  {
+    title: 'Valor Contratado',
+    value: formatCurrency(contrato.value.saldoContrato),
+    icon: 'fa6-solid:file-contract',
+    bgColor: 'from-blue-400 to-blue-600'
+  },
+  {
+    title: 'Aguardando faturamento',
+    value: formatCurrency(calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoFaturamento),
+    icon: 'ph:clock-fill',
+    bgColor: 'from-orange-400 to-orange-600'
+  },
+  {
+    title: 'Aguardando pagamento',
+    value: formatCurrency(calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoPagamento),
+    icon: 'fa-solid:hand-holding-usd',
+    bgColor: 'from-indigo-400 to-indigo-600'
+  },
+  {
+    title: 'Pago',
+    value: formatCurrency(calcularSaldoDisponivel(contrato.value.faturamentos).valorPago),
+    icon: 'fa-check-circle',
+    bgColor: 'from-green-400 to-green-600'
+  },
+  {
+    title: 'Saldo disponível',
+    value: formatCurrency(contrato.value.saldoContrato - calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado),
+    icon: 'ph-wallet-fill',
+    bgColor: 'from-purple-400 to-purple-600'
+  }
+]);
 const router = useRouter();
 const route = useRoute();
 const contrato = ref({});
