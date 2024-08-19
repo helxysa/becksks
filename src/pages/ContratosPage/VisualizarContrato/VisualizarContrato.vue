@@ -253,10 +253,10 @@
 
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="text-4xl font-medium">Lançamentos</h1>
+      <h1 class="text-4xl font-medium">Medição</h1>
       <div class="flex gap-4">
         <button class="btn-lancamento relative" @click="ExibirModalLancamento">
-          Novo Lançamento
+          Nova Medição
           <span class="absolute right-[3px]">
             <Icon
               icon="material-symbols-light:add"
@@ -285,10 +285,13 @@
             />
           </th>
           <th class="text-xl">Id</th>
-          <th class="text-xl">Data</th>
+          <th class="text-xl">Data da medição</th>
           <th class="text-xl">Projeto</th>
+          <th class="text-xl">Tarefa da medição</th>
+          <th class="text-xl">Tipo da medição</th>
+          <th class="text-xl">Status da medição</th>
           <!-- <th class="text-xl">Quantidade itens</th> -->
-          <th class="text-xl">Total do Lançamento</th>
+          <th class="text-xl">Resultado da medição</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
@@ -300,19 +303,56 @@
           class="h-24 text-center"
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
+          :class="{'bg-indigo-100' : lancamento.tipoMedicao === 'Detalhada'}"
         >
-          <td>
+          <td >
             <input
               type="checkbox"
               class="w-6 h-6"
               v-model="pedidosFaturamento"
               :value="lancamento.id"
               @change="changePedido"
+              :disabled="lancamento.tipoMedicao === 'Detalhada'"
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
+          <td class="text-2xl">{{lancamento.tarefaMedicao}}</td>
+          <td class="text-2xl">
+            <div class="flex justify-center">
+              <span
+                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                :class="{
+                  'bg-purple-200 border-purple-400 text-purple-400':
+                    lancamento.tipoMedicao === 'Estimada',
+                  'bg-blue-200 border-blue-400 text-blue-400':
+                    lancamento.tipoMedicao === 'Detalhada',
+                 
+                }"
+              >
+                {{ lancamento.tipoMedicao }}
+              </span>
+            </div>
+          </td>
+          <td class="text-2xl">
+            <div class="flex justify-center">
+              <span
+                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                :class="{
+                  'bg-orange-200 border-orange-400 text-orange-400':
+                    lancamento.status === 'Não Autorizada',
+                  'bg-green-200 border-green-400 text-green-400':
+                    lancamento.status === 'Autorizada',
+                    'bg-red-200 border-red-400 text-red-400':
+                    lancamento.status === 'Cancelada',
+                 
+                }"
+              >
+                {{ lancamento.status }}
+              </span>
+            </div>
+          </td>
           <!-- <td class="text-2xl">
             {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
           </td> -->
@@ -380,12 +420,13 @@
             <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
-          <td class="text-2xl" v-if="  faturamento.status !== 'Aguardando Faturamento'">
+          <td
+            class="text-2xl"
+            v-if="faturamento.status !== 'Aguardando Faturamento'"
+          >
             {{ faturamento.notaFiscal }}
           </td>
-          <td v-else>
-             -
-          </td>
+          <td v-else>-</td>
 
           <td class="text-2xl">
             {{
@@ -799,24 +840,75 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal criar Lancamento -->
+  <!-- Modal criar Medição -->
   <JetDialogModal
     :show="modalLancamento"
     :withouHeader="false"
     @close="closeModalLancamento"
     maxWidth="8xl"
-    :modalTitle="'Criar Lançamento'"
+    :modalTitle="'Medição'"
   >
     <template #content>
       <form @submit.prevent="createLancamento">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
-            <label class="font-bold text-3xl">Projeto:</label>
+            <label class="font-bold text-3xl w-[200px]"
+              >Tarefa da medição:</label
+            >
+            <input
+              v-model="medicaoData.tarefa_medicao"
+              type="text"
+              placeholder="Informe o ticket  da tarefa"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Tipo da medição:</label>
+            <select
+              v-model="medicaoData.tipo_medicao"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled hidden value="">
+                Selecione o tipo da medição
+              </option>
+              <option>Estimada</option>
+              <option>Detalhada</option>
+            </select>
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Status da medição:</label
+            >
+            <select
+              v-model="medicaoData.status"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o status da medição
+              </option>
+              <option>Autorizada</option>
+              <option>Não Autorizada</option>
+              <option>Cancelada</option>
+            </select>
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <input
               type="text"
               placeholder="Informe o nome do  projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="projetos"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Data medição:</label>
+            <input
+              type="date"
+              placeholder="Informe a  data da medição"
+              required
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="medicaoData.data_medicao"
             />
           </div>
         </section>
@@ -843,11 +935,10 @@
               >
                 <td class="text-2xl">
                   <input
-                  v-model="item.data"
-                  type="date"
-                  class="border-2 text-center max-w-60"
-                />
-
+                    v-model="item.data"
+                    type="date"
+                    class="border-2 text-center max-w-60"
+                  />
                 </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
@@ -907,28 +998,84 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal editar lancamento-->
+  <!-- Modal editar medição-->
   <JetDialogModal
     :show="modalEditLancamento"
     :withouHeader="false"
     @close="closeEditLancamentoModal"
     maxWidth="8xl"
     :modalTitle="
-      isLancamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
+      isLancamentoViewModal ? 'Visualizar Medição' : 'Editar Medição'
     "
   >
     <template #content>
       <form @submit.prevent="saveEditedLancamento">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
-            <label class="font-bold text-3xl">Projeto:</label>
+            <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <input
               type="text"
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
-              :class="{ 'border-none bg-white': isLancamentoViewModal }"
+          
               v-model="editingLancamento.projetos"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Tarefa da medição:</label
+            >
+            <input
+              v-model="editingLancamento.tarefaMedicao"
+              :disabled="isLancamentoViewModal"
+              type="text"
+              placeholder="Informe o ticket  da tarefa"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Tipo da medição:</label>
+            <select
+              v-model="editingLancamento.tipoMedicao"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              :disabled="isLancamentoViewModal"
+            >
+              <option disabled hidden value="">
+                Selecione o tipo da medição
+              </option>
+              <option>Estimada</option>
+              <option>Detalhada</option>
+            </select>
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Status da medição:</label
+            >
+            <select
+              v-model="editingLancamento.status"
+              :disabled="isLancamentoViewModal"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o status da medição
+              </option>
+              <option>Autorizada</option>
+              <option>Não Autorizada</option>
+              <option>Cancelada</option>
+            </select>
+          </div>  
+          {{ editingLancamento.dataMedicao }}      
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Data medição:</label>
+            <input
+              type="date"
+              placeholder="Informe a  data da medição"
+              required
+              :disabled="isLancamentoViewModal"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="editingLancamento.dataMedicao"
             />
           </div>
         </section>
@@ -954,7 +1101,9 @@
                 :key="item.id"
               >
                 <td class="text-2xl">
-                  <span v-if="isLancamentoViewModal">{{formatDate(item.data)}}</span>
+                  <span v-if="isLancamentoViewModal">{{
+                    formatDate(item.data)
+                  }}</span>
                   <input
                     v-if="!isLancamentoViewModal"
                     v-model="item.data"
@@ -1311,6 +1460,13 @@ const pedidoFaturamentoData = ref({
   observacoes: "",
 });
 
+const medicaoData = ref({
+  tarefa_medicao: "",
+  tipo_medicao: "",
+  status: "",
+  data_medicao: "",
+});
+
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
 };
@@ -1654,9 +1810,15 @@ const isSaldoNegativo = computed(() => {
 const closeModalLancamento = () => {
   modalLancamento.value = false;
   projetos.value = "";
-  contrato.value.contratoItens.forEach((item) => {  
-    item.data =  null;
-    item.quantidadeItens = null;    
+  medicaoData.value = {
+    tarefa_medicao: "",
+    status: "",
+    tipo_medicao: "",
+    data_medicao: "",
+  };
+  contrato.value.contratoItens.forEach((item) => {
+    item.data = null;
+    item.quantidadeItens = null;
   });
 };
 
@@ -1684,14 +1846,21 @@ const createLancamento = async () => {
       quantidade_itens: item.quantidadeItens,
       data: item.data,
     }))
-    .filter(item => item.data && item.quantidade_itens && parseFloat(item.quantidade_itens) > 0);
-
+    .filter(
+      (item) =>
+        item.data &&
+        item.quantidade_itens &&
+        parseFloat(item.quantidade_itens) > 0
+    );
 
   if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item com data e quantidade para criar o lançamento.", {
-      theme: "colored",
-      type: "error",
-    });
+    toast(
+      "Adicione pelo menos um item com data e quantidade para criar o lançamento.",
+      {
+        theme: "colored",
+        type: "error",
+      }
+    );
     return;
   }
 
@@ -1704,7 +1873,9 @@ const createLancamento = async () => {
   });
 
   if (quantidadeExcedida) {
-    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
+    toast.error(
+      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
+    );
     return;
   }
 
@@ -1719,11 +1890,14 @@ const createLancamento = async () => {
     });
     return;
   }
-
+  console.log(medicaoData.value, 'medicao')
   let payload = {
-    status: selectNovoLancamento.value || "status",
+    status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
     projetos: projetos.value,
+    data_medicao: medicaoData.value.data_medicao,
+    tarefa_medicao: medicaoData.value.tarefa_medicao,
+    tipo_medicao: medicaoData.value.tipo_medicao,
   };
   try {
     const contratoId = route.params.id;
@@ -1731,7 +1905,7 @@ const createLancamento = async () => {
     const response = await api
       .post(`/contratos/${contrato.value.id}/lancamentos`, payload)
       .then((response) => {
-        toast("Lancamento criado com sucesso!", {
+        toast("Medição criada com sucesso!", {
           theme: "colored",
           type: "success",
         });
@@ -1739,8 +1913,8 @@ const createLancamento = async () => {
     resetForm();
     fetchContrato(contratoId);
   } catch (error) {
-    console.error("Erro ao criar lancamento:", error);
-    toast.error("Não foi possível criar o lançamento", error);
+    console.error("Erro ao criar medição:", error);
+    toast.error("Não foi possível criar a medição", error);
   }
 };
 
@@ -1762,6 +1936,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    console.log(contrato.value, 'value')
     if (!contrato.value.quantidadeItens) {
     }
 
@@ -1775,7 +1950,7 @@ const deleteLancamento = (lancamentoId) => {
   const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este lançamento?",
+    text: "Tem certeza que deseja excluir essa medição?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -1787,7 +1962,7 @@ const deleteLancamento = (lancamentoId) => {
       api
         .delete(`/lancamentos/${lancamentoId}`)
         .then((response) => {
-          toast("Lancamento deletado com sucesso!", {
+          toast("Medição deletada com sucesso!", {
             theme: "colored",
             type: "success",
           });
@@ -2179,7 +2354,12 @@ const createNewItem = async () => {
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
-  editingLancamento.value = lancamento;
+  // editingLancamento.value = lancamento;
+  const dataFormatada = format(
+    new Date(lancamento.dataMedicao),
+    "yyyy-MM-dd"
+  );
+  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };  
   modalEditLancamento.value = true;
 };
 
@@ -2188,10 +2368,16 @@ const openViewLancamentoModal = (lancamento) => {
   const itensComQuantidade = lancamento.lancamentoItens.filter(
     (item) => item.quantidadeItens > 0
   );
+  const dataFormatada = format(
+    new Date(lancamento.dataMedicao),
+    "yyyy-MM-dd"
+  );
   editingLancamento.value = {
     ...lancamento,
-    lancamentoItens: itensComQuantidade,
+    lancamentoItens: itensComQuantidade,  
+    dataMedicao: dataFormatada,
   };
+ 
   modalEditLancamento.value = true;
 };
 
@@ -2224,7 +2410,7 @@ const saveEditedLancamento = async () => {
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
-      data: item.data
+      data: item.data,
     }));
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
@@ -2286,10 +2472,14 @@ const saveEditedLancamento = async () => {
     );
     return;
   }
-
+  console.log(editingLancamento.value, 'eidt')
+  
   let payload = {
     // status: editingLancamento.value.status,
-    status: "sem situação",
+    data_medicao: formatDate(editingLancamento.value.dataMedicao),
+    tarefa_medicao:editingLancamento.value.tarefaMedicao,
+    tipo_medicao: editingLancamento.value.tipoMedicao,
+    status: editingLancamento.value.status,
     itens: itensQuantidadePreenchida.map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidade_itens,
@@ -2303,7 +2493,7 @@ const saveEditedLancamento = async () => {
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
       .then((response) => {
         Object.assign(editingLancamento.value);
-        toast("Lancamento atualizado com sucesso!", {
+        toast("Medição atualizada com sucesso!", {
           theme: "colored",
           type: "success",
         });
