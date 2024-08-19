@@ -7,7 +7,7 @@
         class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 transform hover:scale-105 hover:shadow-xl"
         >
         <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
-          <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-48 object-cover">
+          <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
           <div class="p-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
 
@@ -29,7 +29,7 @@
 
             <div class="space-y-2 text-xl">
               <div class="mb-3">
-                <p class="text-gray-600 font-semibold">Nome cliente:</p>
+                <p class="text-gray-600 font-semibold whitespace-nowrap">Nome cliente:</p>
                 <p class="text-gray-800 break-words truncate" :title="contrato.nomeCliente">{{ contrato.nomeCliente }}</p>
               </div>
               <div class="flex justify-between">
