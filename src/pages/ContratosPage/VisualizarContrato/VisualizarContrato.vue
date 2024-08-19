@@ -305,7 +305,7 @@
           </span>
         </button>
         <button
-          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]"
+          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px] h-[40px]"
           @click="ExibirModalPedidoFaturamento"
         >
           Novo pedido faturamento
