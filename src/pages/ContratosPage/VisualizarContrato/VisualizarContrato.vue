@@ -429,9 +429,7 @@
           </td> -->
           <td class="text-2xl">
             {{
-              formatCurrency(
                 calcularSaldoLancamentoItens(lancamento.lancamentoItens)
-              )
             }}
           </td>
           <td class="text-2xl">
@@ -1015,7 +1013,7 @@
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
-                <th class="text-xl">Quantidade a ser lançada</th>
+                <th class="text-xl">Resultado da medição</th>
                 <th class="text-xl">Total</th>
               </tr>
             </thead>
@@ -1180,7 +1178,7 @@
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
-                <th class="text-xl">Quantidade a ser lançada</th>
+                <th class="text-xl">Resultado da medição</th>
                 <th class="text-xl">Total</th>
               </tr>
             </thead>
@@ -2598,7 +2596,8 @@ const createNewItem = async () => {
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
-  const dataFormatada = lancamento.dataMedicao.split("T")[0];
+  const dataMedicao = lancamento.dataMedicao || '';
+  const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
 };
@@ -2608,7 +2607,8 @@ const openViewLancamentoModal = (lancamento) => {
   const itensComQuantidade = lancamento.lancamentoItens.filter(
     (item) => item.quantidadeItens > 0
   );
-  const dataFormatada = lancamento.dataMedicao.split("T")[0];
+  const dataMedicao = lancamento.dataMedicao || '';
+  const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = {
     ...lancamento,
     lancamentoItens: itensComQuantidade,
