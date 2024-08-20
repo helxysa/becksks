@@ -1230,7 +1230,7 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
                   <span
                     class="max-w-60"
                     :class="{
@@ -1590,6 +1590,7 @@ const route = useRoute();
 const contrato = ref({});
 const lancamentos = ref([]);
 const modalLancamento = ref(false);
+const selectedItem = ref('');
 const selectNovoLancamento = ref(null);
 const selectNovoFaturamento = ref(null);
 const modalPedidoFaturamento = ref(false);
@@ -2048,6 +2049,7 @@ const closeModalLancamento = () => {
     data_medicao: "",
     itens: [],
   };
+  selectedItem.value = '';
   contrato.value.contratoItens.forEach((item) => {
     item.data = null;
     item.quantidadeItens = null;
@@ -2596,7 +2598,6 @@ const createNewItem = async () => {
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
-  // editingLancamento.value = lancamento;
   const dataFormatada = lancamento.dataMedicao.split("T")[0];
   editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
@@ -2607,7 +2608,7 @@ const openViewLancamentoModal = (lancamento) => {
   const itensComQuantidade = lancamento.lancamentoItens.filter(
     (item) => item.quantidadeItens > 0
   );
-  const dataFormatada = format(new Date(lancamento.dataMedicao), "yyyy-MM-dd");
+  const dataFormatada = lancamento.dataMedicao.split("T")[0];
   editingLancamento.value = {
     ...lancamento,
     lancamentoItens: itensComQuantidade,
