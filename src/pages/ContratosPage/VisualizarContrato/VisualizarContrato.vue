@@ -376,7 +376,7 @@
           class="h-24 text-center"
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
-          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Detalhada' }"
+          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' }"
         >
           <td>
             <input
@@ -385,7 +385,7 @@
               v-model="pedidosFaturamento"
               :value="lancamento.id"
               @change="changePedido"
-              :disabled="lancamento.tipoMedicao === 'Detalhada'"
+              :disabled="lancamento.tipoMedicao === 'Estimada'"
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
