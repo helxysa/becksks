@@ -947,14 +947,14 @@
             <label class="font-bold text-3xl w-[200px]"
               >Item:</label
             >
-            <select
+            <select           
               v-model="medicaoData.itens"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             >
               <option disabled hidden value="">
                 Selecione o  item da  medição
               </option>
-              <option v-for="item in contrato.contratoItens" :value="item.titulo" :key="item.id">
+              <option v-for="item in contrato.contratoItens" :value="item" :key="item.id">
                 {{ item.titulo }}
               </option>
             </select>
@@ -975,7 +975,7 @@
                 <th class="text-xl">Total</th>
               </tr>
             </thead>
-            {{medicaoData.itens}}
+            {{medicaoData}}
             <tbody v-if="medicaoData.itens">
               <tr
                 class="h-24 text-center"
@@ -1551,6 +1551,10 @@ const medicaoData = ref({
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
 };
+
+const  changeMedicao = (e) => {
+  console.log(e.target.value, 'value')
+}
 
 const areAllSelected = computed(() => {
   return (
