@@ -1,213 +1,252 @@
 <template>
   <!-- Detalhes do contrato -->
-    <section>
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Detalhes do Contrato</h1>
-        <div class="flex flex-wrap gap-3">
-          <button class="btn-edit bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center">
-            <i class="fas fa-edit mr-2"></i>
-            <router-link :to="{ name: 'editarcontrato', params: { id: contrato.id } }">
-              Editar
-            </router-link>
-          </button>
-          <button @click="deleteContrato(contrato)" class="btn-delete bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center">
-            <i class="fas fa-trash-alt mr-2"></i>Excluir
-          </button>
+  <section>
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
+    >
+      <h1 class="text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Detalhes do Contrato
+      </h1>
+      <div class="flex flex-wrap gap-3">
+        <button
+          class="btn-edit bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center"
+        >
+          <i class="fas fa-edit mr-2"></i>
+          <router-link
+            :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
+          >
+            Editar
+          </router-link>
+        </button>
+        <button
+          @click="deleteContrato(contrato)"
+          class="btn-delete bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center"
+        >
+          <i class="fas fa-trash-alt mr-2"></i>Excluir
+        </button>
+      </div>
+    </div>
+
+    <!-- Detalhes do contrato -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div
+        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Informações do Contrato
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
+              <i class="fas fa-file-contract"></i>
+              <Icon
+                icon="fa6-solid:file-contract"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-blue-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.nomeContrato }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
+              <i class="fas fa-user"></i>
+              <Icon
+                icon="fa-solid:user"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-green-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cliente</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.nomeCliente }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
+              <i class="fas fa-calendar-alt"></i>
+              <Icon
+                icon="fa-solid:calendar-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-purple-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Vigência</p>
+              <p class="font-medium text-gray-700">
+                {{ formatDate(contrato.dataInicio) }} até
+                {{ formatDate(contrato.dataFim) }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Detalhes do contrato -->
-      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        <div class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
-          <h3 class="text-2xl font-semibold text-gray-800 mb-4">Informações do Contrato</h3>
-          <div class="space-y-4">
-            <div class="flex items-center">
-              <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
-                <i class="fas fa-file-contract"></i>
-                <Icon
-                  icon="fa6-solid:file-contract"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-blue-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Contrato</p>
-                <p class="font-medium text-gray-700">{{ contrato.nomeContrato }}</p>
-              </div>
+      <section
+        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
+              <i class="fas fa-user-tie"></i>
+              <Icon
+                icon="fa-solid:user-tie"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-indigo-400"
+              />
             </div>
-            <div class="flex items-center">
-              <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
-                <i class="fas fa-user"></i>
-                <Icon
-                  icon="fa-solid:user"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-green-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Cliente</p>
-                <p class="font-medium text-gray-700">{{ contrato.nomeCliente }}</p>
-              </div>
+            <div>
+              <p class="text-lg text-gray-500">Nome</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.nome }}
+              </p>
             </div>
-            <div class="flex items-center">
-              <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
-                <i class="fas fa-calendar-alt"></i>
-                <Icon
-                  icon="fa-solid:calendar-alt"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-purple-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Vigência</p>
-                <p class="font-medium text-gray-700">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</p>
-              </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
+              <i class="fas fa-phone"></i>
+              <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.telefone }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa:envelope"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-red-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">E-mail</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.email }}
+              </p>
             </div>
           </div>
         </div>
-
-        <section class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
-          <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
-          <div class="space-y-4">
-            <div class="flex items-center">
-              <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
-                <i class="fas fa-user-tie"></i>
-                <Icon
-                  icon="fa-solid:user-tie"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-indigo-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Nome</p>
-                <p class="font-medium text-gray-700">{{ contrato?.fiscal?.nome }}</p>
-              </div>
-            </div>
-            <div class="flex items-center">
-              <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
-                <i class="fas fa-phone"></i>
-                <Icon
-                  icon="fa:phone"
-                  width="1.5rem"
-                  class="text-yellow-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Contato</p>
-                <p class="font-medium text-gray-700">{{ contrato?.fiscal?.telefone }}</p>
-              </div>
-            </div>
-            <div class="flex items-center">
-              <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
-                <Icon
-                  icon="fa:envelope"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-red-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">E-mail</p>
-                <p class="font-medium text-gray-700">{{ contrato?.fiscal?.email }}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
-          <h3 class="text-2xl font-semibold text-gray-800 mb-4">Detalhes Adicionais</h3>
-          <div class="space-y-4">
-            <div class="flex items-center">
-              <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
-                <Icon
-                  icon="fa-solid:bullseye"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-teal-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Ponto Focal</p>
-                <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
-              </div>
-            </div>
-            <div class="flex items-center">
-              <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
-                <Icon
-                  icon="fa6-solid:city"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-pink-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Cidade</p>
-                <p class="font-medium text-gray-700">{{ contrato.cidade }}</p>
-              </div>
-            </div>
-            <div class="flex items-center">
-              <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
-                <Icon
-                  icon="fa-solid:file-alt"
-                  width="1.5rem"
-                  height="1.5rem"
-                  class="text-orange-400"
-                />
-              </div>
-              <div>
-                <p class="text-lg text-gray-500">Objeto do Contrato</p>
-                <p class="font-medium text-gray-700">{{ contrato.objetoContrato }}</p>
-              </div>
-            </div>
-          </div>
-        </section>
       </section>
 
-      <!-- Financial Summary Cards -->
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
-      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
-        <div
-          v-for="(item, index) in financialSummary" :key="index"
-          :class="`bg-gradient-to-br ${item.bgColor} rounded-xl shadow-lg p-6 text-white transition duration-300 ease-in-out hover:shadow-xl`"
-        >
-          <section class="flex flex-col h-full justify-between">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold">{{ item.title }}</h3>
-              <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+      <section
+        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Detalhes Adicionais
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:bullseye"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-teal-400"
+              />
             </div>
-            <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
-          </section>
-        </div>
-      </section>
-
-      <!-- Observações Section -->
-      <section class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">Observações</h3>
-        <div class="flex items-center">
-          <div class="bg-gray-100 text-gray-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa-solid:comment-alt"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-gray-400"
-            />
+            <div>
+              <p class="text-lg text-gray-500">Ponto Focal</p>
+              <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+            </div>
           </div>
-          <div>
-            <p class="text-lg text-gray-500">Detalhes adicionais</p>
-            <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+          <div class="flex items-center">
+            <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa6-solid:city"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-pink-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cidade</p>
+              <p class="font-medium text-gray-700">{{ contrato.cidade }}</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:file-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-orange-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Objeto do Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.objetoContrato }}
+              </p>
+            </div>
           </div>
         </div>
       </section>
     </section>
 
+    <!-- Financial Summary Cards -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
+    <section
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
+    >
+      <div
+        v-for="(item, index) in financialSummary"
+        :key="index"
+        :class="`bg-gradient-to-br ${item.bgColor} rounded-xl shadow-lg p-6 text-white transition duration-300 ease-in-out hover:shadow-xl`"
+      >
+        <section class="flex flex-col h-full justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+            <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+          </div>
+          <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- Observações Section -->
+    <section
+      class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+    >
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Observações</h3>
+      <div class="flex items-center">
+        <div class="bg-gray-100 text-gray-500 rounded-full p-3 mr-3">
+          <Icon
+            icon="fa-solid:comment-alt"
+            width="1.5rem"
+            height="1.5rem"
+            class="text-gray-400"
+          />
+        </div>
+        <div>
+          <p class="text-lg text-gray-500">Detalhes adicionais</p>
+          <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
   <!-- Tabela itens do contrato-->
   <section class="mt-16">
     <div class="flex justify-between items-center">
-      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Itens do Contrato</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Itens do Contrato
+      </h1>
       <button @click="openCreateItemModal" class="btn-item relative">
         Adicionar Item
         <span class="absolute right-[3px]">
@@ -292,7 +331,9 @@
   <!-- Tabela Medições-->
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Medição</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Medição
+      </h1>
       <div class="flex gap-4">
         <button class="btn-lancamento relative" @click="ExibirModalLancamento">
           Nova Medição
@@ -305,7 +346,7 @@
           </span>
         </button>
         <button
-          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]"
+          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px] h-[40px]"
           @click="ExibirModalPedidoFaturamento"
         >
           Novo pedido faturamento
@@ -335,9 +376,9 @@
           class="h-24 text-center"
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
-          :class="{'bg-indigo-100' : lancamento.tipoMedicao === 'Detalhada'}"
+          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Detalhada' }"
         >
-          <td >
+          <td>
             <input
               type="checkbox"
               class="w-6 h-6"
@@ -350,7 +391,7 @@
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
-          <td class="text-2xl">{{lancamento.tarefaMedicao}}</td>
+          <td class="text-2xl">{{ lancamento.tarefaMedicao }}</td>
           <td class="text-2xl">
             <div class="flex justify-center">
               <span
@@ -360,7 +401,6 @@
                     lancamento.tipoMedicao === 'Estimada',
                   'bg-blue-200 border-blue-400 text-blue-400':
                     lancamento.tipoMedicao === 'Detalhada',
-
                 }"
               >
                 {{ lancamento.tipoMedicao }}
@@ -376,9 +416,8 @@
                     lancamento.status === 'Não Autorizada',
                   'bg-green-200 border-green-400 text-green-400':
                     lancamento.status === 'Autorizada',
-                    'bg-red-200 border-red-400 text-red-400':
+                  'bg-red-200 border-red-400 text-red-400':
                     lancamento.status === 'Cancelada',
-
                 }"
               >
                 {{ lancamento.status }}
@@ -428,7 +467,9 @@
   <!-- Tabela Faturamentos-->
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">Faturamentos</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Faturamentos
+      </h1>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
@@ -943,6 +984,25 @@
               v-model="medicaoData.data_medicao"
             />
           </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Item:</label>
+            <select
+              v-model="selectedItem"
+              @change="addItemToTable(selectedItem)"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o item da medição
+              </option>
+              <option
+                v-for="item in contrato.contratoItens"
+                :value="item"
+                :key="item.id"
+              >
+                {{ item.titulo }}
+              </option>
+            </select>
+          </div>
         </section>
         <div class="mt-8">
           <table
@@ -959,10 +1019,10 @@
                 <th class="text-xl">Total</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody v-if="medicaoData.itens">
               <tr
                 class="h-24 text-center"
-                v-for="item in contrato.contratoItens"
+                v-for="item in medicaoData.itens"
                 :key="item.id"
               >
                 <td class="text-2xl">
@@ -1050,7 +1110,6 @@
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
-
               v-model="editingLancamento.projetos"
             />
           </div>
@@ -1171,7 +1230,7 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
                   <span
                     class="max-w-60"
                     :class="{
@@ -1228,15 +1287,15 @@
             />
           </div>
           <div class="flex justify-between items-center">
-
-            <label class="font-bold text-3xl">Unidade de Medida:
+            <label class="font-bold text-3xl"
+              >Unidade de Medida:
               <button
                 type="button"
                 @click="openNewUnitInput"
                 class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
               >
-              {{showNewUnitInput ? 'Voltar' : 'Adicionar'}}
-            </button>
+                {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
+              </button>
             </label>
             <select
               v-if="!showNewUnitInput"
@@ -1244,14 +1303,19 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
             >
-              <option disabled value="">
-                Selecione a unidade de medida
-              </option>
-              <option v-for="unidade in unidadesMedida" :key="unidade.id" :value="unidade.unidadeMedida">
+              <option disabled value="">Selecione a unidade de medida</option>
+              <option
+                v-for="unidade in unidadesMedida"
+                :key="unidade.id"
+                :value="unidade.unidadeMedida"
+              >
                 {{ unidade.unidadeMedida }}
               </option>
             </select>
-            <div v-if="showNewUnitInput" class=" w-[50%] flex items-center justify-between gap-8">
+            <div
+              v-if="showNewUnitInput"
+              class="w-[50%] flex items-center justify-between gap-8"
+            >
               <input
                 v-model="newUnitName"
                 type="text"
@@ -1266,8 +1330,7 @@
               >
                 Salvar
               </button>
-          </div>
-
+            </div>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
@@ -1483,41 +1546,51 @@ import { format, formatISO, startOfDay } from "date-fns";
 
 const financialSummary = computed(() => [
   {
-    title: 'Valor Contratado',
+    title: "Valor Contratado",
     value: formatCurrency(contrato.value.saldoContrato),
-    icon: 'fa6-solid:file-contract',
-    bgColor: 'from-blue-400 to-blue-600'
+    icon: "fa6-solid:file-contract",
+    bgColor: "from-blue-400 to-blue-600",
   },
   {
-    title: 'Aguardando faturamento',
-    value: formatCurrency(calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoFaturamento),
-    icon: 'ph:clock-fill',
-    bgColor: 'from-orange-400 to-orange-600'
+    title: "Aguardando faturamento",
+    value: formatCurrency(
+      calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoFaturamento
+    ),
+    icon: "ph:clock-fill",
+    bgColor: "from-orange-400 to-orange-600",
   },
   {
-    title: 'Aguardando pagamento',
-    value: formatCurrency(calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoPagamento),
-    icon: 'fa-solid:hand-holding-usd',
-    bgColor: 'from-indigo-400 to-indigo-600'
+    title: "Aguardando pagamento",
+    value: formatCurrency(
+      calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoPagamento
+    ),
+    icon: "fa-solid:hand-holding-usd",
+    bgColor: "from-indigo-400 to-indigo-600",
   },
   {
-    title: 'Pago',
-    value: formatCurrency(calcularSaldoDisponivel(contrato.value.faturamentos).valorPago),
-    icon: 'fa-check-circle',
-    bgColor: 'from-green-400 to-green-600'
+    title: "Pago",
+    value: formatCurrency(
+      calcularSaldoDisponivel(contrato.value.faturamentos).valorPago
+    ),
+    icon: "fa-check-circle",
+    bgColor: "from-green-400 to-green-600",
   },
   {
-    title: 'Saldo disponível',
-    value: formatCurrency(contrato.value.saldoContrato - calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado),
-    icon: 'ph-wallet-fill',
-    bgColor: 'from-purple-400 to-purple-600'
-  }
+    title: "Saldo disponível",
+    value: formatCurrency(
+      contrato.value.saldoContrato -
+        calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado
+    ),
+    icon: "ph-wallet-fill",
+    bgColor: "from-purple-400 to-purple-600",
+  },
 ]);
 const router = useRouter();
 const route = useRoute();
 const contrato = ref({});
 const lancamentos = ref([]);
 const modalLancamento = ref(false);
+const selectedItem = ref('');
 const selectNovoLancamento = ref(null);
 const selectNovoFaturamento = ref(null);
 const modalPedidoFaturamento = ref(false);
@@ -1555,11 +1628,12 @@ const medicaoData = ref({
   tipo_medicao: "",
   status: "",
   data_medicao: "",
+  itens: [],
 });
 
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
-const newUnitName = ref('');
+const newUnitName = ref("");
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -1567,27 +1641,35 @@ const openNewUnitInput = () => {
 
 const fetchUnidadesMedida = async () => {
   try {
-    const response = await api.get('/unidade_medida');
+    const response = await api.get("/unidade_medida");
     unidadesMedida.value = response.data.data;
   } catch (error) {
-    console.error('Erro ao buscar unidades de medida:', error);
+    console.error("Erro ao buscar unidades de medida:", error);
   }
 };
 
 const CriarUnidadeMedida = async () => {
   try {
-    const response = await api.post('/unidade_medida', { unidade_medida: newUnitName.value });
+    const response = await api.post("/unidade_medida", {
+      unidade_medida: newUnitName.value,
+    });
     await fetchUnidadesMedida();
     newItem.value.unidade_medida = newUnitName.value;
-    newUnitName.value = '';
+    newUnitName.value = "";
     showNewUnitInput.value = false;
-    toast.success('Unidade de medida criada com sucesso!');
+    toast.success("Unidade de medida criada com sucesso!");
   } catch (error) {
-    console.error('Erro ao criar nova unidade de medida:', error.response.data.message);
-    if(error.response.data.message == 'Já existe uma unidade de medida com esse nome.')  {
+    console.error(
+      "Erro ao criar nova unidade de medida:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe uma unidade de medida com esse nome."
+    ) {
       return toast.error(error.response.data.message);
     } else {
-      toast.error('Não foi possível criar a unidade de medida.')
+      toast.error("Não foi possível criar a unidade de medida.");
     }
   }
 };
@@ -1595,23 +1677,23 @@ const CriarUnidadeMedida = async () => {
 const deletarUnidadeMedida = (id, unidadeMedida) => {
   //Não implementado ainda
   Swal.fire({
-    title: 'Você tem certeza?',
+    title: "Você tem certeza?",
     text: `Deseja remover a unidade de medida "${unidadeMedida}"?`,
-    icon: 'warning',
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sim, remover!',
-    cancelButtonText: 'Cancelar'
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
         await api.delete(`/unidade_medida/${id}`);
         await fetchUnidadesMedida();
-        toast.success('Unidade de medida removida com sucesso!');
+        toast.success("Unidade de medida removida com sucesso!");
       } catch (error) {
-        console.error('Erro ao remover unidade de medida:', error);
-        toast.error('Erro ao remover unidade de medida.');
+        console.error("Erro ao remover unidade de medida:", error);
+        toast.error("Erro ao remover unidade de medida.");
       }
     }
   });
@@ -1965,7 +2047,9 @@ const closeModalLancamento = () => {
     status: "",
     tipo_medicao: "",
     data_medicao: "",
+    itens: [],
   };
+  selectedItem.value = '';
   contrato.value.contratoItens.forEach((item) => {
     item.data = null;
     item.quantidadeItens = null;
@@ -1980,7 +2064,15 @@ const resetForm = () => {
   projetos.value = "";
   closeModalLancamento();
 };
-
+const addItemToTable = (selectedItem) => {
+  if (selectedItem) {
+    // Substitui o item existente ou adiciona o novo item
+    medicaoData.value.itens = [selectedItem]; // Garante que apenas o item selecionado esteja na lista
+  } else {
+    console.log('Nenhum item selecionado');
+  }
+  // console.log('medicaoData', medicaoData.value.itens);
+};
 const createLancamento = async () => {
   if (!projetos.value || projetos.value == null) {
     toast("Insira o nome do projeto", {
@@ -2506,8 +2598,7 @@ const createNewItem = async () => {
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
-  // editingLancamento.value = lancamento;
-  const dataFormatada = lancamento.dataMedicao.split('T')[0];
+  const dataFormatada = lancamento.dataMedicao.split("T")[0];
   editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
 };
@@ -2517,10 +2608,7 @@ const openViewLancamentoModal = (lancamento) => {
   const itensComQuantidade = lancamento.lancamentoItens.filter(
     (item) => item.quantidadeItens > 0
   );
-  const dataFormatada = format(
-    new Date(lancamento.dataMedicao),
-    "yyyy-MM-dd"
-  );
+  const dataFormatada = lancamento.dataMedicao.split("T")[0];
   editingLancamento.value = {
     ...lancamento,
     lancamentoItens: itensComQuantidade,
@@ -2624,7 +2712,7 @@ const saveEditedLancamento = async () => {
 
   let payload = {
     data_medicao: formatDate(editingLancamento.value.dataMedicao),
-    tarefa_medicao:editingLancamento.value.tarefaMedicao,
+    tarefa_medicao: editingLancamento.value.tarefaMedicao,
     tipo_medicao: editingLancamento.value.tipoMedicao,
     status: editingLancamento.value.status,
     itens: itensQuantidadePreenchida.map((item) => ({
