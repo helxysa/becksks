@@ -972,7 +972,7 @@
               <option>Cancelada</option>
             </select>
           </div>
-        
+
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
@@ -1008,7 +1008,7 @@
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
             <thead class="h-20 bg-slate-100 border-1">
-              <tr>              
+              <tr>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
@@ -1022,7 +1022,7 @@
                 class="h-24 text-center"
                 v-for="item in medicaoData.itens"
                 :key="item.id"
-              >              
+              >
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -1165,7 +1165,7 @@
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
             <thead class="h-20 bg-slate-100 border-1">
-              <tr>               
+              <tr>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
@@ -1179,7 +1179,7 @@
                 class="h-24 text-center"
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
-              >               
+              >
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -2065,11 +2065,9 @@ const createLancamento = async () => {
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
-      data: item.data,
     }))
     .filter(
       (item) =>
-        item.data &&
         item.quantidade_itens &&
         parseFloat(item.quantidade_itens) > 0
     );
