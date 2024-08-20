@@ -923,6 +923,15 @@
       <form @submit.prevent="createLancamento">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Projeto:</label>
+            <input
+              type="text"
+              placeholder="Informe o nome do  projeto"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="projetos"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]"
               >Tarefa da medição:</label
             >
@@ -963,15 +972,7 @@
               <option>Cancelada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center">
-            <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <input
-              type="text"
-              placeholder="Informe o nome do  projeto"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              v-model="projetos"
-            />
-          </div>
+        
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
@@ -1007,8 +1008,7 @@
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
             <thead class="h-20 bg-slate-100 border-1">
-              <tr>
-                <th class="text-xl">Data</th>
+              <tr>              
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
@@ -1022,14 +1022,7 @@
                 class="h-24 text-center"
                 v-for="item in medicaoData.itens"
                 :key="item.id"
-              >
-                <td class="text-2xl">
-                  <input
-                    v-model="item.data"
-                    type="date"
-                    class="border-2 text-center max-w-60"
-                  />
-                </td>
+              >              
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
@@ -1172,8 +1165,7 @@
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
             <thead class="h-20 bg-slate-100 border-1">
-              <tr>
-                <th class="text-xl">Data</th>
+              <tr>               
                 <th class="text-xl">Item</th>
                 <th class="text-xl">Valor unitário</th>
                 <th class="text-xl">Quantidade contratada</th>
@@ -1187,18 +1179,7 @@
                 class="h-24 text-center"
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
-              >
-                <td class="text-2xl">
-                  <span v-if="isLancamentoViewModal">{{
-                    formatDate(item.data)
-                  }}</span>
-                  <input
-                    v-if="!isLancamentoViewModal"
-                    v-model="item.data"
-                    type="date"
-                    class="border-2 text-center max-w-60"
-                  />
-                </td>
+              >               
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
