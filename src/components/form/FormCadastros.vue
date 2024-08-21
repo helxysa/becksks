@@ -191,7 +191,7 @@
               v-for="(item, index) in contratoForm.items"
               :key="index"
               class="text-center"
-            >
+            >          
               <td class="text-xl p-4">{{ item.titulo }}</td>
               <td class="text-xl p-4">{{ item.unidade_medida }}</td>
               <td class="text-xl p-4">{{ formatCurrency(item.valor_unitario) }}</td>
@@ -360,17 +360,52 @@
             />
           </div>
           <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Unidade de Medida:</label>
+            <label class="font-bold text-3xl">Unidade de Medida:
+              <button            
+              type="button"
+              @click="openNewUnitInput"
+              class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
+            >
+              {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
+            </button>
+
+            </label>
             <select
+                v-if="!showNewUnitInput"
+              :disabled="isItemViewModal"
               v-model="editItem.unidade_medida"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
               >
               <option disabled hidden value="">Selecione a unidade de medida</option>
-              <option>Pontos  de  Função</option>
-              <option>UST(Unidade de Serviço Técnico)</option>
-              <option>Funcionário</option>
+              <option
+              v-for="unidade in unidadesMedida"
+              :key="unidade.id"
+              :value="unidade.unidadeMedida"
+            >
+              {{ unidade.unidadeMedida }}
+            </option>
+         
             </select>
+            <div
+            v-if="showNewUnitInput"
+            class="w-[50%] flex items-center justify-between gap-8"
+          >
+            <input
+              v-model="newUnitName"            
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-md h-14"
+              placeholder="Nova unidade"
+              required
+            />
+            <button
+              @click="CriarUnidadeMedida"
+              type="button"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-white bg-green-600 hover:bg-green-700"
+            >
+              Salvar
+            </button>
+          </div>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
