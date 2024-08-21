@@ -250,17 +250,50 @@
               />
             </div>
             <div class="flex gap-4 justify-between items-center">
-              <label class="font-bold text-3xl">Unidade de Medida:</label>
+              <label class="font-bold text-3xl">Unidade de Medida:
+                <button
+                type="button"
+                @click="openNewUnitInput"
+                class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
+              >
+                {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
+              </button>
+              </label>
               <select
+                v-if="!showNewUnitInput"
                 v-model="novoItem.unidade_medida"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                 required
                 >
                 <!-- <option disabled hidden value="">Selecione a unidade de medida</option> -->
-                <option>Pontos  de Função</option>
-                <option>UST(Unidade de Serviço Técnico)</option>
-                <option>Funcionário</option>
+                <option disabled value="">Selecione a unidade de medida</option>
+                <option
+                  v-for="unidade in unidadesMedida"
+                  :key="unidade.id"
+                  :value="unidade.unidadeMedida"
+                >
+                  {{ unidade.unidadeMedida }}
+                </option>
               </select>
+              <div
+              v-if="showNewUnitInput"
+              class="w-[50%] flex items-center justify-between gap-8"
+            >
+              <input
+                v-model="newUnitName"
+                type="text"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-md h-14"
+                placeholder="Nova unidade"
+                required
+              />
+              <button
+                @click="CriarUnidadeMedida"
+                type="button"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-white bg-green-600 hover:bg-green-700"
+              >
+                Salvar
+              </button>
+            </div>
             </div>
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Valor Unitário:</label>
@@ -453,6 +486,74 @@ let editItem = ref({
   valor_unitario: "",
   saldo_quantidade_contratada: "",
 });
+
+const unidadesMedida = ref([]);
+const showNewUnitInput = ref(false);
+const newUnitName = ref("");
+
+const openNewUnitInput = () => {
+  showNewUnitInput.value = !showNewUnitInput.value;
+};
+
+const fetchUnidadesMedida = async () => {
+  try {
+    const response = await api.get("/unidade_medida");
+    unidadesMedida.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar unidades de medida:", error);
+  }
+};
+
+const CriarUnidadeMedida = async () => {
+  try {
+    const response = await api.post("/unidade_medida", {
+      unidade_medida: newUnitName.value,
+    });
+    await fetchUnidadesMedida();
+    newItem.value.unidade_medida = newUnitName.value;
+    newUnitName.value = "";
+    showNewUnitInput.value = false;
+    toast.success("Unidade de medida criada com sucesso!");
+  } catch (error) {
+    console.error(
+      "Erro ao criar nova unidade de medida:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe uma unidade de medida com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível criar a unidade de medida.");
+    }
+  }
+};
+
+const deletarUnidadeMedida = (id, unidadeMedida) => {
+  //Não implementado ainda
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover a unidade de medida "${unidadeMedida}"?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/unidade_medida/${id}`);
+        await fetchUnidadesMedida();
+        toast.success("Unidade de medida removida com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover unidade de medida:", error);
+        toast.error("Erro ao remover unidade de medida.");
+      }
+    }
+  });
+};
 
 onMounted(()=>{
   const contratoId = route.params.id;
