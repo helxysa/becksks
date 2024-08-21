@@ -365,6 +365,7 @@
           <th class="text-xl">Status da medição</th>
           <!-- <th class="text-xl">Quantidade itens</th> -->
           <th class="text-xl">Resultado da medição</th>
+          <th class="text-xl">Unidade de medida</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
@@ -377,7 +378,7 @@
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' }"
-        >
+        >          
           <td>
             <input
               type="checkbox"
@@ -429,8 +430,11 @@
           </td> -->
           <td class="text-2xl">
             {{
-                calcularSaldoLancamentoItens(lancamento.lancamentoItens)
+              calcularQuantidadeItens(lancamento.lancamentoItens) 
             }}
+          </td>
+          <td class="text-2xl">
+            {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
           </td>
           <td class="text-2xl">
             <div class="flex justify-center items-center gap-2">
@@ -1011,11 +1015,12 @@
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">Item</th>
-                <th class="text-xl">Valor unitário</th>
+                <th class="text-xl">U.M (Unidade Medida)</th>
+                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
                 <th class="text-xl">Resultado da medição</th>
-                <th class="text-xl">Total</th>
+                <!-- <th class="text-xl">Total</th> -->
               </tr>
             </thead>
             <tbody v-if="medicaoData.itens">
@@ -1023,11 +1028,12 @@
                 class="h-24 text-center"
                 v-for="item in medicaoData.itens"
                 :key="item.id"
-              >
+              >             
                 <td class="text-2xl">{{ item.titulo }}</td>
-                <td class="text-2xl">
+                <td class="text-2xl">{{ item.unidadeMedida }}</td>
+                <!-- <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
-                </td>
+                </td> -->
                 <td>
                   <span>
                     {{ item.saldoQuantidadeContratada }}
@@ -1051,14 +1057,14 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                <!-- <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
                     class="max-w-60"
                     :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
                   >
                     {{ formatCurrency(calcularSaldoItem(item) || 0) }}
                   </span>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -1168,11 +1174,12 @@
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">Item</th>
-                <th class="text-xl">Valor unitário</th>
+                <th class="text-xl">U.M (Unidade Medida)</th>                
+                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
                 <th class="text-xl">Resultado da medição</th>
-                <th class="text-xl">Total</th>
+                <!-- <th class="text-xl">Total</th> -->
               </tr>
             </thead>
             <tbody>
@@ -1180,11 +1187,12 @@
                 class="h-24 text-center"
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
-              >
+              >             
                 <td class="text-2xl">{{ item.titulo }}</td>
-                <td class="text-2xl">
+                <td class="text-2xl">{{ item.unidadeMedida }}</td>
+                <!-- <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
-                </td>
+                </td> -->
                 <td>
                   <span>
                     {{ item.saldoQuantidadeContratada }}
@@ -1210,7 +1218,7 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
+                <!-- <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
                   <span
                     class="max-w-60"
                     :class="{
@@ -1219,7 +1227,7 @@
                   >
                     {{ formatCurrency(calcularSaldoItem(item) || 0) }}
                   </span>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -2417,6 +2425,15 @@ const calcularQuantidadeItens = (lancamentoItens) => {
     saldoTotal += quantidadeItens;
   });
   return parseFloat(saldoTotal.toFixed(2));
+};
+
+const mostrarUnidadeMedida = (lancamentoItens) => {
+  let unidadeMedida = '';
+
+  lancamentoItens.forEach((item) => {
+    unidadeMedida = item.unidadeMedida
+  });
+  return unidadeMedida
 };
 
 // Editar Item do contrato
