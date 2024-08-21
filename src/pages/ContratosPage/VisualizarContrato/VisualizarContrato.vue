@@ -378,7 +378,7 @@
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' }"
-        >          
+        >
           <td>
             <input
               type="checkbox"
@@ -430,7 +430,7 @@
           </td> -->
           <td class="text-2xl">
             {{
-              calcularQuantidadeItens(lancamento.lancamentoItens) 
+              calcularQuantidadeItens(lancamento.lancamentoItens)
             }}
           </td>
           <td class="text-2xl">
@@ -801,7 +801,7 @@
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
-          </div>        
+          </div>
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Observações</label>
             <textarea
@@ -1028,7 +1028,7 @@
                 class="h-24 text-center"
                 v-for="item in medicaoData.itens"
                 :key="item.id"
-              >             
+              >
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <!-- <td class="text-2xl">
@@ -1174,7 +1174,7 @@
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">Item</th>
-                <th class="text-xl">U.M (Unidade Medida)</th>                
+                <th class="text-xl">U.M (Unidade Medida)</th>
                 <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
@@ -1187,7 +1187,7 @@
                 class="h-24 text-center"
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
-              >             
+              >
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <!-- <td class="text-2xl">
@@ -1387,7 +1387,7 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Unidade de Medida:
-              <button            
+              <button
               type="button"
               @click="openNewUnitInput"
               class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
@@ -1416,7 +1416,7 @@
             class="w-[50%] flex items-center justify-between gap-8"
           >
             <input
-              v-model="newUnitName"            
+              v-model="newUnitName"
               type="text"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-md h-14"
               placeholder="Nova unidade"
@@ -1649,7 +1649,7 @@ const medicaoData = ref({
   status: "",
   data_medicao: "",
   itens: [],
-  
+
 });
 
 const unidadesMedida = ref([]);
@@ -1844,7 +1844,7 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
- 
+
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
@@ -2073,11 +2073,11 @@ const closeModalLancamento = () => {
     tipo_medicao: "",
     data_medicao: "",
     itens: [],
-    
+
   };
   selectedItem.value = '';
   contrato.value.contratoItens.forEach((item) => {
-    item.data = null;
+    // item.data = null;
     item.quantidadeItens = null;
   });
 };
@@ -2157,7 +2157,7 @@ const createLancamento = async () => {
     return;
   }
 
- 
+
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -2165,7 +2165,7 @@ const createLancamento = async () => {
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
-  
+
   };
   try {
     const contratoId = route.params.id;
@@ -2684,7 +2684,7 @@ const saveEditedLancamento = async () => {
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
-      data: item.data,
+      // data: item.data,
     }));
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
@@ -2748,14 +2748,16 @@ const saveEditedLancamento = async () => {
   }
 
   let payload = {
-    data_medicao: formatDate(editingLancamento.value.dataMedicao),
+    // data_medicao: formatDate(editingLancamento.value.dataMedicao),
+    data_medicao: editingLancamento.value.dataMedicao,
+    // data_medicao: "2024-08-22",
     tarefa_medicao: editingLancamento.value.tarefaMedicao,
     tipo_medicao: editingLancamento.value.tipoMedicao,
     status: editingLancamento.value.status,
     itens: itensQuantidadePreenchida.map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidade_itens,
-      data: item.data,
+      // data: item.data,
     })),
     projetos: editingLancamento.value.projetos,
   };
