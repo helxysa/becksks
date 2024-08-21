@@ -797,10 +797,11 @@
               placeholder="Informe a  data do pedido  de faturamento"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
-          </div>
+          </div>        
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Observações</label>
             <textarea
+              :disabled="isFaturamentoViewModal"
               v-model="editingFaturamento.observacoes"
               rows="7"
               placeholder="observações"
@@ -1608,6 +1609,7 @@ const medicaoData = ref({
   status: "",
   data_medicao: "",
   itens: [],
+  
 });
 
 const unidadesMedida = ref([]);
@@ -1802,12 +1804,15 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
+ 
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
     status: pedidoFaturamentoData.value.status,
+    observacoes: pedidoFaturamentoData.value.observacoes,
   };
+
 
   if (payload.descricao_nota.length <= 0) {
     toast.error("Selecione pelo menos um lançamento para gerar o faturamento.");
@@ -1874,6 +1879,7 @@ const saveEditedFaturamento = async () => {
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
     status: editingFaturamento.value.status,
+    observacoes: editingFaturamento.value.observacoes,
   };
 
   try {
@@ -2027,6 +2033,7 @@ const closeModalLancamento = () => {
     tipo_medicao: "",
     data_medicao: "",
     itens: [],
+    
   };
   selectedItem.value = '';
   contrato.value.contratoItens.forEach((item) => {
@@ -2076,7 +2083,7 @@ const createLancamento = async () => {
 
   if (itensQuantidadePreenchida.length === 0) {
     toast(
-      "Adicione pelo menos um item com data e quantidade para criar o lançamento.",
+      "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
       {
         theme: "colored",
         type: "error",
@@ -2112,6 +2119,7 @@ const createLancamento = async () => {
     return;
   }
 
+ 
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -2119,6 +2127,7 @@ const createLancamento = async () => {
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
+  
   };
   try {
     const contratoId = route.params.id;
