@@ -125,6 +125,7 @@
 
       if (diasParaVencimento <= lembreteVencimento && diasParaVencimento <= 20) {
         exibirToastNotificacao(contrato, diasParaVencimento, hoje);
+        adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
       } else if (diasParaVencimento > 90) {
         adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
       }
@@ -134,7 +135,7 @@
   const exibirToastNotificacao = (contrato, diasParaVencimento, hoje) => {
     let mensagem = '';
     if (diasParaVencimento === 0 ) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato}</> vence hoje.`
+      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} vence hoje.`
     } else if (diasParaVencimento < 0) {
       mensagem = `Lembrete: O contrato ${contrato.nomeContrato} passou da data de vencimento.`;
     } else if (diasParaVencimento <= 20) {
@@ -148,10 +149,22 @@
   };
 
   const adicionarNotificacaoSino = (contrato, diasParaVencimento, notificacoesLidas, hoje) => {
+    let mensagem = '';
+
+    if (diasParaVencimento === 0 ) {
+      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> vence <strong>hoje.</strong>`
+    } else if (diasParaVencimento < 0) {
+      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> passou da <strong>data de vencimento.</strong>`;
+    } else if (diasParaVencimento <= 20) {
+      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem <strong>${diasParaVencimento} dia(s)</strong> até o vencimento.`;
+    } else {
+      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dia(s)</strong>.`;
+    }
     if (notificacoesLidas[contrato.id] !== hoje) {
       mensagens.value.push({
         id: contrato.id,
-        texto: `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dias</strong>.`,
+        // texto: `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dias</strong>.`,
+        texto: mensagem,
         tipo: 'sino'
       });
     }
