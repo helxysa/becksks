@@ -371,13 +371,13 @@
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
         </tr>
-      </thead>
+      </thead>    
       <tbody v-if="contrato.lancamentos">
         <tr
           class="h-24 text-center"
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
-          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' }"
+          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || validarMedicaoFaturada(lancamento) }"
         >
           <td>
             <input
@@ -386,7 +386,7 @@
               v-model="pedidosFaturamento"
               :value="lancamento.id"
               @change="changePedido"
-              :disabled="lancamento.tipoMedicao === 'Estimada'"
+              :disabled="lancamento.tipoMedicao === 'Estimada' || validarMedicaoFaturada(lancamento)"
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
@@ -2204,6 +2204,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contrato.value = response.data;
+    console.log(contrato.value, 'contrato')
 
     if (!contrato.value.quantidadeItens) {
     }
@@ -2277,6 +2278,18 @@ const faturamentosOrdenados = computed(() => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
+
+//função  pra  validar  se  a  medição  já  tá  faturada  impedindo o checkbox 
+const validarMedicaoFaturada = (lancamento) => {
+  let isFaturada =  false
+    contrato.value.faturamentos.forEach((item)=> {
+        item.faturamentoItens.forEach((subItem)=>{
+          isFaturada = subItem.lancamento.id === lancamento.id
+        })
+    })
+
+    return isFaturada
+}
 
 // Cálculos de saldo
 const calcularSaldoAtual = () => {
