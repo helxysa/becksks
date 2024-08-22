@@ -379,6 +379,7 @@
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || validarMedicaoFaturada(lancamento) }"
         >
+        <!-- {{ validarMedicaoFaturada(lancamento)}} -->
           <td>
             <input
               type="checkbox"
@@ -2238,11 +2239,11 @@ const deleteLancamento = (lancamentoId) => {
           fetchContrato(contratoId);
         })
         .catch((error) => {
-          toast("Não foi possível deletar lançamento", {
+          toast("Não foi possível deletar medição", {
             theme: "colored",
             type: "error",
           });
-          console.error("Erro ao deletar lancamento:", error.message);
+          console.error("Erro ao deletar medição:", error.message);
         });
     }
   });
@@ -2285,6 +2286,7 @@ const validarMedicaoFaturada = (lancamento) => {
     contrato.value.faturamentos.forEach((item)=> {
         item.faturamentoItens.forEach((subItem)=>{
           isFaturada = subItem.lancamento.id === lancamento.id
+          // console.log(isFaturada, 'fat')
         })
     })
 
