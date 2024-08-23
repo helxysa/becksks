@@ -1,175 +1,252 @@
 <template>
-  <div class="flex justify-end gap-4 mb-20">
-    <!-- <button
-      @click="showRenovacaoModal()"
-      class="btn-renove bg-blue-400 rounded-md text-white p-2 w-32"
-      v-if="podeRenovar"
+  <!-- Detalhes do contrato -->
+  <section>
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
     >
-      Renovar
-    </button> -->
-    <button class="btn-edit bg-green-500 rounded-md text-white p-2 w-32">
-      <router-link
-        :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
-      >
-        <router-view> Editar </router-view>
-      </router-link>
-    </button>
-    <button
-      class="btn-delete bg-red-600 rounded-md text-white p-2 w-32"
-      @click="deleteContrato(contrato)"
-    >
-      Excluir
-    </button>
-  </div>
-
-  <section class="mb-4">
-    <div class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      <div class="flex items-center gap-4">
-        <label class="font-semibold dark:text-white">Contrato:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.nomeContrato
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold dark:text-white">Cliente:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.nomeCliente
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <span
-          ><strong>Vigência:</strong>
-          <span class="underline underline-offset-4 pl-4"
-            >{{ formatDate(contrato.dataInicio) }} até
-            {{ formatDate(contrato.dataFim) }}</span
-          ></span
+      <h1 class="text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Detalhes do Contrato
+      </h1>
+      <div class="flex flex-wrap gap-3">
+        <button
+          class="btn-edit bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center"
         >
+          <i class="fas fa-edit mr-2"></i>
+          <router-link
+            :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
+          >
+            Editar
+          </router-link>
+        </button>
+        <button
+          @click="deleteContrato(contrato)"
+          class="btn-delete bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center"
+        >
+          <i class="fas fa-trash-alt mr-2"></i>Excluir
+        </button>
+      </div>
+    </div>
+
+    <!-- Detalhes do contrato -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div
+        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Informações do Contrato
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
+              <i class="fas fa-file-contract"></i>
+              <Icon
+                icon="fa6-solid:file-contract"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-blue-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.nomeContrato }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
+              <i class="fas fa-user"></i>
+              <Icon
+                icon="fa-solid:user"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-green-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cliente</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.nomeCliente }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
+              <i class="fas fa-calendar-alt"></i>
+              <Icon
+                icon="fa-solid:calendar-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-purple-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Vigência</p>
+              <p class="font-medium text-gray-700">
+                {{ formatDate(contrato.dataInicio) }} até
+                {{ formatDate(contrato.dataFim) }}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato?.fiscal?.nome
-        }}</span>
+      <section
+        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
+              <i class="fas fa-user-tie"></i>
+              <Icon
+                icon="fa-solid:user-tie"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-indigo-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Nome</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.nome }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
+              <i class="fas fa-phone"></i>
+              <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.telefone }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa:envelope"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-red-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">E-mail</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.email }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Detalhes Adicionais
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:bullseye"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-teal-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Ponto Focal</p>
+              <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa6-solid:city"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-pink-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cidade</p>
+              <p class="font-medium text-gray-700">{{ contrato.cidade }}</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:file-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-orange-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Objeto do Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.objetoContrato }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Financial Summary Cards -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
+    <section
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
+    >
+      <div
+        v-for="(item, index) in financialSummary"
+        :key="index"
+        :class="`bg-gradient-to-br ${item.bgColor} rounded-xl shadow-lg p-6 text-white transition duration-300 ease-in-out hover:shadow-xl`"
+      >
+        <section class="flex flex-col h-full justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+            <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+          </div>
+          <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
+        </section>
       </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Telefone fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato?.fiscal?.telefone
-        }}</span>
+    </section>
+
+    <!-- Observações Section -->
+    <section
+      class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
+    >
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Observações</h3>
+      <div class="flex items-center">
+        <div class="bg-gray-100 text-gray-500 rounded-full p-3 mr-3">
+          <Icon
+            icon="fa-solid:comment-alt"
+            width="1.5rem"
+            height="1.5rem"
+            class="text-gray-400"
+          />
+        </div>
+        <div>
+          <p class="text-lg text-gray-500">Detalhes adicionais</p>
+          <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+        </div>
       </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">E-mail fiscal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato?.fiscal?.email
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Ponto Focal:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.pontoFocal
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Cidade:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.cidade
-        }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <label class="font-semibold">Objeto do Contrato:</label>
-        <span class="pl-4 p-2 underline underline-offset-4">{{
-          contrato.objetoContrato
-        }}</span>
-      </div>
-    </div>
+    </section>
   </section>
 
-  <section class="flex items-center gap-4">
-    <label class="font-semibold">Observações:</label>
-    <span class="underline underline-offset-4 text-justify">{{
-      contrato.observacoes
-    }}</span>
-  </section>
-  <section class="flex gap-3 mt-6 flex-wrap 2xl:gap-x-24">
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-blue-800 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{ formatCurrency(contrato.saldoContrato) }}
-        </p>
-        <p>Valor contratado</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-yellow-300 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              calcularSaldoDisponivel(contrato.faturamentos)
-                .aguardandoFaturamento
-            )
-          }}
-        </p>
-        <p>Valor aguardando faturamento</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-gray-300 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              calcularSaldoDisponivel(contrato.faturamentos).aguardandoPagamento
-            )
-          }}
-        </p>
-        <p>Valor aguardando pagamento</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-red-800 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              calcularSaldoDisponivel(contrato.faturamentos).valorPago
-            )
-          }}
-        </p>
-        <p>Valor pago</p>
-      </div>
-    </div>
-    <div
-      class="shadow-lg rounded-lg overflow-hidden w-1/6 min-w-[230px] h-[120px]"
-    >
-      <p class="w-full bg-green-600 h-4"></p>
-      <div class="flex flex-col items-center h-full justify-center">
-        <p class="text-4xl font-semibold">
-          {{
-            formatCurrency(
-              contrato.saldoContrato -
-                calcularSaldoDisponivel(contrato.faturamentos).totalUtilizado
-            )
-          }}
-        </p>
-        <p>Saldo disponível</p>
-      </div>
-    </div>
-  </section>
-
+  <!-- Tabela itens do contrato-->
   <section class="mt-16">
     <div class="flex justify-between items-center">
-      <h1 class="text-4xl font-medium mt-12">Itens do Contrato</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Itens do Contrato
+      </h1>
       <button @click="openCreateItemModal" class="btn-item relative">
         Adicionar Item
         <span class="absolute right-[3px]">
@@ -251,12 +328,15 @@
     </table>
   </section>
 
+  <!-- Tabela Medições-->
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="text-4xl font-medium">Lançamentos</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Medição
+      </h1>
       <div class="flex gap-4">
         <button class="btn-lancamento relative" @click="ExibirModalLancamento">
-          Novo Lançamento
+          Nova Medição
           <span class="absolute right-[3px]">
             <Icon
               icon="material-symbols-light:add"
@@ -266,7 +346,7 @@
           </span>
         </button>
         <button
-          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px]"
+          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px] h-[40px]"
           @click="ExibirModalPedidoFaturamento"
         >
           Novo pedido faturamento
@@ -276,52 +356,87 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th>
-            <input
-              type="checkbox"
-              class="w-6 h-6"
-              :checked="areAllSelected"
-              @change="toggleSelectAll"
-            />
-          </th>
+          <th></th>
           <th class="text-xl">Id</th>
-          <th class="text-xl">Data</th>
+          <th class="text-xl">Data da medição</th>
           <th class="text-xl">Projeto</th>
+          <th class="text-xl">Tarefa da medição</th>
+          <th class="text-xl">Tipo da medição</th>
+          <th class="text-xl">Status da medição</th>
           <!-- <th class="text-xl">Quantidade itens</th> -->
-          <th class="text-xl">Total do Lançamento</th>
+          <th class="text-xl">Resultado da medição</th>
+          <th class="text-xl">Unidade de medida</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
         </tr>
-      </thead>
+      </thead>    
       <tbody v-if="contrato.lancamentos">
         <tr
           class="h-24 text-center"
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
+          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
-          <td>
+     
+          <td>          
             <input
               type="checkbox"
               class="w-6 h-6"
               v-model="pedidosFaturamento"
               :value="lancamento.id"
               @change="changePedido"
+              :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
+            
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
-          <td class="text-2xl">{{ formatDate(lancamento.createdAt) }}</td>
+          <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
+          <td class="text-2xl">{{ lancamento.tarefaMedicao }}</td>
+          <td class="text-2xl">
+            <div class="flex justify-center">
+              <span
+                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                :class="{
+                  'bg-purple-200 border-purple-400 text-purple-400':
+                    lancamento.tipoMedicao === 'Estimada',
+                  'bg-blue-200 border-blue-400 text-blue-400':
+                    lancamento.tipoMedicao === 'Detalhada',
+                }"
+              >
+                {{ lancamento.tipoMedicao }}
+              </span>
+            </div>
+          </td>
+          <td class="text-2xl">
+            <div class="flex justify-center">
+              <span
+                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                :class="{
+                  'bg-orange-200 border-orange-400 text-orange-400':
+                    lancamento.status === 'Não Autorizada',
+                  'bg-green-200 border-green-400 text-green-400':
+                    lancamento.status === 'Autorizada',
+                  'bg-red-200 border-red-400 text-red-400':
+                    lancamento.status === 'Cancelada',
+                }"
+              >
+                {{ lancamento.status }}
+              </span>
+            </div>
+          </td>
           <!-- <td class="text-2xl">
             {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
           </td> -->
           <td class="text-2xl">
             {{
-              formatCurrency(
-                calcularSaldoLancamentoItens(lancamento.lancamentoItens)
-              )
+              calcularQuantidadeItens(lancamento.lancamentoItens)
             }}
+          </td>
+          <td class="text-2xl">
+            {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
           </td>
           <td class="text-2xl">
             <div class="flex justify-center items-center gap-2">
@@ -332,14 +447,30 @@
                   class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-              <span @click="openEditLancamentoModal(lancamento)">
+             
+              <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado ">
+                <Icon
+                  icon="bx:edit"
+                  height="20"
+                  class="text-gray-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+              <span @click="openEditLancamentoModal(lancamento)" v-else>
                 <Icon
                   icon="bx:edit"
                   height="20"
                   class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-              <span @click="deleteLancamento(lancamento.id)">
+              <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado ">
+                <Icon
+                  icon="ph:trash"
+                  height="20"
+                  class="text-gray-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+
+              <span @click="deleteLancamento(lancamento.id)" v-else>
                 <Icon
                   icon="ph:trash"
                   height="20"
@@ -356,7 +487,9 @@
   <!-- Tabela Faturamentos-->
   <section>
     <div class="flex justify-between mt-12">
-      <h1 class="text-4xl font-medium">Faturamentos</h1>
+      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+        Faturamentos
+      </h1>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
@@ -380,12 +513,13 @@
             <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
-          <td class="text-2xl" v-if="  faturamento.status !== 'Aguardando Faturamento'">
+          <td
+            class="text-2xl"
+            v-if="faturamento.status !== 'Aguardando Faturamento'"
+          >
             {{ faturamento.notaFiscal }}
           </td>
-          <td v-else>
-             -
-          </td>
+          <td v-else>-</td>
 
           <td class="text-2xl">
             {{
@@ -689,6 +823,7 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Observações</label>
             <textarea
+              :disabled="isFaturamentoViewModal"
               v-model="editingFaturamento.observacoes"
               rows="7"
               placeholder="observações"
@@ -799,25 +934,96 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal criar Lancamento -->
+  <!-- Modal criar Medição -->
   <JetDialogModal
     :show="modalLancamento"
     :withouHeader="false"
     @close="closeModalLancamento"
     maxWidth="8xl"
-    :modalTitle="'Criar Lançamento'"
+    :modalTitle="'Medição'"
   >
     <template #content>
       <form @submit.prevent="createLancamento">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
-            <label class="font-bold text-3xl">Projeto:</label>
+            <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <input
               type="text"
               placeholder="Informe o nome do  projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="projetos"
             />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Tarefa da medição:</label
+            >
+            <input
+              v-model="medicaoData.tarefa_medicao"
+              type="text"
+              placeholder="Informe o ticket  da tarefa"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Tipo da medição:</label>
+            <select
+              v-model="medicaoData.tipo_medicao"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+            >
+              <option disabled hidden value="">
+                Selecione o tipo da medição
+              </option>
+              <option>Estimada</option>
+              <option>Detalhada</option>
+            </select>
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Status da medição:</label
+            >
+            <select
+              v-model="medicaoData.status"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o status da medição
+              </option>
+              <option>Autorizada</option>
+              <option>Não Autorizada</option>
+              <option>Cancelada</option>
+            </select>
+          </div>
+
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Data medição:</label>
+            <input
+              type="date"
+              placeholder="Informe a  data da medição"
+              required
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="medicaoData.data_medicao"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Item:</label>
+            <select
+              v-model="selectedItem"
+              @change="addItemToTable(selectedItem)"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o item da medição
+              </option>
+              <option
+                v-for="item in contrato.contratoItens"
+                :value="item"
+                :key="item.id"
+              >
+                {{ item.titulo }}
+              </option>
+            </select>
           </div>
         </section>
         <div class="mt-8">
@@ -826,33 +1032,26 @@
           >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
-                <th class="text-xl">Data</th>
                 <th class="text-xl">Item</th>
-                <th class="text-xl">Valor unitário</th>
+                <th class="text-xl">U.M (Unidade Medida)</th>
+                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
-                <th class="text-xl">Quantidade a ser lançada</th>
-                <th class="text-xl">Total</th>
+                <th class="text-xl">Resultado da medição</th>
+                <!-- <th class="text-xl">Total</th> -->
               </tr>
             </thead>
-            <tbody>
+            <tbody v-if="medicaoData.itens">
               <tr
                 class="h-24 text-center"
-                v-for="item in contrato.contratoItens"
+                v-for="item in medicaoData.itens"
                 :key="item.id"
               >
-                <td class="text-2xl">
-                  <input
-                  v-model="item.data"
-                  type="date"
-                  class="border-2 text-center max-w-60"
-                />
-
-                </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
-                <td class="text-2xl">
+                <td class="text-2xl">{{ item.unidadeMedida }}</td>
+                <!-- <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
-                </td>
+                </td> -->
                 <td>
                   <span>
                     {{ item.saldoQuantidadeContratada }}
@@ -876,14 +1075,14 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                <!-- <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
                   <span
                     class="max-w-60"
                     :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
                   >
                     {{ formatCurrency(calcularSaldoItem(item) || 0) }}
                   </span>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -907,28 +1106,82 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal editar lancamento-->
+  <!-- Modal editar medição-->
   <JetDialogModal
     :show="modalEditLancamento"
     :withouHeader="false"
     @close="closeEditLancamentoModal"
     maxWidth="8xl"
     :modalTitle="
-      isLancamentoViewModal ? 'Visualizar Lançamento' : 'Editar Lançamento'
+      isLancamentoViewModal ? 'Visualizar Medição' : 'Editar Medição'
     "
   >
     <template #content>
       <form @submit.prevent="saveEditedLancamento">
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
-            <label class="font-bold text-3xl">Projeto:</label>
+            <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <input
               type="text"
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
-              :class="{ 'border-none bg-white': isLancamentoViewModal }"
               v-model="editingLancamento.projetos"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Tarefa da medição:</label
+            >
+            <input
+              v-model="editingLancamento.tarefaMedicao"
+              :disabled="isLancamentoViewModal"
+              type="text"
+              placeholder="Informe o ticket  da tarefa"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Tipo da medição:</label>
+            <select
+              v-model="editingLancamento.tipoMedicao"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              required
+              :disabled="isLancamentoViewModal"
+            >
+              <option disabled hidden value="">
+                Selecione o tipo da medição
+              </option>
+              <option>Estimada</option>
+              <option>Detalhada</option>
+            </select>
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]"
+              >Status da medição:</label
+            >
+            <select
+              v-model="editingLancamento.status"
+              :disabled="isLancamentoViewModal"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            >
+              <option disabled hidden value="">
+                Selecione o status da medição
+              </option>
+              <option>Autorizada</option>
+              <option>Não Autorizada</option>
+              <option>Cancelada</option>
+            </select>
+          </div>
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Data medição:</label>
+            <input
+              type="date"
+              placeholder="Informe a  data da medição"
+              required
+              :disabled="isLancamentoViewModal"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="editingLancamento.dataMedicao"
             />
           </div>
         </section>
@@ -938,13 +1191,13 @@
           >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
-                <th class="text-xl">Data</th>
                 <th class="text-xl">Item</th>
-                <th class="text-xl">Valor unitário</th>
+                <th class="text-xl">U.M (Unidade Medida)</th>
+                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
-                <th class="text-xl">Quantidade a ser lançada</th>
-                <th class="text-xl">Total</th>
+                <th class="text-xl">Resultado da medição</th>
+                <!-- <th class="text-xl">Total</th> -->
               </tr>
             </thead>
             <tbody>
@@ -953,19 +1206,11 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">
-                  <span v-if="isLancamentoViewModal">{{formatDate(item.data)}}</span>
-                  <input
-                    v-if="!isLancamentoViewModal"
-                    v-model="item.data"
-                    type="date"
-                    class="border-2 text-center max-w-60"
-                  />
-                </td>
                 <td class="text-2xl">{{ item.titulo }}</td>
-                <td class="text-2xl">
+                <td class="text-2xl">{{ item.unidadeMedida }}</td>
+                <!-- <td class="text-2xl">
                   {{ formatCurrency(item.valorUnitario) }}
-                </td>
+                </td> -->
                 <td>
                   <span>
                     {{ item.saldoQuantidadeContratada }}
@@ -991,7 +1236,7 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
+                <!-- <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
                   <span
                     class="max-w-60"
                     :class="{
@@ -1000,7 +1245,7 @@
                   >
                     {{ formatCurrency(calcularSaldoItem(item) || 0) }}
                   </span>
-                </td>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -1047,20 +1292,51 @@
               placeholder="Titulo do item"
             />
           </div>
-          <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Unidade de Medida:</label>
+          <div class="flex justify-between items-center">
+            <label class="font-bold text-3xl"
+              >Unidade de Medida:
+              <button
+                type="button"
+                @click="openNewUnitInput"
+                class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
+              >
+                {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
+              </button>
+            </label>
             <select
+              v-if="!showNewUnitInput"
               v-model="newItem.unidade_medida"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
             >
-              <option disabled hidden value="">
-                Selecione a unidade de medida
+              <option disabled value="">Selecione a unidade de medida</option>
+              <option
+                v-for="unidade in unidadesMedida"
+                :key="unidade.id"
+                :value="unidade.unidadeMedida"
+              >
+                {{ unidade.unidadeMedida }}
               </option>
-              <option>Pontos de Função</option>
-              <option>UST(Unidade de Serviço Técnico)</option>
-              <option>Funcionário</option>
             </select>
+            <div
+              v-if="showNewUnitInput"
+              class="w-[50%] flex items-center justify-between gap-8"
+            >
+              <input
+                v-model="newUnitName"
+                type="text"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-md h-14"
+                placeholder="Nova unidade"
+                required
+              />
+              <button
+                @click="CriarUnidadeMedida"
+                type="button"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-white bg-green-600 hover:bg-green-700"
+              >
+                Salvar
+              </button>
+            </div>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
@@ -1128,18 +1404,50 @@
             />
           </div>
           <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl">Unidade de Medida:</label>
+            <label class="font-bold text-3xl">Unidade de Medida:
+              <button
+              type="button"
+              @click="openNewUnitInput"
+              class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
+            >
+              {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
+            </button>
+            </label>
             <select
+              v-if="!showNewUnitInput"
               :disabled="isItemViewModal"
               v-model="editingItem.unidadeMedida"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
             >
               <option disabled hidden value="">Selecione a situação</option>
-              <option>Pontos de Função</option>
-              <option>UST(Unidade de Serviço Técnico)</option>
-              <option>Funcionário</option>
+              <option
+              v-for="unidade in unidadesMedida"
+              :key="unidade.id"
+              :value="unidade.unidadeMedida"
+            >
+              {{ unidade.unidadeMedida }}
+            </option>
             </select>
+            <div
+            v-if="showNewUnitInput"
+            class="w-[50%] flex items-center justify-between gap-8"
+          >
+            <input
+              v-model="newUnitName"
+              type="text"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-full border-gray-300 rounded-md h-14"
+              placeholder="Nova unidade"
+              required
+            />
+            <button
+              @click="CriarUnidadeMedida"
+              type="button"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-white bg-green-600 hover:bg-green-700"
+            >
+              Salvar
+            </button>
+          </div>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
@@ -1264,7 +1572,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, defineEmits } from "vue";
+import { ref, onMounted, computed, defineEmits, watch } from "vue";
 import { useRoute, useRouter, RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { api } from "@/services/api";
@@ -1274,11 +1582,53 @@ import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay } from "date-fns";
 
+const financialSummary = computed(() => [
+  {
+    title: "Valor Contratado",
+    value: formatCurrency(contrato.value.saldoContrato),
+    icon: "fa6-solid:file-contract",
+    bgColor: "from-blue-400 to-blue-600",
+  },
+  {
+    title: "Aguardando faturamento",
+    value: formatCurrency(
+      calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoFaturamento
+    ),
+    icon: "ph:clock-fill",
+    bgColor: "from-orange-400 to-orange-600",
+  },
+  {
+    title: "Aguardando pagamento",
+    value: formatCurrency(
+      calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoPagamento
+    ),
+    icon: "fa-solid:hand-holding-usd",
+    bgColor: "from-indigo-400 to-indigo-600",
+  },
+  {
+    title: "Pago",
+    value: formatCurrency(
+      calcularSaldoDisponivel(contrato.value.faturamentos).valorPago
+    ),
+    icon: "fa-check-circle",
+    bgColor: "from-green-400 to-green-600",
+  },
+  {
+    title: "Saldo disponível",
+    value: formatCurrency(
+      contrato.value.saldoContrato -
+        calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado
+    ),
+    icon: "ph-wallet-fill",
+    bgColor: "from-purple-400 to-purple-600",
+  },
+]);
 const router = useRouter();
 const route = useRoute();
 const contrato = ref({});
 const lancamentos = ref([]);
 const modalLancamento = ref(false);
+const selectedItem = ref('');
 const selectNovoLancamento = ref(null);
 const selectNovoFaturamento = ref(null);
 const modalPedidoFaturamento = ref(false);
@@ -1310,6 +1660,87 @@ const pedidoFaturamentoData = ref({
   status: "",
   observacoes: "",
 });
+
+const medicaoData = ref({
+  tarefa_medicao: "",
+  tipo_medicao: "",
+  status: "",
+  data_medicao: "",
+  itens: [],
+
+});
+
+const faturamentos = ref([]);
+const itens = ref([]);
+const medicoes = ref([]);
+
+const unidadesMedida = ref([]);
+const showNewUnitInput = ref(false);
+const newUnitName = ref("");
+
+const openNewUnitInput = () => {
+  showNewUnitInput.value = !showNewUnitInput.value;
+};
+
+const fetchUnidadesMedida = async () => {
+  try {
+    const response = await api.get("/unidade_medida");
+    unidadesMedida.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar unidades de medida:", error);
+  }
+};
+
+const CriarUnidadeMedida = async () => {
+  try {
+    const response = await api.post("/unidade_medida", {
+      unidade_medida: newUnitName.value,
+    });
+    await fetchUnidadesMedida();
+    newItem.value.unidade_medida = newUnitName.value;
+    newUnitName.value = "";
+    showNewUnitInput.value = false;
+    toast.success("Unidade de medida criada com sucesso!");
+  } catch (error) {
+    console.error(
+      "Erro ao criar nova unidade de medida:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe uma unidade de medida com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível criar a unidade de medida.");
+    }
+  }
+};
+
+const deletarUnidadeMedida = (id, unidadeMedida) => {
+  //Não implementado ainda
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover a unidade de medida "${unidadeMedida}"?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/unidade_medida/${id}`);
+        await fetchUnidadesMedida();
+        toast.success("Unidade de medida removida com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover unidade de medida:", error);
+        toast.error("Erro ao remover unidade de medida.");
+      }
+    }
+  });
+};
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
@@ -1435,12 +1866,15 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
+
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
     status: pedidoFaturamentoData.value.status,
+    observacoes: pedidoFaturamentoData.value.observacoes,
   };
+
 
   if (payload.descricao_nota.length <= 0) {
     toast.error("Selecione pelo menos um lançamento para gerar o faturamento.");
@@ -1507,6 +1941,7 @@ const saveEditedFaturamento = async () => {
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
     status: editingFaturamento.value.status,
+    observacoes: editingFaturamento.value.observacoes,
   };
 
   try {
@@ -1654,9 +2089,18 @@ const isSaldoNegativo = computed(() => {
 const closeModalLancamento = () => {
   modalLancamento.value = false;
   projetos.value = "";
-  contrato.value.contratoItens.forEach((item) => {  
-    item.data =  null;
-    item.quantidadeItens = null;    
+  medicaoData.value = {
+    tarefa_medicao: "",
+    status: "",
+    tipo_medicao: "",
+    data_medicao: "",
+    itens: [],
+
+  };
+  selectedItem.value = '';
+  contrato.value.contratoItens.forEach((item) => {
+    // item.data = null;
+    item.quantidadeItens = null;
   });
 };
 
@@ -1668,7 +2112,15 @@ const resetForm = () => {
   projetos.value = "";
   closeModalLancamento();
 };
-
+const addItemToTable = (selectedItem) => {
+  if (selectedItem) {
+    // Substitui o item existente ou adiciona o novo item
+    medicaoData.value.itens = [selectedItem]; // Garante que apenas o item selecionado esteja na lista
+  } else {
+    console.log('Nenhum item selecionado');
+  }
+  // console.log('medicaoData', medicaoData.value.itens);
+};
 const createLancamento = async () => {
   if (!projetos.value || projetos.value == null) {
     toast("Insira o nome do projeto", {
@@ -1682,16 +2134,21 @@ const createLancamento = async () => {
     .map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
-      data: item.data,
     }))
-    .filter(item => item.data && item.quantidade_itens && parseFloat(item.quantidade_itens) > 0);
-
+    .filter(
+      (item) =>
+        item.quantidade_itens &&
+        parseFloat(item.quantidade_itens) > 0
+    );
 
   if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item com data e quantidade para criar o lançamento.", {
-      theme: "colored",
-      type: "error",
-    });
+    toast(
+      "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
+      {
+        theme: "colored",
+        type: "error",
+      }
+    );
     return;
   }
 
@@ -1704,7 +2161,9 @@ const createLancamento = async () => {
   });
 
   if (quantidadeExcedida) {
-    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
+    toast.error(
+      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
+    );
     return;
   }
 
@@ -1720,10 +2179,15 @@ const createLancamento = async () => {
     return;
   }
 
+
   let payload = {
-    status: selectNovoLancamento.value || "status",
+    status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
     projetos: projetos.value,
+    data_medicao: medicaoData.value.data_medicao,
+    tarefa_medicao: medicaoData.value.tarefa_medicao,
+    tipo_medicao: medicaoData.value.tipo_medicao,
+
   };
   try {
     const contratoId = route.params.id;
@@ -1731,7 +2195,7 @@ const createLancamento = async () => {
     const response = await api
       .post(`/contratos/${contrato.value.id}/lancamentos`, payload)
       .then((response) => {
-        toast("Lancamento criado com sucesso!", {
+        toast("Medição criada com sucesso!", {
           theme: "colored",
           type: "success",
         });
@@ -1739,8 +2203,8 @@ const createLancamento = async () => {
     resetForm();
     fetchContrato(contratoId);
   } catch (error) {
-    console.error("Erro ao criar lancamento:", error);
-    toast.error("Não foi possível criar o lançamento", error);
+    console.error("Erro ao criar medição:", error);
+    toast.error("Não foi possível criar a medição", error);
   }
 };
 
@@ -1758,12 +2222,21 @@ onMounted(() => {
   });
 });
 
+
+
+
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    contrato.value = response.data;
-    if (!contrato.value.quantidadeItens) {
-    }
+    let contratoData = response.data;
+
+    contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
+    console.log('contratoData', contratoData)
+
+    contrato.value = contratoData;
+
+    // if (!contrato.value.quantidadeItens) {
+    // }
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -1771,11 +2244,28 @@ const fetchContrato = async (id) => {
   }
 };
 
+const verificaIsFaturado = (lancamentos, faturamentos) => {
+  lancamentos.forEach(lancamento => {
+    lancamento.isFaturado = false;
+  });
+
+  faturamentos.forEach(faturamento => {
+    faturamento.faturamentoItens.forEach(item => {
+      const lancamento = lancamentos.find(lancamento => lancamento.id === item.lancamentoId);
+      if (lancamento) {
+        lancamento.isFaturado = true;
+      }
+    });
+  });
+
+  return lancamentos;
+};
+
 const deleteLancamento = (lancamentoId) => {
   const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este lançamento?",
+    text: "Tem certeza que deseja excluir essa medição?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -1787,18 +2277,18 @@ const deleteLancamento = (lancamentoId) => {
       api
         .delete(`/lancamentos/${lancamentoId}`)
         .then((response) => {
-          toast("Lancamento deletado com sucesso!", {
+          toast("Medição deletada com sucesso!", {
             theme: "colored",
             type: "success",
           });
           fetchContrato(contratoId);
         })
         .catch((error) => {
-          toast("Não foi possível deletar lançamento", {
+          toast("Não foi possível deletar medição", {
             theme: "colored",
             type: "error",
           });
-          console.error("Erro ao deletar lancamento:", error.message);
+          console.error("Erro ao deletar medição:", error.message);
         });
     }
   });
@@ -1834,6 +2324,8 @@ const faturamentosOrdenados = computed(() => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
+
+
 
 // Cálculos de saldo
 const calcularSaldoAtual = () => {
@@ -1984,6 +2476,15 @@ const calcularQuantidadeItens = (lancamentoItens) => {
   return parseFloat(saldoTotal.toFixed(2));
 };
 
+const mostrarUnidadeMedida = (lancamentoItens) => {
+  let unidadeMedida = '';
+
+  lancamentoItens.forEach((item) => {
+    unidadeMedida = item.unidadeMedida
+  });
+  return unidadeMedida
+};
+
 // Editar Item do contrato
 
 const openItemEditModal = (item) => {
@@ -2106,6 +2607,8 @@ const deleteItem = async (itemId) => {
 
 const openCreateItemModal = () => {
   modalCreateItem.value = true;
+  showNewUnitInput.value = false;
+  fetchUnidadesMedida();
 };
 
 const closeModalCreateItem = () => {
@@ -2179,7 +2682,9 @@ const createNewItem = async () => {
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
-  editingLancamento.value = lancamento;
+  const dataMedicao = lancamento.dataMedicao || '';
+  const dataFormatada = dataMedicao.split("T")[0];
+  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
 };
 
@@ -2188,10 +2693,14 @@ const openViewLancamentoModal = (lancamento) => {
   const itensComQuantidade = lancamento.lancamentoItens.filter(
     (item) => item.quantidadeItens > 0
   );
+  const dataMedicao = lancamento.dataMedicao || '';
+  const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = {
     ...lancamento,
     lancamentoItens: itensComQuantidade,
+    dataMedicao: dataFormatada,
   };
+
   modalEditLancamento.value = true;
 };
 
@@ -2224,7 +2733,7 @@ const saveEditedLancamento = async () => {
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
-      data: item.data
+      // data: item.data,
     }));
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
@@ -2288,12 +2797,16 @@ const saveEditedLancamento = async () => {
   }
 
   let payload = {
-    // status: editingLancamento.value.status,
-    status: "sem situação",
+    // data_medicao: formatDate(editingLancamento.value.dataMedicao),
+    data_medicao: editingLancamento.value.dataMedicao,
+    // data_medicao: "2024-08-22",
+    tarefa_medicao: editingLancamento.value.tarefaMedicao,
+    tipo_medicao: editingLancamento.value.tipoMedicao,
+    status: editingLancamento.value.status,
     itens: itensQuantidadePreenchida.map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidade_itens,
-      data: item.data,
+      // data: item.data,
     })),
     projetos: editingLancamento.value.projetos,
   };
@@ -2303,7 +2816,7 @@ const saveEditedLancamento = async () => {
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
       .then((response) => {
         Object.assign(editingLancamento.value);
-        toast("Lancamento atualizado com sucesso!", {
+        toast("Medição atualizada com sucesso!", {
           theme: "colored",
           type: "success",
         });

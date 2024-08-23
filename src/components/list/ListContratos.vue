@@ -1,71 +1,74 @@
 <template>
-  <div v-for="contrato in contratos" :key="contrato.id" class="flex flex-col ">
-    <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
-      <div class="shadow-lg rounded-lg overflow-hidden cursor-pointer hover:bg-slate-300 mt-12 h-[650px]">
-        <section class="relative">
-          <img class="relative" src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" />
-        </section>
+  <div class="px-6 py-8 2xl:max-w-[2000px] 2xl:mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+      <div
+        v-for="contrato in contratos"
+        :key="contrato.id"
+        class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 transform hover:scale-105 hover:shadow-xl"
+        >
+        <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
+          <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
+          <div class="p-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
 
-        <section>
-          <p class="flex justify-center font-semibold text-3xl mt-6 max-w-[330px] px-2 ">{{ contrato.nomeContrato }}</p>
-
-          <section class="px-8">
-            <div class="relative">
-              <div class="flex justify-between items-center">
-                <span class="mb-2 text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
-                  Progresso
+            <div class="mb-4">
+              <div class="flex justify-between text-xl mb-1">
+                <span class="text-gray-600">Progresso:</span>
+                <span class="font-semibold text-msb-blue">
                   {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
                 </span>
               </div>
-              <div class="overflow-hidden h-10 mb-4 text-xs flex rounded bg-blue-200 relative">
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
                 <div
+                  class="bg-[#0066cc] h-2.5 rounded-full"
                   :style="{ width: `${(calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0)}%` }"
-                  class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500 relative"
                 >
-              </div>
-              </div>
-            </div>
-          </section>
-          <section class="p-6 flex flex-col gap-2 text-2xl">
-            <div class="flex gap-2 max-w-[300px]">
-              <span class="font-semibold">Nome cliente:</span>
-              <span >{{ contrato.nomeCliente }}</span>
-            </div>
-            <div class="flex gap-2">
-
-              <span class="font-semibold">Vigência:</span>
-              <span>{{ formatDate(contrato.dataInicio) }}</span>
-              <span>até</span>
-              <span>{{ formatDate(contrato.dataFim) }}</span>
-            </div>
-            <div class="flex gap-2">
-              <span class="font-semibold">Valor contratado:</span>
-              <span>{{ formatCurrency(contrato.saldoContrato) }}</span>
-            </div>
-            <div class="flex gap-2">
-              <span class="font-semibold">Valor aguard. faturamento:</span>
-              {{
-                formatCurrency(
-                  calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento
-                  )
-                }}
-              </div>
-              <div class="flex gap-2">
-                <span class="font-semibold">Valor aguard. pagamento:</span>
-                {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
                 </div>
-                <div class="flex gap-2">
-                  <span class="font-semibold">Valor pago:</span>
+              </div>
+            </div>
+
+            <div class="space-y-2 text-xl">
+              <div class="mb-3">
+                <p class="text-gray-600 font-semibold whitespace-nowrap">Nome cliente:</p>
+                <p class="text-gray-800 break-words truncate" :title="contrato.nomeCliente">{{ contrato.nomeCliente }}</p>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Vigência:</span>
+                <span class="text-gray-800">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Valor contratado:</span>
+                <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Aguardando faturamento:</span>
+                <span class="font-semibold text-yellow-600">
+                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Aguardando pagamento:</span>
+                <span class="font-semibold text-orange-600">
+                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Valor pago:</span>
+                <span class="font-semibold text-green-600">
                   {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
-                  </div>
-                  <div class="flex gap-2">
-                    <span class="font-semibold">Saldo  disponível:</span>
-                    {{ formatCurrency(contrato.saldoContrato  - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
-                    </div>
-          </section>
-        </section>
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Saldo disponível:</span>
+                <span class="font-semibold text-msb-blue">
+                  {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </router-link>
       </div>
-    </router-link>
+    </div>
   </div>
 </template>
 
@@ -78,6 +81,9 @@ import { toast } from "vue3-toastify";
 const route = useRoute();
 const router = useRouter();
 const contratos = ref([]);
+const faturamentos = ref([]);
+const itens = ref([]);
+const medicoes = ref([]);
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
@@ -160,3 +166,16 @@ onMounted(() => {
 });
 
 </script>
+
+<style scoped>
+  /* Adicione estas classes ao seu arquivo Tailwind ou inclua-as aqui se necessário */
+  .text-msb-blue {
+    color: #0066cc;
+  }
+  .bg-msb-light-blue {
+    background-color: #e6f2ff;
+  }
+  .hover\:text-msb-dark-blue:hover {
+    color: #004c99;
+  }
+  </style>

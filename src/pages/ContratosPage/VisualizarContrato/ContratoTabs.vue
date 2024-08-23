@@ -1,10 +1,10 @@
 <template>
   <div class="flex gap-4 cursor-pointer mb-12 hover:text-gray-500 ease-out" @click="voltarListagem">
     <Icon icon="ic:round-arrow-back" height="20" />
-    <h1 class="text-3xl font-medium">Visualizar Contrato</h1>
+    <h1 class="text-3xl font-medium">Voltar</h1>
   </div>
   <div>
-    <div class="tabs-scroll flex border-b overflow-x-auto whitespace-nowrap pb-4">
+    <!-- <div class="tabs-scroll flex border-b overflow-x-auto whitespace-nowrap pb-4">
       <button
         v-for="(tab, index) in tabs"
         :key="index"
@@ -14,7 +14,7 @@
       >
         {{ tab }}
       </button>
-    </div>
+    </div> -->
 
     <div v-if="selectedTab === 'Contrato'" class="p-4">
        <VisualizarContrato @renovacaoCriada="handleRenovacaoCriada"/>
