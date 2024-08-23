@@ -452,7 +452,7 @@
                 <Icon
                   icon="bx:edit"
                   height="20"
-                  class="text-red-500 hover:rounded-md cursor-pointer"
+                  class="text-gray-500 hover:rounded-md cursor-pointer"
                 />
               </span>
               <span @click="openEditLancamentoModal(lancamento)" v-else>
@@ -466,7 +466,7 @@
                 <Icon
                   icon="ph:trash"
                   height="20"
-                  class="text-red-500 hover:rounded-md cursor-pointer"
+                  class="text-gray-500 hover:rounded-md cursor-pointer"
                 />
               </span>
 
@@ -1669,6 +1669,10 @@ const medicaoData = ref({
   itens: [],
 
 });
+
+const faturamentos = ref([]);
+const itens = ref([]);
+const medicoes = ref([]);
 
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
