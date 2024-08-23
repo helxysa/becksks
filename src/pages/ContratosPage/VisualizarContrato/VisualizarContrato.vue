@@ -449,14 +449,15 @@
               </span>
 
               <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-                <span>
+                <!-- <span>
                 <Icon
                   icon="bx:edit"
                   height="20"
                   class="text-gray-500 hover:rounded-md cursor-pointer"
                 />
-              </span>
-              <span @click="openEditLancamentoModal(lancamento)" v-else>
+              </span> -->
+              <!-- <span @click="openEditLancamentoModal(lancamento)" v-else> -->
+                <span @click="openEditLancamentoModal(lancamento)">
                 <Icon
                   icon="bx:edit"
                   height="20"
