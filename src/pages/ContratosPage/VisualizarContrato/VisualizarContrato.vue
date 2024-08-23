@@ -377,17 +377,18 @@
           class="h-24 text-center"
           v-for="(lancamento, index) in lancamentosOrdenados"
           :key="lancamento.id"
-          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || validarMedicaoFaturada(lancamento) }"
+          :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
-        <!-- {{ validarMedicaoFaturada(lancamento)}} -->
-          <td>
+     
+          <td>          
             <input
               type="checkbox"
               class="w-6 h-6"
               v-model="pedidosFaturamento"
               :value="lancamento.id"
               @change="changePedido"
-              :disabled="lancamento.tipoMedicao === 'Estimada' || validarMedicaoFaturada(lancamento)"
+              :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
+            
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
@@ -446,14 +447,30 @@
                   class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-              <span @click="openEditLancamentoModal(lancamento)">
+             
+              <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado ">
+                <Icon
+                  icon="bx:edit"
+                  height="20"
+                  class="text-red-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+              <span @click="openEditLancamentoModal(lancamento)" v-else>
                 <Icon
                   icon="bx:edit"
                   height="20"
                   class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-              <span @click="deleteLancamento(lancamento.id)">
+              <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado ">
+                <Icon
+                  icon="ph:trash"
+                  height="20"
+                  class="text-red-500 hover:rounded-md cursor-pointer"
+                />
+              </span>
+
+              <span @click="deleteLancamento(lancamento.id)" v-else>
                 <Icon
                   icon="ph:trash"
                   height="20"
@@ -2201,19 +2218,43 @@ onMounted(() => {
   });
 });
 
+
+
+
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    contrato.value = response.data;
-    console.log(contrato.value, 'contrato')
+    let contratoData = response.data;
 
-    if (!contrato.value.quantidadeItens) {
-    }
+    contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
+    console.log('contratoData', contratoData)
+
+    contrato.value = contratoData;
+
+    // if (!contrato.value.quantidadeItens) {
+    // }
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
+};
+
+const verificaIsFaturado = (lancamentos, faturamentos) => {
+  lancamentos.forEach(lancamento => {
+    lancamento.isFaturado = false;
+  });
+
+  faturamentos.forEach(faturamento => {
+    faturamento.faturamentoItens.forEach(item => {
+      const lancamento = lancamentos.find(lancamento => lancamento.id === item.lancamentoId);
+      if (lancamento) {
+        lancamento.isFaturado = true;
+      }
+    });
+  });
+
+  return lancamentos;
 };
 
 const deleteLancamento = (lancamentoId) => {
@@ -2280,18 +2321,7 @@ const faturamentosOrdenados = computed(() => {
   });
 });
 
-//função  pra  validar  se  a  medição  já  tá  faturada  impedindo o checkbox 
-const validarMedicaoFaturada = (lancamento) => {
-  let isFaturada =  false
-    contrato.value.faturamentos.forEach((item)=> {
-        item.faturamentoItens.forEach((subItem)=>{
-          isFaturada = subItem.lancamento.id === lancamento.id
-          // console.log(isFaturada, 'fat')
-        })
-    })
 
-    return isFaturada
-}
 
 // Cálculos de saldo
 const calcularSaldoAtual = () => {
