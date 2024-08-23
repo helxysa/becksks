@@ -326,6 +326,18 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      
+      <vue-awesome-paginate
+      :total-items="totalItens"
+      :items-per-page="3"
+      :max-pages-shown="6"
+      v-model="currentPage"
+       :on-click="changePageItem"
+  
+    />
+
+    </div>
   </section>
 
   <!-- Tabela Medições-->
@@ -482,6 +494,16 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <vue-awesome-paginate
+      :total-items="50"
+      :items-per-page="5"
+      :max-pages-shown="5"
+      v-model="currentPageMedicao"
+      @click="onClickHandlerMedicao"
+    />
+
+    </div>
   </section>
 
   <!-- Tabela Faturamentos-->
@@ -574,6 +596,16 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <vue-awesome-paginate
+      :total-items="50"
+      :items-per-page="5"
+      :max-pages-shown="5"
+      v-model="currentPageFaturamento"
+      @click="onClickHandlerFaturamento"
+    />
+
+    </div>
   </section>
 
   <!-- Modal novo pedido de faturamento-->
@@ -1677,6 +1709,44 @@ const medicoes = ref([]);
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
+const totalItens = ref(contrato?.value?.contratoItens?.length)
+const totalPages = ref(0)
+
+console.log(contrato?.value?.contratoItens?.length, 'tttt')
+
+  const changePageItem = (page) => {
+      currentPage.value = page;
+    }
+
+  const onClickHandlerMedicao = (page) => {
+    console.log(page);
+  };
+
+  const onClickHandlerFaturamento = (page) => {
+    console.log(page);
+  };
+
+  const currentPage = ref(1);
+  const currentPageMedicao = ref(1);
+  const currentPageFaturamento = ref(1);
+
+ const  getSolicitations =  async (page) => {
+      try {
+      
+
+        const response = await api.get(`/contratos/${contrato.value.id}/items/?page=1`);
+        this.solicitationData = response.data.data;
+        console.log(this.solicitationData, 'data')
+
+        // currentPage.value = response.data.meta.currentPage;
+        // totalPages.value = response.data.meta.lastPage;
+        // totalItens.value = response.data.meta.count;
+      } catch (error) {
+        toast.error(error);
+      }
+    }
+
+   watch(()=> currentPage, ()=> getSolicitations(currentPage));
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -2234,6 +2304,7 @@ const fetchContrato = async (id) => {
     console.log('contratoData', contratoData)
 
     contrato.value = contratoData;
+    getSolicitations(currentPage)
 
     // if (!contrato.value.quantidadeItens) {
     // }
@@ -2841,7 +2912,7 @@ const calcularPodeRenovar = () => {
 };
 </script>
 
-<style scoped>
+<style >
 .btn-lancamento,
 .btn-faturamento {
   background-color: var(--bluePrimary);
@@ -2882,5 +2953,43 @@ const calcularPodeRenovar = () => {
 
 .text-observacoes {
   resize: none;
+}
+
+.pagination-container {
+  display: flex;
+  padding-top: 5px; 
+  column-gap: 10px;
+}
+
+.paginate-buttons {
+  height: 40px ;
+
+  width: 40px ;
+
+  border-radius: 20px ;
+
+  cursor: pointer;
+
+  background-color: rgb(242, 242, 242);
+
+  border: 1px solid rgb(217, 217, 217) ;
+
+  color: black;
+}
+
+.paginate-buttons:hover {
+  background-color: #d8d8d8 ;
+}
+
+.active-page {
+  background-color: #3498db ;
+
+  border: 1px solid #3498db ;
+
+  color: white ;
+}
+
+.active-page:hover {
+  background-color: #2988c8 ;
 }
 </style>
