@@ -371,7 +371,7 @@
           <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
           <th class="text-xl">Ações</th>
         </tr>
-      </thead>    
+      </thead>
       <tbody v-if="contrato.lancamentos">
         <tr
           class="h-24 text-center"
@@ -379,8 +379,8 @@
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
-     
-          <td>          
+
+          <td>
             <input
               type="checkbox"
               class="w-6 h-6"
@@ -388,7 +388,7 @@
               :value="lancamento.id"
               @change="changePedido"
               :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
-            
+
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
@@ -447,8 +447,9 @@
                   class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-             
-              <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado ">
+
+              <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
+                <span>
                 <Icon
                   icon="bx:edit"
                   height="20"
@@ -462,7 +463,8 @@
                   class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                 />
               </span>
-              <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado ">
+              <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
+              <span>
                 <Icon
                   icon="ph:trash"
                   height="20"
