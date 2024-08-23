@@ -465,15 +465,15 @@
                 />
               </span>
               <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-              <span>
+              <!-- <span>
                 <Icon
                   icon="ph:trash"
                   height="20"
                   class="text-gray-500 hover:rounded-md cursor-pointer"
                 />
-              </span>
+              </span> -->
 
-              <span @click="deleteLancamento(lancamento.id)" v-else>
+              <span @click="deleteLancamento(lancamento.id)">
                 <Icon
                   icon="ph:trash"
                   height="20"
