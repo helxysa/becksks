@@ -81,6 +81,9 @@ import { toast } from "vue3-toastify";
 const route = useRoute();
 const router = useRouter();
 const contratos = ref([]);
+const faturamentos = ref([]);
+const itens = ref([]);
+const medicoes = ref([]);
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
