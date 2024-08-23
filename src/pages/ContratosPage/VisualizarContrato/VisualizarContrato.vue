@@ -327,15 +327,15 @@
       </tbody>
     </table>
     <div class="flex justify-center">
-      
-      <vue-awesome-paginate
+
+      <!-- <vue-awesome-paginate
       :total-items="totalItens"
       :items-per-page="3"
       :max-pages-shown="6"
       v-model="currentPage"
        :on-click="changePageItem"
-  
-    />
+
+    /> -->
 
     </div>
   </section>
@@ -1715,8 +1715,6 @@ const newUnitName = ref("");
 const totalItens = ref(contrato?.value?.contratoItens?.length)
 const totalPages = ref(0)
 
-console.log(contrato?.value?.contratoItens?.length, 'tttt')
-
   const changePageItem = (page) => {
       currentPage.value = page;
     }
@@ -1733,23 +1731,22 @@ console.log(contrato?.value?.contratoItens?.length, 'tttt')
   const currentPageMedicao = ref(1);
   const currentPageFaturamento = ref(1);
 
- const  getSolicitations =  async (page) => {
+ const fetchContratoItens = async (page) => {
       try {
-      
-
-        const response = await api.get(`/contratos/${contrato.value.id}/items/?page=1`);
-        this.solicitationData = response.data.data;
-        console.log(this.solicitationData, 'data')
-
-        // currentPage.value = response.data.meta.currentPage;
-        // totalPages.value = response.data.meta.lastPage;
-        // totalItens.value = response.data.meta.count;
+        const response = await api.get(`/contratos/${contrato.value.id}/items/?page=${page}`);
+        console.log('response', response.data)
+        let contratoItemData = response.data.data;
+        let contratoItemMeta = response.data.meta;
+        console.log('contratoItemMeta', contratoItemMeta)
+        // currentPage.value = contratoItemMeta.currentPage;
+        // totalPages.value = contratoItemMeta.lastPage;
+        // totalItens.value = contratoItemMeta.total;
       } catch (error) {
-        toast.error(error);
+        console.error(error);
       }
     }
 
-   watch(()=> currentPage, ()=> getSolicitations(currentPage));
+watch(()=> currentPage, ()=> fetchContratoItens(currentPage));
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -2304,13 +2301,9 @@ const fetchContrato = async (id) => {
     let contratoData = response.data;
 
     contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
-    console.log('contratoData', contratoData)
 
     contrato.value = contratoData;
-    getSolicitations(currentPage)
-
-    // if (!contrato.value.quantidadeItens) {
-    // }
+    fetchContratoItens(1)
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -2960,7 +2953,7 @@ const calcularPodeRenovar = () => {
 
 .pagination-container {
   display: flex;
-  padding-top: 5px; 
+  padding-top: 5px;
   column-gap: 10px;
 }
 
