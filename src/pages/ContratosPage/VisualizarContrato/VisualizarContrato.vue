@@ -272,9 +272,10 @@
         </tr>
       </thead>
       <tbody>
+        <!-- {{contratoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(item, index) in contrato.contratoItens"
+          v-for="(item, index) in  contratoItemData"
           :key="item.id"
         >
           <td class="text-2xl px-2">{{ index + 1 }}</td>
@@ -328,14 +329,13 @@
     </table>
     <div class="flex justify-center">
 
-      <!-- <vue-awesome-paginate
-      :total-items="totalItens"
-      :items-per-page="3"
+      <vue-awesome-paginate
+      :total-items="totalItens"     
       :max-pages-shown="6"
       v-model="currentPage"
-       :on-click="changePageItem"
+      @click="changePageItem"
 
-    /> -->
+    />
 
     </div>
   </section>
@@ -385,9 +385,11 @@
         </tr>
       </thead>
       <tbody v-if="contrato.lancamentos">
+        <!-- {{ lancamentosOrdenados }} -->
+        <!-- {{medicaoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in lancamentosOrdenados"
+          v-for="(lancamento, index) in  lancamentosOrdenados"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
@@ -499,11 +501,10 @@
     </table>
     <div class="flex justify-center">
       <vue-awesome-paginate
-      :total-items="50"
-      :items-per-page="5"
-      :max-pages-shown="5"
+      :total-items="totalMedicoes"     
+      :max-pages-shown="6"
       v-model="currentPageMedicao"
-      @click="onClickHandlerMedicao"
+      @click="changePageMedicao"
     />
 
     </div>
@@ -601,11 +602,10 @@
     </table>
     <div class="flex justify-center">
       <vue-awesome-paginate
-      :total-items="50"
-      :items-per-page="5"
-      :max-pages-shown="5"
+      :total-items="totalFaturamentos"    
+      :max-pages-shown="6"
       v-model="currentPageFaturamento"
-      @click="onClickHandlerFaturamento"
+      @click="changePageFaturamento"
     />
 
     </div>
@@ -1705,26 +1705,35 @@ const medicaoData = ref({
 
 });
 
-const faturamentos = ref([]);
-const itens = ref([]);
-const medicoes = ref([]);
-
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
 const totalItens = ref(contrato?.value?.contratoItens?.length)
 const totalPages = ref(0)
+let contratoItemData =  ref([]);
+let contratoItemMeta = ref([]);
 
-  const changePageItem = (page) => {
+const totalMedicoes = ref(contrato?.value?.lancamentos?.length)
+const totalPagesMedicao = ref(0)
+let medicaoItemData =  ref([]);
+let medicaoItemMeta = ref([]);
+
+const totalFaturamentos = ref(contrato?.value?.faturamentos?.length)
+const totalPagesFaturamento = ref(0)
+let faturamentoItemData =  ref([]);
+let faturamentoItemMeta = ref([]);
+
+
+  const changePageItem = (page) => {  
       currentPage.value = page;
     }
 
-  const onClickHandlerMedicao = (page) => {
-    console.log(page);
-  };
+    const changePageMedicao = (page) => {  
+      currentPageMedicao.value = page;
+    }  
 
-  const onClickHandlerFaturamento = (page) => {
-    console.log(page);
+  const changePageFaturamento = (page) => {
+    currentPageFaturamento.value = page;
   };
 
   const currentPage = ref(1);
@@ -1734,19 +1743,52 @@ const totalPages = ref(0)
  const fetchContratoItens = async (page) => {
       try {
         const response = await api.get(`/contratos/${contrato.value.id}/items/?page=${page}`);
-        console.log('response', response.data)
-        let contratoItemData = response.data.data;
-        let contratoItemMeta = response.data.meta;
-        console.log('contratoItemMeta', contratoItemMeta)
-        // currentPage.value = contratoItemMeta.currentPage;
-        // totalPages.value = contratoItemMeta.lastPage;
-        // totalItens.value = contratoItemMeta.total;
+        // console.log('response', response.data)
+        contratoItemData.value = response.data.data;
+        contratoItemMeta.value = response.data.meta;
+        // console.log('contratoItemMeta', contratoItemMeta)
+        currentPage.value = contratoItemMeta.value.currentPage;
+        totalPages.value = contratoItemMeta.value.lastPage;
+        totalItens.value = contratoItemMeta.value.total;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  
+  const fetchContratoMedicoes = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
+        // console.log('response', response.data)
+        medicaoItemData.value = response.data.data;
+        medicaoItemMeta.value = response.data.meta;
+        // console.log('contratoItemMeta', contratoItemMeta)
+        currentPageMedicao.value = medicaoItemMeta.value.currentPage;
+        totalPagesMedicao.value = medicaoItemMeta.value.lastPage;
+        totalMedicoes.value = medicaoItemMeta.value.total;
       } catch (error) {
         console.error(error);
       }
     }
 
-watch(()=> currentPage, ()=> fetchContratoItens(currentPage));
+    const fetchContratoFaturamentos = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`);
+        // console.log('response', response.data)
+        faturamentoItemData.value = response.data.data;
+        faturamentoItemMeta.value = response.data.meta;
+        // console.log('contratoItemMeta', contratoItemMeta)
+        currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
+        totalPagesFaturamento.value = faturamentoItemMeta.value.lastPage;
+        totalFaturamentos.value = faturamentoItemMeta.value.total;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+watch(()=> currentPage.value, ()=> fetchContratoItens(currentPage.value));
+watch(()=> currentPageMedicao.value, ()=> fetchContratoMedicoes(currentPageMedicao.value));
+watch(()=> currentPageFaturamento.value, ()=> fetchContratoFaturamentos(currentPageFaturamento.value));
+
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -2303,7 +2345,9 @@ const fetchContrato = async (id) => {
     contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
     contrato.value = contratoData;
-    fetchContratoItens(1)
+    fetchContratoItens(currentPage.value)
+    fetchContratoMedicoes(currentPageMedicao.value)
+    fetchContratoFaturamentos(currentPageFaturamento.value)
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -2381,13 +2425,13 @@ const lancamentosOrdenados = computed(() => {
   if (!contrato.value || !contrato.value.lancamentos) {
     return [];
   }
-  return contrato.value.lancamentos.slice().sort((a, b) => {
+  return medicaoItemData.value.slice().sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
 
 const faturamentosOrdenados = computed(() => {
-  return contrato.value.faturamentos.slice().sort((a, b) => {
+  return faturamentoItemData.value.slice().sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
