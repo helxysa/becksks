@@ -272,9 +272,10 @@
         </tr>
       </thead>
       <tbody>
+        <!-- {{contratoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(item, index) in contrato.contratoItens"
+          v-for="(item, index) in  contratoItemData"
           :key="item.id"
         >
           <td class="text-2xl px-2">{{ index + 1 }}</td>
@@ -326,6 +327,16 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <vue-awesome-paginate
+      :total-items="totalItens"
+      :items-per-page="resultsPerPageItens"
+      :max-pages-shown="5"
+      v-model="currentPage"
+      @click="changePageItem"
+    />
+
+    </div>
   </section>
 
   <!-- Tabela Medições-->
@@ -373,13 +384,15 @@
         </tr>
       </thead>
       <tbody v-if="contrato.lancamentos">
+        <!-- {{ lancamentosOrdenados }} -->
+        <!-- {{medicaoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in lancamentosOrdenados"
+          v-for="(lancamento, index) in  lancamentosOrdenados"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
-
+        
           <td>
             <input
               type="checkbox"
@@ -485,6 +498,16 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <vue-awesome-paginate
+      :total-items="totalMedicoes"
+      :items-per-page="resultsPerPageMedicoes"
+      :max-pages-shown="5"
+      v-model="currentPageMedicao"
+      @click="changePageMedicao"
+    />
+
+    </div>
   </section>
 
   <!-- Tabela Faturamentos-->
@@ -577,6 +600,16 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <vue-awesome-paginate
+      :total-items="totalFaturamentos"
+      :max-pages-shown="5"
+      :items-per-page="resultsPerPageFaturamentos"
+      v-model="currentPageFaturamento"
+      @click="changePageFaturamento"
+    />
+
+    </div>
   </section>
 
   <!-- Modal novo pedido de faturamento-->
@@ -1673,13 +1706,88 @@ const medicaoData = ref({
 
 });
 
-const faturamentos = ref([]);
-const itens = ref([]);
-const medicoes = ref([]);
-
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
+const totalItens = ref()
+const resultsPerPageItens= ref()
+let contratoItemData =  ref([]);
+let contratoItemMeta = ref([]);
+
+const totalMedicoes = ref()
+const resultsPerPageMedicoes= ref()
+
+let medicaoItemData =  ref([]);
+let medicaoItemMeta = ref([]);
+
+
+const totalFaturamentos = ref(0)
+const resultsPerPageFaturamentos= ref()
+let faturamentoItemData =  ref([]);
+let faturamentoItemMeta = ref([]);
+
+
+  const changePageItem = (page) => {
+      currentPage.value = page;
+    }
+
+    const changePageMedicao = (page) => {
+      currentPageMedicao.value = page;
+    }
+
+  const changePageFaturamento = (page) => {
+    currentPageFaturamento.value = page;
+  };
+
+  const currentPage = ref(1);
+  const currentPageMedicao = ref(1);
+  const currentPageFaturamento = ref(1);
+
+ const fetchContratoItens = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/items/?page=${page}`);
+        contratoItemData.value = response.data.data;
+        contratoItemMeta.value = response.data.meta;
+        currentPage.value = contratoItemMeta.value.currentPage;
+        totalItens.value = contratoItemMeta.value.total;
+        resultsPerPageItens.value = contratoItemMeta.value.perPage;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  const fetchContratoMedicoes = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
+        // console.log('response', response.data)
+        medicaoItemData.value = response.data.data;
+        medicaoItemMeta.value = response.data.meta;
+        // console.log('contratoItemMeta', contratoItemMeta)
+        currentPageMedicao.value = medicaoItemMeta.value.currentPage;
+        resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
+        totalMedicoes.value = medicaoItemMeta.value.total;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const fetchContratoFaturamentos = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`);
+        // console.log('response', response.data)
+        faturamentoItemData.value = response.data.data;
+        faturamentoItemMeta.value = response.data.meta;      
+        currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
+        resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
+        totalFaturamentos.value = faturamentoItemMeta.value.total;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+watch(()=> currentPage.value, ()=> fetchContratoItens(currentPage.value));
+watch(()=> currentPageMedicao.value, ()=> fetchContratoMedicoes(currentPageMedicao.value));
+watch(()=> currentPageFaturamento.value, ()=> fetchContratoFaturamentos(currentPageFaturamento.value));
+
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -2234,12 +2342,11 @@ const fetchContrato = async (id) => {
     let contratoData = response.data;
 
     contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
-    console.log('contratoData', contratoData)
 
     contrato.value = contratoData;
-
-    // if (!contrato.value.quantidadeItens) {
-    // }
+    fetchContratoItens(currentPage.value)
+    fetchContratoMedicoes(currentPageMedicao.value)
+    fetchContratoFaturamentos(currentPageFaturamento.value)
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -2259,8 +2366,7 @@ const verificaIsFaturado = (lancamentos, faturamentos) => {
         lancamento.isFaturado = true;
       }
     });
-  });
-
+  }); 
   return lancamentos;
 };
 
@@ -2317,13 +2423,13 @@ const lancamentosOrdenados = computed(() => {
   if (!contrato.value || !contrato.value.lancamentos) {
     return [];
   }
-  return contrato.value.lancamentos.slice().sort((a, b) => {
+  return medicaoItemData.value.slice().sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
 
 const faturamentosOrdenados = computed(() => {
-  return contrato.value.faturamentos.slice().sort((a, b) => {
+  return faturamentoItemData.value.slice().sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 });
@@ -2493,6 +2599,7 @@ const mostrarUnidadeMedida = (lancamentoItens) => {
 const openItemEditModal = (item) => {
   editingItem.value = { ...item };
   modalEditItem.value = true;
+  fetchUnidadesMedida()
 };
 
 const openItemViewModal = (item) => {
@@ -2593,7 +2700,7 @@ const deleteItem = async (itemId) => {
     if (result.isConfirmed) {
       try {
         const response = await api.delete(`/contratos/items/${itemId}`);
-        fetchContrato(contratoId);
+        fetchContrato(contratoId);       
         toast("Item deletado com sucesso!", {
           theme: "colored",
           type: "success",
@@ -2844,7 +2951,7 @@ const calcularPodeRenovar = () => {
 };
 </script>
 
-<style scoped>
+<style >
 .btn-lancamento,
 .btn-faturamento {
   background-color: var(--bluePrimary);
@@ -2885,5 +2992,43 @@ const calcularPodeRenovar = () => {
 
 .text-observacoes {
   resize: none;
+}
+
+.pagination-container {
+  display: flex;
+  padding-top: 5px;
+  column-gap: 10px;
+}
+
+.paginate-buttons {
+  height: 40px ;
+
+  width: 40px ;
+
+  border-radius: 20px ;
+
+  cursor: pointer;
+
+  background-color: rgb(242, 242, 242);
+
+  border: 1px solid rgb(217, 217, 217) ;
+
+  color: black;
+}
+
+.paginate-buttons:hover {
+  background-color: #d8d8d8 ;
+}
+
+.active-page {
+  background-color: #3498db ;
+
+  border: 1px solid #3498db ;
+
+  color: white ;
+}
+
+.active-page:hover {
+  background-color: #2988c8 ;
 }
 </style>
