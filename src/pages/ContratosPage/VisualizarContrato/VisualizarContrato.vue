@@ -384,15 +384,13 @@
         </tr>
       </thead>
       <tbody v-if="contrato.lancamentos">
-        <!-- {{ lancamentosOrdenados }} -->
-        <!-- {{medicaoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in  lancamentosOrdenados"
+          v-for="(lancamento, index) in  contrato.lancamentos"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
-        
+
           <td>
             <input
               type="checkbox"
@@ -531,7 +529,7 @@
       <tbody v-if="contrato.faturamentos">
         <tr
           class="h-28 text-center"
-          v-for="(faturamento, index) in faturamentosOrdenados"
+          v-for="(faturamento, index) in faturamentoItemData"
           :key="faturamento.id"
         >
           <td class="text-2xl">{{ index + 1 }}</td>
@@ -1758,10 +1756,8 @@ let faturamentoItemMeta = ref([]);
   const fetchContratoMedicoes = async (page) => {
       try {
         const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
-        // console.log('response', response.data)
         medicaoItemData.value = response.data.data;
         medicaoItemMeta.value = response.data.meta;
-        // console.log('contratoItemMeta', contratoItemMeta)
         currentPageMedicao.value = medicaoItemMeta.value.currentPage;
         resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
         totalMedicoes.value = medicaoItemMeta.value.total;
@@ -1773,9 +1769,8 @@ let faturamentoItemMeta = ref([]);
     const fetchContratoFaturamentos = async (page) => {
       try {
         const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`);
-        // console.log('response', response.data)
         faturamentoItemData.value = response.data.data;
-        faturamentoItemMeta.value = response.data.meta;      
+        faturamentoItemMeta.value = response.data.meta;
         currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
         resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
         totalFaturamentos.value = faturamentoItemMeta.value.total;
@@ -1855,24 +1850,6 @@ const deletarUnidadeMedida = (id, unidadeMedida) => {
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
-};
-
-const areAllSelected = computed(() => {
-  return (
-    pedidosFaturamento.value.length === lancamentosOrdenados.value.length &&
-    lancamentosOrdenados.value.length > 0
-  );
-});
-
-const toggleSelectAll = () => {
-  if (areAllSelected.value) {
-    pedidosFaturamento.value = [];
-  } else {
-    pedidosFaturamento.value = lancamentosOrdenados.value.map(
-      (lancamento) => lancamento.id
-    );
-  }
-  changePedido();
 };
 
 // Faturamento
@@ -2230,7 +2207,6 @@ const addItemToTable = (selectedItem) => {
   } else {
     console.log('Nenhum item selecionado');
   }
-  // console.log('medicaoData', medicaoData.value.itens);
 };
 const createLancamento = async () => {
   if (!projetos.value || projetos.value == null) {
@@ -2366,7 +2342,7 @@ const verificaIsFaturado = (lancamentos, faturamentos) => {
         lancamento.isFaturado = true;
       }
     });
-  }); 
+  });
   return lancamentos;
 };
 
@@ -2418,23 +2394,6 @@ const formatDate = (dateString) => {
     ? ""
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
-
-const lancamentosOrdenados = computed(() => {
-  if (!contrato.value || !contrato.value.lancamentos) {
-    return [];
-  }
-  return medicaoItemData.value.slice().sort((a, b) => {
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-});
-
-const faturamentosOrdenados = computed(() => {
-  return faturamentoItemData.value.slice().sort((a, b) => {
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-});
-
-
 
 // Cálculos de saldo
 const calcularSaldoAtual = () => {
@@ -2700,7 +2659,7 @@ const deleteItem = async (itemId) => {
     if (result.isConfirmed) {
       try {
         const response = await api.delete(`/contratos/items/${itemId}`);
-        fetchContrato(contratoId);       
+        fetchContrato(contratoId);
         toast("Item deletado com sucesso!", {
           theme: "colored",
           type: "success",
