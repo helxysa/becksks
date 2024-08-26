@@ -383,10 +383,10 @@
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
-      <tbody v-if="contrato.lancamentos">       
+      <tbody v-if="medicaoItemData">
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in  medicaoItemData"
+          v-for="(lancamento, index) in medicaoItemData"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
@@ -399,7 +399,6 @@
               :value="lancamento.id"
               @change="changePedido"
               :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
-
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
@@ -504,15 +503,14 @@
         </tr>
       </tbody>
     </table>
-    <div class="flex justify-center">
+    <div class="flex justify-center" v-if="medicaoItemData">
       <vue-awesome-paginate
-      :total-items="totalMedicoes"
-      :items-per-page="resultsPerPageMedicoes"
-      :max-pages-shown="5"
-      v-model="currentPageMedicao"
-      @click="changePageMedicao"
-    />
-
+        :total-items="totalMedicoes"
+        :items-per-page="resultsPerPageMedicoes"
+        :max-pages-shown="5"
+        v-model="currentPageMedicao"
+        @click="changePageMedicao"
+      />
     </div>
   </section>
 
@@ -534,7 +532,7 @@
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
-      <tbody v-if="contrato.faturamentos">
+      <tbody v-if="faturamentoItemData">
         <tr
           class="h-28 text-center"
           v-for="(faturamento, index) in faturamentoItemData"
@@ -542,7 +540,6 @@
         >
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">
-            <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
           <td
@@ -606,15 +603,14 @@
         </tr>
       </tbody>
     </table>
-    <div class="flex justify-center">
+    <div class="flex justify-center" v-if="faturamentoItemData">
       <vue-awesome-paginate
-      :total-items="totalFaturamentos"
-      :max-pages-shown="5"
-      :items-per-page="resultsPerPageFaturamentos"
-      v-model="currentPageFaturamento"
-      @click="changePageFaturamento"
-    />
-
+        :total-items="totalFaturamentos"
+        :max-pages-shown="5"
+        :items-per-page="resultsPerPageFaturamentos"
+        v-model="currentPageFaturamento"
+        @click="changePageFaturamento"
+      />
     </div>
   </section>
 
@@ -1766,6 +1762,9 @@ let faturamentoItemMeta = ref([]);
         const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
         medicaoItemData.value = response.data.data;
         medicaoItemMeta.value = response.data.meta;
+        if(contrato.value.faturamentos){
+          medicaoItemData.value = verificaIsFaturado(medicaoItemData.value, contrato.value.faturamentos);
+        }
         currentPageMedicao.value = medicaoItemMeta.value.currentPage;
         resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
         totalMedicoes.value = medicaoItemMeta.value.total;
@@ -1783,7 +1782,7 @@ let faturamentoItemMeta = ref([]);
         resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
         totalFaturamentos.value = faturamentoItemMeta.value.total;
       } catch (error) {
-        console.error(error);
+        console.error(error.response.data.message);
       }
     }
 
@@ -2325,7 +2324,7 @@ const fetchContrato = async (id) => {
     const response = await api.get(`/contratos/${id}`);
     let contratoData = response.data;
 
-    contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
+    // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
     contrato.value = contratoData;
     fetchContratoItens(currentPage.value)
