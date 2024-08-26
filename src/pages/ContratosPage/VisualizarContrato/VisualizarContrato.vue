@@ -328,13 +328,12 @@
       </tbody>
     </table>
     <div class="flex justify-center">
-
       <vue-awesome-paginate
-      :total-items="totalItens"     
-      :max-pages-shown="6"
+      :total-items="totalItens"
+      :items-per-page="resultsPerPageItens"
+      :max-pages-shown="5"
       v-model="currentPage"
       @click="changePageItem"
-
     />
 
     </div>
@@ -501,7 +500,7 @@
     </table>
     <div class="flex justify-center">
       <vue-awesome-paginate
-      :total-items="totalMedicoes"     
+      :total-items="totalMedicoes"
       :max-pages-shown="6"
       v-model="currentPageMedicao"
       @click="changePageMedicao"
@@ -602,7 +601,7 @@
     </table>
     <div class="flex justify-center">
       <vue-awesome-paginate
-      :total-items="totalFaturamentos"    
+      :total-items="totalFaturamentos"
       :max-pages-shown="6"
       v-model="currentPageFaturamento"
       @click="changePageFaturamento"
@@ -1708,8 +1707,8 @@ const medicaoData = ref({
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
-const totalItens = ref(contrato?.value?.contratoItens?.length)
-const totalPages = ref(0)
+const totalItens = ref()
+const resultsPerPageItens= ref()
 let contratoItemData =  ref([]);
 let contratoItemMeta = ref([]);
 
@@ -1724,13 +1723,13 @@ let faturamentoItemData =  ref([]);
 let faturamentoItemMeta = ref([]);
 
 
-  const changePageItem = (page) => {  
+  const changePageItem = (page) => {
       currentPage.value = page;
     }
 
-    const changePageMedicao = (page) => {  
+    const changePageMedicao = (page) => {
       currentPageMedicao.value = page;
-    }  
+    }
 
   const changePageFaturamento = (page) => {
     currentPageFaturamento.value = page;
@@ -1743,18 +1742,15 @@ let faturamentoItemMeta = ref([]);
  const fetchContratoItens = async (page) => {
       try {
         const response = await api.get(`/contratos/${contrato.value.id}/items/?page=${page}`);
-        // console.log('response', response.data)
         contratoItemData.value = response.data.data;
         contratoItemMeta.value = response.data.meta;
-        // console.log('contratoItemMeta', contratoItemMeta)
         currentPage.value = contratoItemMeta.value.currentPage;
-        totalPages.value = contratoItemMeta.value.lastPage;
         totalItens.value = contratoItemMeta.value.total;
+        resultsPerPageItens.value = contratoItemMeta.value.perPage;
       } catch (error) {
         console.error(error);
       }
     }
-  
   const fetchContratoMedicoes = async (page) => {
       try {
         const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
