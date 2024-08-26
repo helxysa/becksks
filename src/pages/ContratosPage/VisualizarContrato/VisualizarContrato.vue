@@ -2273,7 +2273,9 @@ const createLancamento = async () => {
     return;
   }
 
-
+if (medicaoData.value.tipo_medicao === "Detalhada") {
+  medicaoData.value.status = ""
+}
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -2528,9 +2530,12 @@ const calcularSaldoDisponivel = (faturamento) => {
 
 const calcularItensRestante = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0;
-  let quantidadeRestante = 0;
+  let quantidadeRestante = 0;  
 
   contrato.value.lancamentos.forEach((lancamento) => {
+    if (lancamento.status === 'Não Autorizada' || lancamento.status === 'Cancelada') {         
+           return
+    }
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
       if (idItem === lancamentoItem.contratoItemId) {
         quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
@@ -2871,6 +2876,10 @@ const saveEditedLancamento = async () => {
     );
     return;
   }
+
+  if (editingLancamento.value.tipoMedicao === "Detalhada") {
+  editingLancamento.value.status = ""
+}
 
   let payload = {
     // data_medicao: formatDate(editingLancamento.value.dataMedicao),
