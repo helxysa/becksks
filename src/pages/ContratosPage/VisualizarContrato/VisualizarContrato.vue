@@ -393,7 +393,7 @@
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
-
+        
           <td>
             <input
               type="checkbox"
@@ -1708,17 +1708,18 @@ const medicaoData = ref({
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
-const totalItens = ref(contrato?.value?.contratoItens?.length)
+const totalItens = ref(0)
 const totalPages = ref(0)
 let contratoItemData =  ref([]);
 let contratoItemMeta = ref([]);
 
-const totalMedicoes = ref(contrato?.value?.lancamentos?.length)
+const totalMedicoes = ref(0)
 const totalPagesMedicao = ref(0)
 let medicaoItemData =  ref([]);
 let medicaoItemMeta = ref([]);
 
-const totalFaturamentos = ref(contrato?.value?.faturamentos?.length)
+
+const totalFaturamentos = ref(0)
 const totalPagesFaturamento = ref(0)
 let faturamentoItemData =  ref([]);
 let faturamentoItemMeta = ref([]);
@@ -1776,7 +1777,7 @@ let faturamentoItemMeta = ref([]);
         // console.log('response', response.data)
         faturamentoItemData.value = response.data.data;
         faturamentoItemMeta.value = response.data.meta;
-        // console.log('contratoItemMeta', contratoItemMeta)
+        console.log('faturamentoItemMeta', faturamentoItemMeta)
         currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
         totalPagesFaturamento.value = faturamentoItemMeta.value.lastPage;
         totalFaturamentos.value = faturamentoItemMeta.value.total;
@@ -2367,8 +2368,7 @@ const verificaIsFaturado = (lancamentos, faturamentos) => {
         lancamento.isFaturado = true;
       }
     });
-  });
-
+  }); 
   return lancamentos;
 };
 
@@ -2601,6 +2601,7 @@ const mostrarUnidadeMedida = (lancamentoItens) => {
 const openItemEditModal = (item) => {
   editingItem.value = { ...item };
   modalEditItem.value = true;
+  fetchUnidadesMedida()
 };
 
 const openItemViewModal = (item) => {
@@ -2701,7 +2702,7 @@ const deleteItem = async (itemId) => {
     if (result.isConfirmed) {
       try {
         const response = await api.delete(`/contratos/items/${itemId}`);
-        fetchContrato(contratoId);
+        fetchContrato(contratoId);       
         toast("Item deletado com sucesso!", {
           theme: "colored",
           type: "success",
