@@ -383,10 +383,10 @@
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
-      <tbody v-if="contrato.lancamentos">
+      <tbody v-if="contrato.lancamentos">       
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in  contrato.lancamentos"
+          v-for="(lancamento, index) in  medicaoItemData"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
@@ -424,6 +424,7 @@
           <td class="text-2xl">
             <div class="flex justify-center">
               <span
+               v-if="lancamento.tipoMedicao !== 'Detalhada'"
                 class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
                   'bg-orange-200 border-orange-400 text-orange-400':
@@ -436,6 +437,13 @@
               >
                 {{ lancamento.status }}
               </span>
+              <span 
+               class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]
+               bg-gray-200 border-gray-400
+               "
+              v-else>
+              Sem status
+            </span>
             </div>
           </td>
           <!-- <td class="text-2xl">
@@ -1013,7 +1021,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center">
+          <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1190,7 +1198,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center">
+          <div class="flex gap-4 items-center" v-if="editingLancamento.tipoMedicao !== 'Detalhada'">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
