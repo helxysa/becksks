@@ -272,9 +272,10 @@
         </tr>
       </thead>
       <tbody>
+        <!-- {{contratoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(item, index) in contrato.contratoItens"
+          v-for="(item, index) in  contratoItemData"
           :key="item.id"
         >
           <td class="text-2xl px-2">{{ index + 1 }}</td>
@@ -326,6 +327,16 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center">
+      <vue-awesome-paginate
+      :total-items="totalItens"
+      :items-per-page="resultsPerPageItens"
+      :max-pages-shown="5"
+      v-model="currentPage"
+      @click="changePageItem"
+    />
+
+    </div>
   </section>
 
   <!-- Tabela Medições-->
@@ -372,10 +383,10 @@
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
-      <tbody v-if="contrato.lancamentos">
+      <tbody v-if="medicaoItemData">
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in lancamentosOrdenados"
+          v-for="(lancamento, index) in medicaoItemData"
           :key="lancamento.id"
           :class="{ 'bg-indigo-100': lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado  }"
         >
@@ -388,7 +399,6 @@
               :value="lancamento.id"
               @change="changePedido"
               :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
-
             />
           </td>
           <td class="text-2xl">{{ index + 1 }}</td>
@@ -413,6 +423,7 @@
           <td class="text-2xl">
             <div class="flex justify-center">
               <span
+               v-if="lancamento.tipoMedicao !== 'Detalhada'"
                 class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
                   'bg-orange-200 border-orange-400 text-orange-400':
@@ -425,6 +436,13 @@
               >
                 {{ lancamento.status }}
               </span>
+              <span 
+               class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]
+               bg-gray-200 border-gray-400
+               "
+              v-else>
+              Sem status
+            </span>
             </div>
           </td>
           <!-- <td class="text-2xl">
@@ -485,6 +503,15 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center" v-if="medicaoItemData">
+      <vue-awesome-paginate
+        :total-items="totalMedicoes"
+        :items-per-page="resultsPerPageMedicoes"
+        :max-pages-shown="5"
+        v-model="currentPageMedicao"
+        @click="changePageMedicao"
+      />
+    </div>
   </section>
 
   <!-- Tabela Faturamentos-->
@@ -505,15 +532,14 @@
           <th class="text-xl">Ações</th>
         </tr>
       </thead>
-      <tbody v-if="contrato.faturamentos">
+      <tbody v-if="faturamentoItemData">
         <tr
           class="h-28 text-center"
-          v-for="(faturamento, index) in faturamentosOrdenados"
+          v-for="(faturamento, index) in faturamentoItemData"
           :key="faturamento.id"
         >
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">
-            <!-- {{ faturamento.dataFaturamento}} -->
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
           <td
@@ -577,6 +603,15 @@
         </tr>
       </tbody>
     </table>
+    <div class="flex justify-center" v-if="faturamentoItemData">
+      <vue-awesome-paginate
+        :total-items="totalFaturamentos"
+        :max-pages-shown="5"
+        :items-per-page="resultsPerPageFaturamentos"
+        v-model="currentPageFaturamento"
+        @click="changePageFaturamento"
+      />
+    </div>
   </section>
 
   <!-- Modal novo pedido de faturamento-->
@@ -982,7 +1017,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center">
+          <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1159,7 +1194,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center">
+          <div class="flex gap-4 items-center" v-if="editingLancamento.tipoMedicao !== 'Detalhada'">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1673,13 +1708,88 @@ const medicaoData = ref({
 
 });
 
-const faturamentos = ref([]);
-const itens = ref([]);
-const medicoes = ref([]);
-
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
+const totalItens = ref()
+const resultsPerPageItens= ref()
+let contratoItemData =  ref([]);
+let contratoItemMeta = ref([]);
+
+const totalMedicoes = ref()
+const resultsPerPageMedicoes= ref()
+
+let medicaoItemData =  ref([]);
+let medicaoItemMeta = ref([]);
+
+
+const totalFaturamentos = ref(0)
+const resultsPerPageFaturamentos= ref()
+let faturamentoItemData =  ref([]);
+let faturamentoItemMeta = ref([]);
+
+
+  const changePageItem = (page) => {
+      currentPage.value = page;
+    }
+
+    const changePageMedicao = (page) => {
+      currentPageMedicao.value = page;
+    }
+
+  const changePageFaturamento = (page) => {
+    currentPageFaturamento.value = page;
+  };
+
+  const currentPage = ref(1);
+  const currentPageMedicao = ref(1);
+  const currentPageFaturamento = ref(1);
+
+ const fetchContratoItens = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/items/?page=${page}`);
+        contratoItemData.value = response.data.data;
+        contratoItemMeta.value = response.data.meta;
+        currentPage.value = contratoItemMeta.value.currentPage;
+        totalItens.value = contratoItemMeta.value.total;
+        resultsPerPageItens.value = contratoItemMeta.value.perPage;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  const fetchContratoMedicoes = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
+        medicaoItemData.value = response.data.data;
+        medicaoItemMeta.value = response.data.meta;
+        if(contrato.value.faturamentos){
+          medicaoItemData.value = verificaIsFaturado(medicaoItemData.value, contrato.value.faturamentos);
+        }
+        currentPageMedicao.value = medicaoItemMeta.value.currentPage;
+        resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
+        totalMedicoes.value = medicaoItemMeta.value.total;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const fetchContratoFaturamentos = async (page) => {
+      try {
+        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`);
+        faturamentoItemData.value = response.data.data;
+        faturamentoItemMeta.value = response.data.meta;
+        currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
+        resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
+        totalFaturamentos.value = faturamentoItemMeta.value.total;
+      } catch (error) {
+        console.error(error.response.data.message);
+      }
+    }
+
+watch(()=> currentPage.value, ()=> fetchContratoItens(currentPage.value));
+watch(()=> currentPageMedicao.value, ()=> fetchContratoMedicoes(currentPageMedicao.value));
+watch(()=> currentPageFaturamento.value, ()=> fetchContratoFaturamentos(currentPageFaturamento.value));
+
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -1747,24 +1857,6 @@ const deletarUnidadeMedida = (id, unidadeMedida) => {
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
-};
-
-const areAllSelected = computed(() => {
-  return (
-    pedidosFaturamento.value.length === lancamentosOrdenados.value.length &&
-    lancamentosOrdenados.value.length > 0
-  );
-});
-
-const toggleSelectAll = () => {
-  if (areAllSelected.value) {
-    pedidosFaturamento.value = [];
-  } else {
-    pedidosFaturamento.value = lancamentosOrdenados.value.map(
-      (lancamento) => lancamento.id
-    );
-  }
-  changePedido();
 };
 
 // Faturamento
@@ -2122,7 +2214,6 @@ const addItemToTable = (selectedItem) => {
   } else {
     console.log('Nenhum item selecionado');
   }
-  // console.log('medicaoData', medicaoData.value.itens);
 };
 const createLancamento = async () => {
   if (!projetos.value || projetos.value == null) {
@@ -2182,7 +2273,9 @@ const createLancamento = async () => {
     return;
   }
 
-
+if (medicaoData.value.tipo_medicao === "Detalhada") {
+  medicaoData.value.status = ""
+}
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
@@ -2233,13 +2326,12 @@ const fetchContrato = async (id) => {
     const response = await api.get(`/contratos/${id}`);
     let contratoData = response.data;
 
-    contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
-    console.log('contratoData', contratoData)
+    // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
     contrato.value = contratoData;
-
-    // if (!contrato.value.quantidadeItens) {
-    // }
+    fetchContratoItens(currentPage.value)
+    fetchContratoMedicoes(currentPageMedicao.value)
+    fetchContratoFaturamentos(currentPageFaturamento.value)
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -2260,7 +2352,6 @@ const verificaIsFaturado = (lancamentos, faturamentos) => {
       }
     });
   });
-
   return lancamentos;
 };
 
@@ -2312,23 +2403,6 @@ const formatDate = (dateString) => {
     ? ""
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
-
-const lancamentosOrdenados = computed(() => {
-  if (!contrato.value || !contrato.value.lancamentos) {
-    return [];
-  }
-  return contrato.value.lancamentos.slice().sort((a, b) => {
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-});
-
-const faturamentosOrdenados = computed(() => {
-  return contrato.value.faturamentos.slice().sort((a, b) => {
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
-});
-
-
 
 // Cálculos de saldo
 const calcularSaldoAtual = () => {
@@ -2456,9 +2530,12 @@ const calcularSaldoDisponivel = (faturamento) => {
 
 const calcularItensRestante = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0;
-  let quantidadeRestante = 0;
+  let quantidadeRestante = 0;  
 
   contrato.value.lancamentos.forEach((lancamento) => {
+    if (lancamento.status === 'Não Autorizada' || lancamento.status === 'Cancelada') {         
+           return
+    }
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
       if (idItem === lancamentoItem.contratoItemId) {
         quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
@@ -2493,6 +2570,7 @@ const mostrarUnidadeMedida = (lancamentoItens) => {
 const openItemEditModal = (item) => {
   editingItem.value = { ...item };
   modalEditItem.value = true;
+  fetchUnidadesMedida()
 };
 
 const openItemViewModal = (item) => {
@@ -2799,6 +2877,10 @@ const saveEditedLancamento = async () => {
     return;
   }
 
+  if (editingLancamento.value.tipoMedicao === "Detalhada") {
+  editingLancamento.value.status = ""
+}
+
   let payload = {
     // data_medicao: formatDate(editingLancamento.value.dataMedicao),
     data_medicao: editingLancamento.value.dataMedicao,
@@ -2844,7 +2926,7 @@ const calcularPodeRenovar = () => {
 };
 </script>
 
-<style scoped>
+<style >
 .btn-lancamento,
 .btn-faturamento {
   background-color: var(--bluePrimary);
@@ -2885,5 +2967,43 @@ const calcularPodeRenovar = () => {
 
 .text-observacoes {
   resize: none;
+}
+
+.pagination-container {
+  display: flex;
+  padding-top: 5px;
+  column-gap: 10px;
+}
+
+.paginate-buttons {
+  height: 40px ;
+
+  width: 40px ;
+
+  border-radius: 20px ;
+
+  cursor: pointer;
+
+  background-color: rgb(242, 242, 242);
+
+  border: 1px solid rgb(217, 217, 217) ;
+
+  color: black;
+}
+
+.paginate-buttons:hover {
+  background-color: #d8d8d8 ;
+}
+
+.active-page {
+  background-color: #3498db ;
+
+  border: 1px solid #3498db ;
+
+  color: white ;
+}
+
+.active-page:hover {
+  background-color: #2988c8 ;
 }
 </style>
