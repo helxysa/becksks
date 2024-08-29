@@ -247,9 +247,24 @@
       <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
         Itens do Contrato
       </h1>
-      <button @click="openCreateItemModal" class="btn-item relative">
-        Adicionar Item
-        <span class="absolute right-[3px]">
+      <div class="flex  gap-4">
+        <button @click="openCreateItemModal" class="btn-item relative">
+          Adicionar Item
+          <span class="absolute right-[3px]">
+            <Icon
+              icon="material-symbols-light:add"
+              height="25"
+              class="text-zinc-50"
+            />
+          </span>
+        </button>
+        <button
+        class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
+        type="button"
+        @click="openModalUnit"
+      >
+        Adicionar Unidade
+        <span class="absolute right-[10px]">
           <Icon
             icon="material-symbols-light:add"
             height="25"
@@ -257,6 +272,8 @@
           />
         </span>
       </button>
+
+      </div>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
@@ -406,6 +423,7 @@
               :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
             />
           </td>
+          
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
@@ -995,12 +1013,27 @@
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <input
+            <!-- <input
               type="text"
               placeholder="Informe o nome do  projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="projetos"
-            />
+            /> -->
+            <select
+            v-model="projetos"           
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          >
+            <option disabled hidden value="">
+              Selecione o projeto
+            </option>
+            <option
+              v-for="item in projetosLoaders"
+              :value="item"
+              :key="item.id"
+            >          
+              {{ item.projeto }}
+            </option>
+          </select>
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]"
@@ -1169,13 +1202,30 @@
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <input
+            <!-- <input
               type="text"
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
               v-model="editingLancamento.projetos"
-            />
+            /> -->
+          
+            <select
+            v-model="editingLancamento.projetos"   
+            :disabled="isLancamentoViewModal"        
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          >
+            <option disabled hidden value="">
+              Selecione o projeto
+            </option>
+            <option
+              v-for="item in projetosLoaders"
+              :value="item"
+              :key="item.id"
+            >          
+              {{ item.projeto }}
+            </option>
+          </select>
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]"
@@ -1617,6 +1667,70 @@
       </form>
     </template>
   </JetDialogModal>
+
+<!-- modal crud unidade -->
+<JetDialogModal
+:show="isModalUnidadeOpen"
+:withouHeader="false"
+@close="closeModalUnit"
+:modalTitle="modalTitleUnidade"
+maxWidth="6xl"
+>
+<template #content>
+  <form @submit.prevent="handleSubmitUnidade" class="space-y-4">
+    <div class="flex gap-4  items-center">
+      <label for="nome" class="font-bold text-3xl text-gray-700">Unidade</label>
+      <input
+        type="text"
+        id="nome"
+        v-model="newUnitName"
+        required
+        class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
+        placeholder="Nome  da   unidade"
+      />
+    </div>
+ 
+    <div class="flex justify-end space-x-2">
+      <button
+        type="button"
+        @click="closeModalUnit"
+        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        {{ isEditingUnidade ? 'Atualizar' : 'Adicionar' }}
+      </button>
+    </div>
+  </form>
+  <div class="mt-6">
+    <h3 class="text-lg font-semibold mb-2">Unidades</h3>
+    <ul class="divide-y divide-gray-200">          
+      <li v-for="item in unidadesMedida" :key="item.id" class="py-3 flex justify-between items-center">
+        <span>{{ item.unidadeMedida }}</span>
+        <div>
+          <button
+            @click="editUnidade(item)"
+            class="text-blue-600 hover:text-blue-800 mr-2"
+          >
+            Editar
+          </button>
+          <button
+            @click="deletarUnidadeMedida(item.id, item)"
+            class="text-red-600 hover:text-red-800"
+          >
+            Excluir
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</template>
+</JetDialogModal>
 </template>
 
 <script setup>
@@ -1699,6 +1813,7 @@ const isFaturamentoViewModal = ref(false);
 const editingFaturamento = ref({});
 const podeRenovar = ref(false);
 const projetos = ref("");
+const projetosLoaders = ref([])
 const pedidosFaturamento = ref([]);
 const arrayIds = ref([]);
 const pedidoFaturamentoData = ref({
@@ -1718,9 +1833,6 @@ const medicaoData = ref({
 
 });
 
-const unidadesMedida = ref([]);
-const showNewUnitInput = ref(false);
-const newUnitName = ref("");
 const totalItens = ref()
 const resultsPerPageItens= ref()
 let contratoItemData =  ref([]);
@@ -1737,6 +1849,139 @@ const resultsPerPageFaturamentos= ref()
 let faturamentoItemData =  ref([]);
 let faturamentoItemMeta = ref([]);
 
+const isModalUnidadeOpen = ref(false);
+const isEditingUnidade = ref(false);
+const modalTitleUnidade = computed(() => isEditingUnidade.value ? 'Editar Unidade' : 'Adicionar Unidade');
+const  idUnidade =  ref("")
+
+const openModalUnit = () => {
+  isModalUnidadeOpen.value = true;
+  fetchUnidadesMedida();
+};
+
+const closeModalUnit = () => {
+  isModalUnidadeOpen.value = false;
+  resetFormUnit();
+};
+
+const resetFormUnit = () => {
+  newUnitName.value = "" 
+  isEditingUnidade.value = false;
+};
+
+
+const handleSubmitUnidade = () => {
+  if (isEditingUnidade.value) {
+    EditarUnidade()
+  } else {    
+    CriarUnidadeMedida()
+  }
+  closeModalUnit();
+};
+
+const editUnidade = (item) => {
+  newUnitName.value = item.unidadeMedida;
+  isEditingUnidade.value = true;
+  idUnidade.value = item.id;
+};
+
+const EditarUnidade = async () => { 
+  try {
+    const response = await api.put(`unidade_medida/${idUnidade.value}`, {
+      unidade_medida: newUnitName.value,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade editada com sucesso!");   
+    newUnitName.value = "";
+   
+  } catch (error) {
+    console.error(
+      "Erro ao editar unidade:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe uma unidade com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível editar a  unidade.");
+    }
+  }
+};
+
+
+const unidadesMedida = ref([]);
+const newUnitName = ref("");
+
+const fetchUnidadesMedida = async () => {
+  try {
+    const response = await api.get("/unidade_medida");
+    unidadesMedida.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar unidades de medida:", error);
+  }
+};
+
+const CriarUnidadeMedida = async () => {
+  try {
+    const response = await api.post("/unidade_medida", {
+      unidade_medida: newUnitName.value,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade de medida criada com sucesso!");   
+    newUnitName.value = "";
+   
+  } catch (error) {
+    console.error(
+      "Erro ao criar nova unidade de medida:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe uma unidade de medida com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível criar a unidade de medida.");
+    }
+  }
+};
+
+const deletarUnidadeMedida = (id, unidadeMedida) => {
+  //Não implementado ainda
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover a unidade de medida "${unidadeMedida.unidadeMedida}"?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/unidade_medida/${id}`);
+        await fetchUnidadesMedida();
+        toast.success("Unidade de medida removida com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover unidade de medida:", error);
+        toast.error("Erro ao remover unidade de medida.");
+      }
+    }
+  });
+};
+
+
+const fetchProjetos = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/projetos`);
+    projetosLoaders.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao contratos:", error);
+  }
+};
 
   const changePageItem = (page) => {
       currentPage.value = page;
@@ -1839,70 +2084,6 @@ watch(()=> currentPage.value, ()=> fetchContratoItens(currentPage.value));
 watch(()=> currentPageMedicao.value, ()=> fetchContratoMedicoes(currentPageMedicao.value));
 watch(()=> currentPageFaturamento.value, ()=> fetchContratoFaturamentos(currentPageFaturamento.value));
 
-
-const openNewUnitInput = () => {
-  showNewUnitInput.value = !showNewUnitInput.value;
-};
-
-const fetchUnidadesMedida = async () => {
-  try {
-    const response = await api.get("/unidade_medida");
-    unidadesMedida.value = response.data.data;
-  } catch (error) {
-    console.error("Erro ao buscar unidades de medida:", error);
-  }
-};
-
-const CriarUnidadeMedida = async () => {
-  try {
-    const response = await api.post("/unidade_medida", {
-      unidade_medida: newUnitName.value,
-    });
-    await fetchUnidadesMedida();
-    newItem.value.unidade_medida = newUnitName.value;
-    newUnitName.value = "";
-    showNewUnitInput.value = false;
-    toast.success("Unidade de medida criada com sucesso!");
-  } catch (error) {
-    console.error(
-      "Erro ao criar nova unidade de medida:",
-      error.response.data.message
-    );
-    if (
-      error.response.data.message ==
-      "Já existe uma unidade de medida com esse nome."
-    ) {
-      return toast.error(error.response.data.message);
-    } else {
-      toast.error("Não foi possível criar a unidade de medida.");
-    }
-  }
-};
-
-const deletarUnidadeMedida = (id, unidadeMedida) => {
-  //Não implementado ainda
-  Swal.fire({
-    title: "Você tem certeza?",
-    text: `Deseja remover a unidade de medida "${unidadeMedida}"?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sim, remover!",
-    cancelButtonText: "Cancelar",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await api.delete(`/unidade_medida/${id}`);
-        await fetchUnidadesMedida();
-        toast.success("Unidade de medida removida com sucesso!");
-      } catch (error) {
-        console.error("Erro ao remover unidade de medida:", error);
-        toast.error("Erro ao remover unidade de medida.");
-      }
-    }
-  });
-};
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
@@ -2211,6 +2392,7 @@ const closeModal = () => {
 };
 
 const ExibirModalLancamento = () => {
+  fetchProjetos(route.params.id);
   if (contrato.value.contratoItens.length === 0) {
     toast(
       "Não é possível adicionar um novo lancamento. Não há itens no contrato.",
@@ -2737,7 +2919,7 @@ const deleteItem = async (itemId) => {
 
 const openCreateItemModal = () => {
   modalCreateItem.value = true;
-  showNewUnitInput.value = false;
+  // showNewUnitInput.value = false;
   fetchUnidadesMedida();
 };
 
@@ -3012,6 +3194,14 @@ const calcularPodeRenovar = () => {
 
 .btn-item:hover {
   background-color: #0ea5e9;
+}
+
+.btn-unidade { 
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 200px;
+  height: 40px;
 }
 
 .text-observacoes {

@@ -161,7 +161,7 @@
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
           />
         </div>
-        <div class="mt-14 flex justify-between flex-wrap">
+        <div class="mt-14 flex gap-8 flex-wrap">
           <button
             class="btn-contrato relative"
             type="button"
@@ -190,7 +190,7 @@
             />
           </span>
         </button>
-          <button
+          <!-- <button
             class="btn-projeto relative bg-green-500 hover:bg-green-600"
             type="button"
             @click="showExibirModalItems"
@@ -203,7 +203,7 @@
                 class="text-zinc-50"
               />
             </span>
-          </button>
+          </button> -->
         </div>
         <table
           class="mt-8 table-auto border border-slate-200 rounded-2xl w-full"
@@ -458,13 +458,13 @@
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl"
                 >Unidade de Medida:
-                <button
+                <!-- <button
                   type="button"
                   @click="openNewUnitInput"
                   class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
                 >
                   {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-                </button>
+                </button> -->
               </label>
               <select
                 v-if="!showNewUnitInput"
@@ -617,6 +617,7 @@ let editItem = ref({
 const isModalOpen = ref(false);
 const isEditing = ref(false);
 const modalTitle = computed(() => isEditing.value ? 'Editar Unidade' : 'Adicionar Unidade');
+const  idUnidade =  ref("")
 
 const openModalUnit = () => {
   isModalOpen.value = true;
@@ -629,13 +630,14 @@ const closeModalUnit = () => {
 };
 
 const resetForm = () => {
-  newUnitName.value = ""
-  // unidade.value = { id: null, nome: '', endereco: '' };
+  newUnitName.value = "" 
   isEditing.value = false;
 };
 
+
 const handleSubmit = () => {
   if (isEditing.value) {
+    EditarUnidade()
   } else {    
     CriarUnidadeMedida()
   }
@@ -645,11 +647,37 @@ const handleSubmit = () => {
 const editUnidade = (item) => {
   newUnitName.value = item.unidadeMedida;
   isEditing.value = true;
+  idUnidade.value = item.id;
 };
 
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
+
+const EditarUnidade = async () => { 
+  try {
+    const response = await api.put(`unidade_medida/${idUnidade.value}`, {
+      unidade_medida: newUnitName.value,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade editada com sucesso!");   
+    newUnitName.value = "";
+   
+  } catch (error) {
+    console.error(
+      "Erro ao editar unidade:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe uma unidade com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível editar a  unidade.");
+    }
+  }
+};
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
