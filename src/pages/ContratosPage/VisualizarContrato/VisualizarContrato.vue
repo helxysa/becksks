@@ -1343,13 +1343,13 @@
           <div class="flex justify-between items-center">
             <label class="font-bold text-3xl"
               >Unidade de Medida:
-              <button
+              <!-- <button
                 type="button"
                 @click="openNewUnitInput"
                 class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
               >
                 {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-              </button>
+              </button> -->
             </label>
             <select
               v-if="!showNewUnitInput"
@@ -1453,13 +1453,13 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Unidade de Medida:
-              <button
+              <!-- <button
               type="button"
               @click="openNewUnitInput"
               class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
             >
               {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-            </button>
+            </button> -->
             </label>
             <select
               v-if="!showNewUnitInput"
