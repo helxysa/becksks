@@ -369,13 +369,18 @@
         <tr>
           <th></th>
           <th class="text-xl">Id</th>
-          <th class="text-xl">Data da medição</th>
+          <th class="text-xl cursor-pointer" @click="changeSorting('data_medicao', 'medicoes')">
+            Data
+            <span>
+              {{ sortOrder['medicoes'] === 'asc' ? '▲' : '▼' }}
+            </span>
+        </th>
           <th class="text-xl">Projeto</th>
-          <th class="text-xl">Tarefa da medição</th>
-          <th class="text-xl">Tipo da medição</th>
-          <th class="text-xl">Status da medição</th>
+          <th class="text-xl">Tarefa</th>
+          <th class="text-xl">Tipo</th>
+          <th class="text-xl">Status</th>
           <!-- <th class="text-xl">Quantidade itens</th> -->
-          <th class="text-xl">Resultado da medição</th>
+          <th class="text-xl">Resultado</th>
           <th class="text-xl">Unidade de medida</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
@@ -436,7 +441,7 @@
               >
                 {{ lancamento.status }}
               </span>
-              <span 
+              <span
                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]
                bg-gray-200 border-gray-400
                "
@@ -525,9 +530,14 @@
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
           <th class="text-xl">Id</th>
-          <th class="text-xl">Data</th>
+          <th class="text-xl cursor-pointer" @click="changeSorting('data_faturamento', 'faturamentos')">
+            Data
+            <span>
+              {{ sortOrder['faturamentos'] === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
           <th class="text-xl">Nota Fiscal</th>
-          <th class="text-xl">Total do Faturamento</th>
+          <th class="text-xl">Total</th>
           <th class="text-xl">Situação</th>
           <th class="text-xl">Ações</th>
         </tr>
@@ -1722,7 +1732,6 @@ const resultsPerPageMedicoes= ref()
 let medicaoItemData =  ref([]);
 let medicaoItemMeta = ref([]);
 
-
 const totalFaturamentos = ref(0)
 const resultsPerPageFaturamentos= ref()
 let faturamentoItemData =  ref([]);
@@ -1757,9 +1766,39 @@ let faturamentoItemMeta = ref([]);
         console.error(error);
       }
     }
+
+
+  const sortBy = ref({ medicoes: null, faturamentos: null })
+  const sortOrder = ref({ medicoes: null, faturamentos: null })
+
+  const changeSorting = (column, type) => {
+    if (sortBy.value[type] === column) {
+      sortOrder.value[type] = sortOrder.value[type] === 'asc' ? 'desc' : 'asc'
+    } else {
+      sortBy.value[type] = column
+      sortOrder.value[type] = 'asc'
+    }
+
+    if (type === 'medicoes') {
+      fetchContratoMedicoes(currentPageMedicao.value)
+    } else if (type === 'faturamentos') {
+      fetchContratoFaturamentos(currentPageFaturamento.value)
+    }
+  }
+
   const fetchContratoMedicoes = async (page) => {
       try {
-        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
+        const params = {
+          page,
+          limit: 8,
+        }
+        if (sortBy.value) {
+          params.sortBy = sortBy.value.medicoes
+        }
+        if (sortOrder.value) {
+          params.sortOrder = sortOrder.value.medicoes
+        }
+        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos`, { params});
         medicaoItemData.value = response.data.data;
         medicaoItemMeta.value = response.data.meta;
         if(contrato.value.faturamentos){
@@ -1775,7 +1814,17 @@ let faturamentoItemMeta = ref([]);
 
     const fetchContratoFaturamentos = async (page) => {
       try {
-        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`);
+      const params = {
+          page,
+          limit: 8,
+      }
+      if (sortBy.value) {
+          params.sortBy = sortBy.value.faturamentos
+      }
+      if (sortOrder.value) {
+          params.sortOrder = sortOrder.value.faturamentos
+      }
+        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params});
         faturamentoItemData.value = response.data.data;
         faturamentoItemMeta.value = response.data.meta;
         currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2530,10 +2579,10 @@ const calcularSaldoDisponivel = (faturamento) => {
 
 const calcularItensRestante = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0;
-  let quantidadeRestante = 0;  
+  let quantidadeRestante = 0;
 
   contrato.value.lancamentos.forEach((lancamento) => {
-    if (lancamento.status === 'Não Autorizada' || lancamento.status === 'Cancelada') {         
+    if (lancamento.status === 'Não Autorizada' || lancamento.status === 'Cancelada') {
            return
     }
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
