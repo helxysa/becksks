@@ -1208,8 +1208,7 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
               v-model="editingLancamento.projetos"
-            /> -->
-          
+            /> -->          
             <select
             v-model="editingLancamento.projetos"   
             :disabled="isLancamentoViewModal"        
@@ -1220,7 +1219,7 @@
             </option>
             <option
               v-for="item in projetosLoaders"
-              :value="item"
+              :value="item.projeto"
               :key="item.id"
             >          
               {{ item.projeto }}
@@ -2510,7 +2509,7 @@ if (medicaoData.value.tipo_medicao === "Detalhada") {
   let payload = {
     status: medicaoData.value.status || "",
     itens: itensQuantidadePreenchida,
-    projetos: projetos.value,
+    projetos: projetos.value.projeto,
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
@@ -2998,6 +2997,7 @@ const openEditLancamentoModal = (lancamento) => {
   const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
+  fetchProjetos(route.params.id)
 };
 
 const openViewLancamentoModal = (lancamento) => {

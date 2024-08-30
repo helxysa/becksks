@@ -190,10 +190,10 @@
             />
           </span>
         </button>
-          <!-- <button
+          <button
             class="btn-projeto relative bg-green-500 hover:bg-green-600"
             type="button"
-            @click="showExibirModalItems"
+            @click="openModalProjeto"
           >
             Adicionar Projeto
             <span class="absolute right-[10px]">
@@ -203,7 +203,7 @@
                 class="text-zinc-50"
               />
             </span>
-          </button> -->
+          </button>
         </div>
         <table
           class="mt-8 table-auto border border-slate-200 rounded-2xl w-full"
@@ -547,6 +547,71 @@
         </form>
       </template>
     </JetDialogModal>
+
+    <JetDialogModal
+    :show="isModalProjetoOpen"
+    :withouHeader="false"
+    @close="closeModalProjeto"
+    :modalTitle="modalTitleProjeto"
+    maxWidth="6xl"
+  >
+    <template #content>
+      <form  class="space-y-4">
+        <div class="flex gap-4  items-center">
+          <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
+          <input
+            type="text"
+            id="nome"
+            v-model="newProjeto"
+            required
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
+            placeholder="Nome  do projeto"
+          />
+        </div>
+     
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            @click="closeModalProjeto"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Cancelar
+          </button>
+          {{isEditingProjeto}}
+          <button
+            @click=" isEditingProjeto ? EditarProjeto : CriarProjeto"
+            type="button"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
+          </button>
+        </div>
+      </form>
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold mb-2">Projetos</h3>
+        <ul class="divide-y divide-gray-200">          
+          <li v-for="item in projetosArray" :key="item.id" class="py-3 flex justify-between items-center">            
+            <span>{{ item }}</span>
+            <div>
+              <button
+                @click="editProjeto(item)"
+                class="text-blue-600 hover:text-blue-800 mr-2"
+              >
+                Editar
+              </button>
+              <button
+                @click="deletarProjeto(item.id, item)"
+                class="text-red-600 hover:text-red-800"
+              >
+                Excluir
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </template>
+  </JetDialogModal>
   </div>
 </template>
 
@@ -618,6 +683,116 @@ const isModalOpen = ref(false);
 const isEditing = ref(false);
 const modalTitle = computed(() => isEditing.value ? 'Editar Unidade' : 'Adicionar Unidade');
 const  idUnidade =  ref("")
+
+const isModalProjetoOpen = ref(false);
+const isEditingProjeto = ref(false);
+const modalTitleProjeto = computed(() => isEditingProjeto.value ? 'Editar Projeto' : 'Adicionar Projeto');
+// const idProjeto = ref("")
+const  idContrato =  ref("")
+
+const openModalProjeto = () => {
+  isModalProjetoOpen.value = true;
+  // fetchProjetos(route.params.id);
+};
+
+const closeModalProjeto = () => {
+  isModalProjetoOpen.value = false;
+  resetFormProjeto();
+};
+
+const resetFormProjeto = () => {
+  newProjeto.value = "" 
+  isEditingProjeto.value = false;
+};
+
+
+const handleSubmitProjeto = () => {
+  // if (isEditingProjeto.value) {
+  //   EditarProjeto()
+  // } else {    
+  //   CriarProjeto()
+  // }
+  // closeModalProjeto();
+};
+
+const editProjeto = (item) => {
+  
+  newProjeto.value = item;
+  isEditingProjeto.value = true;
+  // idProjeto.value = item.id;
+  // idContrato.value =  item.contratoId;
+};
+const projetosArray =  ref([])
+const projetos = ref([]);
+const newProjeto = ref("");
+
+const fetchProjetos = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/projetos`);
+    projetos.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao contratos:", error);
+  }
+};
+
+const CriarProjeto =  () => {
+  console.log('salvar')
+  projetosArray.value.push(newProjeto.value)
+  newProjeto.value = "";
+ 
+};
+
+const EditarProjeto = async () => { 
+  console.log('editar')
+  // try {
+  //   const response = await api.put(`projetos/${idProjeto.value}`, {
+  //     projeto: newProjeto.value,
+  //     contrato_id: idContrato.value,
+  //   });
+  //   // await fetchProjetos(route.params.id);
+  //   toast.success("Projeto editado com sucesso!");   
+  //   newProjeto.value = "";
+   
+  // } catch (error) {
+  //   console.error(
+  //     "Erro ao editar projeto:",
+  //     error.response.data.message
+  //   );
+  //   if (
+  //     error.response.data.message ==
+  //     "Já existe um projeto com esse nome."
+  //   ) {
+  //     return toast.error(error.response.data.message);
+  //   } else {
+  //     toast.error("Não foi possível editar o  projeto.");
+  //   }
+  // }
+};
+
+const deletarProjeto = (id, projeto) => {
+  //Não implementado ainda
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover o projeto "${projeto.projeto}"?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/projetos/${id}`);
+        await fetchProjetos(route.params.id);
+        toast.success("Projeto removido com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover projeto:", error);
+        toast.error("Erro ao remover projeto.");
+      }
+    }
+  });
+};
 
 const openModalUnit = () => {
   isModalOpen.value = true;
@@ -811,7 +986,18 @@ const removeItem = (index) => {
     }
   });
 };
-const saveContrato = () => {
+
+const createProjeto = (id) => {
+  let payload = {
+    projetos: projetosArray.value
+  }
+   try {
+    const response = api.post(`/contratos/${id}/projetos/multiplos`, payload)
+   } catch (error) {
+      console.log(error)
+   }
+}
+const saveContrato = async() => {
   if (contratoForm.fiscal.telefone.length < 15) {
     toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
       theme: "colored",
@@ -820,44 +1006,30 @@ const saveContrato = () => {
     return;
   }
 
-  if (route.params.id) {
-    api
-      .put(`/contratos/${route.params.id}`, contratoForm)
-      .then((response) => {
-        toast("Contrato editado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-        voltarListagem();
-      })
-      .catch((error) => {
-        toast("Não foi possível editar o contrato!", {
-          theme: "colored",
-          type: "error",
-        });
-        console.error("Erro ao editar contrato:", error);
-      });
-    voltarListagem();
-  } else {
-    api
-      .post("/contratos", contratoForm)
-      .then((response) => {
-        toast("Contrato cadastrado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-        voltarListagem();
-      })
-      .catch((error) => {
-        toast("Não foi possível cadastrar o contrato!", {
+  try {
+
+    const response =  await api
+    .post("/contratos", contratoForm)
+    
+    toast("Contrato cadastrado com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+      console.log(response, 'response')
+      if (response.data.id) {
+        createProjeto(response.data.id)
+      }
+
+    // voltarListagem();
+  } catch(error){
+    toast("Não foi possível cadastrar o contrato!", {
           theme: "colored",
           type: "error",
         });
         console.error("Erro ao cadastrar contrato:", error);
-      });
-    voltarListagem();
   }
-};
+} 
+  
 const voltarListagem = () => {
   router.push({ name: "Contratos" });
 };
