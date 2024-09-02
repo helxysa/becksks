@@ -161,7 +161,7 @@
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
           />
         </div>
-        <div class="mt-14 flex justify-between flex-wrap">
+        <div class="mt-14 flex gap-8 flex-wrap">
           <button
             class="btn-contrato relative"
             type="button"
@@ -177,23 +177,23 @@
             </span>
           </button>
           <button
-          class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
-          type="button"
-          @click="openModalUnit"
-        >
-          Adicionar Unidade
-          <span class="absolute right-[10px]">
-            <Icon
-              icon="material-symbols-light:add"
-              height="25"
-              class="text-zinc-50"
-            />
-          </span>
-        </button>
+            class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
+            type="button"
+            @click="openModalUnit"
+          >
+            Adicionar Unidade
+            <span class="absolute right-[10px]">
+              <Icon
+                icon="material-symbols-light:add"
+                height="25"
+                class="text-zinc-50"
+              />
+            </span>
+          </button>
           <button
             class="btn-projeto relative bg-green-500 hover:bg-green-600"
             type="button"
-            @click="showExibirModalItems"
+            @click="openModalProjeto()"
           >
             Adicionar Projeto
             <span class="absolute right-[10px]">
@@ -270,8 +270,10 @@
     >
       <template #content>
         <form @submit.prevent="handleSubmit" class="space-y-4">
-          <div class="flex gap-4  items-center">
-            <label for="nome" class="font-bold text-3xl text-gray-700">Unidade</label>
+          <div class="flex gap-4 items-center">
+            <label for="nome" class="font-bold text-3xl text-gray-700"
+              >Unidade</label
+            >
             <input
               type="text"
               id="nome"
@@ -281,7 +283,7 @@
               placeholder="Nome  da   unidade"
             />
           </div>
-       
+
           <div class="flex justify-end space-x-2">
             <button
               type="button"
@@ -294,14 +296,18 @@
               type="submit"
               class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              {{ isEditing ? 'Atualizar' : 'Adicionar' }}
+              {{ isEditing ? "Atualizar" : "Adicionar" }}
             </button>
           </div>
         </form>
         <div class="mt-6">
           <h3 class="text-lg font-semibold mb-2">Unidades</h3>
-          <ul class="divide-y divide-gray-200">          
-            <li v-for="item in unidadesMedida" :key="item.id" class="py-3 flex justify-between items-center">
+          <ul class="divide-y divide-gray-200">
+            <li
+              v-for="item in unidadesMedida"
+              :key="item.id"
+              class="py-3 flex justify-between items-center"
+            >
               <span>{{ item.unidadeMedida }}</span>
               <div>
                 <button
@@ -320,7 +326,6 @@
             </li>
           </ul>
         </div>
-
       </template>
     </JetDialogModal>
 
@@ -458,13 +463,13 @@
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl"
                 >Unidade de Medida:
-                <button
+                <!-- <button
                   type="button"
                   @click="openNewUnitInput"
                   class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
                 >
                   {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-                </button>
+                </button> -->
               </label>
               <select
                 v-if="!showNewUnitInput"
@@ -547,6 +552,97 @@
         </form>
       </template>
     </JetDialogModal>
+    <JetDialogModal
+      :show="isModalProjetoOpen"
+      :withouHeader="false"
+      @close="closeModalProjeto"
+      :modalTitle="modalTitleProjeto"
+      maxWidth="6xl"
+    >
+      <template #content>
+        <form @submit.prevent="handleSubmitProjeto" class="space-y-4">
+          <div class="flex gap-4 items-center">
+            <label for="nome" class="font-bold text-3xl text-gray-700"
+              >Nome:</label
+            >
+            <input
+              type="text"
+              id="nome"
+              v-model="newProjeto"
+              required
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
+              placeholder="Nome do projeto"
+            />
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              @click="handleSubmitProjeto"
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
+            </button>
+          </div>
+        </form>
+        <div class="mt-6">
+          <h3 class="font-semibold mb-2">Projetos</h3>
+          <ul class="divide-y divide-gray-200">
+            <li
+              v-for="item in projetos"
+              :key="item.id"
+              class="py-3 flex items-center"
+            >
+              <div
+                v-if="!item.isEditing"
+                class="flex justify-between items-center w-full"
+              >
+                <span>{{ item.projeto }}</span>
+                <div class="ml-auto">
+                  <button
+                    @click="editProjeto(item)"
+                    class="text-blue-600 hover:text-blue-800 mr-2"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    @click="deletarProjeto(item.id)"
+                    class="text-red-600 hover:text-red-800"
+                  >
+                    Excluir
+                  </button>
+                </div>
+              </div>
+              <div v-else class="flex justify-between items-center w-full">
+                <input type="text" v-model="item.projeto" class="w-full" />
+                <div class="ml-auto text-nowrap">
+                  <button
+                    @click="saveProjeto(item)"
+                    class="text-blue-600 hover:text-blue-800 mr-2"
+                  >
+                    Salvar
+                  </button>
+                  <button
+                    @click="cancelEdit(item)"
+                    class="text-red-600 hover:text-red-800"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="flex justify-end">
+          <button
+            type="button"
+            @click="closeModalProjeto"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Fechar
+          </button>
+        </div>
+      </template>
+    </JetDialogModal>
   </div>
 </template>
 
@@ -616,7 +712,11 @@ let editItem = ref({
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
-const modalTitle = computed(() => isEditing.value ? 'Editar Unidade' : 'Adicionar Unidade');
+const modalTitle = computed(() =>
+  isEditing.value ? "Editar Unidade" : "Adicionar Unidade"
+);
+const idUnidade = ref("");
+const idContrato = ref("");
 
 const openModalUnit = () => {
   isModalOpen.value = true;
@@ -629,15 +729,15 @@ const closeModalUnit = () => {
 };
 
 const resetForm = () => {
-  newUnitName.value = ""
-  // unidade.value = { id: null, nome: '', endereco: '' };
+  newUnitName.value = "";
   isEditing.value = false;
 };
 
 const handleSubmit = () => {
   if (isEditing.value) {
-  } else {    
-    CriarUnidadeMedida()
+    EditarUnidade();
+  } else {
+    CriarUnidadeMedida();
   }
   closeModalUnit();
 };
@@ -645,11 +745,30 @@ const handleSubmit = () => {
 const editUnidade = (item) => {
   newUnitName.value = item.unidadeMedida;
   isEditing.value = true;
+  idUnidade.value = item.id;
 };
 
 const unidadesMedida = ref([]);
 const showNewUnitInput = ref(false);
 const newUnitName = ref("");
+
+const EditarUnidade = async () => {
+  try {
+    const response = await api.put(`unidade_medida/${idUnidade.value}`, {
+      unidade_medida: newUnitName.value,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade editada com sucesso!");
+    newUnitName.value = "";
+  } catch (error) {
+    console.error("Erro ao editar unidade:", error.response.data.message);
+    if (error.response.data.message == "Já existe uma unidade com esse nome.") {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível editar a  unidade.");
+    }
+  }
+};
 
 const openNewUnitInput = () => {
   showNewUnitInput.value = !showNewUnitInput.value;
@@ -783,7 +902,8 @@ const removeItem = (index) => {
     }
   });
 };
-const saveContrato = () => {
+
+const createContrato = async () => {
   if (contratoForm.fiscal.telefone.length < 15) {
     toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
       theme: "colored",
@@ -792,44 +912,67 @@ const saveContrato = () => {
     return;
   }
 
-  if (route.params.id) {
-    api
-      .put(`/contratos/${route.params.id}`, contratoForm)
-      .then((response) => {
-        toast("Contrato editado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-        voltarListagem();
-      })
-      .catch((error) => {
-        toast("Não foi possível editar o contrato!", {
-          theme: "colored",
-          type: "error",
-        });
-        console.error("Erro ao editar contrato:", error);
-      });
-    voltarListagem();
-  } else {
-    api
-      .post("/contratos", contratoForm)
-      .then((response) => {
-        toast("Contrato cadastrado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-        voltarListagem();
-      })
-      .catch((error) => {
-        toast("Não foi possível cadastrar o contrato!", {
-          theme: "colored",
-          type: "error",
-        });
-        console.error("Erro ao cadastrar contrato:", error);
-      });
-    voltarListagem();
+  try {
+    const response = await api.post("/contratos", contratoForm);
+    return response.data.id;
+  } catch (error) {
+    toast("Não foi possível cadastrar o contrato!", {
+      theme: "colored",
+      type: "error",
+    });
+    console.error("Erro ao cadastrar contrato:", error);
+    return null;
   }
 };
+
+const createProjetos = async (contratoId) => {
+  try {
+    const projetosArray = projetos.value.map(p => p.projeto);
+
+    if (projetosArray.length > 0) {
+      await api.post(`/contratos/${contratoId}/projetos/multiplos`, { projetos: projetosArray });
+    } else {
+      toast.info("Nenhum projeto para adicionar.");
+  }
+  } catch (error) {
+    console.log("Erro ao criar projetos:", error);
+    toast("Não foi possível criar os projetos associados.", {
+      theme: "colored",
+      type: "error",
+    });
+    return 'error';
+  }
+};
+
+const deleteContrato = async (contratoId) => {
+  try {
+    await api.delete(`/contratos/${contratoId}`);
+    toast("Não foi possível salvar o contrato devido à falha na criação dos projetos.", {
+      theme: "colored",
+      type: "info",
+    });
+  } catch (error) {
+    console.error("Erro ao deletar contrato:", error);
+    toast("Não foi possível deletar o contrato após falha na criação dos projetos.", {
+      theme: "colored",
+      type: "error",
+    });
+  }
+};
+
+const saveContrato = async () => {
+  const contratoId = await createContrato();
+
+  if (contratoId) {
+    const projetosCriados = await createProjetos(contratoId);
+    if (projetosCriados === 'error') {
+      await deleteContrato(contratoId);
+    } else {
+      voltarListagem();
+    }
+  }
+};
+
 const voltarListagem = () => {
   router.push({ name: "Contratos" });
 };
@@ -854,6 +997,113 @@ const phoneMask = (value) => {
   value = value.replace(/(\d)(\d{4})$/, "$1-$2");
   return value;
 };
+
+// Projeto
+const projetos = ref([]);
+const newProjeto = ref("");
+const isModalProjetoOpen = ref(false);
+const isEditingProjeto = ref(false);
+const currentProjetoId = ref(null);
+const modalTitleProjeto = computed(() => isEditingProjeto.value ? "Atualizar Projeto" : "Adicionar Projeto");
+const originalProjetoValue = ref('');
+
+
+const openModalProjeto = (projeto = null) => {
+  if (projeto) {
+    newProjeto.value = projeto.projeto;
+    currentProjetoId.value = projeto.id;
+    isEditingProjeto.value = true;
+    modalTitleProjeto.value = "Editar Projeto";
+  } else {
+    newProjeto.value = "";
+    isEditingProjeto.value = false;
+    modalTitleProjeto.value = "Adicionar Projeto";
+  }
+  isModalProjetoOpen.value = true;
+};
+
+const handleSubmitProjeto = () => {
+  const projetoNome = newProjeto.value.trim();
+
+  if (projetoNome === '') {
+    toast.error("O nome do projeto não pode estar vazio.");
+    return;
+  }
+
+  if (isDuplicateProjeto(projetoNome, isEditingProjeto.value ? currentProjetoId.value : null)) {
+    toast.error("Já existe um projeto com esse nome.");
+    return;
+  }
+
+  if (isEditingProjeto.value) {
+    const index = projetos.value.findIndex(p => p.id === currentProjetoId.value);
+    if (index !== -1) {
+      projetos.value[index].projeto = projetoNome;
+    }
+    isEditingProjeto.value = false;
+    currentProjetoId.value = null;
+  } else {
+    projetos.value.push({
+      id: Date.now(),
+      projeto: projetoNome,
+      isEditing: false,
+    });
+  }
+  newProjeto.value = "";
+};
+
+
+const editProjeto = (item) => {
+  item.isEditing = true;
+  originalProjetoValue.value = item.projeto;
+};
+
+const saveProjeto = (item) => {
+  const projetoNome = item.projeto.trim();
+
+  if (projetoNome === '') {
+    toast.error("O nome do projeto não pode estar vazio.");
+    return;
+  }
+
+  if (isDuplicateProjeto(projetoNome, item.id)) {
+    toast.error("Já existe um projeto com esse nome.");
+    return;
+  }
+
+  item.isEditing = false;
+};
+
+const cancelEdit = (item) => {
+  item.projeto = originalProjetoValue.value;
+  item.isEditing = false;
+};
+
+const deletarProjeto = (id) => {
+  projetos.value = projetos.value.filter((p) => p.id !== id);
+};
+
+const closeModalProjeto = () => {
+  restoreOriginalValues();
+  newProjeto.value = "";
+  isEditingProjeto.value = false;
+  currentProjetoId.value = null;
+  isModalProjetoOpen.value = false;
+};
+
+const restoreOriginalValues = () => {
+  projetos.value.forEach(item => {
+    if (item.isEditing) {
+      item.projeto = originalProjetoValue.value;
+      item.isEditing = false;
+    }
+  });
+};
+
+const isDuplicateProjeto = (nome, excludeId = null) => {
+  return projetos.value.some(p => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId);
+};
+
 </script>
 
 <style scoped>
@@ -874,24 +1124,21 @@ const phoneMask = (value) => {
   background-color: #0ea5e9;
 }
 
-.btn-unidade { 
+.btn-unidade {
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
   width: 200px;
   height: 40px;
 }
-
 
 .btn-projeto {
-  
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
   width: 200px;
   height: 40px;
 }
-
 
 .btn-item {
   background-color: var(--bluePrimary);

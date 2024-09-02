@@ -160,7 +160,50 @@
 
           />
         </div>
-
+        <div class="mt-14 flex gap-8 flex-wrap">
+          <!-- <button
+            class="btn-contrato relative"
+            type="button"
+            @click="showExibirModalItems"
+          >
+            Adicionar Item
+            <span class="absolute right-[10px]">
+              <Icon
+                icon="material-symbols-light:add"
+                height="25"
+                class="text-zinc-50"
+              />
+            </span>
+          </button> -->
+          <!-- <button
+          class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
+          type="button"
+          @click="openModalProjeto"
+        >
+          Adicionar Unidade
+          <span class="absolute right-[10px]">
+            <Icon
+              icon="material-symbols-light:add"
+              height="25"
+              class="text-zinc-50"
+            />
+          </span>
+        </button> -->
+          <button
+            class="btn-projeto relative bg-green-500 hover:bg-green-600"
+            type="button"
+            @click="openModalProjeto"
+          >
+            Adicionar Projeto
+            <span class="absolute right-[10px]">
+              <Icon
+                icon="material-symbols-light:add"
+                height="25"
+                class="text-zinc-50"
+              />
+            </span>
+          </button>
+        </div>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
             <button class="btn-submit-contrato" type="submit">Voltar</button>
@@ -171,16 +214,79 @@
         </div>
       </form>
     </section>
+    <JetDialogModal
+    :show="isModalProjetoOpen"
+    :withouHeader="false"
+    @close="closeModalProjeto"
+    :modalTitle="modalTitleProjeto"
+    maxWidth="6xl"
+  >
+    <template #content>
+      <form @submit.prevent="handleSubmitProjeto" class="space-y-4">
+        <div class="flex gap-4  items-center">
+          <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
+          <input
+            type="text"
+            id="nome"
+            v-model="newProjeto"
+            required
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
+            placeholder="Nome  do projeto"
+          />
+        </div>
+     
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            @click="closeModalProjeto"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
+          </button>
+        </div>
+      </form>
+      <div class="mt-6">
+        <h3 class="text-lg font-semibold mb-2">Projetos</h3>
+        <ul class="divide-y divide-gray-200">          
+          <li v-for="item in projetos" :key="item.id" class="py-3 flex justify-between items-center">
+            <span>{{ item.projeto }}</span>
+            <div>
+              <button
+                @click="editProjeto(item)"
+                class="text-blue-600 hover:text-blue-800 mr-2"
+              >
+                Editar
+              </button>
+              <button
+                @click="deletarProjeto(item.id, item)"
+                class="text-red-600 hover:text-red-800"
+              >
+                Excluir
+              </button>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+    </template>
+  </JetDialogModal>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref, watch, onMounted } from "vue";
+import { reactive, ref, watch, onMounted, computed } from "vue";
 import { Icon } from "@iconify/vue";
 import { useRouter, useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
 import { api } from "@/services/api";
 import Swal from "sweetalert2";
+import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { format } from "date-fns";
 import { Money3Component } from "v-money3";
 
@@ -211,6 +317,133 @@ const moneyConfig = {
   thousands: ".",
   prefix: "R$ ",
   masked: false,
+};
+
+const isModalProjetoOpen = ref(false);
+const isEditingProjeto = ref(false);
+const modalTitleProjeto = computed(() => isEditingProjeto.value ? 'Editar Projeto' : 'Adicionar Projeto');
+const idProjeto = ref("")
+const  idContrato =  ref("")
+
+const openModalProjeto = () => {
+  isModalProjetoOpen.value = true;
+  fetchProjetos(route.params.id);
+};
+
+const closeModalProjeto = () => {
+  isModalProjetoOpen.value = false;
+  resetFormProjeto();
+};
+
+const resetFormProjeto = () => {
+  newProjeto.value = "" 
+  isEditingProjeto.value = false;
+};
+
+
+const handleSubmitProjeto = () => {
+  if (isEditingProjeto.value) {
+    EditarProjeto()
+  } else {    
+    CriarProjeto()
+  }
+  closeModalProjeto();
+};
+
+const editProjeto = (item) => {
+  
+  newProjeto.value = item.projeto;
+  isEditingProjeto.value = true;
+  idProjeto.value = item.id;
+  idContrato.value =  item.contratoId;
+};
+
+const projetos = ref([]);
+const newProjeto = ref("");
+
+const fetchProjetos = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/projetos`);
+    projetos.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao contratos:", error);
+  }
+};
+
+const CriarProjeto = async () => {
+  try {
+    const response = await api.post(`contratos/${route.params.id}/projetos`, {
+      projeto: newProjeto.value,     
+    });
+    await fetchProjetos(route.params.id);
+    toast.success("Projeto criado com sucesso!");   
+    newProjeto.value = "";
+   
+  } catch (error) {
+    console.error(
+      "Erro ao criar novo projeto:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe um projeto com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível criar o  projeto.");
+    }
+  }
+};
+
+const EditarProjeto = async () => { 
+  try {
+    const response = await api.put(`projetos/${idProjeto.value}`, {
+      projeto: newProjeto.value,
+      contrato_id: idContrato.value,
+    });
+    await fetchProjetos(route.params.id);
+    toast.success("Projeto editado com sucesso!");   
+    newProjeto.value = "";
+   
+  } catch (error) {
+    console.error(
+      "Erro ao editar projeto:",
+      error.response.data.message
+    );
+    if (
+      error.response.data.message ==
+      "Já existe um projeto com esse nome."
+    ) {
+      return toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível editar o  projeto.");
+    }
+  }
+};
+
+const deletarProjeto = (id, projeto) => {
+  //Não implementado ainda
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover o projeto "${projeto.projeto}"?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/projetos/${id}`);
+        await fetchProjetos(route.params.id);
+        toast.success("Projeto removido com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover projeto:", error);
+        toast.error("Erro ao remover projeto.");
+      }
+    }
+  });
 };
 
 onMounted(async () => {
@@ -327,6 +560,22 @@ const phoneMask = (value) => {
 
 .btn-contrato:hover {
   background-color: #0ea5e9;
+}
+
+.btn-unidade { 
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 200px;
+  height: 40px;
+}
+
+.btn-projeto { 
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 200px;
+  height: 40px;
 }
 
 .btn-item {
