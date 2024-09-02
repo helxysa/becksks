@@ -903,7 +903,7 @@ const removeItem = (index) => {
   });
 };
 
-const saveContrato = async () => {
+const createContrato = async () => {
   if (contratoForm.fiscal.telefone.length < 15) {
     toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
       theme: "colored",
@@ -914,23 +914,62 @@ const saveContrato = async () => {
 
   try {
     const response = await api.post("/contratos", contratoForm);
-
-    toast("Contrato cadastrado com sucesso!", {
-      theme: "colored",
-      type: "success",
-    });
-    console.log(response, "response");
-    // if (response.data.id) {
-    //   createProjeto(response.data.id);
-    // }
-
-    // voltarListagem();
+    return response.data.id;
   } catch (error) {
     toast("Não foi possível cadastrar o contrato!", {
       theme: "colored",
       type: "error",
     });
     console.error("Erro ao cadastrar contrato:", error);
+    return null;
+  }
+};
+
+const createProjetos = async (contratoId) => {
+  try {
+    const projetosArray = projetos.value.map(p => p.projeto);
+
+    if (projetosArray.length > 0) {
+      await api.post(`/contratos/${contratoId}/projetos/multiplos`, { projetos: projetosArray });
+    } else {
+      toast.info("Nenhum projeto para adicionar.");
+  }
+  } catch (error) {
+    console.log("Erro ao criar projetos:", error);
+    toast("Não foi possível criar os projetos associados.", {
+      theme: "colored",
+      type: "error",
+    });
+    return 'error';
+  }
+};
+
+const deleteContrato = async (contratoId) => {
+  try {
+    await api.delete(`/contratos/${contratoId}`);
+    toast("Não foi possível salvar o contrato devido à falha na criação dos projetos.", {
+      theme: "colored",
+      type: "info",
+    });
+  } catch (error) {
+    console.error("Erro ao deletar contrato:", error);
+    toast("Não foi possível deletar o contrato após falha na criação dos projetos.", {
+      theme: "colored",
+      type: "error",
+    });
+  }
+};
+
+const saveContrato = async () => {
+  const contratoId = await createContrato();
+
+  if (contratoId) {
+    const projetosCriados = await createProjetos(contratoId);
+    if (projetosCriados === 'error') {
+      await deleteContrato(contratoId);
+    } else {
+      voltarListagem();
+    }
   }
 };
 
@@ -960,9 +999,9 @@ const phoneMask = (value) => {
 };
 
 // Projeto
-const projetos = ref([{ id: 1, projeto: "hello" }]);
+const projetos = ref([]);
 const newProjeto = ref("");
-const isModalProjetoOpen = ref(true);
+const isModalProjetoOpen = ref(false);
 const isEditingProjeto = ref(false);
 const currentProjetoId = ref(null);
 const modalTitleProjeto = computed(() => isEditingProjeto.value ? "Atualizar Projeto" : "Adicionar Projeto");
