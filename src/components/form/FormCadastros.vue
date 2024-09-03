@@ -568,87 +568,91 @@
       maxWidth="6xl"
     >
       <template #content>
-        <form @submit.prevent="handleSubmitProjeto" class="space-y-4">
-          <div class="flex gap-4 items-center">
-            <label for="nome" class="font-bold text-3xl text-gray-700"
-              >Nome:</label
-            >
-            <input
-              type="text"
-              id="nome"
-              v-model="newProjeto"
-              required
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
-              placeholder="Nome do projeto"
-            />
-          </div>
-          <div class="flex justify-end space-x-2">
-            <button
-              type="button"
-              @click="handleSubmitProjeto"
-              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
-            </button>
-          </div>
+        <form @submit.prevent="handleSubmitProjeto" class="flex gap-8 px-6 h-[4.40rem]">
+          <input
+            type="text"
+            id="nome"
+            v-model="newProjeto"
+            required
+            class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            placeholder="Digite o nome do projeto"
+          />
+          <button
+            type="button"
+            @click="handleSubmitProjeto"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
+          >
+            {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
+          </button>
         </form>
-        <div class="mt-6">
-          <h3 class="font-semibold mb-2">Projetos</h3>
-          <ul class="divide-y divide-gray-200">
-            <li
+        <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+          <div
               v-for="item in projetos"
               :key="item.id"
-              class="py-3 flex items-center"
+              class="flex items-center gap-2 border-[1px] rounded-md"
             >
               <div
                 v-if="!item.isEditing"
-                class="flex justify-between items-center w-full"
+                class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
               >
-                <span>{{ item.projeto }}</span>
-                <div class="ml-auto">
+                <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.projeto">{{ item.projeto }}</span>
+                <div class="flex items-center mx-4">
                   <button
                     @click="editProjeto(item)"
-                    class="text-blue-600 hover:text-blue-800 mr-2"
+                    class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
                   >
-                    Editar
+                    <Icon
+                      icon="heroicons-solid:pencil"
+                      height="18"
+                      class="text-blue-600 rounded-full"
+                    />
                   </button>
                   <button
                     @click="deletarProjeto(item.id)"
-                    class="text-red-600 hover:text-red-800"
+                    class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
                   >
-                    Excluir
+                  <Icon
+                    icon="ph:trash-fill"
+                    height="20"
+                    class="text-red-500"
+                  />
                   </button>
                 </div>
               </div>
-              <div v-else class="flex justify-between items-center w-full">
-                <input type="text" v-model="item.projeto" class="w-full" />
-                <div class="ml-auto text-nowrap">
+              <div v-else class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6">
+                <input
+                  type="text"
+                  v-model="item.projeto"
+                  class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+                  placeholder="Digite o nome do projeto"
+                />
+                <div class="ml-auto text-nowrap flex gap-4">
                   <button
                     @click="saveProjeto(item)"
-                    class="text-blue-600 hover:text-blue-800 mr-2"
+                    class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
                   >
                     Salvar
                   </button>
                   <button
                     @click="cancelEdit(item)"
-                    class="text-red-600 hover:text-red-800"
+                    class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
                   >
                     Cancelar
                   </button>
                 </div>
               </div>
-            </li>
-          </ul>
+            </div>
         </div>
-        <div class="flex justify-end">
+        <hr class="my-8">
+        <footer class="flex justify-end h-16 mb-2">
           <button
             type="button"
             @click="closeModalProjeto"
-            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
           >
-            Fechar
+            Salvar Projetos
           </button>
-        </div>
+        </footer>
       </template>
     </JetDialogModal>
   </div>
@@ -1012,7 +1016,7 @@ const newProjeto = ref("");
 const isModalProjetoOpen = ref(false);
 const isEditingProjeto = ref(false);
 const currentProjetoId = ref(null);
-const modalTitleProjeto = computed(() => isEditingProjeto.value ? "Atualizar Projeto" : "Adicionar Projeto");
+const modalTitleProjeto = "Adicionar Projetos";
 const originalProjetoValue = ref('');
 
 
@@ -1021,11 +1025,9 @@ const openModalProjeto = (projeto = null) => {
     newProjeto.value = projeto.projeto;
     currentProjetoId.value = projeto.id;
     isEditingProjeto.value = true;
-    modalTitleProjeto.value = "Editar Projeto";
   } else {
     newProjeto.value = "";
     isEditingProjeto.value = false;
-    modalTitleProjeto.value = "Adicionar Projeto";
   }
   isModalProjetoOpen.value = true;
 };
@@ -1088,7 +1090,25 @@ const cancelEdit = (item) => {
 };
 
 const deletarProjeto = (id) => {
-  projetos.value = projetos.value.filter((p) => p.id !== id);
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover o projeto ?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+    position: 'top',
+    backdrop: true,
+    customClass: {
+      container: 'p-20',
+    }
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+       projetos.value = projetos.value.filter((p) => p.id !== id);
+  }
+})
 };
 
 const closeModalProjeto = () => {
