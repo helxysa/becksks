@@ -7,7 +7,7 @@
       <h1 class="text-5xl font-medium">Formulário de Contrato</h1>
     </div>
 
-    <section class="container">
+    <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
         <div class="flex flex-col items-start gap-3">
           <label class="font-medium">Nome do contrato</label>
