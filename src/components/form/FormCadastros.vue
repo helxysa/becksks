@@ -161,48 +161,48 @@
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
           />
         </div>
-        <div class="mt-14 flex gap-8 flex-wrap">
+        <div class="mt-14 flex gap-8 flex-wrap justify-end">
           <button
-            class="btn-contrato relative"
+            class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-linear transform hover:-translate-y-1"
             type="button"
             @click="showExibirModalItems"
           >
+          <span class="">
+            <Icon
+              icon="ic:baseline-plus"
+              height="20"
+              class="text-zinc-50"
+            />
+          </span>
             Adicionar Item
-            <span class="absolute right-[10px]">
-              <Icon
-                icon="material-symbols-light:add"
-                height="25"
-                class="text-zinc-50"
-              />
-            </span>
           </button>
           <button
-            class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
+            class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-linear transform hover:-translate-y-1"
             type="button"
             @click="openModalUnit"
-          >
-            Adicionar Unidade
-            <span class="absolute right-[10px]">
+            >
+            <span class="mr-2 pb-[1px]">
               <Icon
-                icon="material-symbols-light:add"
-                height="25"
+                icon="material-symbols-light:grid-on-outline"
+                height="20"
                 class="text-zinc-50"
               />
             </span>
+            Adicionar Unidade
           </button>
           <button
-            class="btn-projeto relative bg-green-500 hover:bg-green-600"
+          class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-linear transform hover:-translate-y-1"
             type="button"
             @click="openModalProjeto()"
           >
+          <span class="mr-2 ">
+            <Icon
+              icon="ant-design:project-outlined"
+              height="20"
+              class="text-zinc-50"
+            />
+          </span>
             Adicionar Projeto
-            <span class="absolute right-[10px]">
-              <Icon
-                icon="material-symbols-light:add"
-                height="25"
-                class="text-zinc-50"
-              />
-            </span>
           </button>
         </div>
         <table
@@ -252,9 +252,17 @@
         </table>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
-            <button class="btn-submit-contrato" type="submit">Voltar</button>
+            <button
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-linear transform hover:-translate-y-1"
+              type="button"
+            >
+            Voltar
+          </button>
           </span>
-          <button class="btn-submit-contrato" type="submit">
+          <button
+            class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-linear transform hover:-translate-y-1"
+            type="submit"
+          >
             {{ route.params.id ? "Editar" : "Salvar" }}
           </button>
         </div>
