@@ -2,9 +2,13 @@
   <div>
     <div class="flex items-center mt-12 gap-4">
       <span @click="voltarListagem" class="cursor-pointer">
-        <Icon icon="ic:round-arrow-back" height="30" />
+        <Icon
+          icon="ic:round-arrow-back"
+          height="30"
+          class=" duration-600  transition-all ease-in-out transform hover:-translate-y-[2px]"
+        />
       </span>
-      <h1 class="text-5xl font-medium">Formulário de Contrato</h1>
+      <h1 class="text-5xl font-bold">Formulário de Contrato</h1>
     </div>
 
     <section class="">
@@ -12,7 +16,7 @@
         <div class="flex flex-col items-start gap-3">
           <label class="font-medium">Nome do contrato</label>
           <input
-            class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
             type="text"
             placeholder="Informe o nome do contrato"
@@ -23,7 +27,7 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-medium">Nome do cliente</label>
           <input
-            class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
             type="text"
             placeholder="Informe o nome do cliente"
@@ -35,7 +39,7 @@
           <label class="font-medium">Vigência</label>
           <div class="flex gap-4 items-center w-full">
             <input
-              class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               required
               type="date"
               placeholder="Digite o inicio do contrato"
@@ -43,7 +47,7 @@
             />
             <span class="font-sans"> até</span>
             <input
-              class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               required
               type="date"
               placeholder="Digite o fim do  contrato"
@@ -58,7 +62,7 @@
             required
             type="text"
             placeholder="Informe o valor contratado"
-                        class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.saldo_contrato"
             v-bind="moneyConfig"
           />
@@ -69,7 +73,7 @@
             required
             type="text"
             placeholder="Informe o fiscal do contrato"
-                        class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.fiscal.nome"
             maxlength="120"
           />
@@ -80,7 +84,7 @@
             required
             type="tel"
             placeholder="Informe o telefone do fiscal"
-                        class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.fiscal.telefone"
             maxlength="15"
             @keyup="handlePhone"
@@ -92,7 +96,7 @@
             required
             type="email"
             placeholder="Informe o email do fiscal"
-                        class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.fiscal.email"
             maxlength="120"
           />
@@ -103,7 +107,7 @@
             required
             type="text"
             placeholder="Informe o ponto focal"
-                        class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.ponto_focal"
             maxlength="120"
           />
@@ -114,7 +118,7 @@
             required
             type="text"
             placeholder="Informe a cidade do contrato"
-            class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.cidade"
             maxlength="120"
           />
@@ -125,7 +129,7 @@
             required
             type="text"
             placeholder="Informe o objeto do contrato"
-            class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.objeto_contrato"
             maxlength="120"
           />
@@ -134,7 +138,7 @@
           <label class="font-medium">Lembrete vencimento:</label>
           <select
             v-model="contratoForm.lembrete_vencimento"
-            class="focus:border-blue-400 transition-colors h-[4.40rem] ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors h-[4.40rem] ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
           >
             <option disabled hidden value="">
@@ -158,29 +162,25 @@
             v-model="contratoForm.observacoes"
             rows="7"
             placeholder="Observações..."
-            class="focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-3 w-full border-gray-300 rounded-md"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-3 w-full border-gray-300 rounded-md"
           />
         </div>
         <div class="mt-8 flex gap-8 flex-wrap justify-end">
           <button
-            class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-linear transform hover:-translate-y-1"
+            class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="showExibirModalItems"
           >
-          <span class="">
-            <Icon
-              icon="ic:baseline-plus"
-              height="20"
-              class="text-zinc-50"
-            />
-          </span>
+            <span class="">
+              <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+            </span>
             Adicionar Item
           </button>
           <button
-            class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-linear transform hover:-translate-y-1"
+            class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="openModalUnit"
-            >
+          >
             <span class="mr-2 pb-[1px]">
               <Icon
                 icon="material-symbols-light:grid-on-outline"
@@ -191,17 +191,17 @@
             Adicionar Unidade
           </button>
           <button
-          class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-linear transform hover:-translate-y-1"
+            class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="openModalProjeto()"
           >
-          <span class="mr-2 ">
-            <Icon
-              icon="ant-design:project-outlined"
-              height="20"
-              class="text-zinc-50"
-            />
-          </span>
+            <span class="mr-2">
+              <Icon
+                icon="ant-design:project-outlined"
+                height="20"
+                class="text-zinc-50"
+              />
+            </span>
             Adicionar Projeto
           </button>
         </div>
@@ -253,14 +253,14 @@
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
             <button
-              class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-linear transform hover:-translate-y-1"
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
               type="button"
             >
-            Voltar
-          </button>
+              Voltar
+            </button>
           </span>
           <button
-            class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-linear transform hover:-translate-y-1"
+            class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="submit"
           >
             {{ route.params.id ? "Editar" : "Salvar" }}
@@ -568,7 +568,10 @@
       maxWidth="6xl"
     >
       <template #content>
-        <form @submit.prevent="handleSubmitProjeto" class="flex gap-8 px-6 h-[4.40rem]">
+        <form
+          @submit.prevent="handleSubmitProjeto"
+          class="flex gap-8 px-6 h-[4.40rem]"
+        >
           <input
             type="text"
             id="nome"
@@ -580,75 +583,78 @@
           <button
             type="button"
             @click="handleSubmitProjeto"
-            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           >
             {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
           </button>
         </form>
         <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
           <div
-              v-for="item in projetos"
-              :key="item.id"
-              class="flex items-center gap-2 border-[1px] rounded-md"
+            v-for="item in projetos"
+            :key="item.id"
+            class="flex items-center gap-2 border-[1px] rounded-md"
+          >
+            <div
+              v-if="!item.isEditing"
+              class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
             >
-              <div
-                v-if="!item.isEditing"
-                class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
+              <span
+                class="ml-6 font-sans text-nowrap truncate max-w-[500px]"
+                :title="item.projeto"
+                >{{ item.projeto }}</span
               >
-                <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.projeto">{{ item.projeto }}</span>
-                <div class="flex items-center mx-4">
-                  <button
-                    @click="editProjeto(item)"
-                    class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                  >
-                    <Icon
-                      icon="heroicons-solid:pencil"
-                      height="18"
-                      class="text-blue-600 rounded-full"
-                    />
-                  </button>
-                  <button
-                    @click="deletarProjeto(item.id)"
-                    class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                  >
+              <div class="flex items-center mx-4">
+                <button
+                  @click="editProjeto(item)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
                   <Icon
-                    icon="ph:trash-fill"
-                    height="20"
-                    class="text-red-500"
+                    icon="heroicons-solid:pencil"
+                    height="18"
+                    class="text-blue-600 rounded-full"
                   />
-                  </button>
-                </div>
-              </div>
-              <div v-else class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6">
-                <input
-                  type="text"
-                  v-model="item.projeto"
-                  class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-                  placeholder="Digite o nome do projeto"
-                />
-                <div class="ml-auto text-nowrap flex gap-4">
-                  <button
-                    @click="saveProjeto(item)"
-                    class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
-                  >
-                    Salvar
-                  </button>
-                  <button
-                    @click="cancelEdit(item)"
-                    class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
-                  >
-                    Cancelar
-                  </button>
-                </div>
+                </button>
+                <button
+                  @click="deletarProjeto(item.id)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
+                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
+                </button>
               </div>
             </div>
+            <div
+              v-else
+              class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6"
+            >
+              <input
+                type="text"
+                v-model="item.projeto"
+                class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+                placeholder="Digite o nome do projeto"
+              />
+              <div class="ml-auto text-nowrap flex gap-4">
+                <button
+                  @click="saveProjeto(item)"
+                  class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                >
+                  Salvar
+                </button>
+                <button
+                  @click="cancelEdit(item)"
+                  class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <hr class="my-8">
+        <hr class="my-8" />
         <footer class="flex justify-end h-16 mb-2">
           <button
             type="button"
             @click="closeModalProjeto"
-            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-linear transform hover:-translate-y-[2px]"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           >
             Salvar Projetos
           </button>
@@ -939,36 +945,44 @@ const createContrato = async () => {
 
 const createProjetos = async (contratoId) => {
   try {
-    const projetosArray = projetos.value.map(p => p.projeto);
+    const projetosArray = projetos.value.map((p) => p.projeto);
 
     if (projetosArray.length > 0) {
-      await api.post(`/contratos/${contratoId}/projetos/multiplos`, { projetos: projetosArray });
+      await api.post(`/contratos/${contratoId}/projetos/multiplos`, {
+        projetos: projetosArray,
+      });
     } else {
       toast.info("Nenhum projeto para adicionar.");
-  }
+    }
   } catch (error) {
     console.log("Erro ao criar projetos:", error);
     toast("Não foi possível criar os projetos associados.", {
       theme: "colored",
       type: "error",
     });
-    return 'error';
+    return "error";
   }
 };
 
 const deleteContrato = async (contratoId) => {
   try {
     await api.delete(`/contratos/${contratoId}`);
-    toast("Não foi possível salvar o contrato devido à falha na criação dos projetos.", {
-      theme: "colored",
-      type: "info",
-    });
+    toast(
+      "Não foi possível salvar o contrato devido à falha na criação dos projetos.",
+      {
+        theme: "colored",
+        type: "info",
+      }
+    );
   } catch (error) {
     console.error("Erro ao deletar contrato:", error);
-    toast("Não foi possível deletar o contrato após falha na criação dos projetos.", {
-      theme: "colored",
-      type: "error",
-    });
+    toast(
+      "Não foi possível deletar o contrato após falha na criação dos projetos.",
+      {
+        theme: "colored",
+        type: "error",
+      }
+    );
   }
 };
 
@@ -977,7 +991,7 @@ const saveContrato = async () => {
 
   if (contratoId) {
     const projetosCriados = await createProjetos(contratoId);
-    if (projetosCriados === 'error') {
+    if (projetosCriados === "error") {
       await deleteContrato(contratoId);
     } else {
       voltarListagem();
@@ -1017,8 +1031,7 @@ const isModalProjetoOpen = ref(false);
 const isEditingProjeto = ref(false);
 const currentProjetoId = ref(null);
 const modalTitleProjeto = "Adicionar Projetos";
-const originalProjetoValue = ref('');
-
+const originalProjetoValue = ref("");
 
 const openModalProjeto = (projeto = null) => {
   if (projeto) {
@@ -1035,18 +1048,25 @@ const openModalProjeto = (projeto = null) => {
 const handleSubmitProjeto = () => {
   const projetoNome = newProjeto.value.trim();
 
-  if (projetoNome === '') {
+  if (projetoNome === "") {
     toast.error("O nome do projeto não pode estar vazio.");
     return;
   }
 
-  if (isDuplicateProjeto(projetoNome, isEditingProjeto.value ? currentProjetoId.value : null)) {
+  if (
+    isDuplicateProjeto(
+      projetoNome,
+      isEditingProjeto.value ? currentProjetoId.value : null
+    )
+  ) {
     toast.error("Já existe um projeto com esse nome.");
     return;
   }
 
   if (isEditingProjeto.value) {
-    const index = projetos.value.findIndex(p => p.id === currentProjetoId.value);
+    const index = projetos.value.findIndex(
+      (p) => p.id === currentProjetoId.value
+    );
     if (index !== -1) {
       projetos.value[index].projeto = projetoNome;
     }
@@ -1062,7 +1082,6 @@ const handleSubmitProjeto = () => {
   newProjeto.value = "";
 };
 
-
 const editProjeto = (item) => {
   item.isEditing = true;
   originalProjetoValue.value = item.projeto;
@@ -1071,7 +1090,7 @@ const editProjeto = (item) => {
 const saveProjeto = (item) => {
   const projetoNome = item.projeto.trim();
 
-  if (projetoNome === '') {
+  if (projetoNome === "") {
     toast.error("O nome do projeto não pode estar vazio.");
     return;
   }
@@ -1099,16 +1118,16 @@ const deletarProjeto = (id) => {
     cancelButtonColor: "#d33",
     confirmButtonText: "Sim, remover!",
     cancelButtonText: "Cancelar",
-    position: 'top',
+    position: "top",
     backdrop: true,
     customClass: {
-      container: 'p-20',
-    }
+      container: "p-20",
+    },
   }).then(async (result) => {
     if (result.isConfirmed) {
-       projetos.value = projetos.value.filter((p) => p.id !== id);
-  }
-})
+      projetos.value = projetos.value.filter((p) => p.id !== id);
+    }
+  });
 };
 
 const closeModalProjeto = () => {
@@ -1120,7 +1139,7 @@ const closeModalProjeto = () => {
 };
 
 const restoreOriginalValues = () => {
-  projetos.value.forEach(item => {
+  projetos.value.forEach((item) => {
     if (item.isEditing) {
       item.projeto = originalProjetoValue.value;
       item.isEditing = false;
@@ -1129,9 +1148,10 @@ const restoreOriginalValues = () => {
 };
 
 const isDuplicateProjeto = (nome, excludeId = null) => {
-  return projetos.value.some(p => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId);
+  return projetos.value.some(
+    (p) => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId
+  );
 };
-
 </script>
 
 <style scoped>
