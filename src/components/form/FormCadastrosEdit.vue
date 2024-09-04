@@ -199,20 +199,27 @@
     maxWidth="6xl"
   >
     <template #content>
-      <form @submit.prevent="handleSubmitProjeto" class="space-y-4">
-        <div class="flex gap-4  items-center">
+      <form @submit.prevent="handleSubmitProjeto" class="flex gap-8 px-6 h-[4.40rem]">
+        <input
+          type="text"
+          id="nome"
+          v-model="newProjeto"
+          required
+          class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          placeholder="Nome  do projeto"
+        />
+
+        <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
+      </button>
+        <!-- <div class="flex gap-4  items-center">
           <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
-          <input
-            type="text"
-            id="nome"
-            v-model="newProjeto"
-            required
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
-            placeholder="Nome  do projeto"
-          />
-        </div>
+        </div> -->
      
-        <div class="flex justify-end space-x-2">
+        <!-- <div class="flex justify-end space-x-2">
           <button
             type="button"
             @click="closeModalProjeto"
@@ -226,29 +233,36 @@
           >
             {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
           </button>
-        </div>
+        </div> -->
       </form>
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-2">Projetos</h3>
-        <ul class="divide-y divide-gray-200">          
-          <li v-for="item in projetos" :key="item.id" class="py-3 flex justify-between items-center">
-            <span>{{ item.projeto }}</span>
-            <div>
-              <button
+      <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">    
+             
+          <div v-for="item in projetos" :key="item.id" class="flex items-center gap-2 border-[1px] rounded-md">
+            <div  class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
+              <span  class="ml-6 font-sans text-nowrap truncate max-w-[500px]">
+                {{ item.projeto }}
+              </span>
+              <div class="flex items-center mx-4">
+                <button
                 @click="editProjeto(item)"
-                class="text-blue-600 hover:text-blue-800 mr-2"
+                class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
               >
-                Editar
+                <Icon
+                  icon="heroicons-solid:pencil"
+                  height="18"
+                  class="text-blue-600 rounded-full"
+                />
               </button>
               <button
                 @click="deletarProjeto(item.id, item)"
-                class="text-red-600 hover:text-red-800"
+                class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
               >
-                Excluir
+                <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
               </button>
-            </div>
-          </li>
-        </ul>
+              </div>
+            </div>          
+          </div>
+      
       </div>
 
     </template>
