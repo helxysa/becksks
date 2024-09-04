@@ -4,137 +4,137 @@
       <span @click="voltarListagem" class="cursor-pointer">
         <Icon icon="ic:round-arrow-back" height="30" />
       </span>
-      <h1 class="text-5xl font-medium">Formulário de Contrato</h1>
+      <h1 class="text-5xl font-bold">Formulário de Contrato</h1>
     </div>
 
-    <section class="flex justify-center">
-      <form class="mt-12 form-contrato" @submit.prevent="saveContrato">
-        <div class="flex items-center justify-between">
-          <label class="font-bold w-60">Nome do contrato</label>
+    <section class="">
+      <form class="mt-12 " @submit.prevent="saveContrato">
+        <div class="flex flex-col items-start gap-3">
+          <label class="font-semibold">Nome do contrato</label>
           <input
             required
             type="text"
             placeholder="Informe o nome do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.nomeContrato"
             maxlength="120"
           />
         </div>
-        <div class="flex items-center justify-between mt-8">
-          <label class="font-bold w-60">Nome do cliente</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Nome do cliente</label>
           <input
             type="text"
             placeholder="Informe o nome do cliente"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.nomeCliente"
             maxlength="120"
             required
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Vigência</label>
-          <div class="flex gap-4 items-center w-3/4">
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold w-60">Vigência</label>
+          <div class="flex gap-4 items-center w-full">
             <input
               required
               type="date"
               placeholder="Digite o inicio do contrato"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               v-model="contratoForm.dataInicio"
             />
-            <span> até</span>
+            <span class="font-sans"> até</span>
             <input
               required
               type="date"
               placeholder="Digite o fim do  contrato"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl"
+              class=" focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               v-model="contratoForm.dataFim"
             />
           </div>
         </div>
 
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Valor contratado</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold ">Valor contratado</label>
           <money3
             required
             type="text"
             placeholder="Informe o saldo do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.saldoContrato"
             v-bind="moneyConfig"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Nome do Fiscal</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Nome do Fiscal</label>
           <input
             required
             type="text"
             placeholder="Informe o nome do fiscal do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.fiscal.nome"
             maxlength="120"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Telefone do fiscal</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Telefone do fiscal</label>
           <input
             required
             type="tel"
             placeholder="Informe o telefone do fiscal"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.fiscal.telefone"
             maxlength="15"
             @keyup="handlePhone"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">E-mail do fiscal</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">E-mail do fiscal</label>
           <input
             required
             type="email"
             placeholder="Informe o email do fiscal"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.fiscal.email"
             maxlength="120"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Ponto focal</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Ponto focal</label>
           <input
             required
             type="text"
             placeholder="Informe o ponto focal"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.pontoFocal"
             maxlength="120"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Cidade</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Cidade</label>
           <input
             required
             type="text"
             placeholder="Informe a cidade do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.cidade"
             maxlength="120"
           />
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Objeto do contrato</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Objeto do contrato</label>
           <input
             required
             type="text"
             placeholder="Informe o objeto do contrato"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="contratoForm.objetoContrato"
             maxlength="120"
           />
         </div>
-        <div class=" flex  justify-between items-center mt-8">
-          <label class="font-bold w-60">Lembrete vencimento:</label>
+        <div class=" flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Lembrete vencimento:</label>
           <select
             v-model="contratoForm.lembreteVencimento"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl h-14"
+            class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
           >
             <option disabled value="">Selecione a notificação do vencimento</option>
@@ -150,65 +150,42 @@
             <option>120</option>
           </select>
         </div>
-        <div class="mt-8 flex items-center justify-between">
-          <label class="font-bold w-60">Observações</label>
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Observações</label>
           <textarea
            v-model="contratoForm.observacoes"
             rows="7"
-            placeholder="observações"
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-3xl text-observacoes"
+            placeholder="Observações..."
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-3 w-full border-gray-300 rounded-md"
 
           />
         </div>
-        <div class="mt-14 flex gap-8 flex-wrap">
-          <!-- <button
-            class="btn-contrato relative"
+        <div class="mt-8 flex gap-8 flex-wrap justify-end">
+      
+          <button
+            class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
-            @click="showExibirModalItems"
+            @click="openModalProjeto"            
           >
-            Adicionar Item
-            <span class="absolute right-[10px]">
-              <Icon
-                icon="material-symbols-light:add"
-                height="25"
-                class="text-zinc-50"
-              />
-            </span>
-          </button> -->
-          <!-- <button
-          class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
-          type="button"
-          @click="openModalProjeto"
-        >
-          Adicionar Unidade
-          <span class="absolute right-[10px]">
+          <span class="mr-2">
             <Icon
-              icon="material-symbols-light:add"
-              height="25"
+              icon="ant-design:project-outlined"
+              height="20"
               class="text-zinc-50"
             />
           </span>
-        </button> -->
-          <button
-            class="btn-projeto relative bg-green-500 hover:bg-green-600"
-            type="button"
-            @click="openModalProjeto"
-          >
-            Adicionar Projeto
-            <span class="absolute right-[10px]">
-              <Icon
-                icon="material-symbols-light:add"
-                height="25"
-                class="text-zinc-50"
-              />
-            </span>
+            Adicionar Projeto          
           </button>
         </div>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
-            <button class="btn-submit-contrato" type="submit">Voltar</button>
+            <button class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]" 
+            type="button">
+            Voltar
+          </button>
           </span>
-          <button class="btn-submit-contrato" type="submit">
+          <button class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]" 
+            type="submit">
             {{ route.params.id ? "Editar" : "Salvar" }}
           </button>
         </div>
@@ -222,20 +199,27 @@
     maxWidth="6xl"
   >
     <template #content>
-      <form @submit.prevent="handleSubmitProjeto" class="space-y-4">
-        <div class="flex gap-4  items-center">
+      <form @submit.prevent="handleSubmitProjeto" class="flex gap-8 px-6 h-[4.40rem]">
+        <input
+          type="text"
+          id="nome"
+          v-model="newProjeto"
+          required
+          class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          placeholder="Nome  do projeto"
+        />
+
+        <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
+      </button>
+        <!-- <div class="flex gap-4  items-center">
           <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
-          <input
-            type="text"
-            id="nome"
-            v-model="newProjeto"
-            required
-            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
-            placeholder="Nome  do projeto"
-          />
-        </div>
+        </div> -->
      
-        <div class="flex justify-end space-x-2">
+        <!-- <div class="flex justify-end space-x-2">
           <button
             type="button"
             @click="closeModalProjeto"
@@ -249,29 +233,36 @@
           >
             {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
           </button>
-        </div>
+        </div> -->
       </form>
-      <div class="mt-6">
-        <h3 class="text-lg font-semibold mb-2">Projetos</h3>
-        <ul class="divide-y divide-gray-200">          
-          <li v-for="item in projetos" :key="item.id" class="py-3 flex justify-between items-center">
-            <span>{{ item.projeto }}</span>
-            <div>
-              <button
+      <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">    
+             
+          <div v-for="item in projetos" :key="item.id" class="flex items-center gap-2 border-[1px] rounded-md">
+            <div  class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
+              <span  class="ml-6 font-sans text-nowrap truncate max-w-[500px]">
+                {{ item.projeto }}
+              </span>
+              <div class="flex items-center mx-4">
+                <button
                 @click="editProjeto(item)"
-                class="text-blue-600 hover:text-blue-800 mr-2"
+                class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
               >
-                Editar
+                <Icon
+                  icon="heroicons-solid:pencil"
+                  height="18"
+                  class="text-blue-600 rounded-full"
+                />
               </button>
               <button
                 @click="deletarProjeto(item.id, item)"
-                class="text-red-600 hover:text-red-800"
+                class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
               >
-                Excluir
+                <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
               </button>
-            </div>
-          </li>
-        </ul>
+              </div>
+            </div>          
+          </div>
+      
       </div>
 
     </template>

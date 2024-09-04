@@ -14,7 +14,7 @@
     <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
         <div class="flex flex-col items-start gap-3">
-          <label class="font-medium">Nome do contrato</label>
+          <label class="font-semibold">Nome do contrato</label>
           <input
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
@@ -25,7 +25,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Nome do cliente</label>
+          <label class="font-semibold">Nome do cliente</label>
           <input
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
@@ -36,7 +36,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Vigência</label>
+          <label class="font-semibold">Vigência</label>
           <div class="flex gap-4 items-center w-full">
             <input
               class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -57,7 +57,7 @@
         </div>
 
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Valor contratado</label>
+          <label class="font-semibold">Valor contratado</label>
           <money3
             required
             type="text"
@@ -68,7 +68,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Fiscal do contrato</label>
+          <label class="font-semibold">Fiscal do contrato</label>
           <input
             required
             type="text"
@@ -79,7 +79,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Telefone do fiscal</label>
+          <label class="font-semibold">Telefone do fiscal</label>
           <input
             required
             type="tel"
@@ -91,7 +91,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">E-mail do fiscal</label>
+          <label class="font-semibold">E-mail do fiscal</label>
           <input
             required
             type="email"
@@ -102,7 +102,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Ponto focal</label>
+          <label class="font-semibold">Ponto focal</label>
           <input
             required
             type="text"
@@ -113,7 +113,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="block font-medium mb-2">Cidade</label>
+          <label class="block font-semibold mb-2">Cidade</label>
           <input
             required
             type="text"
@@ -124,7 +124,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Objeto do contrato</label>
+          <label class="font-semibold">Objeto do contrato</label>
           <input
             required
             type="text"
@@ -135,7 +135,7 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Lembrete vencimento:</label>
+          <label class="font-semibold">Lembrete vencimento:</label>
           <select
             v-model="contratoForm.lembrete_vencimento"
             class="font-sans focus:border-blue-400 transition-colors h-[4.40rem] ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -157,7 +157,7 @@
           </select>
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-medium">Observações</label>
+          <label class="font-semibold">Observações</label>
           <textarea
             v-model="contratoForm.observacoes"
             rows="7"
