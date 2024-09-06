@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-const HomePage = () => import("../pages/HomePage/HomePage.vue");
+const DashboardPage = () => import("../pages/DashboardPage/DashboardPage.vue");
 const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
 const FormContratosEdit = () =>
@@ -13,8 +13,8 @@ import Login from "@/pages/Login.vue";
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: HomePage,
+    name: "Dashboard",
+    component: DashboardPage,
     meta: { requiresAuth: true },
   },
   {
@@ -51,7 +51,7 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)*",
-    redirect: '{ name: "Home" }',
+    redirect: '{ name: "Dashboard" }',
   },
 ];
 
