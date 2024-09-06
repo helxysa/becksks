@@ -1,7 +1,5 @@
 <template>
-    <div class="chart-container ">
-        <Doughnut :data="data" :options="options" /> 
-    </div>
+  <Doughnut :data="data" :options="options"/>
 </template>
 
 <script setup>
@@ -18,7 +16,7 @@ const percentagePlugin = {
     const { ctx } = chart;
     if (!chart.chartArea) return;
 
-    const fontSize = 18;
+    const fontSize = 12;
     const fontFamily = 'Arial';
     const fontStyle = 'normal';
     ctx.font = `${fontStyle} ${fontSize}px ${fontFamily}`;
@@ -45,8 +43,8 @@ const percentagePlugin = {
         const radius = (innerRadius + outerRadius) / 2;
 
         // Ajustar o deslocamento para aumentar a distância
-        const xOffset = Math.cos(angle) * (radius + 100); // Aumente o valor para mais distância
-        const yOffset = Math.sin(angle) * (radius + 100); // Aumente o valor para mais distância
+        const xOffset = Math.cos(angle) * (radius + 70); // Aumente o valor para mais distância
+        const yOffset = Math.sin(angle) * (radius + 70); // Aumente o valor para mais distância
 
         const lineX = x + xOffset;
         const lineY = y + yOffset;
@@ -99,7 +97,7 @@ const percentagePlugin = {
           const label = context.label || '';
           const value = context.raw ;
           const percentage = dataset.data.length > 0 ? ((value / dataset.data.reduce((acc, val) => acc + (val ), 0)) * 100).toFixed(2) : '0';
-          
+
           const customText = customTexts[context.dataIndex] || '';
           // return `${label}: ${customText}\n${percentage}%`;
           return `${customText}\n${percentage}%`;
@@ -112,15 +110,15 @@ const percentagePlugin = {
   },
   layout: {
     padding: {
-      top: 200,   // Ajuste conforme necessário
-      bottom: 200, // Ajuste conforme necessário
-      left: 200,  // Ajuste conforme necessário
-      right: 200  // Ajuste conforme necessário
+      top: 90,
+      bottom: 80,
+      left: 50,
+      right: 120
     }
   },
   elements: {
     arc: {
-      borderWidth: 1, // Largura da borda dos segmentos
+      borderWidth: 1,
     }
   }
 };
@@ -128,23 +126,3 @@ const percentagePlugin = {
 // Registro do plugin
 ChartJS.register(ArcElement, Tooltip, Legend, percentagePlugin);
 </script>
-
-<style scoped>
-.chart-container {
-  display: flex;
-  justify-content: center;
-  align-items: center; 
-  height: 100%; /* Ajusta a altura do contêiner para ocupar todo o espaço disponível */
-  width: 100%;  /* Ajusta a largura do contêiner para ocupar todo o espaço disponível */
-  max-width: 1000px; /* Define um tamanho máximo para o contêiner */
-  max-height: 1000px; /* Define um tamanho máximo para o contêiner */
-  max-height: 1000px; /* Define um tamanho máximo para o contêiner */
-  background-color: lightblue;
-  overflow: auto; /* Permite rolar se o conteúdo exceder o tamanho do contêiner */
-  }
-  
-  .chart {
-  height: 100%; /* Ajusta a altura do gráfico para preencher o contêiner */
-  width: 100%;  /* Ajusta a largura do gráfico para preencher o contêiner */
-  }
-</style>

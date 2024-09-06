@@ -1,33 +1,40 @@
 <template>
   <div>
-    <div class="flex justify-between mt-12 px-6">
+    <div class="mb-10">
       <h1 class="text-5xl font-medium">Dashboard</h1>
     </div>
-    <div class="flex h-[300px] mt-4 gap-24">
-      <section class="flex gap-14 w-3/5">
-        <div class="h-full relative">
-          <div class="flex flex-col mb-10">
-            <h3 class="font-semibold">Contratos</h3>
-            por status do pagamento
+    <div class="flex items-start w-full justify-between gap-6">
+      <section class="w-full h-full border ">
+        <div class="flex h-full w-full">
+          <div class="flex flex-col w-full h-[400px]">
+            <span class="font-semibold">Contratos</span>
+            <span>por status do pagamento</span>
+            <div class="h-full">
+              <Doughnut />
+            </div>
+            <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
+              <div class="font-semibold text-5xl">68</div>
+              <p>contratos</p>
+            </div> -->
           </div>
-          <Doughnut/>       
-          <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
-            <div class="font-semibold text-5xl">68</div>
-            <p>contratos</p>
+          <div class="h-full w-full">
+            <section class="h-full w-full">
+              <div class="flex flex-col">
+                <span class="font-semibold">Top 5</span>
+                <span>Contratos por valor</span>
+              </div>
+              <div class="h-full mt-36">
+                <Bar />
+              </div>
+            </section>
           </div>
-        
-        </div>
-        <div class="h-full relative">
-          <div class="flex flex-col mb-10">
-            <h3 class="font-semibold">Top 5</h3>
-            contratos por valor
-          </div>
-          <Bar />
+
         </div>
       </section>
-      <section class="w-2/5 flex flex-col gap-y-4">
+      <!-- stamps -->
+      <section class="flex flex-col gap-6">
         <div
-          class="w-[350px] h-[96px] flex bg-cyan-200 justify-between items-center px-4"
+          class="w-[350px] h-[96px] flex bg-cyan-200 justify-between items-center px-4 rounded-lg"
         >
           <div>
             <p class="font-semibold">R$ 35 Milhões</p>
@@ -38,7 +45,7 @@
           </span>
         </div>
         <div
-          class="w-[350px] h-[96px] flex bg-pink-200 justify-between items-center px-4"
+          class="w-[350px] h-[96px] flex bg-pink-200 justify-between items-center px-4 rounded-lg"
         >
           <div>
             <p class="font-semibold">R$ 7.5 Milhões</p>
@@ -53,7 +60,7 @@
           </span>
         </div>
         <div
-          class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4"
+          class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg"
         >
           <div>
             <p class="font-semibold">R$ 11 Milhões</p>
@@ -69,16 +76,18 @@
         </div>
       </section>
     </div>
-    <div class="flex   mt-32">
-        <div class="w-1/2 h-[300px]">
-             <Map />
-        </div>
-        <div class="w-1/2 ">
-            <BarVertical/>
-        </div>
+    <div class="flex mt-32">
+      <div class="w-1/2 h-[300px]">
+        <Map />
+      </div>
+      <div class="w-1/2">
+        <BarVertical />
+      </div>
     </div>
     <div>
-      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+      <table
+        class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+      >
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
             <th class="text-xl px-2">Id</th>
@@ -86,15 +95,12 @@
             <th class="text-xl">Cliente</th>
             <th class="text-xl">Valor</th>
             <th class="text-xl">Data inicial</th>
-            <th class="text-xl">Data  final</th>
-            <th class="text-xl ">Status</th>           
+            <th class="text-xl">Data final</th>
+            <th class="text-xl">Status</th>
           </tr>
         </thead>
         <tbody>
-        
-          <tr
-            class="h-24 text-center"         
-          >
+          <tr class="h-24 text-center">
             <td class="text-2xl px-2">1</td>
             <td class="text-2xl">Contrato 4</td>
             <td class="text-2xl">Laecio</td>
@@ -115,8 +121,7 @@
                   {{ lancamento.tipoMedicao }}
                 </span> -->
               </div>
-            </td>         
-           
+            </td>
           </tr>
         </tbody>
       </table>
@@ -125,14 +130,11 @@
 </template>
 
 <script setup>
-import Doughnut from '../../components/graficos/Doughnut.vue';
-import Bar from '../../components/graficos/Bar.vue';
-import BarVertical from '@/components/graficos/BarVertical.vue';
+import Doughnut from "../../components/graficos/Doughnut.vue";
+import Bar from "../../components/graficos/Bar.vue";
+import BarVertical from "@/components/graficos/BarVertical.vue";
 import { Icon } from "@iconify/vue";
-import Map from '@/components/Map.vue';
-
-
+import Map from "@/components/Map.vue";
 </script>
 
-<style  scoped>
-</style>
+<style scoped></style>
