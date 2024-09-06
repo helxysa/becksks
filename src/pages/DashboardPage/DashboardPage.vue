@@ -70,9 +70,7 @@
       </section>
     </div>
     <div class="flex   mt-32">
-        <div class="w-1/2 h-[300px]">
-             <Map />
-        </div>
+        <Map />   
         <div class="w-1/2 ">
             <BarVertical/>
         </div>
