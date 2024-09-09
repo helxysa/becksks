@@ -120,7 +120,7 @@
             </div>
             <div>
               <p class="text-lg text-gray-500">Contato</p>
-              <p class="font-medium text-gray-700">
+              <p class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer" @click="openWhatsApp(contrato.fiscal.telefone)">
                 {{ contrato?.fiscal?.telefone }}
               </p>
             </div>
@@ -423,11 +423,11 @@
               :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
             />
           </td>
-          
+
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
-          <td class="text-2xl">{{ lancamento.tarefaMedicao }}</td>
+          <td class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300" @click="redirectToRedmine(lancamento.tarefaMedicao)">{{ lancamento.tarefaMedicao }}</td>
           <td class="text-2xl">
             <div class="flex justify-center">
               <span
@@ -1020,7 +1020,7 @@
               v-model="projetos"
             /> -->
             <select
-            v-model="projetos"           
+            v-model="projetos"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
           >
             <option disabled hidden value="">
@@ -1030,7 +1030,7 @@
               v-for="item in projetosLoaders"
               :value="item"
               :key="item.id"
-            >          
+            >
               {{ item.projeto }}
             </option>
           </select>
@@ -1208,10 +1208,10 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
               v-model="editingLancamento.projetos"
-            /> -->          
+            /> -->
             <select
-            v-model="editingLancamento.projetos"   
-            :disabled="isLancamentoViewModal"        
+            v-model="editingLancamento.projetos"
+            :disabled="isLancamentoViewModal"
             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
           >
             <option disabled hidden value="">
@@ -1221,7 +1221,7 @@
               v-for="item in projetosLoaders"
               :value="item.projeto"
               :key="item.id"
-            >          
+            >
               {{ item.projeto }}
             </option>
           </select>
@@ -1688,7 +1688,7 @@ maxWidth="6xl"
         placeholder="Nome  da   unidade"
       />
     </div>
- 
+
     <div class="flex justify-end space-x-2">
       <button
         type="button"
@@ -1707,7 +1707,7 @@ maxWidth="6xl"
   </form>
   <div class="mt-6">
     <h3 class="text-lg font-semibold mb-2">Unidades</h3>
-    <ul class="divide-y divide-gray-200">          
+    <ul class="divide-y divide-gray-200">
       <li v-for="item in unidadesMedida" :key="item.id" class="py-3 flex justify-between items-center">
         <span>{{ item.unidadeMedida }}</span>
         <div>
@@ -1864,7 +1864,7 @@ const closeModalUnit = () => {
 };
 
 const resetFormUnit = () => {
-  newUnitName.value = "" 
+  newUnitName.value = ""
   isEditingUnidade.value = false;
 };
 
@@ -1872,7 +1872,7 @@ const resetFormUnit = () => {
 const handleSubmitUnidade = () => {
   if (isEditingUnidade.value) {
     EditarUnidade()
-  } else {    
+  } else {
     CriarUnidadeMedida()
   }
   closeModalUnit();
@@ -1884,15 +1884,15 @@ const editUnidade = (item) => {
   idUnidade.value = item.id;
 };
 
-const EditarUnidade = async () => { 
+const EditarUnidade = async () => {
   try {
     const response = await api.put(`unidade_medida/${idUnidade.value}`, {
       unidade_medida: newUnitName.value,
     });
     await fetchUnidadesMedida();
-    toast.success("Unidade editada com sucesso!");   
+    toast.success("Unidade editada com sucesso!");
     newUnitName.value = "";
-   
+
   } catch (error) {
     console.error(
       "Erro ao editar unidade:",
@@ -1928,9 +1928,9 @@ const CriarUnidadeMedida = async () => {
       unidade_medida: newUnitName.value,
     });
     await fetchUnidadesMedida();
-    toast.success("Unidade de medida criada com sucesso!");   
+    toast.success("Unidade de medida criada com sucesso!");
     newUnitName.value = "";
-   
+
   } catch (error) {
     console.error(
       "Erro ao criar nova unidade de medida:",
@@ -3155,6 +3155,17 @@ const calcularPodeRenovar = () => {
 
   return totalUtilizado >= saldoContrato || dataFimContrato <= dataAtual;
 };
+
+const redirectToRedmine = (tarefa) => {
+  const url = `https://redmine.msbtec.com.br/issues/${tarefa}`;
+  window.open(url, '_blank');
+}
+
+const openWhatsApp = (telefone) => {
+  const telefoneFormatado = `+55${telefone.replace(/\D/g, '')}`;
+  const url = `https://wa.me/${telefoneFormatado}`;
+  window.open(url, '_blank');
+}
 </script>
 
 <style >
@@ -3196,7 +3207,7 @@ const calcularPodeRenovar = () => {
   background-color: #0ea5e9;
 }
 
-.btn-unidade { 
+.btn-unidade {
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
