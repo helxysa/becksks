@@ -176,7 +176,7 @@
             </div>
             <div>
               <p class="text-lg text-gray-500">Cidade</p>
-              <p class="font-medium text-gray-700">{{ contrato.cidade }}</p>
+              <p class="font-medium text-gray-700">{{ contrato.cidade }} ({{contrato.estado}})</p>
             </div>
           </div>
           <div class="flex items-center">

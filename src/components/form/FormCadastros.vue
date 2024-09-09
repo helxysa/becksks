@@ -124,6 +124,19 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="block font-semibold mb-2">Estado</label>
+          <select
+            required
+            v-model="contratoForm.estado"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          >
+            <option value="" disabled selected>Selecione o estado</option>
+            <option v-for="uf in ufs" :key="uf.sigla" :value="uf.sigla">
+              {{ uf.nome }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Objeto do contrato</label>
           <input
             required
@@ -681,6 +694,7 @@ import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
+import { ufs } from '../../services/ufs.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -716,6 +730,7 @@ let contratoForm = reactive({
   },
   ponto_focal: "",
   cidade: "",
+  estado: "",
   objeto_contrato: "",
   items: [],
   observacoes: "",
