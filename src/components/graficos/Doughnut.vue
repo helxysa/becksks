@@ -1,5 +1,11 @@
 <template>
-  <Doughnut :data="data" :options="options"/>
+  <div class="relative bg-blue-50 h-full">
+    <Doughnut :data="data" :options="options" />
+    <div class="flex flex-col absolute text-white p-4 rounded z-10 bottom-0 right-0 bg-black bg-opacity-70 text-base" :style="annotationStyleSaldoDisponivel">
+      <span>Total Contratado: {{ formatCurrency(props.valoresTotais.total_valor_contratado) }}</span>
+      <span>Saldo Disponível: {{ formatCurrency(props.valoresTotais.total_saldo_disponível) }}</span>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -7,7 +13,6 @@
   } from "chart.js";
  import { Doughnut } from "vue-chartjs";
  import { onMounted, ref, computed } from "vue";
- import annotationPlugin from 'chartjs-plugin-annotation';
 
 const valorContratado = ref(0)
 const aguardandoFaturamento = ref(0)
@@ -39,39 +44,61 @@ const percentagePlugin = {
 
     const fontSize = 12;
     const fontFamily = 'Arial';
-    const fontStyle = 'normal';
+    const fontStyle = 'semibold';
     ctx.font = `${fontStyle} ${fontSize}px ${fontFamily}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+
+    const texts = [];
 
     chart.data.datasets.forEach((dataset, datasetIndex) => {
       const meta = chart.getDatasetMeta(datasetIndex);
       const total = dataset.data.reduce((acc, val) => acc + (val), 0);
       const totalValorContratado = props.valoresTotais.total_valor_contratado;
-      // Verifica se 'customText' está definido e é um array
-      const customTexts = (dataset).customText || [];
 
       meta.data.forEach((segment) => {
         const { x, y, innerRadius, outerRadius, startAngle, endAngle } = segment;
         const value = dataset.data[segment.$context.index];
         const percentage = totalValorContratado > 0 ? ((value / totalValorContratado) * 100).toFixed(2) : '0';
-        const label = customTexts[segment.$context.index] || (chart.data.labels[segment.$context.index]);
+        const label = dataset.customText ? dataset.customText[segment.$context.index] : chart.data.labels[segment.$context.index];
 
-        const angle = (startAngle + endAngle) / 2;
-        const radius = (innerRadius + outerRadius) / 2;
+        if (parseFloat(percentage) > 0) { // Verifica se a porcentagem é maior que 0
+          let angle = (startAngle + endAngle) / 2;
+          let radius = (innerRadius + outerRadius) / 2;
 
-        const xOffset = Math.cos(angle) * (radius + 70);
-        const yOffset = Math.sin(angle) * (radius + 70);
+          // Inicialização das coordenadas
+          let lineX = x + Math.cos(angle) * (radius + 50);
+          let lineY = y + Math.sin(angle) * (radius + 50);
 
-        const lineX = x + xOffset;
-        const lineY = y + yOffset;
+          // Ajustar posição se muito perto de outros textos
+          const distanceThreshold = 50; // Distância mínima para evitar sobreposição
+          let isNear;
 
-        ctx.fillStyle = '#000000';
-        ctx.fillText(`${percentage}%`, lineX, lineY - 10);
+          do {
+            isNear = texts.some(([prevX, prevY]) => {
+              const distance = Math.sqrt(Math.pow(prevX - lineX, 2) + Math.pow(prevY - lineY, 2));
+              return distance < distanceThreshold;
+            });
 
-        // Adiciona o texto personalizado abaixo da porcentagem
-        ctx.font = `${fontStyle} ${fontSize}px ${fontFamily}`;
-        ctx.fillText(label, lineX, lineY + 10); // Texto personalizado
+            if (isNear) {
+              angle += Math.PI / 6; // Ajusta o ângulo para mover o texto
+              lineX = x + Math.cos(angle) * (radius + 20);
+              lineY = y + Math.sin(angle) * (radius + 20);
+            }
+          } while (isNear);
+
+          const fontSize = Math.max(10, Math.min(20, (outerRadius - innerRadius) / 2));
+          ctx.font = `normal ${fontSize}px Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          ctx.fillStyle = '#000000';
+          ctx.fillText(`${percentage}%`, lineX, lineY - 10);
+          ctx.fillText(label, lineX, lineY + 10);
+
+          // Adiciona as coordenadas do texto à lista
+          texts.push([lineX, lineY]);
+        }
       });
     });
   },
@@ -128,30 +155,13 @@ const options = {
     legend: {
       display: false
     },
-  //   annotation: {
-  //     annotations: [
-  //       {
-  //         type: 'label',
-  //         xValue: 'end', // Coordenada x normalizada (0 a 1, sendo 0.5 o centro)
-  //         yValue: 'end', // Coordenada y normalizada (0 a 1, sendo 0.5 o centro)
-  //         xAdjust: 140,
-  //         yAdjust: 167,
-  //         backgroundColor: 'rgba(0,0,0,0)',
-  //         content: [`Saldo Disponível: R$ ${props.valoresTotais.total_saldo_disponível.toFixed(2)}`, `Total Contratado: R$ ${props.valoresTotais.total_valor_contratado.toFixed(2)}`],
-  //         backgroundColor: 'rgba(0,0,0,0.7)',
-  //         font: { size: 14},
-  //         color: '#fff',
-  //         position: 'absolute'
-  //       }
-  //     ]
-  //   }
    },
   layout: {
     padding: {
-      top: 90,
+      top: 80,
       bottom: 80,
-      left: 50,
-      right: 120
+      left: 0,
+      right: 50
     }
   },
   elements: {
@@ -161,6 +171,13 @@ const options = {
   }
 };
 
-// Registro do plugin
-ChartJS.register(ArcElement, Tooltip, Legend, percentagePlugin, annotationPlugin);
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};
+
+ChartJS.register(ArcElement, Tooltip, Legend, percentagePlugin);
 </script>

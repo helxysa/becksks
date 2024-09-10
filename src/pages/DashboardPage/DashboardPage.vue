@@ -9,7 +9,7 @@
           <div class="flex flex-col w-full h-[400px]">
             <span class="font-semibold">Contratos</span>
             <span>por status do pagamento</span>
-            <div class="h-full" v-if="valoresTotaisStatus">
+            <div class="h-full bg-red-50" v-if="valoresTotaisStatus">
               <Doughnut :valoresTotais="valoresTotaisStatus" />
             </div>
             <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
