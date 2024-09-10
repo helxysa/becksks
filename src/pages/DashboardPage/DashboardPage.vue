@@ -151,7 +151,6 @@ const fetchDataDashboard = async () => {
   try {
     const response = await api.get(`/dashboard`);
     valoresTotaisStatus.value = response.data.valores_totais_status
-    console.log(valoresTotaisStatus.value)
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
   }

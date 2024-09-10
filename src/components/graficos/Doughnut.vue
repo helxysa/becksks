@@ -24,13 +24,13 @@ const props = defineProps({
   }
 });
 
-onMounted(()=> {
-  console.log('valoresTotais', props.valoresTotais)
-  // aguardandoFaturamento.value = props?.valoresTotais?.total_aguardando_faturamento.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
-  // aguardandoPagamento.value = props?.valoresTotais?.total_aguardando_pagamento.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
-  // pago.value = props?.valoresTotais?.total_pago.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
-  // saldoDisponivel.value = props?.valoresTotais?.total_saldo_disponível.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
-})
+onMounted(() => {
+  const totalValorContratado = props.valoresTotais.total_valor_contratado;
+  aguardandoFaturamento.value = (props.valoresTotais.total_aguardando_faturamento / totalValorContratado * 100).toFixed(2);
+  aguardandoPagamento.value = (props.valoresTotais.total_aguardando_pagamento / totalValorContratado * 100).toFixed(2);
+  pago.value = (props.valoresTotais.total_pago / totalValorContratado * 100).toFixed(2);
+  saldoDisponivel.value = (props.valoresTotais.total_saldo_disponível / totalValorContratado * 100).toFixed(2);
+});
 
  // Definição do plugin para desenhar valores ao lado das fatias
 const percentagePlugin = {
@@ -49,7 +49,6 @@ const percentagePlugin = {
     chart.data.datasets.forEach((dataset, datasetIndex) => {
       const meta = chart.getDatasetMeta(datasetIndex);
       const total = dataset.data.reduce((acc, val) => acc + (val), 0);
-      console.log('Dataset Total:', total);
       // Verifica se 'customText' está definido e é um array
       const customTexts = (dataset).customText || [];
 
@@ -86,16 +85,7 @@ const percentagePlugin = {
 };
 
 const data = computed(() => {
-  const { total_aguardando_faturamento, total_aguardando_pagamento, total_pago, total_saldo_disponível } = props.valoresTotais;
-  const total = total_aguardando_pagamento + total_aguardando_faturamento + total_pago + total_saldo_disponível;
-
-  console.log('Total:', total); // Verifique o total
-  console.log('Dados:', {
-    aguardandoPagamento: total_aguardando_pagamento,
-    aguardandoFaturamento: total_aguardando_faturamento,
-    pago: total_pago,
-    saldoDisponivel: total_saldo_disponível
-  });
+  const totalValorContratado = props.valoresTotais.total_valor_contratado;
 
   return {
     labels: [
@@ -108,16 +98,16 @@ const data = computed(() => {
       {
         backgroundColor: ['#EF6B26', '#00AFEF', '#FACD36', '#57BA5E'],
         data: [
-          total_aguardando_pagamento || 0,
-          total_aguardando_faturamento || 0,
-          total_pago || 0,
-          total_saldo_disponível || 0
+          (props.valoresTotais.total_aguardando_pagamento / totalValorContratado),
+          (props.valoresTotais.total_aguardando_faturamento / totalValorContratado),
+          (props.valoresTotais.total_pago / totalValorContratado),
+          // (props.valoresTotais.total_saldo_disponível / totalValorContratado * 100)
         ],
         customText: [
           'Aguardando Pagamento',
           'Aguardando Faturamento',
           'Pago',
-          'Saldo'
+          // 'Saldo'
         ]
       }
     ]
