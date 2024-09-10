@@ -120,6 +120,19 @@
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="block font-semibold mb-2">Estado</label>
+          <select
+            required
+            v-model="contratoForm.estado"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          >
+            <option value="" disabled selected>Selecione o estado</option>
+            <option v-for="uf in ufs" :key="uf.sigla" :value="uf.sigla">
+              {{ uf.nome }}
+            </option>
+          </select>
+        </div>
+        <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Objeto do contrato</label>
           <input
             required
@@ -161,11 +174,11 @@
           />
         </div>
         <div class="mt-8 flex gap-8 flex-wrap justify-end">
-      
+
           <button
             class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
-            @click="openModalProjeto"            
+            @click="openModalProjeto"
           >
           <span class="mr-2">
             <Icon
@@ -174,17 +187,17 @@
               class="text-zinc-50"
             />
           </span>
-            Adicionar Projeto          
+            Adicionar Projeto
           </button>
         </div>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
-            <button class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]" 
+            <button class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button">
             Voltar
           </button>
           </span>
-          <button class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]" 
+          <button class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="submit">
             {{ route.params.id ? "Editar" : "Salvar" }}
           </button>
@@ -218,7 +231,7 @@
         <!-- <div class="flex gap-4  items-center">
           <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
         </div> -->
-     
+
         <!-- <div class="flex justify-end space-x-2">
           <button
             type="button"
@@ -235,8 +248,8 @@
           </button>
         </div> -->
       </form>
-      <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">    
-             
+      <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+
           <div v-for="item in projetos" :key="item.id" class="flex items-center gap-2 border-[1px] rounded-md">
             <div  class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
               <span  class="ml-6 font-sans text-nowrap truncate max-w-[500px]">
@@ -260,9 +273,9 @@
                 <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
               </button>
               </div>
-            </div>          
+            </div>
           </div>
-      
+
       </div>
 
     </template>
@@ -280,6 +293,7 @@ import Swal from "sweetalert2";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { format } from "date-fns";
 import { Money3Component } from "v-money3";
+import { ufs } from '../../services/ufs.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -297,6 +311,7 @@ let contratoForm = ref({
   },
   pontoFocal: '',
   cidade: '',
+  estado: '',
   objetoContrato: '',
   observacoes: '',
   lembreteVencimento:'',
@@ -327,7 +342,7 @@ const closeModalProjeto = () => {
 };
 
 const resetFormProjeto = () => {
-  newProjeto.value = "" 
+  newProjeto.value = ""
   isEditingProjeto.value = false;
 };
 
@@ -335,14 +350,14 @@ const resetFormProjeto = () => {
 const handleSubmitProjeto = () => {
   if (isEditingProjeto.value) {
     EditarProjeto()
-  } else {    
+  } else {
     CriarProjeto()
   }
   closeModalProjeto();
 };
 
 const editProjeto = (item) => {
-  
+
   newProjeto.value = item.projeto;
   isEditingProjeto.value = true;
   idProjeto.value = item.id;
@@ -364,12 +379,12 @@ const fetchProjetos = async (id) => {
 const CriarProjeto = async () => {
   try {
     const response = await api.post(`contratos/${route.params.id}/projetos`, {
-      projeto: newProjeto.value,     
+      projeto: newProjeto.value,
     });
     await fetchProjetos(route.params.id);
-    toast.success("Projeto criado com sucesso!");   
+    toast.success("Projeto criado com sucesso!");
     newProjeto.value = "";
-   
+
   } catch (error) {
     console.error(
       "Erro ao criar novo projeto:",
@@ -386,16 +401,16 @@ const CriarProjeto = async () => {
   }
 };
 
-const EditarProjeto = async () => { 
+const EditarProjeto = async () => {
   try {
     const response = await api.put(`projetos/${idProjeto.value}`, {
       projeto: newProjeto.value,
       contrato_id: idContrato.value,
     });
     await fetchProjetos(route.params.id);
-    toast.success("Projeto editado com sucesso!");   
+    toast.success("Projeto editado com sucesso!");
     newProjeto.value = "";
-   
+
   } catch (error) {
     console.error(
       "Erro ao editar projeto:",
@@ -485,6 +500,7 @@ async function saveContrato() {
     },
     ponto_focal: contratoForm.value.pontoFocal,
     cidade: contratoForm.value.cidade,
+    estado: contratoForm.value.estado,
     objeto_contrato: contratoForm.value.objetoContrato,
     observacoes: contratoForm.value.observacoes,
     lembrete_vencimento: contratoForm.value.lembreteVencimento,
@@ -553,7 +569,7 @@ const phoneMask = (value) => {
   background-color: #0ea5e9;
 }
 
-.btn-unidade { 
+.btn-unidade {
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
@@ -561,7 +577,7 @@ const phoneMask = (value) => {
   height: 40px;
 }
 
-.btn-projeto { 
+.btn-projeto {
   border-radius: 9px;
   color: var(--whiteLight);
   font-weight: 500;
