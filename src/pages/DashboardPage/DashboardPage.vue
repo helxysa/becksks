@@ -9,8 +9,8 @@
           <div class="flex flex-col w-full h-[400px]">
             <span class="font-semibold">Contratos</span>
             <span>por status do pagamento</span>
-            <div class="h-full">
-              <Doughnut />
+            <div class="h-full" v-if="valoresTotaisStatus">             
+              <Doughnut :valoresTotais="valoresTotaisStatus" />
             </div>
             <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
               <div class="font-semibold text-5xl">68</div>
@@ -23,7 +23,7 @@
                 <span class="font-semibold">Top 5</span>
                 <span>Contratos por valor</span>
               </div>
-              <div class="h-full mt-36">
+              <div class="h-full mt-36 ">
                 <Bar />
               </div>
             </section>
@@ -34,7 +34,8 @@
       <!-- stamps -->
       <section class="flex flex-col gap-6">
         <div
-          class="w-[350px] h-[96px] flex bg-cyan-200 justify-between items-center px-4 rounded-lg"
+          class="w-[350px] h-[96px] flex  justify-between items-center px-4 rounded-lg
+          bg-gradient-to-r from-cyan-50 to-cyan-400 "
         >
           <div>
             <p class="font-semibold">R$ 35 Milhões</p>
@@ -45,7 +46,8 @@
           </span>
         </div>
         <div
-          class="w-[350px] h-[96px] flex bg-pink-200 justify-between items-center px-4 rounded-lg"
+          class="w-[350px] h-[96px] flex  justify-between items-center px-4 rounded-lg
+           bg-gradient-to-r from-blue-300 to-pink-200"
         >
           <div>
             <p class="font-semibold">R$ 7.5 Milhões</p>
@@ -60,7 +62,8 @@
           </span>
         </div>
         <div
-          class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg"
+          class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
+           bg-gradient-to-r from-orange-200 to-green-200"
         >
           <div>
             <p class="font-semibold">R$ 11 Milhões</p>
@@ -133,6 +136,29 @@ import Bar from "../../components/graficos/Bar.vue";
 import BarVertical from "@/components/graficos/BarVertical.vue";
 import { Icon } from "@iconify/vue";
 import Map from "@/components/Map.vue";
+import { onMounted, ref } from "vue";
+import { api } from "@/services/api";
+
+const valoresTotaisStatus = ref({})
+const  contratosPorVencimento = ref({})
+const top5 = ref({})
+
+onMounted(()=> {
+  console.log('entrei')
+  fetchDataDashboard()
+})
+
+const fetchDataDashboard = async () => {
+ 
+  try {
+    const response = await api.get(`/dashboard`);    
+    console.log(response, 'response')
+    valoresTotaisStatus.value = response.data.valores_totais_status
+    console.log(valoresTotaisStatus.value, 'valores')
+  } catch (error) {
+    console.error("Erro ao buscar contrato:", error);
+  }
+};
 </script>
 
 <style scoped></style>

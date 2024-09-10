@@ -1,13 +1,35 @@
 <template>
-  <Doughnut :data="data" :options="options"/>
+  <Doughnut :data="data" :options="options"/>  
 </template>
 
 <script setup>
  import { Chart as ChartJS, ArcElement, Tooltip, Legend,
   } from "chart.js";
  import { Doughnut } from "vue-chartjs";
+ import { onMounted, ref } from "vue";
 //  ChartJS.register(ArcElement, Tooltip, Legend,
 // );
+
+const valorContratado = ref(0)
+const aguardandoFaturamento = ref(0)
+const   aguardandoPagamento =  ref(0)
+const pago = ref(0)
+const saldoDisponivel = ref(0)
+
+const props = defineProps({
+  valoresTotais : {
+    type: Object,
+    required: false
+  }
+})
+
+onMounted(()=> {
+  console.log(  props.valoresTotais , 'jjjj')
+  // aguardandoFaturamento.value = props?.valoresTotais?.total_aguardando_faturamento.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
+  // aguardandoPagamento.value = props?.valoresTotais?.total_aguardando_pagamento.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
+  // pago.value = props?.valoresTotais?.total_pago.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
+  // saldoDisponivel.value = props?.valoresTotais?.total_saldo_disponível.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
+})
 
  // Definição do plugin para desenhar valores ao lado das fatias
 const percentagePlugin = {
@@ -72,7 +94,7 @@ const percentagePlugin = {
   datasets: [
     {
       backgroundColor: ['#EF6B26', '#00AFEF', '#FACD36', '#57BA5E'],
-      data: [10, 20, 40, 30],
+      data: [aguardandoPagamento.value, aguardandoFaturamento.value, pago.value, saldoDisponivel.value],
       customText: [
         'Aguardando Pagamento',
         'Aguardando Faturamento',
