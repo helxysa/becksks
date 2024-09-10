@@ -100,14 +100,14 @@
             <th class="text-xl">Status</th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="h-24 text-center">
-            <td class="text-2xl px-2">1</td>
-            <td class="text-2xl">Contrato 4</td>
-            <td class="text-2xl">Laecio</td>
-            <td class="text-2xl">15 mil</td>
-            <td class="text-2xl">12/05/2024</td>
-            <td class="text-2xl">17/09/2024</td>
+        <tbody v-if="contratoItemData">
+          <tr class="h-24 text-center"  v-for="(contrato, index) in contratoItemData" :key="contrato.id">
+            <td class="text-2xl px-2">{{index + 1}}</td>
+            <td class="text-2xl">{{contrato.nomeContrato}}</td>
+            <td class="text-2xl">{{contrato.nomeCliente}}</td>
+            <td class="text-2xl">{{formatCurrency(contrato.saldoContrato)}}</td>
+            <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
+            <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
             <td class="text-2xl">
               <div class="flex justify-center">
                 <!-- <span
@@ -126,6 +126,15 @@
           </tr>
         </tbody>
       </table>
+      <div class="flex justify-center" v-if="contratoItemData">
+        <vue-awesome-paginate
+          :total-items="totalContratos"
+          :max-pages-shown="5"
+          :items-per-page="resultsPerPageContratos"
+          v-model="currentPageContratos"
+          @click="changePageContratos"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -139,9 +148,15 @@ import Map from "@/components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 
+const currentPageContratos = ref(1);
 const valoresTotaisStatus = ref()
 const  contratosPorVencimento = ref({})
 const top5 = ref({})
+
+const totalContratos = ref(0)
+const resultsPerPageContratos= ref()
+let contratoItemData =  ref([]);
+let contratoItemMeta = ref({});
 
 onMounted(()=> {
   fetchDataDashboard()
@@ -150,12 +165,78 @@ onMounted(()=> {
 const fetchDataDashboard = async () => {
   try {
     const response = await api.get(`/dashboard`);
+
     valoresTotaisStatus.value = response.data.valores_totais_status
-    console.log(valoresTotaisStatus.value)
+    contratoItemData.value = response.data.contratos.data;
+    contratoItemMeta.value = response.data.contratos.meta;
+    currentPageContratos.value = contratoItemMeta.value.currentPage;
+    totalContratos.value = contratoItemMeta.value.total;
+    resultsPerPageContratos.value = contratoItemMeta.value.perPage;
+    console.log(response, 'response')
+
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
   }
 };
+const changePageContratos = (page) => {
+    currentPageContratos.value = page;
+  };
+
+  const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return isNaN(date)
+    ? ""
+    : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
+};
+
+watch(()=> currentPageContratos.value, ()=> fetchDataDashboard());
 </script>
 
-<style scoped></style>
+<style>
+.pagination-container {
+  display: flex;
+  padding-top: 5px;
+  column-gap: 10px;
+}
+
+.paginate-buttons {
+  height: 40px ;
+
+  width: 40px ;
+
+  border-radius: 20px ;
+
+  cursor: pointer;
+
+  background-color: rgb(242, 242, 242);
+
+  border: 1px solid rgb(217, 217, 217) ;
+
+  color: black;
+}
+
+.paginate-buttons:hover {
+  background-color: #d8d8d8 ;
+}
+
+.active-page {
+  background-color: #3498db ;
+
+  border: 1px solid #3498db ;
+
+  color: white ;
+}
+
+.active-page:hover {
+  background-color: #2988c8 ;
+}
+</style>
