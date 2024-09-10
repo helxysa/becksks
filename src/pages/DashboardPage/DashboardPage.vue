@@ -4,12 +4,12 @@
       <h1 class="text-5xl font-medium">Dashboard</h1>
     </div>
     <div class="flex items-start w-full justify-between gap-6">
-      <section class="w-full h-full border ">
+      <section class="w-full h-full border">
         <div class="flex h-full w-full">
           <div class="flex flex-col w-full h-[400px]">
             <span class="font-semibold">Contratos</span>
             <span>por status do pagamento</span>
-            <div class="h-full bg-red-50" v-if="valoresTotaisStatus">
+            <div class="h-full" v-if="valoresTotaisStatus">
               <Doughnut :valoresTotais="valoresTotaisStatus" />
             </div>
             <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
@@ -28,7 +28,6 @@
               </div>
             </section>
           </div>
-
         </div>
       </section>
       <!-- stamps -->

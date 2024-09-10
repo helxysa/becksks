@@ -1,5 +1,5 @@
 <template>
-  <div class="relative bg-blue-50 h-full">
+  <div class="relative h-full">
     <Doughnut :data="data" :options="options" />
     <div class="flex flex-col absolute text-white p-4 rounded z-10 bottom-0 right-0 bg-black bg-opacity-70 text-base" :style="annotationStyleSaldoDisponivel">
       <span>Total Contratado: {{ formatCurrency(props.valoresTotais.total_valor_contratado) }}</span>
