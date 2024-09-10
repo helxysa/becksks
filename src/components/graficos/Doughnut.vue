@@ -7,8 +7,7 @@
   } from "chart.js";
  import { Doughnut } from "vue-chartjs";
  import { onMounted, ref, computed } from "vue";
-//  ChartJS.register(ArcElement, Tooltip, Legend,
-// );
+ import annotationPlugin from 'chartjs-plugin-annotation';
 
 const valorContratado = ref(0)
 const aguardandoFaturamento = ref(0)
@@ -122,14 +121,31 @@ const options = {
           const percentage = totalValorContratado > 0 ? ((value / totalValorContratado) * 100).toFixed(2) : '0';
 
           const customText = customTexts[context.dataIndex] || '';
-          return `${customText}\n${percentage}%`;
+          return `\nR$ ${value.toFixed(2)}`;
         }
       }
     },
     legend: {
-      display: false // Remove as legendas
-    }
-  },
+      display: false
+    },
+  //   annotation: {
+  //     annotations: [
+  //       {
+  //         type: 'label',
+  //         xValue: 'end', // Coordenada x normalizada (0 a 1, sendo 0.5 o centro)
+  //         yValue: 'end', // Coordenada y normalizada (0 a 1, sendo 0.5 o centro)
+  //         xAdjust: 140,
+  //         yAdjust: 167,
+  //         backgroundColor: 'rgba(0,0,0,0)',
+  //         content: [`Saldo Disponível: R$ ${props.valoresTotais.total_saldo_disponível.toFixed(2)}`, `Total Contratado: R$ ${props.valoresTotais.total_valor_contratado.toFixed(2)}`],
+  //         backgroundColor: 'rgba(0,0,0,0.7)',
+  //         font: { size: 14},
+  //         color: '#fff',
+  //         position: 'absolute'
+  //       }
+  //     ]
+  //   }
+   },
   layout: {
     padding: {
       top: 90,
@@ -140,11 +156,11 @@ const options = {
   },
   elements: {
     arc: {
-      borderWidth: 1,
+      borderWidth: 0,
     }
   }
 };
 
 // Registro do plugin
-ChartJS.register(ArcElement, Tooltip, Legend, percentagePlugin);
+ChartJS.register(ArcElement, Tooltip, Legend, percentagePlugin, annotationPlugin);
 </script>
