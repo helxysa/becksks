@@ -4,7 +4,7 @@
       <h1 class="text-5xl font-medium">Dashboard</h1>
     </div>
     <div class="flex items-start w-full justify-between gap-6">
-      <section class="w-full h-full border ">
+      <section class="w-full h-full border">
         <div class="flex h-full w-full">
           <div class="flex flex-col w-full h-[400px]">
             <span class="font-semibold">Contratos</span>
@@ -28,7 +28,6 @@
               </div>
             </section>
           </div>
-
         </div>
       </section>
       <!-- stamps -->
@@ -109,7 +108,17 @@
             <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
             <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
             <td class="text-2xl">
+              {{ verificarVencimentoContratos(contrato) }}
               <div class="flex justify-center">
+                <span v-if="statusVencimento === 'a vencer'">
+                  <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
+                </span>
+                <span v-else-if="statusVencimento === 'ativo'">
+                  <Icon icon="line-md:confirm-circle-filled" height="30" class="text-green-300" />
+                </span>
+                <span v-else>
+                  <Icon icon="ri:alert-line" height="30" class="text-red-300" />
+                </span>
                 <!-- <span
                   class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
@@ -157,27 +166,65 @@ const totalContratos = ref(0)
 const resultsPerPageContratos= ref()
 let contratoItemData =  ref([]);
 let contratoItemMeta = ref({});
+let statusVencimento = ref('')
 
 onMounted(()=> {
   fetchDataDashboard()
+  
 })
 
+const getCurrentDateString = () => new Date().toISOString().split('T')[0];
+
+const verificarVencimentoContratos = (contrato) => {
+    const hoje = getCurrentDateString();   
+    console.log(typeof hoje,  'hh')
+    const dataFim = contrato.dataFim;
+    console.log(typeof dataFim , 'jkk')
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);    
+    const  diferenca = new Date(hoje) - new Date(dataFim)
+    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);
+    console.log(diasParaVencimento, 'vencimento')
+    console.log(lembreteVencimento, 'lembrete')
+    console.log(hoje, 'hoje')
+   
+
+      console.log(dataFim, 'fim')
+      if (diasParaVencimento <= lembreteVencimento ) {
+         statusVencimento.value = 'a vencer'     
+      } else if ( diasParaVencimento > lembreteVencimento) {       
+        statusVencimento.value = 'atraso'
+      } else   {
+        statusVencimento.value = 'ativo'
+      }
+  
+  };
 const fetchDataDashboard = async () => {
   try {
     const response = await api.get(`/dashboard`);
 
     valoresTotaisStatus.value = response.data.valores_totais_status
-    contratoItemData.value = response.data.contratos.data;
-    contratoItemMeta.value = response.data.contratos.meta;
-    currentPageContratos.value = contratoItemMeta.value.currentPage;
-    totalContratos.value = contratoItemMeta.value.total;
-    resultsPerPageContratos.value = contratoItemMeta.value.perPage;
+    fetchContratos(currentPageContratos.value)
     console.log(response, 'response')
 
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
   }
 };
+
+const fetchContratos = async(page) => {
+   try {
+    const response = await api.get(`/dashboard?page=${page}`);
+    contratoItemData.value = response.data.contratos.data;
+    console.log(contratoItemData.value, 'outro con')
+    contratoItemMeta.value = response.data.contratos.meta;
+    currentPageContratos.value = contratoItemMeta.value.currentPage;
+    totalContratos.value = contratoItemMeta.value.total;
+    resultsPerPageContratos.value = contratoItemMeta.value.perPage;
+    
+   } catch (error) {
+    console.error(error);
+   }
+}
 const changePageContratos = (page) => {
     currentPageContratos.value = page;
   };
@@ -198,7 +245,7 @@ const formatDate = (dateString) => {
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
 
-watch(()=> currentPageContratos.value, ()=> fetchDataDashboard());
+watch(()=> currentPageContratos.value, ()=> fetchContratos(currentPageContratos.value));
 </script>
 
 <style>
