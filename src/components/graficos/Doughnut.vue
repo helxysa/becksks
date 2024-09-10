@@ -1,12 +1,12 @@
 <template>
-  <Doughnut :data="data" :options="options"/>  
+  <Doughnut :data="data" :options="options"/>
 </template>
 
 <script setup>
  import { Chart as ChartJS, ArcElement, Tooltip, Legend,
   } from "chart.js";
  import { Doughnut } from "vue-chartjs";
- import { onMounted, ref } from "vue";
+ import { onMounted, ref, computed } from "vue";
 //  ChartJS.register(ArcElement, Tooltip, Legend,
 // );
 
@@ -17,14 +17,15 @@ const pago = ref(0)
 const saldoDisponivel = ref(0)
 
 const props = defineProps({
-  valoresTotais : {
+  valoresTotais: {
     type: Object,
-    required: false
+    required: true,
+    default: () => ({})
   }
-})
+});
 
 onMounted(()=> {
-  console.log(  props.valoresTotais , 'jjjj')
+  console.log('valoresTotais', props.valoresTotais)
   // aguardandoFaturamento.value = props?.valoresTotais?.total_aguardando_faturamento.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
   // aguardandoPagamento.value = props?.valoresTotais?.total_aguardando_pagamento.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
   // pago.value = props?.valoresTotais?.total_pago.toFixed(2) / props?.valoresTotais?.total_valor_contratado.toFixed(2)
@@ -48,25 +49,21 @@ const percentagePlugin = {
     chart.data.datasets.forEach((dataset, datasetIndex) => {
       const meta = chart.getDatasetMeta(datasetIndex);
       const total = dataset.data.reduce((acc, val) => acc + (val), 0);
-
+      console.log('Dataset Total:', total);
       // Verifica se 'customText' está definido e é um array
       const customTexts = (dataset).customText || [];
 
       meta.data.forEach((segment) => {
-        const { x, y, innerRadius, outerRadius, startAngle, endAngle } =
-          segment;
+        const { x, y, innerRadius, outerRadius, startAngle, endAngle } = segment;
         const value = dataset.data[segment.$context.index] ;
         const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : '0';
-        const label =
-          customTexts[segment.$context.index] ||
-          (chart.data.labels[segment.$context.index] );
+        const label = customTexts[segment.$context.index] || (chart.data.labels[segment.$context.index] );
 
         const angle = (startAngle + endAngle) / 2;
         const radius = (innerRadius + outerRadius) / 2;
 
-        // Ajustar o deslocamento para aumentar a distância
-        const xOffset = Math.cos(angle) * (radius + 70); // Aumente o valor para mais distância
-        const yOffset = Math.sin(angle) * (radius + 70); // Aumente o valor para mais distância
+        const xOffset = Math.cos(angle) * (radius + 70);
+        const yOffset = Math.sin(angle) * (radius + 70);
 
         const lineX = x + xOffset;
         const lineY = y + yOffset;
@@ -77,8 +74,8 @@ const percentagePlugin = {
         // ctx.lineTo(lineX, lineY);
         // ctx.stroke();
 
-        ctx.fillStyle = '#000000'; // Cor do texto
-        ctx.fillText(`${percentage}%`, lineX, lineY - 10); // Porcentagem
+        ctx.fillStyle = '#000000';
+        ctx.fillText(`${percentage}%`, lineX, lineY - 10);
 
         // Adiciona o texto personalizado abaixo da porcentagem
         ctx.font = `${fontStyle} ${fontSize}px ${fontFamily}`;
@@ -88,30 +85,52 @@ const percentagePlugin = {
   },
 };
 
-// Dados fictícios
- const data = {
-  labels: ['Aguardando Pagamento', 'Aguardando Faturamento', 'Pago', 'Saldo'],
-  datasets: [
-    {
-      backgroundColor: ['#EF6B26', '#00AFEF', '#FACD36', '#57BA5E'],
-      data: [aguardandoPagamento.value, aguardandoFaturamento.value, pago.value, saldoDisponivel.value],
-      customText: [
-        'Aguardando Pagamento',
-        'Aguardando Faturamento',
-        'Pago',
-        'Saldo',
-      ], // Texto personalizado
-    },
-  ],
-};
+const data = computed(() => {
+  const { total_aguardando_faturamento, total_aguardando_pagamento, total_pago, total_saldo_disponível } = props.valoresTotais;
+  const total = total_aguardando_pagamento + total_aguardando_faturamento + total_pago + total_saldo_disponível;
+
+  console.log('Total:', total); // Verifique o total
+  console.log('Dados:', {
+    aguardandoPagamento: total_aguardando_pagamento,
+    aguardandoFaturamento: total_aguardando_faturamento,
+    pago: total_pago,
+    saldoDisponivel: total_saldo_disponível
+  });
+
+  return {
+    labels: [
+      'Aguardando Pagamento',
+      'Aguardando Faturamento',
+      'Pago',
+      'Saldo'
+    ],
+    datasets: [
+      {
+        backgroundColor: ['#EF6B26', '#00AFEF', '#FACD36', '#57BA5E'],
+        data: [
+          total_aguardando_pagamento || 0,
+          total_aguardando_faturamento || 0,
+          total_pago || 0,
+          total_saldo_disponível || 0
+        ],
+        customText: [
+          'Aguardando Pagamento',
+          'Aguardando Faturamento',
+          'Pago',
+          'Saldo'
+        ]
+      }
+    ]
+  };
+});
 
 // Opções do gráfico
  const options = {
   responsive: true,
-  maintainAspectRatio: false, // Permite que o gráfico ajuste seu tamanho ao contêiner
+  maintainAspectRatio: false,
   plugins: {
     tooltip: {
-      enabled: true, // Habilita o tooltip se necessário,
+      enabled: true,
       callbacks: {
         label: function(context) {
           const dataset = context.dataset ;

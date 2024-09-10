@@ -9,7 +9,7 @@
           <div class="flex flex-col w-full h-[400px]">
             <span class="font-semibold">Contratos</span>
             <span>por status do pagamento</span>
-            <div class="h-full" v-if="valoresTotaisStatus">             
+            <div class="h-full" v-if="valoresTotaisStatus">
               <Doughnut :valoresTotais="valoresTotaisStatus" />
             </div>
             <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
@@ -136,27 +136,24 @@ import Bar from "../../components/graficos/Bar.vue";
 import BarVertical from "@/components/graficos/BarVertical.vue";
 import { Icon } from "@iconify/vue";
 import Map from "@/components/Map.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 
-const valoresTotaisStatus = ref({})
+const valoresTotaisStatus = ref()
 const  contratosPorVencimento = ref({})
 const top5 = ref({})
 
 onMounted(()=> {
-  console.log('entrei')
   fetchDataDashboard()
 })
 
 const fetchDataDashboard = async () => {
- 
   try {
-    const response = await api.get(`/dashboard`);    
-    console.log(response, 'response')
+    const response = await api.get(`/dashboard`);
     valoresTotaisStatus.value = response.data.valores_totais_status
-    console.log(valoresTotaisStatus.value, 'valores')
+    console.log(valoresTotaisStatus.value)
   } catch (error) {
-    console.error("Erro ao buscar contrato:", error);
+    console.error("Erro ao buscar dados:", error);
   }
 };
 </script>

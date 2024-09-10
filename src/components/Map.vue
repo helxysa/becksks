@@ -1,7 +1,7 @@
 <template>
-   
+
          <div id="mapContainer" />
-   
+
 </template>
 
 <script setup>
@@ -20,7 +20,7 @@ const props =  defineProps({
    onMounted(()=> {
   //   navigator.geolocation.getCurrentPosition(function (position) {
   //   latitude.value = position.coords.latitude;
-  //   longitude.value = position.coords.longitude;    
+  //   longitude.value = position.coords.longitude;
   //  });
     createMapLayer()
    })
@@ -33,15 +33,15 @@ const props =  defineProps({
 
   //  const latitude = ref('')
   //  const longitude = ref('')
-  
+
 
    let map = null;
-   const createMapLayer = () => {    
+   const createMapLayer = () => {
      map = L.map('mapContainer').setView([-5.08921, -42.8016], 5)
      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
-    console.log(map, 'map')
+    // console.log(map, 'map')
      if (props.markers.lenght > 0) {
         setMarkers()
     }
