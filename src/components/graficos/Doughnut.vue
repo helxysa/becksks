@@ -12,7 +12,7 @@
 
 const valorContratado = ref(0)
 const aguardandoFaturamento = ref(0)
-const   aguardandoPagamento =  ref(0)
+const aguardandoPagamento =  ref(0)
 const pago = ref(0)
 const saldoDisponivel = ref(0)
 
@@ -32,7 +32,6 @@ onMounted(() => {
   saldoDisponivel.value = (props.valoresTotais.total_saldo_disponível / totalValorContratado * 100).toFixed(2);
 });
 
- // Definição do plugin para desenhar valores ao lado das fatias
 const percentagePlugin = {
   id: 'percentagePlugin',
   afterDatasetsDraw(chart) {
@@ -49,14 +48,15 @@ const percentagePlugin = {
     chart.data.datasets.forEach((dataset, datasetIndex) => {
       const meta = chart.getDatasetMeta(datasetIndex);
       const total = dataset.data.reduce((acc, val) => acc + (val), 0);
+      const totalValorContratado = props.valoresTotais.total_valor_contratado;
       // Verifica se 'customText' está definido e é um array
       const customTexts = (dataset).customText || [];
 
       meta.data.forEach((segment) => {
         const { x, y, innerRadius, outerRadius, startAngle, endAngle } = segment;
-        const value = dataset.data[segment.$context.index] ;
-        const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : '0';
-        const label = customTexts[segment.$context.index] || (chart.data.labels[segment.$context.index] );
+        const value = dataset.data[segment.$context.index];
+        const percentage = totalValorContratado > 0 ? ((value / totalValorContratado) * 100).toFixed(2) : '0';
+        const label = customTexts[segment.$context.index] || (chart.data.labels[segment.$context.index]);
 
         const angle = (startAngle + endAngle) / 2;
         const radius = (innerRadius + outerRadius) / 2;
@@ -66,12 +66,6 @@ const percentagePlugin = {
 
         const lineX = x + xOffset;
         const lineY = y + yOffset;
-
-        // ctx.strokeStyle = '#000000'; // Cor da linha
-        // ctx.beginPath();
-        // ctx.moveTo(x, y);
-        // ctx.lineTo(lineX, lineY);
-        // ctx.stroke();
 
         ctx.fillStyle = '#000000';
         ctx.fillText(`${percentage}%`, lineX, lineY - 10);
@@ -85,23 +79,21 @@ const percentagePlugin = {
 };
 
 const data = computed(() => {
-  const totalValorContratado = props.valoresTotais.total_valor_contratado;
-
   return {
     labels: [
       'Aguardando Pagamento',
       'Aguardando Faturamento',
       'Pago',
-      'Saldo'
+      // 'Saldo'
     ],
     datasets: [
       {
         backgroundColor: ['#EF6B26', '#00AFEF', '#FACD36', '#57BA5E'],
         data: [
-          (props.valoresTotais.total_aguardando_pagamento / totalValorContratado),
-          (props.valoresTotais.total_aguardando_faturamento / totalValorContratado),
-          (props.valoresTotais.total_pago / totalValorContratado),
-          // (props.valoresTotais.total_saldo_disponível / totalValorContratado * 100)
+          props.valoresTotais.total_aguardando_pagamento,
+          props.valoresTotais.total_aguardando_faturamento,
+          props.valoresTotais.total_pago,
+          // props.valoresTotais.total_saldo_disponível
         ],
         customText: [
           'Aguardando Pagamento',
@@ -114,8 +106,7 @@ const data = computed(() => {
   };
 });
 
-// Opções do gráfico
- const options = {
+const options = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -123,14 +114,14 @@ const data = computed(() => {
       enabled: true,
       callbacks: {
         label: function(context) {
-          const dataset = context.dataset ;
+          const dataset = context.dataset;
           const customTexts = dataset.customText || [];
           const label = context.label || '';
-          const value = context.raw ;
-          const percentage = dataset.data.length > 0 ? ((value / dataset.data.reduce((acc, val) => acc + (val ), 0)) * 100).toFixed(2) : '0';
+          const value = context.raw;
+          const totalValorContratado = props.valoresTotais.total_valor_contratado;
+          const percentage = totalValorContratado > 0 ? ((value / totalValorContratado) * 100).toFixed(2) : '0';
 
           const customText = customTexts[context.dataIndex] || '';
-          // return `${label}: ${customText}\n${percentage}%`;
           return `${customText}\n${percentage}%`;
         }
       }
