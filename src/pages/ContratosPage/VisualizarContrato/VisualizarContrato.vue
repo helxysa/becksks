@@ -1060,7 +1060,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
+          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1075,7 +1075,7 @@
               <option>Não Autorizada</option>
               <option>Cancelada</option>
             </select>
-          </div>
+          </div> -->
 
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
@@ -2503,11 +2503,14 @@ const createLancamento = async () => {
     return;
   }
 
-if (medicaoData.value.tipo_medicao === "Detalhada") {
-  medicaoData.value.status = ""
-}
+  if (medicaoData.value.tipo_medicao === "Detalhada") {
+    medicaoData.value.status = ""
+  }
+  if (medicaoData.value.tipo_medicao === "Estimada") {
+    medicaoData.value.status = "Não Autorizada"
+  }
   let payload = {
-    status: medicaoData.value.status || "",
+    status: medicaoData.value.status,
     itens: itensQuantidadePreenchida,
     projetos: projetos.value.projeto,
     data_medicao: medicaoData.value.data_medicao,
