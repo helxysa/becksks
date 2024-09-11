@@ -78,9 +78,9 @@
         </div>
       </section>
     </div>
-    <div class="flex mt-32">
-      <Map :markers="map" />
-      <div class="w-1/2 " v-if="contratosPorVencimento">
+    <div class="flex flex-row w-full mt-20">
+      <Map v-if="mapLoaded" :markers="map" />
+      <div class="w-1/2" v-if="contratosPorVencimento">
         <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
       </div>
     </div>
@@ -162,7 +162,7 @@ const valoresTotaisStatus = ref()
 const  contratosPorVencimento = ref()
 const top5 = ref()
 const map = ref([]);
-
+const mapLoaded = ref(false);
 const totalContratos = ref(0)
 const resultsPerPageContratos= ref()
 let contratoItemData =  ref([]);
@@ -201,6 +201,7 @@ const fetchDataDashboard = async () => {
     valoresTotaisStatus.value = response.data.valores_totais_status
     contratosPorVencimento.value = response.data.contratos_por_vencimento
     map.value = response.data.map;
+    mapLoaded.value = true;
     top5.value = response.data.top5;
     fetchContratos(currentPageContratos.value)
 

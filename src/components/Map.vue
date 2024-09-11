@@ -1,17 +1,21 @@
 <template>
-  <div id="mapContainer" />
+  <div id="mapContainer"></div>
 </template>
 
 <script setup>
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { onMounted, onUnmounted, defineProps } from 'vue';
+import { onMounted, onUnmounted, defineProps, ref } from 'vue';
 
 const props = defineProps({
   markers: {
     type: Array,
     required: true,
     default: () => [],
+  },
+  initialCoordinates: {
+    type: Object,
+    default: () => ({ latitude: 0.0344566, longitude: -51.0666 }),
   },
 });
 
@@ -28,7 +32,11 @@ onUnmounted(() => {
 });
 
 const createMapLayer = () => {
-  map = L.map('mapContainer').setView([-12.9714, -38.5014], 5);
+  const { latitude, longitude } = props.initialCoordinates;
+  const initialZoom = 5;
+
+  map = L.map('mapContainer').setView([latitude, longitude], initialZoom);
+
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
@@ -57,7 +65,9 @@ const setMarkers = () => {
 
 <style>
 #mapContainer {
-  width: 100%;
-  height: 500px;
+  border: 1px solid black;
+  border-radius: 9px;
+  width: 60%;
+  height: 300px;
 }
 </style>
