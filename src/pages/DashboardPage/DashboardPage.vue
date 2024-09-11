@@ -23,8 +23,8 @@
                 <span class="font-semibold">Top 5</span>
                 <span>Contratos por valor</span>
               </div>
-              <div class="h-full mt-36 ">
-                <Bar />
+              <div class="h-full mt-36">
+                <Bar :top5="top5"/>
               </div>
             </section>
           </div>
@@ -109,7 +109,7 @@
             <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
             <td class="text-2xl">
               {{ verificarVencimentoContratos(contrato) }}
-              <div class="flex justify-center">              
+              <div class="flex justify-center">
                 <span v-if="statusVencimento === 'a vencer'">
                   <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
                 </span>
@@ -160,7 +160,7 @@ import { api } from "@/services/api";
 const currentPageContratos = ref(1);
 const valoresTotaisStatus = ref()
 const  contratosPorVencimento = ref()
-const top5 = ref({})
+const top5 = ref()
 const map = ref();
 
 const totalContratos = ref(0)
@@ -171,29 +171,29 @@ let statusVencimento = ref('')
 
 onMounted(()=> {
   fetchDataDashboard()
-  
+
 })
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
 const verificarVencimentoContratos = (contrato) => {
-    const hoje = getCurrentDateString();  
-    const dataFim = contrato.dataFim;   
-    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);    
+    const hoje = getCurrentDateString();
+    const dataFim = contrato.dataFim;
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
     const  diferenca =  new Date(dataFim) - new Date(hoje)
-    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);   
+    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);
 
-    
+
       if ((diasParaVencimento <= lembreteVencimento)  && diasParaVencimento > 0) {
-         statusVencimento.value = 'a vencer'     
-      } else if ( (diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {          
+         statusVencimento.value = 'a vencer'
+      } else if ( (diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {
         statusVencimento.value = 'ativo'
-      } else if ( diasParaVencimento <= 0) {      
+      } else if ( diasParaVencimento <= 0) {
         statusVencimento.value = 'atraso'
-      } else {         
+      } else {
         statusVencimento.value = 'atraso'
       }
-  
+
   };
 const fetchDataDashboard = async () => {
   try {
@@ -202,8 +202,8 @@ const fetchDataDashboard = async () => {
     valoresTotaisStatus.value = response.data.valores_totais_status
     contratosPorVencimento.value = response.data.contratos_por_vencimento
     map.value = response.data.map
+    top5.value = response.data.top5;
     fetchContratos(currentPageContratos.value)
-    console.log(response, 'response')
 
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -213,12 +213,12 @@ const fetchDataDashboard = async () => {
 const fetchContratos = async(page) => {
    try {
     const response = await api.get(`/dashboard?page=${page}`);
-    contratoItemData.value = response.data.contratos.data;    
+    contratoItemData.value = response.data.contratos.data;
     contratoItemMeta.value = response.data.contratos.meta;
     currentPageContratos.value = contratoItemMeta.value.currentPage;
     totalContratos.value = contratoItemMeta.value.total;
     resultsPerPageContratos.value = contratoItemMeta.value.perPage;
-    
+
    } catch (error) {
     console.error(error);
    }
