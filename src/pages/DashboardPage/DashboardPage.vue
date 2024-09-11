@@ -109,28 +109,16 @@
             <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
             <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
             <td class="text-2xl">
-              {{ verificarVencimentoContratos(contrato) }}
               <div class="flex justify-center">
-                <span v-if="statusVencimento === 'a vencer'">
+                <span v-if="contrato.statusVencimento === 'a vencer'">
                   <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
                 </span>
-                <span v-else-if="statusVencimento === 'ativo'">
+                <span v-else-if="contrato.statusVencimento === 'ativo'">
                   <Icon icon="line-md:confirm-circle-filled" height="30" class="text-green-300" />
                 </span>
                 <span v-else>
                   <Icon icon="ri:alert-line" height="30" class="text-red-300" />
                 </span>
-                <!-- <span
-                  class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
-                  :class="{
-                    'bg-purple-200 border-purple-400 text-purple-400':
-                      lancamento.tipoMedicao === 'Estimada',
-                    'bg-blue-200 border-blue-400 text-blue-400':
-                      lancamento.tipoMedicao === 'Detalhada',
-                  }"
-                >
-                  {{ lancamento.tipoMedicao }}
-                </span> -->
               </div>
             </td>
           </tr>
@@ -177,25 +165,6 @@ onMounted(()=> {
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-const verificarVencimentoContratos = (contrato) => {
-    const hoje = getCurrentDateString();
-    const dataFim = contrato.dataFim;
-    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
-    const  diferenca =  new Date(dataFim) - new Date(hoje)
-    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);
-
-
-      if ((diasParaVencimento <= lembreteVencimento)  && diasParaVencimento > 0) {
-         statusVencimento.value = 'a vencer'
-      } else if ( (diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {
-        statusVencimento.value = 'ativo'
-      } else if ( diasParaVencimento <= 0) {
-        statusVencimento.value = 'atraso'
-      } else {
-        statusVencimento.value = 'atraso'
-      }
-
-  };
 const fetchDataDashboard = async () => {
   try {
     const response = await api.get(`/dashboard`);
@@ -216,16 +185,43 @@ const fetchDataDashboard = async () => {
 const fetchContratos = async(page) => {
    try {
     const response = await api.get(`/dashboard?page=${page}`);
-    contratoItemData.value = response.data.contratos.data;
-    contratoItemMeta.value = response.data.contratos.meta;
-    currentPageContratos.value = contratoItemMeta.value.currentPage;
-    totalContratos.value = contratoItemMeta.value.total;
-    resultsPerPageContratos.value = contratoItemMeta.value.perPage;
+    const contratos = response.data.contratos.data;
+    const meta = response.data.contratos.meta;
+
+    contratoItemMeta.value = meta;
+    currentPageContratos.value = meta.currentPage;
+    totalContratos.value = meta.total;
+    resultsPerPageContratos.value = meta.perPage;
+
+    contratoItemData.value = adicionarStatusVencimento(contratos);
 
    } catch (error) {
     console.error(error);
    }
 }
+const adicionarStatusVencimento = (contratos) => {
+  const hoje = getCurrentDateString();
+
+  return contratos.map(contrato => {
+    const dataFim = contrato.dataFim;
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
+    const diferenca = new Date(dataFim) - new Date(hoje);
+    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);
+
+    let statusVencimento = 'atraso';
+    if ((diasParaVencimento <= lembreteVencimento) && diasParaVencimento > 0) {
+      statusVencimento = 'a vencer';
+    } else if ((diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {
+      statusVencimento = 'ativo';
+    }
+
+    return {
+      ...contrato,
+      statusVencimento,
+    };
+  });
+};
+
 const changePageContratos = (page) => {
     currentPageContratos.value = page;
   };
