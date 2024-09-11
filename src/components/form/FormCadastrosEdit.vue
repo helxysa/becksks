@@ -8,7 +8,7 @@
     </div>
 
     <section class="">
-      <form class="mt-12 " @submit.prevent="saveContrato">
+      <form class="mt-12" @submit.prevent="saveContrato">
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold">Nome do contrato</label>
           <input
@@ -46,14 +46,14 @@
               required
               type="date"
               placeholder="Digite o fim do  contrato"
-              class=" focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               v-model="contratoForm.dataFim"
             />
           </div>
         </div>
 
         <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-semibold ">Valor contratado</label>
+          <label class="font-semibold">Valor contratado</label>
           <money3
             required
             type="text"
@@ -143,14 +143,16 @@
             maxlength="120"
           />
         </div>
-        <div class=" flex flex-col items-start gap-3 mt-8">
+        <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Lembrete vencimento:</label>
           <select
             v-model="contratoForm.lembreteVencimento"
             class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
           >
-            <option disabled value="">Selecione a notificação do vencimento</option>
+            <option disabled value="">
+              Selecione a notificação do vencimento
+            </option>
             <option>5</option>
             <option>10</option>
             <option>15</option>
@@ -166,73 +168,78 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Observações</label>
           <textarea
-           v-model="contratoForm.observacoes"
+            v-model="contratoForm.observacoes"
             rows="7"
             placeholder="Observações..."
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-3 w-full border-gray-300 rounded-md"
-
           />
         </div>
         <div class="mt-8 flex gap-8 flex-wrap justify-end">
-
           <button
             class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="openModalProjeto"
           >
-          <span class="mr-2">
-            <Icon
-              icon="ant-design:project-outlined"
-              height="20"
-              class="text-zinc-50"
-            />
-          </span>
+            <span class="mr-2">
+              <Icon
+                icon="ant-design:project-outlined"
+                height="20"
+                class="text-zinc-50"
+              />
+            </span>
             Adicionar Projeto
           </button>
         </div>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
-            <button class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-            type="button">
-            Voltar
-          </button>
+            <button
+              class="inline-flex items-center justify-center px-4 py-3 rounded-md w-56 text-2xl font-medium text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+              type="button"
+            >
+              Voltar
+            </button>
           </span>
-          <button class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-            type="submit">
+          <button
+            class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            type="submit"
+          >
             {{ route.params.id ? "Editar" : "Salvar" }}
           </button>
         </div>
       </form>
     </section>
     <JetDialogModal
-    :show="isModalProjetoOpen"
-    :withouHeader="false"
-    @close="closeModalProjeto"
-    :modalTitle="modalTitleProjeto"
-    maxWidth="6xl"
-  >
-    <template #content>
-      <form @submit.prevent="handleSubmitProjeto" class="flex gap-8 px-6 h-[4.40rem]">
-        <input
-          type="text"
-          id="nome"
-          v-model="newProjeto"
-          required
-          class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-          placeholder="Nome  do projeto"
-        />
+      :show="isModalProjetoOpen"
+      :withouHeader="false"
+      @close="closeModalProjeto"
+      :modalTitle="modalTitleProjeto"
+      maxWidth="6xl"
+    >
+      <template #content>
+        <form
+          @submit.prevent="handleSubmitProjeto"
+          class="flex gap-8 px-6 h-[4.40rem]"
+        >
+          <input
+            type="text"
+            id="nome"
+            v-model="newProjeto"
+            required
+            class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            placeholder="Nome  do projeto"
+          />
 
-        <button
-        type="submit"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
-      </button>
-        <!-- <div class="flex gap-4  items-center">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
+          </button>
+          <!-- <div class="flex gap-4  items-center">
           <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
         </div> -->
 
-        <!-- <div class="flex justify-end space-x-2">
+          <!-- <div class="flex justify-end space-x-2">
           <button
             type="button"
             @click="closeModalProjeto"
@@ -247,39 +254,52 @@
             {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
           </button>
         </div> -->
-      </form>
-      <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
-
-          <div v-for="item in projetos" :key="item.id" class="flex items-center gap-2 border-[1px] rounded-md">
-            <div  class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
-              <span  class="ml-6 font-sans text-nowrap truncate max-w-[500px]">
+        </form>
+        <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+          <div
+            v-for="item in projetos"
+            :key="item.id"
+            class="flex items-center gap-2 border-[1px] rounded-md"
+          >
+            <div
+              class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
+            >
+              <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]">
                 {{ item.projeto }}
               </span>
               <div class="flex items-center mx-4">
                 <button
-                @click="editProjeto(item)"
-                class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-              >
-                <Icon
-                  icon="heroicons-solid:pencil"
-                  height="18"
-                  class="text-blue-600 rounded-full"
-                />
-              </button>
-              <button
-                @click="deletarProjeto(item.id, item)"
-                class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-              >
-                <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
-              </button>
+                  @click="editProjeto(item)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
+                  <Icon
+                    icon="heroicons-solid:pencil"
+                    height="18"
+                    class="text-blue-600 rounded-full"
+                  />
+                </button>
+                <button
+                  @click="deletarProjeto(item.id, item)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
+                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
+                </button>
               </div>
             </div>
           </div>
-
-      </div>
-
-    </template>
-  </JetDialogModal>
+        </div>
+        <hr class="my-8" />
+        <footer class="flex justify-end h-16 mb-2">
+          <button
+            type="button"
+            @click="closeModalProjeto"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+          >
+            Salvar Projetos
+          </button>
+        </footer>
+      </template>
+    </JetDialogModal>
   </div>
 </template>
 
@@ -293,28 +313,28 @@ import Swal from "sweetalert2";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { format } from "date-fns";
 import { Money3Component } from "v-money3";
-import { ufs } from '../../services/ufs.js';
+import { ufs } from "../../services/ufs.js";
 
 const router = useRouter();
 const route = useRoute();
 // let contratoForm = ref({});
 let contratoForm = ref({
-  nomeContrato: '',
-  nomeCliente: '',
-  dataInicio: '',
-  dataFim: '',
-  saldoContrato: '',
+  nomeContrato: "",
+  nomeCliente: "",
+  dataInicio: "",
+  dataFim: "",
+  saldoContrato: "",
   fiscal: {
-    nome: '',
-    telefone: '',
-    email: ''
+    nome: "",
+    telefone: "",
+    email: "",
   },
-  pontoFocal: '',
-  cidade: '',
-  estado: '',
-  objetoContrato: '',
-  observacoes: '',
-  lembreteVencimento:'',
+  pontoFocal: "",
+  cidade: "",
+  estado: "",
+  objetoContrato: "",
+  observacoes: "",
+  lembreteVencimento: "",
 });
 
 const moneyConfig = {
@@ -327,9 +347,11 @@ const moneyConfig = {
 
 const isModalProjetoOpen = ref(false);
 const isEditingProjeto = ref(false);
-const modalTitleProjeto = computed(() => isEditingProjeto.value ? 'Editar Projeto' : 'Adicionar Projeto');
-const idProjeto = ref("")
-const  idContrato =  ref("")
+const modalTitleProjeto = computed(() =>
+  isEditingProjeto.value ? "Editar Projeto" : "Adicionar Projeto"
+);
+const idProjeto = ref("");
+const idContrato = ref("");
 
 const openModalProjeto = () => {
   isModalProjetoOpen.value = true;
@@ -342,26 +364,23 @@ const closeModalProjeto = () => {
 };
 
 const resetFormProjeto = () => {
-  newProjeto.value = ""
+  newProjeto.value = "";
   isEditingProjeto.value = false;
 };
 
-
 const handleSubmitProjeto = () => {
   if (isEditingProjeto.value) {
-    EditarProjeto()
+    EditarProjeto();
   } else {
-    CriarProjeto()
+    CriarProjeto();
   }
-  closeModalProjeto();
 };
 
 const editProjeto = (item) => {
-
   newProjeto.value = item.projeto;
   isEditingProjeto.value = true;
   idProjeto.value = item.id;
-  idContrato.value =  item.contratoId;
+  idContrato.value = item.contratoId;
 };
 
 const projetos = ref([]);
@@ -384,16 +403,9 @@ const CriarProjeto = async () => {
     await fetchProjetos(route.params.id);
     toast.success("Projeto criado com sucesso!");
     newProjeto.value = "";
-
   } catch (error) {
-    console.error(
-      "Erro ao criar novo projeto:",
-      error.response.data.message
-    );
-    if (
-      error.response.data.message ==
-      "Já existe um projeto com esse nome."
-    ) {
+    console.error("Erro ao criar novo projeto:", error.response.data.message);
+    if (error.response.data.message === "Já existe um projeto com esse nome para este contrato.") {
       return toast.error(error.response.data.message);
     } else {
       toast.error("Não foi possível criar o  projeto.");
@@ -410,16 +422,9 @@ const EditarProjeto = async () => {
     await fetchProjetos(route.params.id);
     toast.success("Projeto editado com sucesso!");
     newProjeto.value = "";
-
   } catch (error) {
-    console.error(
-      "Erro ao editar projeto:",
-      error.response.data.message
-    );
-    if (
-      error.response.data.message ==
-      "Já existe um projeto com esse nome."
-    ) {
+    console.error("Erro ao editar projeto:", error.response.data.message);
+    if (error.response.data.message == "Já existe um projeto com esse nome.") {
       return toast.error(error.response.data.message);
     } else {
       toast.error("Não foi possível editar o  projeto.");
@@ -465,27 +470,25 @@ const fetchContrato = async (id) => {
 
     if (contratoData.fiscal === null) {
       contratoData.fiscal = {
-        nome: '',
-        telefone: '',
-        email: ''
+        nome: "",
+        telefone: "",
+        email: "",
       };
     }
 
     Object.assign(contratoForm.value, response.data);
-
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
 };
 
 async function saveContrato() {
-
   if (contratoForm.value.fiscal.telefone.length < 15) {
     toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
-        theme: "colored",
-        type: "error",
-      });
-    return
+      theme: "colored",
+      type: "error",
+    });
+    return;
   }
 
   const payload = {
@@ -505,7 +508,6 @@ async function saveContrato() {
     observacoes: contratoForm.value.observacoes,
     lembrete_vencimento: contratoForm.value.lembreteVencimento,
     nome_contrato: contratoForm.value.nomeContrato,
-
   };
   try {
     const response = await api
@@ -538,17 +540,17 @@ const formatCurrency = (value) => {
 };
 
 const handlePhone = (event) => {
-  let input = event.target
-  contratoForm.value.fiscal.telefone = phoneMask(input.value)
-}
+  let input = event.target;
+  contratoForm.value.fiscal.telefone = phoneMask(input.value);
+};
 
 const phoneMask = (value) => {
-  if (!value) return ""
-  value = value.replace(/\D/g,'')
-  value = value.replace(/(\d{2})(\d)/,"($1) $2")
-  value = value.replace(/(\d)(\d{4})$/,"$1-$2")
-  return value
-}
+  if (!value) return "";
+  value = value.replace(/\D/g, "");
+  value = value.replace(/(\d{2})(\d)/, "($1) $2");
+  value = value.replace(/(\d)(\d{4})$/, "$1-$2");
+  return value;
+};
 </script>
 
 <style scoped>

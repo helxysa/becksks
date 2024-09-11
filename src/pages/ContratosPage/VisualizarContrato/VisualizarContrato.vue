@@ -9,7 +9,7 @@
       </h1>
       <div class="flex flex-wrap gap-3">
         <button
-          class="btn-edit bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center"
+          class="flex items-center justify-center px-8 py-3 rounded-md text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
         >
           <i class="fas fa-edit mr-2"></i>
           <router-link
@@ -20,7 +20,8 @@
         </button>
         <button
           @click="deleteContrato(contrato)"
-          class="btn-delete bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 ease-in-out flex items-center"
+          class="flex items-center justify-center px-8 py-3 rounded-md text-2xl font-medium text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+
         >
           <i class="fas fa-trash-alt mr-2"></i>Excluir
         </button>
