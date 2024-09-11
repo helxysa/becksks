@@ -12,12 +12,13 @@ import { ref, onMounted, onBeforeMount } from 'vue';
 const props =  defineProps({
       markers: {
         type: Array,
-        required: false,
+        required: true,
         default: () => [],
       },
    })
 
    onMounted(()=> {
+    console.log(props?.markers, 'marker')
   //   navigator.geolocation.getCurrentPosition(function (position) {
   //   latitude.value = position.coords.latitude;
   //   longitude.value = position.coords.longitude;
@@ -37,7 +38,7 @@ const props =  defineProps({
 
    let map = null;
    const createMapLayer = () => {
-     map = L.map('mapContainer').setView([-5.08921, -42.8016], 5)
+     map = L.map('mapContainer').setView([-5.0874608, -42.8049571], 5)
      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -48,8 +49,9 @@ const props =  defineProps({
    }
 
    const  setMarkers = () => {
+    console.log('entrou')
     props.markers.map((marker)=> {
-      return L.marker([marker.latitude, marker.longitude]).addTo(map).bindPopup(marker.descricao)
+      return L.marker([marker.latitude, marker.longitude]).addTo(map).bindPopup(marker.quantidade_contratos)
     })
    }
 

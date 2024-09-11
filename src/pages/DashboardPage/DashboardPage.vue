@@ -79,9 +79,9 @@
       </section>
     </div>
     <div class="flex   mt-32">
-        <Map />
-        <div class="w-1/2 ">
-            <BarVertical/>
+        <Map :markers="map" />
+        <div class="w-1/2 " v-if="contratosPorVencimento">
+            <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
         </div>
     </div>
     <div>
@@ -159,8 +159,9 @@ import { api } from "@/services/api";
 
 const currentPageContratos = ref(1);
 const valoresTotaisStatus = ref()
-const  contratosPorVencimento = ref({})
+const  contratosPorVencimento = ref()
 const top5 = ref({})
+const map = ref();
 
 const totalContratos = ref(0)
 const resultsPerPageContratos= ref()
@@ -199,6 +200,8 @@ const fetchDataDashboard = async () => {
     const response = await api.get(`/dashboard`);
 
     valoresTotaisStatus.value = response.data.valores_totais_status
+    contratosPorVencimento.value = response.data.contratos_por_vencimento
+    map.value = response.data.map
     fetchContratos(currentPageContratos.value)
     console.log(response, 'response')
 

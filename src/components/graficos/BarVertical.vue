@@ -7,8 +7,20 @@
 <script setup>
  import { Chart as ChartJS, ArcElement, Tooltip,  BarElement, CategoryScale, LinearScale } from "chart.js";
 import {  Bar } from "vue-chartjs";
+import { onMounted, ref, computed } from "vue";
 ChartJS.register(ArcElement, Tooltip,CategoryScale, LinearScale, BarElement);
 
+const props = defineProps({
+  contratosPorVencimento: {
+    type: Array,
+    required: true,
+    default: () => ([])
+  }
+});
+
+onMounted(()=> {
+  console.log(props.contratosPorVencimento, 'contratos veb')
+})
 const dataBarVertical = {
   labels: [
     '-0d ',
