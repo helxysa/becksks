@@ -1,0 +1,73 @@
+<template>
+  <div id="mapContainer"></div>
+</template>
+
+<script setup>
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { onMounted, onUnmounted, defineProps, ref } from 'vue';
+
+const props = defineProps({
+  markers: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  initialCoordinates: {
+    type: Object,
+    default: () => ({ latitude: 0.0344566, longitude: -51.0666 }),
+  },
+});
+
+let map = null;
+
+onMounted(() => {
+  createMapLayer();
+});
+
+onUnmounted(() => {
+  if (map) {
+    map.remove();
+  }
+});
+
+const createMapLayer = () => {
+  const { latitude, longitude } = props.initialCoordinates;
+  const initialZoom = 5;
+
+  map = L.map('mapContainer').setView([latitude, longitude], initialZoom);
+
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+
+  if (props.markers.length > 0) {
+    setMarkers();
+  }
+};
+
+const setMarkers = () => {
+  props.markers.forEach((marker) => {
+    const latitude = parseFloat(marker.latitude);
+    const longitude = parseFloat(marker.longitude);
+    const { cidade, estado, valor_total, quantidade_contratos } = marker;
+
+    L.marker([latitude, longitude])
+      .addTo(map)
+      .bindPopup(`
+        <b>${cidade} - ${estado}</b><br/>
+        Valor Total: R$ ${valor_total.toFixed(2)}<br/>
+        Quantidade de Contratos: ${quantidade_contratos}
+      `);
+  });
+};
+</script>
+
+<style>
+#mapContainer {
+  border: 1px solid black;
+  border-radius: 9px;
+  width: 60%;
+  height: 300px;
+}
+</style>
