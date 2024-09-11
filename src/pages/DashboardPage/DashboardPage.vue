@@ -30,53 +30,54 @@
           </div>
         </div>
       </section>
-      <!-- stamps -->
-      <section class="flex flex-col gap-6">
-        <div
-          class="w-[350px] h-[96px] flex  justify-between items-center px-4 rounded-lg
-          bg-gradient-to-r from-cyan-50 to-cyan-400 "
-        >
-          <div>
-            <p class="font-semibold">R$ 35 Milhões</p>
-            <p>valor dos contratos</p>
-          </div>
-          <span class="cursor-pointer">
-            <Icon icon="hugeicons:note-04" height="30" class="text-white" />
-          </span>
-        </div>
-        <div
-          class="w-[350px] h-[96px] flex  justify-between items-center px-4 rounded-lg
-           bg-gradient-to-r from-blue-300 to-pink-200"
-        >
-          <div>
-            <p class="font-semibold">R$ 7.5 Milhões</p>
-            <p>Aguardando Faturamento</p>
-          </div>
-          <div>
-            <p class="font-semibold">R$ 8 Milhões</p>
-            <p>Aguardando Pagamento</p>
-          </div>
-          <span class="cursor-pointer">
-            <Icon icon="ph:calculator-thin" height="30" class="text-white" />
-          </span>
-        </div>
-        <div
-          class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
-           bg-gradient-to-r from-orange-200 to-green-200"
-        >
-          <div>
-            <p class="font-semibold">R$ 11 Milhões</p>
-            <p>Pago</p>
-          </div>
-          <div>
-            <p class="font-semibold">R$ 8.5 Milhões</p>
-            <p>Saldo</p>
-          </div>
-          <span class="cursor-pointer">
-            <Icon icon="rivet-icons:money" height="30" class="text-white" />
-          </span>
-        </div>
-      </section>
+   <!-- stamps -->
+<section class="flex flex-col gap-6">
+  <div
+    class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
+    bg-gradient-to-r from-cyan-50 to-cyan-400 "
+  >
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_valor_contratado) }}</p>
+      <p>valor dos contratos</p>
+    </div>
+    <span>
+      <Icon icon="hugeicons:note-04" height="30" class="text-white" />
+    </span>
+  </div>
+  <div
+    class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
+     bg-gradient-to-r from-blue-300 to-pink-200"
+  >
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_faturamento) }}</p>
+      <p>Aguardando Faturamento</p>
+    </div>
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento) }}</p>
+      <p>Aguardando Pagamento</p>
+    </div>
+    <span>
+      <Icon icon="ph:calculator-thin" height="30" class="text-white" />
+    </span>
+  </div>
+  <div
+    class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
+     bg-gradient-to-r from-orange-200 to-green-200"
+  >
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_pago) }}</p>
+      <p>Pago</p>
+    </div>
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_saldo_disponível) }}</p>
+      <p>Saldo</p>
+    </div>
+    <span>
+      <Icon icon="rivet-icons:money" height="30" class="text-white" />
+    </span>
+  </div>
+</section>
+
     </div>
     <div class="flex flex-row w-full mt-20">
       <Map v-if="mapLoaded" :markers="map" />
@@ -159,6 +160,7 @@ import { api } from "@/services/api";
 
 const currentPageContratos = ref(1);
 const valoresTotaisStatus = ref()
+const valoresStamp = ref({})
 const  contratosPorVencimento = ref()
 const top5 = ref()
 const map = ref([]);
@@ -199,6 +201,7 @@ const fetchDataDashboard = async () => {
     const response = await api.get(`/dashboard`);
 
     valoresTotaisStatus.value = response.data.valores_totais_status
+    valoresStamp.value = response.data.valores_totais_status
     contratosPorVencimento.value = response.data.contratos_por_vencimento
     map.value = response.data.map;
     mapLoaded.value = true;
@@ -233,6 +236,33 @@ const changePageContratos = (page) => {
     currency: "BRL",
     minimumFractionDigits: 2,
   }).format(value);
+};
+
+const formatCurrencyInMillions = (value) => {
+  if (value === null || value === undefined) return "R$ 0,00";
+
+  const valueInThousands = value / 1000;
+  const valueInMillions = value / 1000000;
+
+  if (valueInMillions >= 1) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    }).format(valueInMillions) + " Milhões";
+  } else if (valueInThousands >= 1) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    }).format(valueInThousands) + " Mil";
+  } else {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    }).format(value);
+  }
 };
 
 const formatDate = (dateString) => {
