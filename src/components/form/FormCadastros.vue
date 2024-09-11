@@ -184,9 +184,7 @@
             type="button"
             @click="showExibirModalItems"
           >
-            <span class="">
-              <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
-            </span>
+            <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
           </button>
           <button

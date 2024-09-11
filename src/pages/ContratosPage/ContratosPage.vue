@@ -2,29 +2,30 @@
   <div>
     <div class="flex justify-between mt-12 px-6">
       <h1 class="text-5xl font-medium">Contratos</h1>
-      <button class="btn-cadastro relative">
-        <router-link to="cadastro/contratos">
-          <router-view >
-            Novo contrato
-          </router-view>
-        </router-link>
-        <span class="absolute right-[5px] top-[8px]">
-          <Icon icon="material-symbols-light:add" class="text-zinc-50" height="25" />
-        </span>
-      </button>
+        <button
+          class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        >
+          <Icon
+            icon="la:file-contract"
+            class="text-zinc-50"
+            height="25"
+          />
+          <router-link to="cadastro/contratos">
+            <router-view> Novo contrato </router-view>
+          </router-link>
+        </button>
     </div>
-    <ListContratos/>
+    <ListContratos />
   </div>
 </template>
 
 <script setup>
 import ListContratos from "@/components/list/ListContratos.vue";
-import { RouterLink } from 'vue-router';
+import { RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
-
 </script>
 
-<style  scoped>
+<style scoped>
 .btn-cadastro {
   background-color: var(--bluePrimary);
   border-radius: 9px;
@@ -35,6 +36,6 @@ import { Icon } from "@iconify/vue";
 }
 
 .btn-cadastro:hover {
-  background-color:  #0ea5e9;;
+  background-color: #0ea5e9;
 }
 </style>
