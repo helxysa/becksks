@@ -1,65 +1,73 @@
 <template>
-
-         <div id="mapContainer" />
-
+  <div id="mapContainer"></div>
 </template>
 
 <script setup>
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet'
-import { ref, onMounted, onBeforeMount } from 'vue';
+import L from 'leaflet';
+import { onMounted, onUnmounted, defineProps, ref } from 'vue';
 
-const props =  defineProps({
-      markers: {
-        type: Array,
-        required: true,
-        default: () => [],
-      },
-   })
+const props = defineProps({
+  markers: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
+  initialCoordinates: {
+    type: Object,
+    default: () => ({ latitude: 0.0344566, longitude: -51.0666 }),
+  },
+});
 
-   onMounted(()=> {
-    console.log(props?.markers, 'marker')
-  //   navigator.geolocation.getCurrentPosition(function (position) {
-  //   latitude.value = position.coords.latitude;
-  //   longitude.value = position.coords.longitude;
-  //  });
-    createMapLayer()
-   })
+let map = null;
 
-   onBeforeMount(()=>{
-    if (map) {
-        map.remove()
-    }
-   })
+onMounted(() => {
+  createMapLayer();
+});
 
-  //  const latitude = ref('')
-  //  const longitude = ref('')
+onUnmounted(() => {
+  if (map) {
+    map.remove();
+  }
+});
 
+const createMapLayer = () => {
+  const { latitude, longitude } = props.initialCoordinates;
+  const initialZoom = 5;
 
-   let map = null;
-   const createMapLayer = () => {
-     map = L.map('mapContainer').setView([-5.0874608, -42.8049571], 5)
-     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-    // console.log(map, 'map')
-     if (props.markers.lenght > 0) {
-        setMarkers()
-    }
-   }
+  map = L.map('mapContainer').setView([latitude, longitude], initialZoom);
 
-   const  setMarkers = () => {
-    console.log('entrou')
-    props.markers.map((marker)=> {
-      return L.marker([marker.latitude, marker.longitude]).addTo(map).bindPopup(marker.quantidade_contratos)
-    })
-   }
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
 
+  if (props.markers.length > 0) {
+    setMarkers();
+  }
+};
+
+const setMarkers = () => {
+  props.markers.forEach((marker) => {
+    const latitude = parseFloat(marker.latitude);
+    const longitude = parseFloat(marker.longitude);
+    const { cidade, estado, valor_total, quantidade_contratos } = marker;
+
+    L.marker([latitude, longitude])
+      .addTo(map)
+      .bindPopup(`
+        <b>${cidade} - ${estado}</b><br/>
+        Valor Total: R$ ${valor_total.toFixed(2)}<br/>
+        Quantidade de Contratos: ${quantidade_contratos}
+      `);
+  });
+};
 </script>
 
 <style>
-  #mapContainer {
-    width: 50% !important;
-    height: 300px !important;
-  }
+#mapContainer {
+  border: 1px solid black;
+  border-radius: 9px;
+  width: 60%;
+  height: 300px;
+}
 </style>

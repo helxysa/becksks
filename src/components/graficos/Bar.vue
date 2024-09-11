@@ -1,58 +1,86 @@
 <template>
-  <Bar :data="dataBar" :options="optionsBar" />
+  <Bar v-if="isArray(top5)" :data="dataBar" :options="optionsBar" />
+  <div v-else>
+    <p>Dados não disponíveis ou formato incorreto.</p>
+  </div>
 </template>
 
 <script setup>
-import { Chart as ChartJS, ArcElement, Tooltip, BarElement, CategoryScale, LinearScale, Legend } from "chart.js";
-import { Bar } from "vue-chartjs";
-ChartJS.register(ArcElement, Tooltip, BarElement, CategoryScale, LinearScale, Legend);
+import { computed, defineProps } from 'vue';
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, BarElement, Tooltip, CategoryScale, LinearScale, Legend } from 'chart.js';
 
-const dataBar = {
-  labels: [
-    "Contrato 1",
-    "Contrato  2",
-    "Contrato 3",
-    "Contrato 4",
-    "Contrato 5",
-  ],
-  datasets: [
-    {
-      label: "Data One",
-      backgroundColor: "#f87979",
-      data: [40, 20, 12, 39, 10],
-      barThickness: 20,
-    },
-  ],
-};
+ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale, Legend);
+
+const props = defineProps({
+  top5: {
+    type: Array,
+    required: true
+  }
+});
+
+const isArray = (value) => Array.isArray(value);
+
+const dataBar = computed(() => {
+  if (!isArray(props.top5)) {
+    return {
+      labels: [],
+      datasets: [
+        {
+          label: 'Percentual Utilizado',
+          backgroundColor: '#f87979',
+          data: [],
+          barThickness: 20
+        }
+      ]
+    };
+  }
+
+  const labels = props.top5.map(item => item.nome_cliente);
+  const data = props.top5.map(item => {
+    if (item.saldo_contrato === 0) return 0;
+    return (item.totalUtilizado / item.saldo_contrato) * 100;
+  });
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: 'Percentual Utilizado',
+        backgroundColor: '#f87979',
+        data,
+        barThickness: 20
+      }
+    ]
+  };
+});
 
 const optionsBar = {
   responsive: true,
   maintainAspectRatio: false,
-  indexAxis: "y",
+  indexAxis: 'y',
   plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.parsed.x + '%'
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            beginAtZero: true,
-            max: 100,
-            ticks: {
-              callback: function(value) {
-                return value + '%'
-              }
-            }
-          },         
-
-         
-        },
+    legend: {
+      display: false
+    },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          return context.parsed.x.toFixed(2) + '%';
+        }
+      }
+    }
+  },
+  scales: {
+    x: {
+      beginAtZero: true,
+      max: 100,
+      ticks: {
+        callback: function (value) {
+          return value + '%';
+        }
+      }
+    }
+  }
 };
 </script>

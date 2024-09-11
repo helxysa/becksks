@@ -23,66 +23,67 @@
                 <span class="font-semibold">Top 5</span>
                 <span>Contratos por valor</span>
               </div>
-              <div class="h-full mt-36 ">
-                <Bar />
+              <div class="h-full mt-36">
+                <Bar :top5="top5"/>
               </div>
             </section>
           </div>
         </div>
       </section>
-      <!-- stamps -->
-      <section class="flex flex-col gap-6">
-        <div
-          class="w-[350px] h-[96px] flex  justify-between items-center px-4 rounded-lg
-          bg-gradient-to-r from-cyan-50 to-cyan-400 "
-        >
-          <div>
-            <p class="font-semibold">R$ 35 Milhões</p>
-            <p>valor dos contratos</p>
-          </div>
-          <span class="cursor-pointer">
-            <Icon icon="hugeicons:note-04" height="30" class="text-white" />
-          </span>
-        </div>
-        <div
-          class="w-[350px] h-[96px] flex  justify-between items-center px-4 rounded-lg
-           bg-gradient-to-r from-blue-300 to-pink-200"
-        >
-          <div>
-            <p class="font-semibold">R$ 7.5 Milhões</p>
-            <p>Aguardando Faturamento</p>
-          </div>
-          <div>
-            <p class="font-semibold">R$ 8 Milhões</p>
-            <p>Aguardando Pagamento</p>
-          </div>
-          <span class="cursor-pointer">
-            <Icon icon="ph:calculator-thin" height="30" class="text-white" />
-          </span>
-        </div>
-        <div
-          class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
-           bg-gradient-to-r from-orange-200 to-green-200"
-        >
-          <div>
-            <p class="font-semibold">R$ 11 Milhões</p>
-            <p>Pago</p>
-          </div>
-          <div>
-            <p class="font-semibold">R$ 8.5 Milhões</p>
-            <p>Saldo</p>
-          </div>
-          <span class="cursor-pointer">
-            <Icon icon="rivet-icons:money" height="30" class="text-white" />
-          </span>
-        </div>
-      </section>
+   <!-- stamps -->
+<section class="flex flex-col gap-6">
+  <div
+    class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
+    bg-gradient-to-r from-cyan-50 to-cyan-400 "
+  >
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_valor_contratado) }}</p>
+      <p>valor dos contratos</p>
     </div>
-    <div class="flex   mt-32">
-        <Map :markers="map" />
-        <div class="w-1/2 " v-if="contratosPorVencimento">
-            <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
-        </div>
+    <span>
+      <Icon icon="hugeicons:note-04" height="30" class="text-white" />
+    </span>
+  </div>
+  <div
+    class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
+     bg-gradient-to-r from-blue-300 to-pink-200"
+  >
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_faturamento) }}</p>
+      <p>Aguardando Faturamento</p>
+    </div>
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento) }}</p>
+      <p>Aguardando Pagamento</p>
+    </div>
+    <span>
+      <Icon icon="ph:calculator-thin" height="30" class="text-white" />
+    </span>
+  </div>
+  <div
+    class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
+     bg-gradient-to-r from-orange-200 to-green-200"
+  >
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_pago) }}</p>
+      <p>Pago</p>
+    </div>
+    <div>
+      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_saldo_disponível) }}</p>
+      <p>Saldo</p>
+    </div>
+    <span>
+      <Icon icon="rivet-icons:money" height="30" class="text-white" />
+    </span>
+  </div>
+</section>
+
+    </div>
+    <div class="flex flex-row w-full mt-20">
+      <Map v-if="mapLoaded" :markers="map" />
+      <div class="w-1/2" v-if="contratosPorVencimento">
+        <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
+      </div>
     </div>
     <div>
       <table
@@ -109,7 +110,7 @@
             <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
             <td class="text-2xl">
               {{ verificarVencimentoContratos(contrato) }}
-              <div class="flex justify-center">              
+              <div class="flex justify-center">
                 <span v-if="statusVencimento === 'a vencer'">
                   <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
                 </span>
@@ -153,16 +154,17 @@ import Doughnut from "../../components/graficos/Doughnut.vue";
 import Bar from "../../components/graficos/Bar.vue";
 import BarVertical from "@/components/graficos/BarVertical.vue";
 import { Icon } from "@iconify/vue";
-import Map from "@/components/Map.vue";
+import Map from "../../components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 
 const currentPageContratos = ref(1);
 const valoresTotaisStatus = ref()
+const valoresStamp = ref({})
 const  contratosPorVencimento = ref()
-const top5 = ref({})
-const map = ref();
-
+const top5 = ref()
+const map = ref([]);
+const mapLoaded = ref(false);
 const totalContratos = ref(0)
 const resultsPerPageContratos= ref()
 let contratoItemData =  ref([]);
@@ -171,39 +173,40 @@ let statusVencimento = ref('')
 
 onMounted(()=> {
   fetchDataDashboard()
-  
 })
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
 const verificarVencimentoContratos = (contrato) => {
-    const hoje = getCurrentDateString();  
-    const dataFim = contrato.dataFim;   
-    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);    
+    const hoje = getCurrentDateString();
+    const dataFim = contrato.dataFim;
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
     const  diferenca =  new Date(dataFim) - new Date(hoje)
-    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);   
+    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);
 
-    
+
       if ((diasParaVencimento <= lembreteVencimento)  && diasParaVencimento > 0) {
-         statusVencimento.value = 'a vencer'     
-      } else if ( (diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {          
+         statusVencimento.value = 'a vencer'
+      } else if ( (diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {
         statusVencimento.value = 'ativo'
-      } else if ( diasParaVencimento <= 0) {      
+      } else if ( diasParaVencimento <= 0) {
         statusVencimento.value = 'atraso'
-      } else {         
+      } else {
         statusVencimento.value = 'atraso'
       }
-  
+
   };
 const fetchDataDashboard = async () => {
   try {
     const response = await api.get(`/dashboard`);
 
     valoresTotaisStatus.value = response.data.valores_totais_status
+    valoresStamp.value = response.data.valores_totais_status
     contratosPorVencimento.value = response.data.contratos_por_vencimento
-    map.value = response.data.map
+    map.value = response.data.map;
+    mapLoaded.value = true;
+    top5.value = response.data.top5;
     fetchContratos(currentPageContratos.value)
-    console.log(response, 'response')
 
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -213,12 +216,12 @@ const fetchDataDashboard = async () => {
 const fetchContratos = async(page) => {
    try {
     const response = await api.get(`/dashboard?page=${page}`);
-    contratoItemData.value = response.data.contratos.data;    
+    contratoItemData.value = response.data.contratos.data;
     contratoItemMeta.value = response.data.contratos.meta;
     currentPageContratos.value = contratoItemMeta.value.currentPage;
     totalContratos.value = contratoItemMeta.value.total;
     resultsPerPageContratos.value = contratoItemMeta.value.perPage;
-    
+
    } catch (error) {
     console.error(error);
    }
@@ -233,6 +236,33 @@ const changePageContratos = (page) => {
     currency: "BRL",
     minimumFractionDigits: 2,
   }).format(value);
+};
+
+const formatCurrencyInMillions = (value) => {
+  if (value === null || value === undefined) return "R$ 0,00";
+
+  const valueInThousands = value / 1000;
+  const valueInMillions = value / 1000000;
+
+  if (valueInMillions >= 1) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    }).format(valueInMillions) + " Milhões";
+  } else if (valueInThousands >= 1) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    }).format(valueInThousands) + " Mil";
+  } else {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    }).format(value);
+  }
 };
 
 const formatDate = (dateString) => {
