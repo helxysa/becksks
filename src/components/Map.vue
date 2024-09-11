@@ -21,6 +21,13 @@ const props = defineProps({
 
 let map = null;
 
+const defaultIcon = L.icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconSize: [25, 41], // tamanhos padrão do ícone
+  iconAnchor: [12, 41], // ponto do ícone que será posicionado sobre as coordenadas
+  popupAnchor: [1, -34], // ponto do popup que será posicionado sobre o ícone
+});
+
 onMounted(() => {
   createMapLayer();
 });
@@ -52,7 +59,7 @@ const setMarkers = () => {
     const longitude = parseFloat(marker.longitude);
     const { cidade, estado, valor_total, quantidade_contratos } = marker;
 
-    L.marker([latitude, longitude])
+    L.marker([latitude, longitude], { icon: defaultIcon })
       .addTo(map)
       .bindPopup(`
         <b>${cidade} - ${estado}</b><br/>
