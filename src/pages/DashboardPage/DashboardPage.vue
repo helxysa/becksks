@@ -109,7 +109,7 @@
             <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
             <td class="text-2xl">
               {{ verificarVencimentoContratos(contrato) }}
-              <div class="flex justify-center">
+              <div class="flex justify-center">              
                 <span v-if="statusVencimento === 'a vencer'">
                   <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
                 </span>
@@ -176,25 +176,21 @@ onMounted(()=> {
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
 const verificarVencimentoContratos = (contrato) => {
-    const hoje = getCurrentDateString();   
-    console.log(typeof hoje,  'hh')
-    const dataFim = contrato.dataFim;
-    console.log(typeof dataFim , 'jkk')
+    const hoje = getCurrentDateString();  
+    const dataFim = contrato.dataFim;   
     const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);    
-    const  diferenca = new Date(hoje) - new Date(dataFim)
-    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);
-    console.log(diasParaVencimento, 'vencimento')
-    console.log(lembreteVencimento, 'lembrete')
-    console.log(hoje, 'hoje')
-   
+    const  diferenca =  new Date(dataFim) - new Date(hoje)
+    const diasParaVencimento = diferenca / (1000 * 60 * 60 * 24);   
 
-      console.log(dataFim, 'fim')
-      if (diasParaVencimento <= lembreteVencimento ) {
+    
+      if ((diasParaVencimento <= lembreteVencimento)  && diasParaVencimento > 0) {
          statusVencimento.value = 'a vencer'     
-      } else if ( diasParaVencimento > lembreteVencimento) {       
-        statusVencimento.value = 'atraso'
-      } else   {
+      } else if ( (diasParaVencimento > lembreteVencimento) && diasParaVencimento > 0) {          
         statusVencimento.value = 'ativo'
+      } else if ( diasParaVencimento <= 0) {      
+        statusVencimento.value = 'atraso'
+      } else {         
+        statusVencimento.value = 'atraso'
       }
   
   };
@@ -214,8 +210,7 @@ const fetchDataDashboard = async () => {
 const fetchContratos = async(page) => {
    try {
     const response = await api.get(`/dashboard?page=${page}`);
-    contratoItemData.value = response.data.contratos.data;
-    console.log(contratoItemData.value, 'outro con')
+    contratoItemData.value = response.data.contratos.data;    
     contratoItemMeta.value = response.data.contratos.meta;
     currentPageContratos.value = contratoItemMeta.value.currentPage;
     totalContratos.value = contratoItemMeta.value.total;
