@@ -247,30 +247,27 @@
       <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
         Itens do Contrato
       </h1>
-      <div class="flex  gap-4">
-        <button @click="openCreateItemModal" class="btn-item relative">
+      <div class="flex gap-4">
+        <button
+          @click="openCreateItemModal"
+          class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        >
+          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
           Adicionar Item
-          <span class="absolute right-[3px]">
-            <Icon
-              icon="material-symbols-light:add"
-              height="25"
-              class="text-zinc-50"
-            />
-          </span>
         </button>
         <button
-        class="btn-unidade relative bg-orange-500 hover:bg-orange-600"
+        class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
         type="button"
-        @click="openModalUnit"
+        @click="openModalUnidade"
       >
-        Adicionar Unidade
-        <span class="absolute right-[10px]">
+        <span class="mr-2 pb-[1px]">
           <Icon
-            icon="material-symbols-light:add"
-            height="25"
+            icon="material-symbols-light:grid-on-outline"
+            height="20"
             class="text-zinc-50"
           />
         </span>
+        Adicionar Unidade
       </button>
 
       </div>
@@ -362,22 +359,20 @@
       <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
         Medição
       </h1>
-      <div class="flex gap-4">
-        <button class="btn-lancamento relative" @click="ExibirModalLancamento">
+      <div class="mt-8 flex gap-8 flex-wrap justify-end">
+        <button
+        class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        @click="ExibirModalLancamento"
+        >
+          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
           Nova Medição
-          <span class="absolute right-[3px]">
-            <Icon
-              icon="material-symbols-light:add"
-              height="25"
-              class="text-zinc-50"
-            />
-          </span>
         </button>
         <button
-          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px] h-[40px]"
+          class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           @click="ExibirModalPedidoFaturamento"
         >
-          Novo pedido faturamento
+          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+          Novo faturamento
         </button>
       </div>
     </div>
@@ -1667,67 +1662,79 @@
     </template>
   </JetDialogModal>
 
-<!-- modal crud unidade -->
+  <!-- Modal unidade -->
 <JetDialogModal
 :show="isModalUnidadeOpen"
 :withouHeader="false"
-@close="closeModalUnit"
+@close="closeModalUnidade"
 :modalTitle="modalTitleUnidade"
 maxWidth="6xl"
 >
 <template #content>
-  <form @submit.prevent="handleSubmitUnidade" class="space-y-4">
-    <div class="flex gap-4  items-center">
-      <label for="nome" class="font-bold text-3xl text-gray-700">Unidade</label>
-      <input
-        type="text"
-        id="nome"
-        v-model="newUnitName"
-        required
-        class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[100%] border-gray-300 rounded-md h-14"
-        placeholder="Nome  da   unidade"
-      />
-    </div>
-
-    <div class="flex justify-end space-x-2">
-      <button
-        type="button"
-        @click="closeModalUnit"
-        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-      >
-        Cancelar
-      </button>
-      <button
-        type="submit"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        {{ isEditingUnidade ? 'Atualizar' : 'Adicionar' }}
-      </button>
-    </div>
+  <form @submit.prevent="handleSubmitUnidade" class="flex gap-8 px-6 h-[4.40rem]">
+    <input
+      type="text"
+      id="nome"
+      v-model="newUnidade"
+      required
+      class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+      placeholder="Digite o nome da unidade"
+    />
+    <button
+      type="button"
+      @click="handleSubmitUnidade"
+      class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+    >
+      {{ isEditingUnidade ? "Atualizar" : "Adicionar" }}
+    </button>
   </form>
-  <div class="mt-6">
-    <h3 class="text-lg font-semibold mb-2">Unidades</h3>
-    <ul class="divide-y divide-gray-200">
-      <li v-for="item in unidadesMedida" :key="item.id" class="py-3 flex justify-between items-center">
-        <span>{{ item.unidadeMedida }}</span>
-        <div>
-          <button
-            @click="editUnidade(item)"
-            class="text-blue-600 hover:text-blue-800 mr-2"
-          >
-            Editar
+  <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+    <div
+      v-for="item in unidadesMedida"
+      :key="item.id"
+      class="flex items-center gap-2 border-[1px] rounded-md"
+    >
+      <div v-if="!item.isEditing" class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
+        <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.unidadeMedida">
+          {{ item.unidadeMedida }}
+        </span>
+        <div class="flex items-center mx-4">
+          <button @click="editUnidade(item)" class="hover:bg-gray-200 hover:rounded-full rounded-full p-4">
+            <Icon icon="heroicons-solid:pencil" height="18" class="text-blue-600 rounded-full" />
           </button>
-          <button
-            @click="deletarUnidadeMedida(item.id, item)"
-            class="text-red-600 hover:text-red-800"
-          >
-            Excluir
+          <button @click="deletarUnidade(item.id)" class="hover:bg-gray-200 hover:rounded-full rounded-full p-4">
+            <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
           </button>
         </div>
-      </li>
-    </ul>
+      </div>
+      <div v-else class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6">
+        <input
+          type="text"
+          v-model="item.unidadeMedida"
+          class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          placeholder="Digite o nome da unidade"
+        />
+        <div class="ml-auto text-nowrap flex gap-4">
+          <button @click="saveUnidade(item)" class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]">
+            Salvar
+          </button>
+          <button @click="cancelEditUnidade(item)" class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-
+  <hr class="my-8" />
+  <footer class="flex justify-end h-16 mb-2">
+    <button
+      type="button"
+      @click="closeModalUnidade"
+      class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+    >
+      Salvar Unidades
+    </button>
+  </footer>
 </template>
 </JetDialogModal>
 </template>
@@ -1848,70 +1855,13 @@ const resultsPerPageFaturamentos= ref()
 let faturamentoItemData =  ref([]);
 let faturamentoItemMeta = ref([]);
 
+// UNIDADE DE MEDIDA
+const unidadesMedida = ref([]);
+const newUnidade = ref("");
 const isModalUnidadeOpen = ref(false);
 const isEditingUnidade = ref(false);
-const modalTitleUnidade = computed(() => isEditingUnidade.value ? 'Editar Unidade' : 'Adicionar Unidade');
-const  idUnidade =  ref("")
-
-const openModalUnit = () => {
-  isModalUnidadeOpen.value = true;
-  fetchUnidadesMedida();
-};
-
-const closeModalUnit = () => {
-  isModalUnidadeOpen.value = false;
-  resetFormUnit();
-};
-
-const resetFormUnit = () => {
-  newUnitName.value = ""
-  isEditingUnidade.value = false;
-};
-
-
-const handleSubmitUnidade = () => {
-  if (isEditingUnidade.value) {
-    EditarUnidade()
-  } else {
-    CriarUnidadeMedida()
-  }
-  closeModalUnit();
-};
-
-const editUnidade = (item) => {
-  newUnitName.value = item.unidadeMedida;
-  isEditingUnidade.value = true;
-  idUnidade.value = item.id;
-};
-
-const EditarUnidade = async () => {
-  try {
-    const response = await api.put(`unidade_medida/${idUnidade.value}`, {
-      unidade_medida: newUnitName.value,
-    });
-    await fetchUnidadesMedida();
-    toast.success("Unidade editada com sucesso!");
-    newUnitName.value = "";
-
-  } catch (error) {
-    console.error(
-      "Erro ao editar unidade:",
-      error.response.data.message
-    );
-    if (
-      error.response.data.message ==
-      "Já existe uma unidade com esse nome."
-    ) {
-      return toast.error(error.response.data.message);
-    } else {
-      toast.error("Não foi possível editar a  unidade.");
-    }
-  }
-};
-
-
-const unidadesMedida = ref([]);
-const newUnitName = ref("");
+// const currentUnidadeId = ref(null);
+const modalTitleUnidade = "Adicionar Unidade";
 
 const fetchUnidadesMedida = async () => {
   try {
@@ -1920,38 +1870,80 @@ const fetchUnidadesMedida = async () => {
   } catch (error) {
     console.error("Erro ao buscar unidades de medida:", error);
   }
+}
+
+const openModalUnidade = () => {
+  fetchUnidadesMedida().then(() => {
+    newUnidade.value = "";
+    isModalUnidadeOpen.value = true;
+  });
 };
 
-const CriarUnidadeMedida = async () => {
+const handleSubmitUnidade = async () => {
+  const unidadeNome = newUnidade.value.trim();
+  if (unidadeNome === "") {
+    toast.error("O nome da unidade não pode estar vazio.");
+    return;
+  }
+
+    await CriarUnidade();
+};
+
+const CriarUnidade = async () => {
   try {
-    const response = await api.post("/unidade_medida", {
-      unidade_medida: newUnitName.value,
+    await api.post("/unidade_medida", {
+      unidade_medida: newUnidade.value,
     });
     await fetchUnidadesMedida();
-    toast.success("Unidade de medida criada com sucesso!");
-    newUnitName.value = "";
-
+    toast.success("Unidade criada com sucesso!");
+    newUnidade.value = '';
   } catch (error) {
-    console.error(
-      "Erro ao criar nova unidade de medida:",
-      error.response.data.message
-    );
-    if (
-      error.response.data.message ==
-      "Já existe uma unidade de medida com esse nome."
-    ) {
-      return toast.error(error.response.data.message);
-    } else {
-      toast.error("Não foi possível criar a unidade de medida.");
-    }
+    console.error("Erro ao criar unidade:", error);
+    toast.error("Não foi possível criar a unidade.");
   }
 };
 
-const deletarUnidadeMedida = (id, unidadeMedida) => {
-  //Não implementado ainda
+const editUnidade = (item) => {
+  item.originalUnidadeMedida = item.unidadeMedida;
+  item.isEditing = true;
+};
+
+const saveUnidade =  async (item) => {
+  const unidadeNome = item.unidadeMedida.trim();
+  const unidadeId = item.id;
+
+  if (unidadeNome === "") {
+    toast.error("O nome da unidade não pode estar vazio.");
+    return;
+  }
+
+  if (isDuplicateUnidade(unidadeNome, item.id)) {
+    toast.error("Já existe uma unidade com esse nome.");
+    return;
+  }
+  try {
+    await api.put(`/unidade_medida/${unidadeId}`, {
+      unidade_medida: unidadeNome,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade editada com sucesso!");
+  } catch (error) {
+    console.error("Erro ao editar unidade:", error);
+    toast.error("Não foi possível editar a unidade.");
+  }
+
+  item.isEditing = false;
+};
+
+const cancelEditUnidade = (item) => {
+  item.isEditing = false;
+  item.unidadeMedida = item.originalUnidadeMedida;
+};
+
+const deletarUnidade = (id) => {
   Swal.fire({
     title: "Você tem certeza?",
-    text: `Deseja remover a unidade de medida "${unidadeMedida.unidadeMedida}"?`,
+    text: `Deseja remover a unidade de medida?`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -1963,15 +1955,27 @@ const deletarUnidadeMedida = (id, unidadeMedida) => {
       try {
         await api.delete(`/unidade_medida/${id}`);
         await fetchUnidadesMedida();
-        toast.success("Unidade de medida removida com sucesso!");
+        toast.success("Unidade removida com sucesso!");
       } catch (error) {
-        console.error("Erro ao remover unidade de medida:", error);
-        toast.error("Erro ao remover unidade de medida.");
+        console.error("Erro ao remover unidade:", error);
+        toast.error("Erro ao remover unidade.");
       }
     }
   });
 };
 
+const closeModalUnidade = () => {
+  newUnidade.value = "";
+  isEditingUnidade.value = false;
+  // currentUnidadeId.value = null;
+  isModalUnidadeOpen.value = false;
+};
+
+const isDuplicateUnidade = (nome, excludeId = null) => {
+  return unidadesMedida.value.some(
+    (u) => u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
+  );
+};
 
 const fetchProjetos = async (id) => {
   try {
