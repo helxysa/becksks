@@ -78,11 +78,11 @@
         </div>
       </section>
     </div>
-    <div class="flex   mt-32">
-        <Map :markers="map" />
-        <div class="w-1/2 " v-if="contratosPorVencimento">
-            <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
-        </div>
+    <div class="flex mt-32">
+      <Map :markers="map" />
+      <div class="w-1/2 " v-if="contratosPorVencimento">
+        <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
+      </div>
     </div>
     <div>
       <table
@@ -153,7 +153,7 @@ import Doughnut from "../../components/graficos/Doughnut.vue";
 import Bar from "../../components/graficos/Bar.vue";
 import BarVertical from "@/components/graficos/BarVertical.vue";
 import { Icon } from "@iconify/vue";
-import Map from "@/components/Map.vue";
+import Map from "../../components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 
@@ -161,7 +161,7 @@ const currentPageContratos = ref(1);
 const valoresTotaisStatus = ref()
 const  contratosPorVencimento = ref()
 const top5 = ref()
-const map = ref();
+const map = ref([]);
 
 const totalContratos = ref(0)
 const resultsPerPageContratos= ref()
@@ -171,7 +171,6 @@ let statusVencimento = ref('')
 
 onMounted(()=> {
   fetchDataDashboard()
-
 })
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
@@ -201,7 +200,7 @@ const fetchDataDashboard = async () => {
 
     valoresTotaisStatus.value = response.data.valores_totais_status
     contratosPorVencimento.value = response.data.contratos_por_vencimento
-    map.value = response.data.map
+    map.value = response.data.map;
     top5.value = response.data.top5;
     fetchContratos(currentPageContratos.value)
 
