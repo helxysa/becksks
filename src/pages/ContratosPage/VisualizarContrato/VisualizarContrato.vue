@@ -120,7 +120,7 @@
             </div>
             <div>
               <p class="text-lg text-gray-500">Contato</p>
-              <p class="font-medium text-gray-700">
+              <p class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer" @click="openWhatsApp(contrato.fiscal.telefone)">
                 {{ contrato?.fiscal?.telefone }}
               </p>
             </div>
@@ -176,7 +176,7 @@
             </div>
             <div>
               <p class="text-lg text-gray-500">Cidade</p>
-              <p class="font-medium text-gray-700">{{ contrato.cidade }}</p>
+              <p class="font-medium text-gray-700">{{ contrato.cidade }} ({{contrato.estado}})</p>
             </div>
           </div>
           <div class="flex items-center">
@@ -247,16 +247,30 @@
       <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
         Itens do Contrato
       </h1>
-      <button @click="openCreateItemModal" class="btn-item relative">
-        Adicionar Item
-        <span class="absolute right-[3px]">
+      <div class="flex gap-4">
+        <button
+          @click="openCreateItemModal"
+          class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        >
+          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+          Adicionar Item
+        </button>
+        <button
+        class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        type="button"
+        @click="openModalUnidade"
+      >
+        <span class="mr-2 pb-[1px]">
           <Icon
-            icon="material-symbols-light:add"
-            height="25"
+            icon="material-symbols-light:grid-on-outline"
+            height="20"
             class="text-zinc-50"
           />
         </span>
+        Adicionar Unidade
       </button>
+
+      </div>
     </div>
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
@@ -345,22 +359,20 @@
       <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
         Medição
       </h1>
-      <div class="flex gap-4">
-        <button class="btn-lancamento relative" @click="ExibirModalLancamento">
+      <div class="mt-8 flex gap-8 flex-wrap justify-end">
+        <button
+        class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        @click="ExibirModalLancamento"
+        >
+          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
           Nova Medição
-          <span class="absolute right-[3px]">
-            <Icon
-              icon="material-symbols-light:add"
-              height="25"
-              class="text-zinc-50"
-            />
-          </span>
         </button>
         <button
-          class="bg-orange-500 text-zinc-50 rounded-lg w-[200px] h-[40px]"
+          class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           @click="ExibirModalPedidoFaturamento"
         >
-          Novo pedido faturamento
+          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+          Novo faturamento
         </button>
       </div>
     </div>
@@ -369,13 +381,18 @@
         <tr>
           <th></th>
           <th class="text-xl">Id</th>
-          <th class="text-xl">Data da medição</th>
+          <th class="text-xl cursor-pointer" @click="changeSorting('data_medicao', 'medicoes')">
+            Data
+            <span>
+              {{ sortOrder['medicoes'] === 'asc' ? '▲' : '▼' }}
+            </span>
+        </th>
           <th class="text-xl">Projeto</th>
-          <th class="text-xl">Tarefa da medição</th>
-          <th class="text-xl">Tipo da medição</th>
-          <th class="text-xl">Status da medição</th>
+          <th class="text-xl">Tarefa</th>
+          <th class="text-xl">Tipo</th>
+          <th class="text-xl">Status</th>
           <!-- <th class="text-xl">Quantidade itens</th> -->
-          <th class="text-xl">Resultado da medição</th>
+          <th class="text-xl">Resultado</th>
           <th class="text-xl">Unidade de medida</th>
           <!-- <th class="text-xl">Itens disponíveis</th> -->
           <!-- <th class="text-xl">Situação</th> -->
@@ -401,10 +418,11 @@
               :disabled="lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado"
             />
           </td>
+
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
-          <td class="text-2xl">{{ lancamento.tarefaMedicao }}</td>
+          <td class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300" @click="redirectToRedmine(lancamento.tarefaMedicao)">{{ lancamento.tarefaMedicao }}</td>
           <td class="text-2xl">
             <div class="flex justify-center">
               <span
@@ -436,7 +454,7 @@
               >
                 {{ lancamento.status }}
               </span>
-              <span 
+              <span
                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]
                bg-gray-200 border-gray-400
                "
@@ -525,9 +543,14 @@
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
           <th class="text-xl">Id</th>
-          <th class="text-xl">Data</th>
+          <th class="text-xl cursor-pointer" @click="changeSorting('data_faturamento', 'faturamentos')">
+            Data
+            <span>
+              {{ sortOrder['faturamentos'] === 'asc' ? '▲' : '▼' }}
+            </span>
+          </th>
           <th class="text-xl">Nota Fiscal</th>
-          <th class="text-xl">Total do Faturamento</th>
+          <th class="text-xl">Total</th>
           <th class="text-xl">Situação</th>
           <th class="text-xl">Ações</th>
         </tr>
@@ -985,12 +1008,27 @@
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <input
+            <!-- <input
               type="text"
               placeholder="Informe o nome do  projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="projetos"
-            />
+            /> -->
+            <select
+            v-model="projetos"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          >
+            <option disabled hidden value="">
+              Selecione o projeto
+            </option>
+            <option
+              v-for="item in projetosLoaders"
+              :value="item"
+              :key="item.id"
+            >
+              {{ item.projeto }}
+            </option>
+          </select>
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]"
@@ -1017,7 +1055,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
+          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1032,7 +1070,7 @@
               <option>Não Autorizada</option>
               <option>Cancelada</option>
             </select>
-          </div>
+          </div> -->
 
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
@@ -1159,13 +1197,29 @@
         <section class="flex flex-col gap-8">
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <input
+            <!-- <input
               type="text"
               placeholder="Informe o nome do projeto"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               :disabled="isLancamentoViewModal"
               v-model="editingLancamento.projetos"
-            />
+            /> -->
+            <select
+            v-model="editingLancamento.projetos"
+            :disabled="isLancamentoViewModal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          >
+            <option disabled hidden value="">
+              Selecione o projeto
+            </option>
+            <option
+              v-for="item in projetosLoaders"
+              :value="item.projeto"
+              :key="item.id"
+            >
+              {{ item.projeto }}
+            </option>
+          </select>
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]"
@@ -1333,13 +1387,13 @@
           <div class="flex justify-between items-center">
             <label class="font-bold text-3xl"
               >Unidade de Medida:
-              <button
+              <!-- <button
                 type="button"
                 @click="openNewUnitInput"
                 class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
               >
                 {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-              </button>
+              </button> -->
             </label>
             <select
               v-if="!showNewUnitInput"
@@ -1443,13 +1497,13 @@
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Unidade de Medida:
-              <button
+              <!-- <button
               type="button"
               @click="openNewUnitInput"
               class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
             >
               {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-            </button>
+            </button> -->
             </label>
             <select
               v-if="!showNewUnitInput"
@@ -1607,6 +1661,82 @@
       </form>
     </template>
   </JetDialogModal>
+
+  <!-- Modal unidade -->
+<JetDialogModal
+:show="isModalUnidadeOpen"
+:withouHeader="false"
+@close="closeModalUnidade"
+:modalTitle="modalTitleUnidade"
+maxWidth="6xl"
+>
+<template #content>
+  <form @submit.prevent="handleSubmitUnidade" class="flex gap-8 px-6 h-[4.40rem]">
+    <input
+      type="text"
+      id="nome"
+      v-model="newUnidade"
+      required
+      class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+      placeholder="Digite o nome da unidade"
+    />
+    <button
+      type="button"
+      @click="handleSubmitUnidade"
+      class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+    >
+      {{ isEditingUnidade ? "Atualizar" : "Adicionar" }}
+    </button>
+  </form>
+  <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+    <div
+      v-for="item in unidadesMedida"
+      :key="item.id"
+      class="flex items-center gap-2 border-[1px] rounded-md"
+    >
+      <div v-if="!item.isEditing" class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
+        <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.unidadeMedida">
+          {{ item.unidadeMedida }}
+        </span>
+        <div class="flex items-center mx-4">
+          <button @click="editUnidade(item)" class="hover:bg-gray-200 hover:rounded-full rounded-full p-4">
+            <Icon icon="heroicons-solid:pencil" height="18" class="text-blue-600 rounded-full" />
+          </button>
+          <button @click="deletarUnidade(item.id)" class="hover:bg-gray-200 hover:rounded-full rounded-full p-4">
+            <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
+          </button>
+        </div>
+      </div>
+      <div v-else class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6">
+        <input
+          type="text"
+          v-model="item.unidadeMedida"
+          class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          placeholder="Digite o nome da unidade"
+        />
+        <div class="ml-auto text-nowrap flex gap-4">
+          <button @click="saveUnidade(item)" class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]">
+            Salvar
+          </button>
+          <button @click="cancelEditUnidade(item)" class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr class="my-8" />
+  <footer class="flex justify-end h-16 mb-2">
+    <button
+      type="button"
+      @click="closeModalUnidade"
+      class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+    >
+      Salvar Unidades
+    </button>
+  </footer>
+</template>
+</JetDialogModal>
 </template>
 
 <script setup>
@@ -1689,6 +1819,7 @@ const isFaturamentoViewModal = ref(false);
 const editingFaturamento = ref({});
 const podeRenovar = ref(false);
 const projetos = ref("");
+const projetosLoaders = ref([])
 const pedidosFaturamento = ref([]);
 const arrayIds = ref([]);
 const pedidoFaturamentoData = ref({
@@ -1708,9 +1839,6 @@ const medicaoData = ref({
 
 });
 
-const unidadesMedida = ref([]);
-const showNewUnitInput = ref(false);
-const newUnitName = ref("");
 const totalItens = ref()
 const resultsPerPageItens= ref()
 let contratoItemData =  ref([]);
@@ -1722,12 +1850,141 @@ const resultsPerPageMedicoes= ref()
 let medicaoItemData =  ref([]);
 let medicaoItemMeta = ref([]);
 
-
 const totalFaturamentos = ref(0)
 const resultsPerPageFaturamentos= ref()
 let faturamentoItemData =  ref([]);
 let faturamentoItemMeta = ref([]);
 
+// UNIDADE DE MEDIDA
+const unidadesMedida = ref([]);
+const newUnidade = ref("");
+const isModalUnidadeOpen = ref(false);
+const isEditingUnidade = ref(false);
+// const currentUnidadeId = ref(null);
+const modalTitleUnidade = "Adicionar Unidade";
+
+const fetchUnidadesMedida = async () => {
+  try {
+    const response = await api.get("/unidade_medida");
+    unidadesMedida.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar unidades de medida:", error);
+  }
+}
+
+const openModalUnidade = () => {
+  fetchUnidadesMedida().then(() => {
+    newUnidade.value = "";
+    isModalUnidadeOpen.value = true;
+  });
+};
+
+const handleSubmitUnidade = async () => {
+  const unidadeNome = newUnidade.value.trim();
+  if (unidadeNome === "") {
+    toast.error("O nome da unidade não pode estar vazio.");
+    return;
+  }
+
+    await CriarUnidade();
+};
+
+const CriarUnidade = async () => {
+  try {
+    await api.post("/unidade_medida", {
+      unidade_medida: newUnidade.value,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade criada com sucesso!");
+    newUnidade.value = '';
+  } catch (error) {
+    console.error("Erro ao criar unidade:", error);
+    toast.error("Não foi possível criar a unidade.");
+  }
+};
+
+const editUnidade = (item) => {
+  item.originalUnidadeMedida = item.unidadeMedida;
+  item.isEditing = true;
+};
+
+const saveUnidade =  async (item) => {
+  const unidadeNome = item.unidadeMedida.trim();
+  const unidadeId = item.id;
+
+  if (unidadeNome === "") {
+    toast.error("O nome da unidade não pode estar vazio.");
+    return;
+  }
+
+  if (isDuplicateUnidade(unidadeNome, item.id)) {
+    toast.error("Já existe uma unidade com esse nome.");
+    return;
+  }
+  try {
+    await api.put(`/unidade_medida/${unidadeId}`, {
+      unidade_medida: unidadeNome,
+    });
+    await fetchUnidadesMedida();
+    toast.success("Unidade editada com sucesso!");
+  } catch (error) {
+    console.error("Erro ao editar unidade:", error);
+    toast.error("Não foi possível editar a unidade.");
+  }
+
+  item.isEditing = false;
+};
+
+const cancelEditUnidade = (item) => {
+  item.isEditing = false;
+  item.unidadeMedida = item.originalUnidadeMedida;
+};
+
+const deletarUnidade = (id) => {
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover a unidade de medida?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/unidade_medida/${id}`);
+        await fetchUnidadesMedida();
+        toast.success("Unidade removida com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover unidade:", error);
+        toast.error("Erro ao remover unidade.");
+      }
+    }
+  });
+};
+
+const closeModalUnidade = () => {
+  newUnidade.value = "";
+  isEditingUnidade.value = false;
+  // currentUnidadeId.value = null;
+  isModalUnidadeOpen.value = false;
+};
+
+const isDuplicateUnidade = (nome, excludeId = null) => {
+  return unidadesMedida.value.some(
+    (u) => u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
+  );
+};
+
+const fetchProjetos = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/projetos`);
+    projetosLoaders.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao contratos:", error);
+  }
+};
 
   const changePageItem = (page) => {
       currentPage.value = page;
@@ -1757,9 +2014,39 @@ let faturamentoItemMeta = ref([]);
         console.error(error);
       }
     }
+
+
+  const sortBy = ref({ medicoes: null, faturamentos: null })
+  const sortOrder = ref({ medicoes: null, faturamentos: null })
+
+  const changeSorting = (column, type) => {
+    if (sortBy.value[type] === column) {
+      sortOrder.value[type] = sortOrder.value[type] === 'asc' ? 'desc' : 'asc'
+    } else {
+      sortBy.value[type] = column
+      sortOrder.value[type] = 'asc'
+    }
+
+    if (type === 'medicoes') {
+      fetchContratoMedicoes(currentPageMedicao.value)
+    } else if (type === 'faturamentos') {
+      fetchContratoFaturamentos(currentPageFaturamento.value)
+    }
+  }
+
   const fetchContratoMedicoes = async (page) => {
       try {
-        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos?page=${page}`);
+        const params = {
+          page,
+          limit: 8,
+        }
+        if (sortBy.value) {
+          params.sortBy = sortBy.value.medicoes
+        }
+        if (sortOrder.value) {
+          params.sortOrder = sortOrder.value.medicoes
+        }
+        const response = await api.get(`/contratos/${contrato.value.id}/lancamentos`, { params});
         medicaoItemData.value = response.data.data;
         medicaoItemMeta.value = response.data.meta;
         if(contrato.value.faturamentos){
@@ -1775,7 +2062,17 @@ let faturamentoItemMeta = ref([]);
 
     const fetchContratoFaturamentos = async (page) => {
       try {
-        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`);
+      const params = {
+          page,
+          limit: 8,
+      }
+      if (sortBy.value) {
+          params.sortBy = sortBy.value.faturamentos
+      }
+      if (sortOrder.value) {
+          params.sortOrder = sortOrder.value.faturamentos
+      }
+        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params});
         faturamentoItemData.value = response.data.data;
         faturamentoItemMeta.value = response.data.meta;
         currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -1790,70 +2087,6 @@ watch(()=> currentPage.value, ()=> fetchContratoItens(currentPage.value));
 watch(()=> currentPageMedicao.value, ()=> fetchContratoMedicoes(currentPageMedicao.value));
 watch(()=> currentPageFaturamento.value, ()=> fetchContratoFaturamentos(currentPageFaturamento.value));
 
-
-const openNewUnitInput = () => {
-  showNewUnitInput.value = !showNewUnitInput.value;
-};
-
-const fetchUnidadesMedida = async () => {
-  try {
-    const response = await api.get("/unidade_medida");
-    unidadesMedida.value = response.data.data;
-  } catch (error) {
-    console.error("Erro ao buscar unidades de medida:", error);
-  }
-};
-
-const CriarUnidadeMedida = async () => {
-  try {
-    const response = await api.post("/unidade_medida", {
-      unidade_medida: newUnitName.value,
-    });
-    await fetchUnidadesMedida();
-    newItem.value.unidade_medida = newUnitName.value;
-    newUnitName.value = "";
-    showNewUnitInput.value = false;
-    toast.success("Unidade de medida criada com sucesso!");
-  } catch (error) {
-    console.error(
-      "Erro ao criar nova unidade de medida:",
-      error.response.data.message
-    );
-    if (
-      error.response.data.message ==
-      "Já existe uma unidade de medida com esse nome."
-    ) {
-      return toast.error(error.response.data.message);
-    } else {
-      toast.error("Não foi possível criar a unidade de medida.");
-    }
-  }
-};
-
-const deletarUnidadeMedida = (id, unidadeMedida) => {
-  //Não implementado ainda
-  Swal.fire({
-    title: "Você tem certeza?",
-    text: `Deseja remover a unidade de medida "${unidadeMedida}"?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sim, remover!",
-    cancelButtonText: "Cancelar",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await api.delete(`/unidade_medida/${id}`);
-        await fetchUnidadesMedida();
-        toast.success("Unidade de medida removida com sucesso!");
-      } catch (error) {
-        console.error("Erro ao remover unidade de medida:", error);
-        toast.error("Erro ao remover unidade de medida.");
-      }
-    }
-  });
-};
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
@@ -2162,6 +2395,7 @@ const closeModal = () => {
 };
 
 const ExibirModalLancamento = () => {
+  fetchProjetos(route.params.id);
   if (contrato.value.contratoItens.length === 0) {
     toast(
       "Não é possível adicionar um novo lancamento. Não há itens no contrato.",
@@ -2273,13 +2507,16 @@ const createLancamento = async () => {
     return;
   }
 
-if (medicaoData.value.tipo_medicao === "Detalhada") {
-  medicaoData.value.status = ""
-}
+  if (medicaoData.value.tipo_medicao === "Detalhada") {
+    medicaoData.value.status = ""
+  }
+  if (medicaoData.value.tipo_medicao === "Estimada") {
+    medicaoData.value.status = "Não Autorizada"
+  }
   let payload = {
-    status: medicaoData.value.status || "",
+    status: medicaoData.value.status,
     itens: itensQuantidadePreenchida,
-    projetos: projetos.value,
+    projetos: projetos.value.projeto,
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
@@ -2530,10 +2767,10 @@ const calcularSaldoDisponivel = (faturamento) => {
 
 const calcularItensRestante = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0;
-  let quantidadeRestante = 0;  
+  let quantidadeRestante = 0;
 
   contrato.value.lancamentos.forEach((lancamento) => {
-    if (lancamento.status === 'Não Autorizada' || lancamento.status === 'Cancelada') {         
+    if (lancamento.status === 'Não Autorizada' || lancamento.status === 'Cancelada') {
            return
     }
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
@@ -2688,7 +2925,7 @@ const deleteItem = async (itemId) => {
 
 const openCreateItemModal = () => {
   modalCreateItem.value = true;
-  showNewUnitInput.value = false;
+  // showNewUnitInput.value = false;
   fetchUnidadesMedida();
 };
 
@@ -2767,6 +3004,7 @@ const openEditLancamentoModal = (lancamento) => {
   const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
   modalEditLancamento.value = true;
+  fetchProjetos(route.params.id)
 };
 
 const openViewLancamentoModal = (lancamento) => {
@@ -2924,6 +3162,17 @@ const calcularPodeRenovar = () => {
 
   return totalUtilizado >= saldoContrato || dataFimContrato <= dataAtual;
 };
+
+const redirectToRedmine = (tarefa) => {
+  const url = `https://redmine.msbtec.com.br/issues/${tarefa}`;
+  window.open(url, '_blank');
+}
+
+const openWhatsApp = (telefone) => {
+  const telefoneFormatado = `+55${telefone.replace(/\D/g, '')}`;
+  const url = `https://wa.me/${telefoneFormatado}`;
+  window.open(url, '_blank');
+}
 </script>
 
 <style >
@@ -2963,6 +3212,14 @@ const calcularPodeRenovar = () => {
 
 .btn-item:hover {
   background-color: #0ea5e9;
+}
+
+.btn-unidade {
+  border-radius: 9px;
+  color: var(--whiteLight);
+  font-weight: 500;
+  width: 200px;
+  height: 40px;
 }
 
 .text-observacoes {
