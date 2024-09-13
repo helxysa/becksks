@@ -147,6 +147,7 @@ import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 
 const currentPageContratos = ref(1);
+const statusAtual = ref('');
 const valoresTotaisStatus = ref()
 const valoresStamp = ref({})
 const  contratosPorVencimento = ref()
@@ -160,37 +161,30 @@ let contratoItemMeta = ref({});
 let statusVencimento = ref('')
 
 onMounted(()=> {
-  fetchDataDashboard()
+  fetchDashboardData()
 })
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-const fetchDataDashboard = async (status) => {
-  try {
-    const statusFaturamento = status !== undefined ? status : '';
+const fetchDashboardData = async (status, page) => {
+  const validStatuses = ["Aguardando Pagamento", "Aguardando Faturamento", "Pago"];
+  const statusFat = validStatuses.includes(status) ? status : '';
 
+  try {
     const response = await api.get('/dashboard', {
-      params: { statusFaturamento }
+      params: {
+        statusFaturamento: statusFat,
+        page: page
+      }
     });
 
-    console.log('response', response)
-
-    valoresTotaisStatus.value = response.data.valores_totais_status
-    valoresStamp.value = response.data.valores_totais_status
-    contratosPorVencimento.value = response.data.contratos_por_vencimento
+    valoresTotaisStatus.value = response.data.valores_totais_status;
+    valoresStamp.value = response.data.valores_totais_status;
+    contratosPorVencimento.value = response.data.contratos_por_vencimento;
     map.value = response.data.map;
     mapLoaded.value = true;
     top5.value = response.data.top5;
-    fetchContratos(currentPageContratos.value)
 
-  } catch (error) {
-    console.error("Erro ao buscar dados:", error);
-  }
-};
-
-const fetchContratos = async(page) => {
-   try {
-    const response = await api.get(`/dashboard?page=${page}`);
     const contratos = response.data.contratos.data;
     const meta = response.data.contratos.meta;
 
@@ -198,13 +192,13 @@ const fetchContratos = async(page) => {
     currentPageContratos.value = meta.currentPage;
     totalContratos.value = meta.total;
     resultsPerPageContratos.value = meta.perPage;
-
     contratoItemData.value = adicionarStatusVencimento(contratos);
 
-   } catch (error) {
-    console.error(error);
-   }
-}
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+  }
+};
+
 const adicionarStatusVencimento = (contratos) => {
   const hoje = getCurrentDateString();
 
@@ -241,8 +235,8 @@ const changePageContratos = (page) => {
 };
 
 const handleFiltragemDonuts = (status) => {
-  console.log(`Status recebido no pai: ${status}`);
-  fetchDataDashboard(status)
+  statusAtual.value = status;
+  fetchDashboardData(statusAtual.value, currentPageContratos.value);
 };
 
 const formatCurrencyInMillions = (value) => {
@@ -261,7 +255,7 @@ const formatCurrencyInMillions = (value) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-      minimumFractionDigits: 2,
+      minimumFractionDigits: 1,
     }).format(valueInThousands) + " Mil";
   } else {
     return new Intl.NumberFormat("pt-BR", {
@@ -280,7 +274,9 @@ const formatDate = (dateString) => {
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
 
-watch(()=> currentPageContratos.value, ()=> fetchContratos(currentPageContratos.value));
+watch(() => [statusAtual.value, currentPageContratos.value], ([status, page]) => {
+  fetchDashboardData(status, page);
+});
 </script>
 
 <style>
