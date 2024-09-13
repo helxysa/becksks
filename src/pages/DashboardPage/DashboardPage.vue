@@ -79,10 +79,15 @@
 </section>
 
     </div>
-    <div class="flex flex-row w-full mt-20">
+    <div class="flex flex-row w-full mt-20 gap-4">
       <Map v-if="mapLoaded" :markers="map" />
-      <div class="w-1/2" v-if="contratosPorVencimento">
+      <div class="w-1/2 relative" v-if="contratosPorVencimento">
         <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
+        <div class="title-vencimento pt-2">
+          <span class="font-semibold">Contratos</span>
+          <p>por vencimento (dias)</p>
+        </div> 
+  
       </div>
     </div>
     <div>
@@ -309,5 +314,12 @@ watch(()=> currentPageContratos.value, ()=> fetchContratos(currentPageContratos.
 
 .active-page:hover {
   background-color: #2988c8 ;
+}
+
+.title-vencimento {
+  position:absolute;
+  top: 0;
+  right: 10px;
+  z-index: 1000;
 }
 </style>
