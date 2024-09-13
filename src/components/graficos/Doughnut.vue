@@ -9,18 +9,17 @@
 </template>
 
 <script setup>
- import { Chart as ChartJS, ArcElement, Tooltip, Legend,
-  } from "chart.js";
- import { Doughnut } from "vue-chartjs";
- import { onMounted, ref, computed } from "vue";
- import { api } from "@/services/api";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "vue-chartjs";
+import { onMounted, ref, computed, defineEmits } from "vue";
+import { api } from "@/services/api";
 
 const valorContratado = ref(0)
 const aguardandoFaturamento = ref(0)
 const aguardandoPagamento =  ref(0)
 const pago = ref(0)
 const saldoDisponivel = ref(0)
-
+const emit = defineEmits(['status-faturamento']);
 const props = defineProps({
   valoresTotais: {
     type: Object,
@@ -105,38 +104,14 @@ const percentagePlugin = {
   },
 };
 
-const fetchDataStatusContrato = async (label) => {
-  try {
-    const response = await api.get(`/dashboard?statusFaturamento=${label}`);
-    console.log(response, 'resposta')
-
-    // valoresTotaisStatus.value = response.data.valores_totais_status
-    // valoresStamp.value = response.data.valores_totais_status
-    // contratosPorVencimento.value = response.data.contratos_por_vencimento
-    // map.value = response.data.map;
-    // mapLoaded.value = true;
-    // top5.value = response.data.top5;
-    // fetchContratos(currentPageContratos.value)
-
-  } catch (error) {
-    console.error("Erro ao buscar dados:", error);
-  }
-};
-
-const handleClick = (event, elements) => {  
+const handleClick = (event, elements) => {
       if (elements.length > 0) {
         const clickedElement = elements[0];
-        const dataIndex = clickedElement.index;       
+        const dataIndex = clickedElement.index;
         const label = data.value.labels[dataIndex];
-        console.log(`Clicou em: ${label}`);        
-        fetchDataStatusContrato(label)
-        
-        // Aqui você pode montar sua requisição
-        // this.fazerRequisicao(label);
+        emit('status-faturamento', label);
       }
     }
-
-  
 
 const data = computed(() => {
   return {

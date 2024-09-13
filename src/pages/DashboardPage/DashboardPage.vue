@@ -10,7 +10,7 @@
             <span class="font-semibold">Contratos</span>
             <span>por status do pagamento</span>
             <div class="h-full" v-if="valoresTotaisStatus">
-              <Doughnut :valoresTotais="valoresTotaisStatus" />
+              <Doughnut :valoresTotais="valoresTotaisStatus" @status-faturamento="handleFiltragemDonuts" />
             </div>
             <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
               <div class="font-semibold text-5xl">68</div>
@@ -165,9 +165,15 @@ onMounted(()=> {
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-const fetchDataDashboard = async () => {
+const fetchDataDashboard = async (status) => {
   try {
-    const response = await api.get(`/dashboard`);
+    const statusFaturamento = status !== undefined ? status : '';
+
+    const response = await api.get('/dashboard', {
+      params: { statusFaturamento }
+    });
+
+    console.log('response', response)
 
     valoresTotaisStatus.value = response.data.valores_totais_status
     valoresStamp.value = response.data.valores_totais_status
@@ -232,6 +238,11 @@ const changePageContratos = (page) => {
     currency: "BRL",
     minimumFractionDigits: 2,
   }).format(value);
+};
+
+const handleFiltragemDonuts = (status) => {
+  console.log(`Status recebido no pai: ${status}`);
+  fetchDataDashboard(status)
 };
 
 const formatCurrencyInMillions = (value) => {
