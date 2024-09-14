@@ -82,7 +82,7 @@
     <div class="flex flex-row w-full mt-20 gap-4">
       <Map v-if="mapLoaded" :markers="map" />
       <div class="w-1/2 relative" v-if="contratosPorVencimento">
-        <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
+        <BarVertical :contratosPorVencimento="contratosPorVencimento" class="pt-20"/>
         <div class="title-vencimento pt-2">
           <span class="font-semibold">Contratos</span>
           <p>por vencimento (dias)</p>
