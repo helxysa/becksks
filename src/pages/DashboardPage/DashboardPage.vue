@@ -17,16 +17,16 @@
               <p>contratos</p>
             </div> -->
           </div>
-          <div class="h-full w-full">
-            <section class="h-full w-full">
+          <div class="flex flex-col w-full h-[300px]">
+            <span class="font-semibold">Top 5</span>
+            <span>Contratos por valor</span>
+            <div class="h-full mt-6">
+              <Bar :top5="top5"/>
+            </div>
+            <!-- <section class="h-full w-full">
               <div class="flex flex-col">
-                <span class="font-semibold">Top 5</span>
-                <span>Contratos por valor</span>
               </div>
-              <div class="h-full mt-36">
-                <Bar :top5="top5"/>
-              </div>
-            </section>
+            </section> -->
           </div>
         </div>
       </section>
@@ -112,7 +112,10 @@
             <td class="text-2xl">{{contrato.nomeCliente}}</td>
             <td class="text-2xl">{{formatCurrency(contrato.saldoContrato)}}</td>
             <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
-            <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
+            <td class="text-2xl"
+            :class="{'text-red-600' : contrato.statusVencimento === 'atraso' }"            
+            >{{formatDate(contrato.dataFim)}}
+          </td>
             <td class="text-2xl">
               <div class="flex justify-center">
                 <span v-if="contrato.statusVencimento === 'a vencer'">
