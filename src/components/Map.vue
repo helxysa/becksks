@@ -1,5 +1,14 @@
-<template>
-  <div id="mapContainer"></div>
+<template >
+  <div class="containerMap" >
+    <div id="mapContainer">
+    </div> 
+      <div class="title-map pt-2">
+        <span class="font-semibold">Contratos</span>
+        <p>por localização</p>
+      </div> 
+
+  </div>
+ 
 </template>
 
 <script setup>
@@ -71,10 +80,25 @@ const setMarkers = () => {
 </script>
 
 <style>
+
+.containerMap {
+  position: relative;
+  width:50%;
+}
+
 #mapContainer {
   border: 1px solid black;
   border-radius: 9px;
-  width: 60%;
+  width: 100%;
   height: 300px;
+  
+  
+}
+
+.title-map {
+  position:absolute;
+  top: 0;
+  right: 10px;
+  z-index: 1000;
 }
 </style>

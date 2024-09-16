@@ -42,13 +42,29 @@ const dataBar = computed(() => {
     return (item.totalUtilizado / item.saldo_contrato) * 100;
   });
 
+  const dataUtilizada =  props.top5.map(item => {
+    if (item.saldo_contrato === 0) return 0;
+    return 100 - (item.totalUtilizado / item.saldo_contrato) * 100 ;
+  });
+
   return {
     labels,
     datasets: [
       {
         label: 'Percentual Utilizado',
-        backgroundColor: '#f87979',
+        backgroundColor: '#00AFEF66',
+        borderColor: '#00AFEF',
+        borderWidth: 1,
         data,
+        barThickness: 20
+      }, 
+
+      {
+        label: 'Percentual Restante',
+        backgroundColor: '#57BA5EB2',
+        borderColor: '#57BA5E',
+        borderWidth: 1,
+        data: dataUtilizada,
         barThickness: 20
       }
     ]
@@ -73,6 +89,7 @@ const optionsBar = {
   },
   scales: {
     x: {
+      stacked: true,
       beginAtZero: true,
       max: 100,
       ticks: {
@@ -80,7 +97,11 @@ const optionsBar = {
           return value + '%';
         }
       }
-    }
+    }, 
+
+    y: {
+            stacked: true
+      }
   }
 };
 </script>

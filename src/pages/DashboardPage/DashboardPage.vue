@@ -10,23 +10,23 @@
             <span class="font-semibold">Contratos</span>
             <span>por status do pagamento</span>
             <div class="h-full" v-if="valoresTotaisStatus">
-              <Doughnut :valoresTotais="valoresTotaisStatus" />
+              <Doughnut :valoresTotais="valoresTotaisStatus" @status-faturamento="handleFiltragemDonuts" />
             </div>
             <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
               <div class="font-semibold text-5xl">68</div>
               <p>contratos</p>
             </div> -->
           </div>
-          <div class="h-full w-full">
-            <section class="h-full w-full">
+          <div class="flex flex-col w-full h-[300px]">
+            <span class="font-semibold">Top 5</span>
+            <span>Contratos por valor</span>
+            <div class="h-full mt-6">
+              <Bar :top5="top5"/>
+            </div>
+            <!-- <section class="h-full w-full">
               <div class="flex flex-col">
-                <span class="font-semibold">Top 5</span>
-                <span>Contratos por valor</span>
               </div>
-              <div class="h-full mt-36">
-                <Bar :top5="top5"/>
-              </div>
-            </section>
+            </section> -->
           </div>
         </div>
       </section>
@@ -79,10 +79,15 @@
 </section>
 
     </div>
-    <div class="flex flex-row w-full mt-20">
+    <div class="flex flex-row w-full mt-20 gap-4">
       <Map v-if="mapLoaded" :markers="map" />
-      <div class="w-1/2" v-if="contratosPorVencimento">
-        <BarVertical :contratosPorVencimento="contratosPorVencimento"/>
+      <div class="w-1/2 relative" v-if="contratosPorVencimento">
+        <BarVertical :contratosPorVencimento="contratosPorVencimento" class="pt-20"/>
+        <div class="title-vencimento pt-2">
+          <span class="font-semibold">Contratos</span>
+          <p>por vencimento (dias)</p>
+        </div> 
+  
       </div>
     </div>
     <div>
@@ -107,7 +112,10 @@
             <td class="text-2xl">{{contrato.nomeCliente}}</td>
             <td class="text-2xl">{{formatCurrency(contrato.saldoContrato)}}</td>
             <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
-            <td class="text-2xl">{{formatDate(contrato.dataFim)}}</td>
+            <td class="text-2xl"
+            :class="{'text-red-600' : contrato.statusVencimento === 'atraso' }"            
+            >{{formatDate(contrato.dataFim)}}
+          </td>
             <td class="text-2xl">
               <div class="flex justify-center">
                 <span v-if="contrato.statusVencimento === 'a vencer'">
@@ -147,6 +155,7 @@ import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 
 const currentPageContratos = ref(1);
+const statusAtual = ref('');
 const valoresTotaisStatus = ref()
 const valoresStamp = ref({})
 const  contratosPorVencimento = ref()
@@ -160,31 +169,30 @@ let contratoItemMeta = ref({});
 let statusVencimento = ref('')
 
 onMounted(()=> {
-  fetchDataDashboard()
+  fetchDashboardData()
 })
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-const fetchDataDashboard = async () => {
-  try {
-    const response = await api.get(`/dashboard`);
+const fetchDashboardData = async (status, page) => {
+  const validStatuses = ["Aguardando Pagamento", "Aguardando Faturamento", "Pago"];
+  const statusFat = validStatuses.includes(status) ? status : '';
 
-    valoresTotaisStatus.value = response.data.valores_totais_status
-    valoresStamp.value = response.data.valores_totais_status
-    contratosPorVencimento.value = response.data.contratos_por_vencimento
+  try {
+    const response = await api.get('/dashboard', {
+      params: {
+        statusFaturamento: statusFat,
+        page: page
+      }
+    });
+
+    valoresTotaisStatus.value = response.data.valores_totais_status;
+    valoresStamp.value = response.data.valores_totais_status;
+    contratosPorVencimento.value = response.data.contratos_por_vencimento;
     map.value = response.data.map;
     mapLoaded.value = true;
     top5.value = response.data.top5;
-    fetchContratos(currentPageContratos.value)
 
-  } catch (error) {
-    console.error("Erro ao buscar dados:", error);
-  }
-};
-
-const fetchContratos = async(page) => {
-   try {
-    const response = await api.get(`/dashboard?page=${page}`);
     const contratos = response.data.contratos.data;
     const meta = response.data.contratos.meta;
 
@@ -192,13 +200,13 @@ const fetchContratos = async(page) => {
     currentPageContratos.value = meta.currentPage;
     totalContratos.value = meta.total;
     resultsPerPageContratos.value = meta.perPage;
-
     contratoItemData.value = adicionarStatusVencimento(contratos);
 
-   } catch (error) {
-    console.error(error);
-   }
-}
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+  }
+};
+
 const adicionarStatusVencimento = (contratos) => {
   const hoje = getCurrentDateString();
 
@@ -234,6 +242,11 @@ const changePageContratos = (page) => {
   }).format(value);
 };
 
+const handleFiltragemDonuts = (status) => {
+  statusAtual.value = status;
+  fetchDashboardData(statusAtual.value, currentPageContratos.value);
+};
+
 const formatCurrencyInMillions = (value) => {
   if (value === null || value === undefined) return "R$ 0,00";
 
@@ -250,7 +263,7 @@ const formatCurrencyInMillions = (value) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-      minimumFractionDigits: 2,
+      minimumFractionDigits: 1,
     }).format(valueInThousands) + " Mil";
   } else {
     return new Intl.NumberFormat("pt-BR", {
@@ -269,7 +282,9 @@ const formatDate = (dateString) => {
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
 
-watch(()=> currentPageContratos.value, ()=> fetchContratos(currentPageContratos.value));
+watch(() => [statusAtual.value, currentPageContratos.value], ([status, page]) => {
+  fetchDashboardData(status, page);
+});
 </script>
 
 <style>
@@ -309,5 +324,12 @@ watch(()=> currentPageContratos.value, ()=> fetchContratos(currentPageContratos.
 
 .active-page:hover {
   background-color: #2988c8 ;
+}
+
+.title-vencimento {
+  position:absolute;
+  top: 0;
+  right: 10px;
+  z-index: 1000;
 }
 </style>
