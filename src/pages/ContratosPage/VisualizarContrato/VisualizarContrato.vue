@@ -311,7 +311,7 @@
               calcularItensRestante(
                 item.id,
                 item.saldoQuantidadeContratada
-              ).toFixed(2)
+              ).toFixed(3)
             }}
           </td>
           <td>
@@ -1057,7 +1057,7 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'
+          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'
            && medicaoData.tipo_medicao !== '' ">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
@@ -1090,7 +1090,7 @@
              <option>Em Andamento</option>
              <option>Disponível para Faturamento</option>
            </select>
-         </div>
+         </div> -->
 
 
           <div class="flex gap-4 items-center">
@@ -1159,7 +1159,7 @@
                     calcularItensRestante(
                       item.id,
                       item.saldoQuantidadeContratada
-                    ).toFixed(2)
+                    ).toFixed(3)
                   }}
                 </td>
                 <td>
@@ -1353,7 +1353,7 @@
                     calcularItensRestante(
                       item.contratoItemId,
                       item.saldoQuantidadeContratada
-                    ).toFixed(2)
+                    ).toFixed(3)
                   }}
                 </td>
                 <td>
@@ -2391,7 +2391,7 @@ const moneyConfig = {
 };
 
 const decimalConfig = {
-  precision: 2,
+  precision: 3,
   decimal: ",",
   thousands: ".",
   prefix: "",
@@ -2830,7 +2830,7 @@ const calcularQuantidadeItens = (lancamentoItens) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     saldoTotal += quantidadeItens;
   });
-  return parseFloat(saldoTotal.toFixed(2));
+  return parseFloat(saldoTotal.toFixed(3));
 };
 
 const mostrarUnidadeMedida = (lancamentoItens) => {
