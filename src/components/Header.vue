@@ -89,9 +89,15 @@
     }, 150);
   };
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem("token");
     isAuthenticated.value = false;
+    try {
+      const response = await api.delete("/logout");
+      toast.sucess(response.message)
+    } catch (error) {
+      console.error(error.message);
+    }
     router.push("/login");
   };
 
