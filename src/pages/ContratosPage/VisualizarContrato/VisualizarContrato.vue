@@ -1037,7 +1037,8 @@
             >
             <input
               v-model="medicaoData.tarefa_medicao"
-              type="text"
+              type="number"
+              min="0"
               placeholder="Informe o ticket  da tarefa"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1056,7 +1057,8 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
+          <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'
+           && medicaoData.tipo_medicao !== '' ">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1071,7 +1073,25 @@
               <option>Não Autorizada</option>
               <option>Cancelada</option>
             </select>
-          </div> -->
+          </div>
+          <div class="flex gap-4 items-center" v-else-if="medicaoData.tipo_medicao !== ''
+           && medicaoData.tipo_medicao === 'Detalhada' ">
+           <label class="font-bold text-3xl w-[200px]"
+             >Status da medição:</label
+           >
+           <select
+             v-model="medicaoData.status"
+             class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+           >
+             <option disabled hidden value="">
+               Selecione o status da medição
+             </option>
+             <option>Não Iniciada</option>
+             <option>Em Andamento</option>
+             <option>Disponível para Faturamento</option>
+           </select>
+         </div>
+
 
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
@@ -1229,7 +1249,8 @@
             <input
               v-model="editingLancamento.tarefaMedicao"
               :disabled="isLancamentoViewModal"
-              type="text"
+              type="number"
+              min="0"
               placeholder="Informe o ticket  da tarefa"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1266,6 +1287,24 @@
               <option>Cancelada</option>
             </select>
           </div>
+          <div class="flex gap-4 items-center" v-else
+        >
+          <label class="font-bold text-3xl w-[200px]"
+            >Status da medição:</label
+          >
+          <select
+            v-model="editingLancamento.status"
+            :disabled="isLancamentoViewModal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          >
+            <option disabled hidden value="">
+              Selecione o status da medição
+            </option>
+            <option>Não Iniciada</option>
+            <option>Em Andamento</option>
+            <option>Disponível para Faturamento</option>
+          </select>
+        </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
