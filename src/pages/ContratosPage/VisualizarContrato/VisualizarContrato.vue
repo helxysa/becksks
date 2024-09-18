@@ -461,7 +461,7 @@
                 v-if="lancamento.tipoMedicao !== 'Detalhada'"
                 class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
-                  'bg-orange-200 border-orange-400 text-orange-400':
+                  'bg-slate-200 border-slate-400 text-orange-400':
                     lancamento.status === 'Não Autorizada',
                   'bg-green-200 border-green-400 text-green-400':
                     lancamento.status === 'Autorizada',
@@ -474,11 +474,11 @@
               <span
                 class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
-                  'bg-orange-200 border-red-600 text-red-600':
+                  'bg-red-200 border-red-400 text-red-400':
                     lancamento.status === 'Não Iniciada',
-                  'bg-green-200 border-yellow-600 text-yellow-400':
+                    'bg-orange-200 border-orange-400 text-orange-400':
                     lancamento.status === 'Em Andamento',
-                  'bg-red-200 border-green-600 text-green-600':
+                    'bg-green-200 border-green-400 text-green-400':
                     lancamento.status === 'Disponível para Faturamento',
                 }"
                 v-else
@@ -1333,7 +1333,6 @@
           </div>
           <div
             class="flex gap-4 items-center"
-            v-if="editingLancamento.tipoMedicao !== 'Detalhada'"
           >
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
@@ -1343,29 +1342,14 @@
               :disabled="isLancamentoViewModal"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             >
-              <option disabled hidden value="">
-                Selecione o status da medição
-              </option>
-              <option>Autorizada</option>
-              <option>Não Autorizada</option>
-              <option>Cancelada</option>
-            </select>
-          </div>
-          <div class="flex gap-4 items-center" v-else>
-            <label class="font-bold text-3xl w-[200px]"
-              >Status da medição:</label
-            >
-            <select
-              v-model="editingLancamento.status"
-              :disabled="isLancamentoViewModal"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            >
-              <option disabled hidden value="">
-                Selecione o status da medição
-              </option>
-              <option>Não Iniciada</option>
-              <option>Em Andamento</option>
-              <option>Disponível para Faturamento</option>
+              <option disabled hidden value="">Selecione o status da medição</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Autorizada">Autorizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Não Autorizada">Não Autorizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Cancelada">Cancelada</option>
+
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível para Faturamento">Disponível para Faturamento</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -3292,8 +3276,9 @@ const saveEditedLancamento = async () => {
     return;
   }
 
-  if (editingLancamento.value.tipoMedicao === "Detalhada") {
-    editingLancamento.value.status = "";
+  if (editingLancamento.value.status === "" || editingLancamento.value.status === null) {
+    toast.error("Selecione um status para a medição.")
+    return;
   }
 
   let payload = {
@@ -3352,6 +3337,18 @@ const openWhatsApp = (telefone) => {
   const url = `https://wa.me/${telefoneFormatado}`;
   window.open(url, "_blank");
 };
+
+watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
+  if (newTipo === 'Estimada') {
+    if (!['Autorizada', 'Não Autorizada', 'Cancelada'].includes(editingLancamento.value.status)) {
+      editingLancamento.value.status = '';
+    }
+  } else if (newTipo === 'Detalhada') {
+    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento'].includes(editingLancamento.value.status)) {
+      editingLancamento.value.status = '';
+    }
+  }
+});
 </script>
 
 <style>
