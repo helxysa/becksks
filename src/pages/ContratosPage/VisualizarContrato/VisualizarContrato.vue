@@ -279,7 +279,7 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th class="text-xl px-2">Id</th>
+          <th class="text-xl px-2">#</th>
           <th class="text-xl">Item</th>
           <th class="text-xl">U.M (Unidade de Medida)</th>
           <th class="text-xl">Quantidade Contratada</th>
@@ -293,10 +293,10 @@
         <!-- {{contratoItemData}} -->
         <tr
           class="h-24 text-center"
-          v-for="(item, index) in contratoItemData"
+          v-for="(item) in contratoItemData"
           :key="item.id"
         >
-          <td class="text-2xl px-2">{{ index + 1 }}</td>
+          <td class="text-2xl px-2">{{ item.id }}</td>
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
           <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
@@ -383,7 +383,7 @@
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
           <th></th>
-          <th class="text-xl">Id</th>
+          <th class="text-xl">#</th>
           <th
             class="text-xl cursor-pointer"
             @click="changeSorting('data_medicao', 'medicoes')"
@@ -410,11 +410,11 @@
       <tbody v-if="medicaoItemData">
         <tr
           class="h-24 text-center"
-          v-for="(lancamento, index) in medicaoItemData"
+          v-for="(lancamento) in medicaoItemData"
           :key="lancamento.id"
           :class="{
             'bg-indigo-100':
-              lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado,
+              lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado,
           }"
         >
           <td>
@@ -425,12 +425,12 @@
               :value="lancamento.id"
               @change="changePedido"
               :disabled="
-                lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado
+                lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado
               "
             />
           </td>
 
-          <td class="text-2xl">{{ index + 1 }}</td>
+          <td class="text-2xl">{{ lancamento.id }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
           <td class="text-2xl">{{ lancamento.competencia }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
@@ -470,7 +470,7 @@
                 }"
               >
                 {{ lancamento.status }}
-              </span>
+              </span>             
               <span
                 class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
@@ -564,7 +564,7 @@
     <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
       <thead class="h-20 bg-slate-100 border-1">
         <tr>
-          <th class="text-xl">Id</th>
+          <th class="text-xl">#</th>
           <th
             class="text-xl cursor-pointer"
             @click="changeSorting('data_faturamento', 'faturamentos')"
@@ -584,10 +584,10 @@
       <tbody v-if="faturamentoItemData">
         <tr
           class="h-28 text-center"
-          v-for="(faturamento, index) in faturamentoItemData"
+          v-for="(faturamento) in faturamentoItemData"
           :key="faturamento.id"
         >
-          <td class="text-2xl">{{ index + 1 }}</td>
+          <td class="text-2xl">{{ faturamento.id }}</td>
           <td class="text-2xl">
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
           </td>
@@ -2665,7 +2665,7 @@ const createLancamento = async () => {
   }
 
   if (medicaoData.value.tipo_medicao === "Detalhada") {
-    medicaoData.value.status = "Não iniciada";
+    medicaoData.value.status = "Não Iniciada";
   }
   if (medicaoData.value.tipo_medicao === "Estimada") {
     medicaoData.value.status = "Não Autorizada";

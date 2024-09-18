@@ -7,8 +7,10 @@
       <section class="w-full h-full border">
         <div class="flex h-full w-full">
           <div class="flex flex-col w-full h-[400px]">
-            <span class="font-semibold">Contratos</span>
-            <span>por status do pagamento</span>
+            <div class="flex flex-col p-2">
+              <span class="font-semibold">Contratos</span>
+              <span>por status do pagamento</span>
+            </div>
             <div class="h-full" v-if="valoresTotaisStatus">
               <Doughnut :valoresTotais="valoresTotaisStatus" @status-faturamento="handleFiltragemDonuts" />
             </div>
@@ -17,9 +19,11 @@
               <p>contratos</p>
             </div> -->
           </div>
-          <div class="flex flex-col w-full h-[300px]">
-            <span class="font-semibold">Top 5</span>
-            <span>Contratos por valor</span>
+          <div class=" flex flex-col w-full h-[300px]">
+            <div class="flex flex-col p-2 items-end">
+              <span class="font-semibold">Top 5</span>
+              <span>Contratos por valor</span>
+            </div>
             <div class="h-full mt-6">
               <Bar :top5="top5"/>
             </div>
@@ -41,7 +45,7 @@
       <p>valor dos contratos</p>
     </div>
     <span>
-      <Icon icon="hugeicons:note-04" height="30" class="text-white" />
+      <Icon icon="fluent:notepad-32-filled" height="35" class="text-white "  />
     </span>
   </div>
   <div
@@ -57,7 +61,7 @@
       <p>Aguardando Pagamento</p>
     </div>
     <span>
-      <Icon icon="ph:calculator-thin" height="30" class="text-white" />
+      <Icon icon="ph:calculator-fill" height="35" class="text-white" />
     </span>
   </div>
   <div
@@ -73,7 +77,7 @@
       <p>Saldo</p>
     </div>
     <span>
-      <Icon icon="rivet-icons:money" height="30" class="text-white" />
+      <Icon icon="rivet-icons:money" height="35" class="text-white" />
     </span>
   </div>
 </section>
