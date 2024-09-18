@@ -2681,7 +2681,7 @@ const createLancamento = async () => {
   }
 
   if (medicaoData.value.tipo_medicao === "Detalhada") {
-    medicaoData.value.status = "";
+    medicaoData.value.status = "Não iniciada";
   }
   if (medicaoData.value.tipo_medicao === "Estimada") {
     medicaoData.value.status = "Não Autorizada";
@@ -2944,6 +2944,7 @@ const calcularItensRestante = (idItem, quantidadeContratada) => {
 
   contrato.value.lancamentos.forEach((lancamento) => {
     if (
+      lancamento.status === "Autorizada" ||
       lancamento.status === "Não Autorizada" ||
       lancamento.status === "Cancelada"
     ) {
