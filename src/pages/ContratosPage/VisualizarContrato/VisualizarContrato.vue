@@ -388,6 +388,7 @@
               {{ sortOrder['medicoes'] === 'asc' ? '▲' : '▼' }}
             </span>
         </th>
+        <th class="text-xl">Competências</th>
           <th class="text-xl">Projeto</th>
           <th class="text-xl">Tarefa</th>
           <th class="text-xl">Tipo</th>
@@ -422,6 +423,7 @@
 
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
+          <td class="text-2xl">{{ lancamento.competencias }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <td class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300" @click="redirectToRedmine(lancamento.tarefaMedicao)">{{ lancamento.tarefaMedicao }}</td>
           <td class="text-2xl">
@@ -457,10 +459,19 @@
               </span>
               <span
                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]
-               bg-gray-200 border-gray-400
+               
                "
-              v-else>
-              Sem status
+               :class="{
+                'bg-orange-200 border-red-600 text-red-600':
+                  lancamento.status === 'Não Iniciada',
+                'bg-green-200 border-yellow-600 text-yellow-400':
+                  lancamento.status === 'Em Andamento',
+                'bg-red-200 border-green-600 text-green-600':
+                  lancamento.status === 'Disponível para Faturamento',
+              }"
+              v-else>            
+                {{lancamento.status}}
+                       
             </span>
             </div>
           </td>
@@ -472,7 +483,7 @@
               calcularQuantidadeItens(lancamento.lancamentoItens)
             }}
           </td>
-          <td class="text-2xl">
+          <td class="text-2xl w-[200px] ">
             {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
           </td>
           <td class="text-2xl">
@@ -550,6 +561,7 @@
               {{ sortOrder['faturamentos'] === 'asc' ? '▲' : '▼' }}
             </span>
           </th>
+          <th class="text-xl">Competências</th>
           <th class="text-xl">Nota Fiscal</th>
           <th class="text-xl">Total</th>
           <th class="text-xl">Situação</th>
@@ -565,6 +577,9 @@
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
+          </td>
+          <td class="text-2xl">
+            {{ faturamento.competencias }}
           </td>
           <td
             class="text-2xl"
@@ -694,15 +709,7 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
           </div>
-          <div class="gap-4 flex items-center justify-between">
-            <label class="font-bold text-3xl w-[180px]">Observações</label>
-            <textarea
-              v-model="pedidoFaturamentoData.observacoes"
-              rows="7"
-              placeholder="observações"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
-            />
-          </div>
+        
         </section>
         <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
         <table
@@ -711,6 +718,7 @@
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
               <th class="text-xl">Projeto</th>
+              <th class="text-xl">Competências</th>
               <th class="text-xl">Unidade de medida</th>
               <th class="text-xl">Quantidade</th>
               <th class="text-xl">Valor do lançamento</th>
@@ -725,6 +733,12 @@
               )"
             >
               <td>{{ item.projetos }}</td>
+              <td>
+                <input              
+                type="text"            
+              
+              />
+              </td>
               <td>
                 <div
                   v-for="unidade in [
@@ -882,16 +896,7 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
           </div>
-          <div class="gap-4 flex items-center justify-between">
-            <label class="font-bold text-3xl w-[180px]">Observações</label>
-            <textarea
-              :disabled="isFaturamentoViewModal"
-              v-model="editingFaturamento.observacoes"
-              rows="7"
-              placeholder="observações"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
-            />
-          </div>
+         
         </section>
         <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
         <table
@@ -900,6 +905,7 @@
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
               <th class="text-xl">Projeto</th>
+              <th class="text-xl">Competências</th>
               <th class="text-xl">Unidade de medida</th>
               <th class="text-xl">Quantidade</th>
               <th class="text-xl">Valor do lançamento</th>
@@ -914,6 +920,16 @@
               :key="item.id"
             >
               <td>{{ item.projetos }}</td>
+              <td>
+                <input
+             
+                type="text"
+                :disabled="isFaturamentoViewModal"
+                :class="{ 'border-none bg-white': isFaturamentoViewModal }"
+                class="border-2 text-center max-w-60"
+              
+              />
+              </td>
               <td>
                 <span
                   class="flex justify-center"
@@ -1103,6 +1119,7 @@
               v-model="medicaoData.data_medicao"
             />
           </div>
+       
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Item:</label>
             <select
@@ -1315,7 +1332,7 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.dataMedicao"
             />
-          </div>
+          </div>       
         </section>
         <div class="mt-8">
           <table
@@ -1867,7 +1884,7 @@ const pedidoFaturamentoData = ref({
   data_faturamento: "",
   descricao_nota: [],
   status: "",
-  observacoes: "",
+  observacoes: "",  
 });
 
 const medicaoData = ref({
@@ -1875,7 +1892,7 @@ const medicaoData = ref({
   tipo_medicao: "",
   status: "",
   data_medicao: "",
-  itens: [],
+  itens: [], 
 
 });
 
@@ -2102,8 +2119,7 @@ const fetchProjetos = async (id) => {
 
     const fetchContratoFaturamentos = async (page) => {
       try {
-      const params = {
-          page,
+      const params = {        
           limit: 8,
       }
       if (sortBy.value) {
@@ -2145,6 +2161,7 @@ const closeModalPedidoFaturamento = () => {
     descricao_nota: [],
     observacoes: "",
     status: "",
+    
   };
 
   pedidosFaturamento.value = [];
@@ -2240,7 +2257,7 @@ const createPedidoFaturamento = async () => {
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
     status: pedidoFaturamentoData.value.status,
-    observacoes: pedidoFaturamentoData.value.observacoes,
+    observacoes: pedidoFaturamentoData.value.observacoes,    
   };
 
 
@@ -2310,6 +2327,7 @@ const saveEditedFaturamento = async () => {
     descricao_nota: editingFaturamento.value.descricao_nota,
     status: editingFaturamento.value.status,
     observacoes: editingFaturamento.value.observacoes,
+    competencias: editingFaturamento.value.competencias,
   };
 
   try {
@@ -2464,6 +2482,7 @@ const closeModalLancamento = () => {
     tipo_medicao: "",
     data_medicao: "",
     itens: [],
+    
 
   };
   selectedItem.value = '';
@@ -2560,6 +2579,7 @@ const createLancamento = async () => {
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
+  
 
   };
   try {
