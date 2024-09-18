@@ -2238,7 +2238,6 @@ const fetchContratoFaturamentos = async (page) => {
       `/contratos/${contrato.value.id}/faturamentos?page=${page}`,
       { params }
     );
-    console.log("response", response.data);
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2295,7 +2294,6 @@ const openEditFaturamentoModal = (faturamento) => {
 };
 
 const openViewFaturamentoModal = (faturamento) => {
-  console.log('faturamento', faturamento)
   isFaturamentoViewModal.value = true;
   const dataFormatada = format(
     new Date(faturamento.dataFaturamento),
