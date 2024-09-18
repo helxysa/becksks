@@ -85,6 +85,7 @@ const handleChangePassword = async () => {
       newPassword: newPassword.value,
     });
     isAuthenticated.value = true;
+    localStorage.removeItem("userId");
     router.push('/');
     toast.success(response.data.message)
   } catch (error) {

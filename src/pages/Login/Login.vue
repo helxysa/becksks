@@ -92,6 +92,7 @@ const handleLogin = async () => {
       isAuthenticated.value = false;
       router.push({ name: 'ChangePassword' });
     } else {
+      localStorage.removeItem("userId");
       router.push("/");
     }
   } catch (error) {
