@@ -311,7 +311,7 @@
               calcularItensRestante(
                 item.id,
                 item.saldoQuantidadeContratada
-              ).toFixed(2)
+              ).toFixed(3)
             }}
           </td>
           <td>
@@ -388,6 +388,7 @@
               {{ sortOrder['medicoes'] === 'asc' ? '▲' : '▼' }}
             </span>
         </th>
+        <th class="text-xl">Competências</th>
           <th class="text-xl">Projeto</th>
           <th class="text-xl">Tarefa</th>
           <th class="text-xl">Tipo</th>
@@ -422,6 +423,7 @@
 
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
+          <td class="text-2xl">{{ lancamento.competencias }}</td>
           <td class="text-2xl">{{ lancamento.projetos }}</td>
           <td class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300" @click="redirectToRedmine(lancamento.tarefaMedicao)">{{ lancamento.tarefaMedicao }}</td>
           <td class="text-2xl">
@@ -457,10 +459,19 @@
               </span>
               <span
                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]
-               bg-gray-200 border-gray-400
+
                "
+               :class="{
+                'bg-orange-200 border-red-600 text-red-600':
+                  lancamento.status === 'Não Iniciada',
+                'bg-green-200 border-yellow-600 text-yellow-400':
+                  lancamento.status === 'Em Andamento',
+                'bg-red-200 border-green-600 text-green-600':
+                  lancamento.status === 'Disponível para Faturamento',
+              }"
               v-else>
-              Sem status
+                {{lancamento.status}}
+
             </span>
             </div>
           </td>
@@ -472,7 +483,7 @@
               calcularQuantidadeItens(lancamento.lancamentoItens)
             }}
           </td>
-          <td class="text-2xl">
+          <td class="text-2xl w-[200px] ">
             {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
           </td>
           <td class="text-2xl">
@@ -550,6 +561,7 @@
               {{ sortOrder['faturamentos'] === 'asc' ? '▲' : '▼' }}
             </span>
           </th>
+          <th class="text-xl">Competências</th>
           <th class="text-xl">Nota Fiscal</th>
           <th class="text-xl">Total</th>
           <th class="text-xl">Situação</th>
@@ -565,6 +577,9 @@
           <td class="text-2xl">{{ index + 1 }}</td>
           <td class="text-2xl">
             {{ formatDatePTBR(faturamento.dataFaturamento) }}
+          </td>
+          <td class="text-2xl">
+            {{ faturamento.competencias }}
           </td>
           <td
             class="text-2xl"
@@ -721,6 +736,7 @@
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
               <th class="text-xl">Projeto</th>
+              <th class="text-xl">Competências</th>
               <th class="text-xl">Unidade de medida</th>
               <th class="text-xl">Quantidade</th>
               <th class="text-xl">Valor do lançamento</th>
@@ -735,6 +751,12 @@
               )"
             >
               <td>{{ item.projetos }}</td>
+              <td>
+                <input
+                type="text"
+
+              />
+              </td>
               <td>
                 <div
                   v-for="unidade in [
@@ -922,6 +944,7 @@
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
               <th class="text-xl">Projeto</th>
+              <th class="text-xl">Competências</th>
               <th class="text-xl">Unidade de medida</th>
               <th class="text-xl">Quantidade</th>
               <th class="text-xl">Valor do lançamento</th>
@@ -936,6 +959,16 @@
               :key="item.id"
             >
               <td>{{ item.projetos }}</td>
+              <td>
+                <input
+
+                type="text"
+                :disabled="isFaturamentoViewModal"
+                :class="{ 'border-none bg-white': isFaturamentoViewModal }"
+                class="border-2 text-center max-w-60"
+
+              />
+              </td>
               <td>
                 <span
                   class="flex justify-center"
@@ -1059,7 +1092,8 @@
             >
             <input
               v-model="medicaoData.tarefa_medicao"
-              type="text"
+              type="number"
+              min="0"
               placeholder="Informe o ticket  da tarefa"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1078,7 +1112,8 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'">
+          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'
+           && medicaoData.tipo_medicao !== '' ">
             <label class="font-bold text-3xl w-[200px]"
               >Status da medição:</label
             >
@@ -1179,7 +1214,7 @@
                     calcularItensRestante(
                       item.id,
                       item.saldoQuantidadeContratada
-                    ).toFixed(2)
+                    ).toFixed(3)
                   }}
                 </td>
                 <td>
@@ -1269,7 +1304,8 @@
             <input
               v-model="editingLancamento.tarefaMedicao"
               :disabled="isLancamentoViewModal"
-              type="text"
+              type="number"
+              min="0"
               placeholder="Informe o ticket  da tarefa"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1306,6 +1342,24 @@
               <option>Cancelada</option>
             </select>
           </div>
+          <div class="flex gap-4 items-center" v-else
+        >
+          <label class="font-bold text-3xl w-[200px]"
+            >Status da medição:</label
+          >
+          <select
+            v-model="editingLancamento.status"
+            :disabled="isLancamentoViewModal"
+            class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+          >
+            <option disabled hidden value="">
+              Selecione o status da medição
+            </option>
+            <option>Não Iniciada</option>
+            <option>Em Andamento</option>
+            <option>Disponível para Faturamento</option>
+          </select>
+        </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
@@ -1375,7 +1429,7 @@
                     calcularItensRestante(
                       item.contratoItemId,
                       item.saldoQuantidadeContratada
-                    ).toFixed(2)
+                    ).toFixed(3)
                   }}
                 </td>
                 <td>
@@ -2127,7 +2181,6 @@ const fetchProjetos = async (id) => {
     const fetchContratoFaturamentos = async (page) => {
       try {
       const params = {
-          page,
           limit: 8,
       }
       if (sortBy.value) {
@@ -2170,6 +2223,7 @@ const closeModalPedidoFaturamento = () => {
     descricao_nota: [],
     observacoes: "",
     status: "",
+
   };
 
   pedidosFaturamento.value = [];
@@ -2337,6 +2391,7 @@ const saveEditedFaturamento = async () => {
     status: editingFaturamento.value.status,
     competencia: editingFaturamento.value.competencia,
     observacoes: editingFaturamento.value.observacoes,
+    competencias: editingFaturamento.value.competencias,
   };
 
   try {
@@ -2418,7 +2473,7 @@ const moneyConfig = {
 };
 
 const decimalConfig = {
-  precision: 2,
+  precision: 3,
   decimal: ",",
   thousands: ".",
   prefix: "",
@@ -2590,6 +2645,7 @@ const createLancamento = async () => {
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
+
 
   };
   try {
@@ -2860,7 +2916,7 @@ const calcularQuantidadeItens = (lancamentoItens) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     saldoTotal += quantidadeItens;
   });
-  return parseFloat(saldoTotal.toFixed(2));
+  return parseFloat(saldoTotal.toFixed(3));
 };
 
 const mostrarUnidadeMedida = (lancamentoItens) => {
