@@ -5,6 +5,7 @@
       <h1 class="text-4xl font-bold text-center mb-6">Primeiro Acesso</h1>
       <span class="font-sans text-base md:text-lg lg:text-xl text-slate-600 flex justify-center text-center mt-4">É necessária a alteração da sua senha padrão para prosseguir.</span>
       <form class="flex flex-col gap-8 mt-8" @submit.prevent="handleChangePassword">
+
         <div class="font-sans">
           <label for="newPassword" class="block text-gray-700 text-lg md:text-xl lg:text-2xl">Nova Senha</label>
           <input
