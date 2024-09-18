@@ -224,7 +224,7 @@
     <section
       class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
     >
-      <h3 class="text-xl font-semibold text-gray-800 mb-4">Observações</h3>
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
       <div class="flex items-center">
         <div class="bg-gray-100 text-gray-500 rounded-full p-3 mr-3">
           <Icon
@@ -694,12 +694,22 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
           </div>
+          <div class="flex gap-4 items-center justify-between">
+            <label class="font-bold text-3xl w-[180px]">Competência:</label>
+            <input
+              type="text"
+              v-model="pedidoFaturamentoData.competencia"
+              required
+              placeholder="Informe a competência"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
           <div class="gap-4 flex items-center justify-between">
-            <label class="font-bold text-3xl w-[180px]">Observações</label>
+            <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
               v-model="pedidoFaturamentoData.observacoes"
               rows="7"
-              placeholder="observações"
+              placeholder="Descrição..."
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
             />
           </div>
@@ -882,13 +892,25 @@
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
           </div>
+          <div class="flex gap-4 items-center justify-between">
+            <label class="font-bold text-3xl w-[180px]">Competência:</label>
+            <input
+              type="text"
+              :disabled="isFaturamentoViewModal"
+              :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+              v-model="editingFaturamento.competencia"
+              required
+              placeholder="Informe a competência"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+            />
+          </div>
           <div class="gap-4 flex items-center justify-between">
-            <label class="font-bold text-3xl w-[180px]">Observações</label>
+            <label class="font-bold text-3xl w-[180px]">Descrição</label>
             <textarea
               :disabled="isFaturamentoViewModal"
               v-model="editingFaturamento.observacoes"
               rows="7"
-              placeholder="observações"
+              placeholder="Descrição..."
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
             />
           </div>
@@ -1072,15 +1094,33 @@
               <option>Cancelada</option>
             </select>
           </div> -->
-
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Competência:</label>
+            <input
+              type="text"
+              placeholder="Informe a competência"
+              required
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="medicaoData.competencia"
+            />
+          </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
               type="date"
-              placeholder="Informe a  data da medição"
+              placeholder="Informe a data da medição"
               required
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.data_medicao"
+            />
+          </div>
+          <div class="flex gap-12 items-center">
+            <label class="font-bold text-3xl w-[180px]">Descrição:</label>
+            <textarea
+              v-model="medicaoData.descricao"
+              rows="7"
+              placeholder="Descrição..."
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-md text-observacoes"
             />
           </div>
           <div class="flex gap-4 items-center">
@@ -1267,6 +1307,17 @@
             </select>
           </div>
           <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Competência:</label>
+            <input
+              type="text"
+              :disabled="isLancamentoViewModal"
+              placeholder="Informe a competência"
+              required
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              v-model="editingLancamento.competencia"
+            />
+          </div>
+          <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Data medição:</label>
             <input
               type="date"
@@ -1275,6 +1326,16 @@
               :disabled="isLancamentoViewModal"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.dataMedicao"
+            />
+          </div>
+          <div class="flex gap-12 items-center">
+            <label class="font-bold text-3xl w-[180px]">Descrição:</label>
+            <textarea
+              v-model="editingLancamento.descricao"
+              :disabled="isLancamentoViewModal"
+              rows="7"
+              placeholder="Descrição..."
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-md text-observacoes"
             />
           </div>
         </section>
@@ -1828,6 +1889,7 @@ const pedidoFaturamentoData = ref({
   data_faturamento: "",
   descricao_nota: [],
   status: "",
+  competencia: "",
   observacoes: "",
 });
 
@@ -1835,9 +1897,10 @@ const medicaoData = ref({
   tarefa_medicao: "",
   tipo_medicao: "",
   status: "",
+  competencia: "",
+  descricao: "",
   data_medicao: "",
   itens: [],
-
 });
 
 const totalItens = ref()
@@ -2074,6 +2137,7 @@ const fetchProjetos = async (id) => {
           params.sortOrder = sortOrder.value.faturamentos
       }
         const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params});
+        console.log('response', response.data)
         faturamentoItemData.value = response.data.data;
         faturamentoItemMeta.value = response.data.meta;
         currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2201,6 +2265,7 @@ const createPedidoFaturamento = async () => {
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
     descricao_nota: pedidoFaturamentoData.value.descricao_nota,
     status: pedidoFaturamentoData.value.status,
+    competencia: pedidoFaturamentoData.value.competencia,
     observacoes: pedidoFaturamentoData.value.observacoes,
   };
 
@@ -2270,6 +2335,7 @@ const saveEditedFaturamento = async () => {
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
     status: editingFaturamento.value.status,
+    competencia: editingFaturamento.value.competencia,
     observacoes: editingFaturamento.value.observacoes,
   };
 
@@ -2423,9 +2489,10 @@ const closeModalLancamento = () => {
     tarefa_medicao: "",
     status: "",
     tipo_medicao: "",
+    competencia: "",
+    descricao: "",
     data_medicao: "",
     itens: [],
-
   };
   selectedItem.value = '';
   contrato.value.contratoItens.forEach((item) => {
@@ -2518,6 +2585,8 @@ const createLancamento = async () => {
     status: medicaoData.value.status,
     itens: itensQuantidadePreenchida,
     projetos: projetos.value.projeto,
+    competencia: medicaoData.value.competencia,
+    descricao: medicaoData.value.descricao,
     data_medicao: medicaoData.value.data_medicao,
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
@@ -3020,7 +3089,7 @@ const openViewLancamentoModal = (lancamento) => {
     lancamentoItens: itensComQuantidade,
     dataMedicao: dataFormatada,
   };
-
+  fetchProjetos(route.params.id)
   modalEditLancamento.value = true;
 };
 
@@ -3124,6 +3193,8 @@ const saveEditedLancamento = async () => {
     // data_medicao: formatDate(editingLancamento.value.dataMedicao),
     data_medicao: editingLancamento.value.dataMedicao,
     // data_medicao: "2024-08-22",
+    competencia: editingLancamento.value.competencia,
+    descricao: editingLancamento.value.descricao,
     tarefa_medicao: editingLancamento.value.tarefaMedicao,
     tipo_medicao: editingLancamento.value.tipoMedicao,
     status: editingLancamento.value.status,
