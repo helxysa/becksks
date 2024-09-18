@@ -1,25 +1,36 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-const HomePage = () => import("../pages/HomePage/HomePage.vue");
+// const ViewContrato = () => import("../components/list/ViewContrato.vue");
+// import Register from "@/pages/Register.vue";
+const DashboardPage = () => import("../pages/DashboardPage/DashboardPage.vue");
 const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
-const FormContratosEdit = () =>
-  import("../components/form/FormCadastrosEdit.vue");
-// const ViewContrato = () => import("../components/list/ViewContrato.vue");
+const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue");
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
-// import Register from "@/pages/Register.vue";
-import Login from "@/pages/Login.vue";
+import Login from "@/pages/Login/Login.vue";
+import ChangePassword from "@/pages/Login/ChangePassword.vue";
+import ResetPassword from "@/pages/Login/ResetPassword.vue";
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: HomePage,
+    name: "Dashboard",
+    component: DashboardPage,
     meta: { requiresAuth: true },
   },
   {
     path: "/login",
     component: Login,
+  },
+  {
+    path: "/alterar-senha",
+    name: "ChangePassword",
+    component: ChangePassword,
+  },
+  {
+    path: '/esqueci-minha-senha',
+    name: 'ResetPassword',
+    component: ResetPassword,
   },
   // {
   //   path: "/cadastro",
@@ -51,7 +62,7 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)*",
-    redirect: '{ name: "Home" }',
+    redirect: '{ name: "Dashboard" }',
   },
 ];
 
