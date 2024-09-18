@@ -470,7 +470,7 @@
                 }"
               >
                 {{ lancamento.status }}
-              </span>             
+              </span>
               <span
                 class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                 :class="{
@@ -2273,7 +2273,6 @@ const openEditFaturamentoModal = (faturamento) => {
     new Date(faturamento.dataFaturamento),
     "yyyy-MM-dd"
   );
-  console.log(faturamento,'faturamento')
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
