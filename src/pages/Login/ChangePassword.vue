@@ -80,12 +80,9 @@ const handleChangePassword = async () => {
   }
 
   try {
-    const response = await api.put(`/users/change-password/${userId}`, {
+    const response = await api.put(`/users/alterar-senha/${userId}`, {
       newPassword: newPassword.value,
     });
-    console.log(response)
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("userId");
     isAuthenticated.value = true;
     router.push('/');
     toast.success(response.data.message)

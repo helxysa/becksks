@@ -26,7 +26,6 @@ const routes = [
     path: "/alterar-senha",
     name: "ChangePassword",
     component: ChangePassword,
-    meta: { requiresAuth: true },
   },
   {
     path: '/esqueci-minha-senha',
