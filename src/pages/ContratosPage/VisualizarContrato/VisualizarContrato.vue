@@ -766,7 +766,6 @@
               <td>{{ item.projetos }}</td>
               <td>
                 {{item.competencia}}
-                <!-- <input type="text" /> -->
               </td>
               <td>
                 <div
@@ -971,13 +970,14 @@
             >
               <td>{{ item.projetos }}</td>
               <td>
-                {{item.competencia}}
-                <!-- <input
-                type="text"
-                :disabled="isFaturamentoViewModal"
-                :class="{ 'border-none bg-white': isFaturamentoViewModal }"
-                class="border-2 text-center max-w-60"
-              /> -->
+                <input
+                  v-model="item.competencia"
+                  type="text"
+                  :disabled="isFaturamentoViewModal"
+                  :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+                  placeholder="Informe a competência"
+                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14"
+                />
               </td>
               <td>
                 <span
@@ -1103,7 +1103,7 @@
               type="number"
               min="0"
               placeholder="Informe o ticket  da tarefa"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14 custom-number-input"
             />
           </div>
           <div class="flex gap-4 items-center">
@@ -2273,7 +2273,18 @@ const openEditFaturamentoModal = (faturamento) => {
     new Date(faturamento.dataFaturamento),
     "yyyy-MM-dd"
   );
-  editingFaturamento.value = { ...faturamento, dataFaturamento: dataFormatada };
+  console.log(faturamento,'faturamento')
+  editingFaturamento.value = {
+    ...faturamento,
+    dataFaturamento: dataFormatada,
+    faturamentoItens: faturamento.faturamentoItens.map(item => ({
+      ...item,
+      lancamento: {
+        ...item.lancamento,
+        originalCompetencia: item.lancamento.competencia
+      }
+    }))
+  };
   modalEditFaturamento.value = true;
 };
 
@@ -2419,15 +2430,29 @@ const deleteFaturamento = (faturamentoId) => {
   });
 };
 
+const updateCompetencia = async (lancamentoId, novaCompetencia) => {
+  try {
+    const response = await api.patch(`/lancamentos/${lancamentoId}/competencia`, {
+      competencia: novaCompetencia
+    });
+
+  } catch (error) {
+    console.error("Erro ao atualizar competência:", error);
+    toast("Erro ao atualizar competência", {
+      theme: "colored",
+      type: "error",
+    });
+  }
+};
+
+
 const saveEditedFaturamento = async () => {
   let payload = {
     nota_fiscal: editingFaturamento.value.notaFiscal,
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
     status: editingFaturamento.value.status,
-    competencia: editingFaturamento.value.competencia,
     observacoes: editingFaturamento.value.observacoes,
-    competencia: editingFaturamento.value.competencia,
   };
 
   try {
@@ -2439,6 +2464,11 @@ const saveEditedFaturamento = async () => {
         toast("Faturamento atualizado com sucesso!", {
           theme: "colored",
           type: "success",
+        });
+        editingFaturamento.value.faturamentoItens.forEach(async (item) => {
+          if (item.lancamento.competencia !== item.lancamento.originalCompetencia) {
+            await updateCompetencia(item.lancamento.id, item.lancamento.competencia);
+          }
         });
         closeEditFaturamentoModal();
         fetchContrato(contratoId);
@@ -3352,6 +3382,16 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
 </script>
 
 <style>
+.custom-number-input::-webkit-inner-spin-button,
+.custom-number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.custom-number-input {
+  -moz-appearance: textfield;
+}
+
 .btn-lancamento,
 .btn-faturamento {
   background-color: var(--bluePrimary);
