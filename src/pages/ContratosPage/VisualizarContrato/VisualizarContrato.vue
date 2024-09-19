@@ -299,7 +299,7 @@
           <td class="text-2xl px-2">{{ item.id }}</td>
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
-          <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
+          <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">
             {{
@@ -314,7 +314,7 @@
               calcularItensRestante(
                 item.id,
                 item.saldoQuantidadeContratada
-              ).toFixed(3)
+              ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
             }}
           </td>
           <td>
@@ -730,7 +730,7 @@
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
               type="text"
-              v-model="pedidoFaturamentoData.competencia"            
+              v-model="pedidoFaturamentoData.competencia"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -938,7 +938,7 @@
               type="text"
               :disabled="isFaturamentoViewModal"
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-              v-model="editingFaturamento.competencia"             
+              v-model="editingFaturamento.competencia"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1088,12 +1088,6 @@
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <!-- <input
-              type="text"
-              placeholder="Informe o nome do  projeto"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              v-model="projetos"
-            /> -->
             <select
               v-model="projetos"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -1134,28 +1128,11 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'
-           && medicaoData.tipo_medicao !== '' ">
-            <label class="font-bold text-3xl w-[200px]"
-              >Status da medição:</label
-            >
-            <select
-              v-model="medicaoData.status"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            >
-              <option disabled hidden value="">
-                Selecione o status da medição
-              </option>
-              <option>Autorizada</option>
-              <option>Não Autorizada</option>
-              <option>Cancelada</option>
-            </select>
-          </div> -->
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
               type="text"
-              placeholder="Informe a competência"             
+              placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.competencia"
             />
@@ -1230,7 +1207,7 @@
                 </td> -->
                 <td>
                   <span>
-                    {{ item.saldoQuantidadeContratada }}
+                    {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
                   </span>
                 </td>
                 <td>
@@ -1238,7 +1215,7 @@
                     calcularItensRestante(
                       item.id,
                       item.saldoQuantidadeContratada
-                    ).toFixed(3)
+                    ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
                 </td>
                 <td>
@@ -1247,7 +1224,6 @@
                     type="number"
                     class="border-2 text-center max-w-60"
                     min="0"
-                    :max="Number(item.saldoQuantidadeContratada)"
                     v-bind="decimalConfig"
                   />
                 </td>
@@ -1301,13 +1277,6 @@
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <!-- <input
-              type="text"
-              placeholder="Informe o nome do projeto"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              :disabled="isLancamentoViewModal"
-              v-model="editingLancamento.projetos"
-            /> -->
             <select
               v-model="editingLancamento.projetos"
               :disabled="isLancamentoViewModal"
@@ -1377,7 +1346,7 @@
             <input
               type="text"
               :disabled="isLancamentoViewModal"
-              placeholder="Informe a competência"            
+              placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.competencia"
             />
@@ -1433,7 +1402,7 @@
                 </td> -->
                 <td>
                   <span>
-                    {{ item.saldoQuantidadeContratada }}
+                    {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
                   </span>
                 </td>
                 <td>
@@ -1441,7 +1410,7 @@
                     calcularItensRestante(
                       item.contratoItemId,
                       item.saldoQuantidadeContratada
-                    ).toFixed(3)
+                    ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
                 </td>
                 <td>
@@ -1452,20 +1421,9 @@
                     :class="{ 'border-none bg-white': isLancamentoViewModal }"
                     class="border-2 text-center max-w-60"
                     min="0"
-                    :max="Number(item.saldoQuantidadeContratada)"
                     v-bind="decimalConfig"
                   />
                 </td>
-                <!-- <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
-                  <span
-                    class="max-w-60"
-                    :class="{
-                      'text-red-500': saldoMaiorQueContratoEditLancamento(item),
-                    }"
-                  >
-                    {{ formatCurrency(calcularSaldoItem(item) || 0) }}
-                  </span>
-                </td> -->
               </tr>
             </tbody>
           </table>
@@ -1515,13 +1473,6 @@
           <div class="flex justify-between items-center">
             <label class="font-bold text-3xl"
               >Unidade de Medida:
-              <!-- <button
-                type="button"
-                @click="openNewUnitInput"
-                class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
-              >
-                {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-              </button> -->
             </label>
             <select
               v-if="!showNewUnitInput"
@@ -2979,7 +2930,9 @@ const calcularItensRestante = (idItem, quantidadeContratada) => {
     if (
       lancamento.status === "Autorizada" ||
       lancamento.status === "Não Autorizada" ||
-      lancamento.status === "Cancelada"
+      lancamento.status === "Cancelada" ||
+      lancamento.status === "Não Iniciada" ||
+      lancamento.status === "Em Andamento"
     ) {
       return;
     }
@@ -3000,7 +2953,7 @@ const calcularQuantidadeItens = (lancamentoItens) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     saldoTotal += quantidadeItens;
   });
-  return parseFloat(saldoTotal.toFixed(3));
+  return saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 3 });
 };
 
 const mostrarUnidadeMedida = (lancamentoItens) => {
