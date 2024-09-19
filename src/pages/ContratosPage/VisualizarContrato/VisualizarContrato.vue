@@ -730,8 +730,7 @@
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
               type="text"
-              v-model="pedidoFaturamentoData.competencia"
-              required
+              v-model="pedidoFaturamentoData.competencia"            
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -739,6 +738,7 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
+              maxlength="255"
               v-model="pedidoFaturamentoData.observacoes"
               rows="7"
               placeholder="Descrição..."
@@ -938,8 +938,7 @@
               type="text"
               :disabled="isFaturamentoViewModal"
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-              v-model="editingFaturamento.competencia"
-              required
+              v-model="editingFaturamento.competencia"             
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -947,6 +946,7 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Descrição</label>
             <textarea
+              maxlength="255"
               :disabled="isFaturamentoViewModal"
               v-model="editingFaturamento.observacoes"
               rows="7"
@@ -1155,8 +1155,7 @@
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
               type="text"
-              placeholder="Informe a competência"
-              required
+              placeholder="Informe a competência"             
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.competencia"
             />
@@ -1174,6 +1173,7 @@
           <div class="flex gap-12 items-center">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
+              maxlength="255"
               v-model="medicaoData.descricao"
               rows="7"
               placeholder="Descrição..."
@@ -1377,8 +1377,7 @@
             <input
               type="text"
               :disabled="isLancamentoViewModal"
-              placeholder="Informe a competência"
-              required
+              placeholder="Informe a competência"            
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.competencia"
             />
@@ -1397,6 +1396,7 @@
           <div class="flex gap-12 items-center">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
+              maxlength="255"
               v-model="editingLancamento.descricao"
               :disabled="isLancamentoViewModal"
               rows="7"
