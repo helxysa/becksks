@@ -204,7 +204,7 @@
       </section>
     </section>
 
-    <!-- Financial Summary Cards -->
+    <!-- Resumo Financeiro -->
     <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
     <section
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
@@ -224,7 +224,7 @@
       </div>
     </section>
 
-    <!-- Observações Section -->
+    <!-- Observações -->
     <section
       class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
     >
@@ -672,11 +672,15 @@
     :withouHeader="false"
     @close="closeModalPedidoFaturamento"
     maxWidth="6xl"
-    :modalTitle="'Criar Pedido de Faturamento'"
+    :modalTitle="'Novo Pedido de Faturamento'"
   >
     <template #content>
       <form @submit.prevent="createPedidoFaturamento">
         <section class="flex flex-col gap-8">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-3xl w-[180px]">Contrato:</label>
+            <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+          </div>
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
             <span class="font-medium text-3xl">{{
@@ -726,8 +730,7 @@
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
               type="text"
-              v-model="pedidoFaturamentoData.competencia"
-              required
+              v-model="pedidoFaturamentoData.competencia"            
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -735,6 +738,7 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
+              maxlength="255"
               v-model="pedidoFaturamentoData.observacoes"
               rows="7"
               placeholder="Descrição..."
@@ -748,6 +752,7 @@
         >
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
+              <th class="text-xl">#</th>
               <th class="text-xl">Projeto</th>
               <th class="text-xl">Competência</th>
               <th class="text-xl">Unidade de medida</th>
@@ -763,6 +768,7 @@
                 (lancamento) => pedidosFaturamento.includes(lancamento.id)
               )"
             >
+              <td class="px-4">{{ item.id }}</td>
               <td>{{ item.projetos }}</td>
               <td>
                 {{item.competencia}}
@@ -867,13 +873,15 @@
     :withouHeader="false"
     @close="closeEditFaturamentoModal"
     maxWidth="6xl"
-    :modalTitle="
-      isFaturamentoViewModal ? 'Visualizar Faturamento' : 'Editar Faturamento'
-    "
+    :modalTitle="isFaturamentoViewModal ? `Visualizar Faturamento` : 'Editar Faturamento'"
   >
     <template #content>
       <form @submit.prevent="saveEditedFaturamento">
         <section class="flex flex-col gap-8">
+          <div class="flex justify-between items-center gap-4">
+            <label class="font-bold text-3xl w-[180px]">Contrato:</label>
+            <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+          </div>
           <div class="flex justify-between items-center gap-4">
             <label class="font-bold text-3xl w-[180px]">Valor total:</label>
             <span class="font-medium text-3xl">{{
@@ -930,8 +938,7 @@
               type="text"
               :disabled="isFaturamentoViewModal"
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-              v-model="editingFaturamento.competencia"
-              required
+              v-model="editingFaturamento.competencia"             
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -939,6 +946,7 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Descrição</label>
             <textarea
+              maxlength="255"
               :disabled="isFaturamentoViewModal"
               v-model="editingFaturamento.observacoes"
               rows="7"
@@ -953,6 +961,7 @@
         >
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
+              <th class="text-xl">#</th>
               <th class="text-xl">Projeto</th>
               <th class="text-xl">Competência</th>
               <th class="text-xl">Unidade de medida</th>
@@ -968,15 +977,16 @@
               )"
               :key="item.id"
             >
+              <td class="px-4">{{ item.id }}</td>
               <td>{{ item.projetos }}</td>
-              <td>
+              <td class="text-center">
                 <input
                   v-model="item.competencia"
                   type="text"
                   :disabled="isFaturamentoViewModal"
                   :class="{ 'bg-white border-none': isFaturamentoViewModal }"
                   placeholder="Informe a competência"
-                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14"
+                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
                 />
               </td>
               <td>
@@ -1067,11 +1077,15 @@
     :withouHeader="false"
     @close="closeModalLancamento"
     maxWidth="8xl"
-    :modalTitle="'Medição'"
+    :modalTitle="'Criar Nova Medição'"
   >
     <template #content>
       <form @submit.prevent="createLancamento">
         <section class="flex flex-col gap-8">
+          <div class="flex items-center gap-12">
+            <label class="font-bold text-3xl w-[180px]">Contrato:</label>
+            <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+          </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <!-- <input
@@ -1141,8 +1155,7 @@
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
               type="text"
-              placeholder="Informe a competência"
-              required
+              placeholder="Informe a competência"             
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.competencia"
             />
@@ -1160,6 +1173,7 @@
           <div class="flex gap-12 items-center">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
+              maxlength="255"
               v-model="medicaoData.descricao"
               rows="7"
               placeholder="Descrição..."
@@ -1192,6 +1206,7 @@
           >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
+                <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
                 <!-- <th class="text-xl">Valor unitário</th> -->
@@ -1207,6 +1222,7 @@
                 v-for="item in medicaoData.itens"
                 :key="item.id"
               >
+                <td class="text-2xl">{{ item.id }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <!-- <td class="text-2xl">
@@ -1279,6 +1295,10 @@
     <template #content>
       <form @submit.prevent="saveEditedLancamento">
         <section class="flex flex-col gap-8">
+          <div class="flex items-center gap-12">
+            <label class="font-bold text-3xl w-[180px]">Contrato:</label>
+            <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+          </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <!-- <input
@@ -1357,8 +1377,7 @@
             <input
               type="text"
               :disabled="isLancamentoViewModal"
-              placeholder="Informe a competência"
-              required
+              placeholder="Informe a competência"            
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.competencia"
             />
@@ -1377,6 +1396,7 @@
           <div class="flex gap-12 items-center">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
+              maxlength="255"
               v-model="editingLancamento.descricao"
               :disabled="isLancamentoViewModal"
               rows="7"
@@ -1477,7 +1497,7 @@
     :withouHeader="false"
     @close="closeModalCreateItem"
     maxWidth="6xl"
-    :modalTitle="'Criar Novo Item do Contrato'"
+    :modalTitle="'Criar Novo Item'"
   >
     <template #content>
       <form @submit.prevent="createNewItem">
@@ -3001,6 +3021,7 @@ const openItemEditModal = (item) => {
 };
 
 const openItemViewModal = (item) => {
+  fetchUnidadesMedida();
   isItemViewModal.value = true;
   editingItem.value = { ...item };
   modalEditItem.value = true;
