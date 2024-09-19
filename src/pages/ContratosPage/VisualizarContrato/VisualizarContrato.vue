@@ -491,7 +491,10 @@
             {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
           </td> -->
           <td class="text-2xl">
-            {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
+            <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
+              <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
+                {{ subitem.quantidadeItens }}
+              </span>
           </td>
           <td class="text-2xl w-[200px]">
             {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
@@ -1397,9 +1400,6 @@
               >
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
-                <!-- <td class="text-2xl">
-                  {{ formatCurrency(item.valorUnitario) }}
-                </td> -->
                 <td>
                   <span>
                     {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
@@ -2418,6 +2418,7 @@ const updateCompetencia = async (lancamentoId, novaCompetencia) => {
 
 const saveEditedFaturamento = async () => {
   let payload = {
+    competencia: editingFaturamento.value.competencia,
     nota_fiscal: editingFaturamento.value.notaFiscal,
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
@@ -3163,10 +3164,19 @@ const createNewItem = async () => {
 // Editar lancamento do contrato
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
+  // Crie um backup profundo (deep copy) do objeto original
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
+
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
-  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
+
+  // Faça uma cópia profunda também dos itens de lançamento
+  editingLancamento.value = {
+    ...lancamento,
+    dataMedicao: dataFormatada,
+    lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
+  };
+
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
@@ -3188,14 +3198,16 @@ const openViewLancamentoModal = (lancamento) => {
 };
 
 const closeEditLancamentoModal = () => {
+  // Verifica se existe um backup
   if (editingLancamentoBackup.value) {
-    Object.assign(editingLancamento.value, editingLancamentoBackup.value);
-    editingLancamentoBackup.value = null;
+    // Restaura o backup, incluindo os itens de lançamento
+    editingLancamento.value = JSON.parse(JSON.stringify(editingLancamentoBackup.value));
+    editingLancamentoBackup.value = null; // Limpa o backup após restaurar
   }
-  isLancamentoViewModal.value = false;
-  editingLancamento.value = {};
+
+  // Fecha o modal
   modalEditLancamento.value = false;
-  projetos.value = "";
+  isLancamentoViewModal.value = false;
 };
 
 const saveEditedLancamento = async () => {
