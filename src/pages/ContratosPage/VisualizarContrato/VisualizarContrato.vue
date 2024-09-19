@@ -1856,7 +1856,7 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
-import { format, formatISO, startOfDay } from "date-fns";
+import { format, formatISO, startOfDay, parseISO } from "date-fns";
 
 const financialSummary = computed(() => [
   {
@@ -2240,10 +2240,14 @@ const closeModalPedidoFaturamento = () => {
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  const dataFormatada = format(
-    new Date(faturamento.dataFaturamento),
-    "yyyy-MM-dd"
-  );
+  // const dataFormatada = format(
+  //   new Date(faturamento.dataFaturamento),
+  //   "yyyy-MM-dd"
+  // );
+  let dataFormatada = ''
+  if (faturamento.dataFaturamento) {
+    dataFormatada = faturamento.dataFaturamento.split('T')[0];
+  }
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
