@@ -299,7 +299,7 @@
           <td class="text-2xl px-2">{{ item.id }}</td>
           <td class="text-2xl">{{ item.titulo }}</td>
           <td class="text-2xl">{{ item.unidadeMedida }}</td>
-          <td class="text-2xl">{{ item.saldoQuantidadeContratada }}</td>
+          <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
           <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
           <td class="text-2xl">
             {{
@@ -314,7 +314,7 @@
               calcularItensRestante(
                 item.id,
                 item.saldoQuantidadeContratada
-              ).toFixed(3)
+              ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
             }}
           </td>
           <td>
@@ -491,7 +491,10 @@
             {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
           </td> -->
           <td class="text-2xl">
-            {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
+            <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
+              <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
+                {{ subitem.quantidadeItens }}
+              </span>
           </td>
           <td class="text-2xl w-[200px]">
             {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
@@ -730,7 +733,7 @@
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
               type="text"
-              v-model="pedidoFaturamentoData.competencia"            
+              v-model="pedidoFaturamentoData.competencia"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -938,7 +941,7 @@
               type="text"
               :disabled="isFaturamentoViewModal"
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-              v-model="editingFaturamento.competencia"             
+              v-model="editingFaturamento.competencia"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             />
@@ -1088,12 +1091,6 @@
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <!-- <input
-              type="text"
-              placeholder="Informe o nome do  projeto"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              v-model="projetos"
-            /> -->
             <select
               v-model="projetos"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -1134,28 +1131,11 @@
               <option>Detalhada</option>
             </select>
           </div>
-          <!-- <div class="flex gap-4 items-center" v-if="medicaoData.tipo_medicao !== 'Detalhada'
-           && medicaoData.tipo_medicao !== '' ">
-            <label class="font-bold text-3xl w-[200px]"
-              >Status da medição:</label
-            >
-            <select
-              v-model="medicaoData.status"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-            >
-              <option disabled hidden value="">
-                Selecione o status da medição
-              </option>
-              <option>Autorizada</option>
-              <option>Não Autorizada</option>
-              <option>Cancelada</option>
-            </select>
-          </div> -->
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
               type="text"
-              placeholder="Informe a competência"             
+              placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.competencia"
             />
@@ -1230,7 +1210,7 @@
                 </td> -->
                 <td>
                   <span>
-                    {{ item.saldoQuantidadeContratada }}
+                    {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
                   </span>
                 </td>
                 <td>
@@ -1238,7 +1218,7 @@
                     calcularItensRestante(
                       item.id,
                       item.saldoQuantidadeContratada
-                    ).toFixed(3)
+                    ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
                 </td>
                 <td>
@@ -1247,7 +1227,6 @@
                     type="number"
                     class="border-2 text-center max-w-60"
                     min="0"
-                    :max="Number(item.saldoQuantidadeContratada)"
                     v-bind="decimalConfig"
                   />
                 </td>
@@ -1301,13 +1280,6 @@
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
-            <!-- <input
-              type="text"
-              placeholder="Informe o nome do projeto"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
-              :disabled="isLancamentoViewModal"
-              v-model="editingLancamento.projetos"
-            /> -->
             <select
               v-model="editingLancamento.projetos"
               :disabled="isLancamentoViewModal"
@@ -1377,7 +1349,7 @@
             <input
               type="text"
               :disabled="isLancamentoViewModal"
-              placeholder="Informe a competência"            
+              placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.competencia"
             />
@@ -1428,12 +1400,9 @@
               >
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
-                <!-- <td class="text-2xl">
-                  {{ formatCurrency(item.valorUnitario) }}
-                </td> -->
                 <td>
                   <span>
-                    {{ item.saldoQuantidadeContratada }}
+                    {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
                   </span>
                 </td>
                 <td>
@@ -1441,7 +1410,7 @@
                     calcularItensRestante(
                       item.contratoItemId,
                       item.saldoQuantidadeContratada
-                    ).toFixed(3)
+                    ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
                 </td>
                 <td>
@@ -1452,20 +1421,9 @@
                     :class="{ 'border-none bg-white': isLancamentoViewModal }"
                     class="border-2 text-center max-w-60"
                     min="0"
-                    :max="Number(item.saldoQuantidadeContratada)"
                     v-bind="decimalConfig"
                   />
                 </td>
-                <!-- <td class="text-2xl flex justify-center mt-7 items-center gap-3 w-full">
-                  <span
-                    class="max-w-60"
-                    :class="{
-                      'text-red-500': saldoMaiorQueContratoEditLancamento(item),
-                    }"
-                  >
-                    {{ formatCurrency(calcularSaldoItem(item) || 0) }}
-                  </span>
-                </td> -->
               </tr>
             </tbody>
           </table>
@@ -1515,13 +1473,6 @@
           <div class="flex justify-between items-center">
             <label class="font-bold text-3xl"
               >Unidade de Medida:
-              <!-- <button
-                type="button"
-                @click="openNewUnitInput"
-                class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
-              >
-                {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-              </button> -->
             </label>
             <select
               v-if="!showNewUnitInput"
@@ -1905,7 +1856,7 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
-import { format, formatISO, startOfDay } from "date-fns";
+import { format, formatISO, startOfDay, parseISO } from "date-fns";
 
 const financialSummary = computed(() => [
   {
@@ -2289,10 +2240,14 @@ const closeModalPedidoFaturamento = () => {
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  const dataFormatada = format(
-    new Date(faturamento.dataFaturamento),
-    "yyyy-MM-dd"
-  );
+  // const dataFormatada = format(
+  //   new Date(faturamento.dataFaturamento),
+  //   "yyyy-MM-dd"
+  // );
+  let dataFormatada = ''
+  if (faturamento.dataFaturamento) {
+    dataFormatada = faturamento.dataFaturamento.split('T')[0];
+  }
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
@@ -2467,6 +2422,7 @@ const updateCompetencia = async (lancamentoId, novaCompetencia) => {
 
 const saveEditedFaturamento = async () => {
   let payload = {
+    competencia: editingFaturamento.value.competencia,
     nota_fiscal: editingFaturamento.value.notaFiscal,
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
@@ -2979,7 +2935,9 @@ const calcularItensRestante = (idItem, quantidadeContratada) => {
     if (
       lancamento.status === "Autorizada" ||
       lancamento.status === "Não Autorizada" ||
-      lancamento.status === "Cancelada"
+      lancamento.status === "Cancelada" ||
+      lancamento.status === "Não Iniciada" ||
+      lancamento.status === "Em Andamento"
     ) {
       return;
     }
@@ -3000,7 +2958,7 @@ const calcularQuantidadeItens = (lancamentoItens) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     saldoTotal += quantidadeItens;
   });
-  return parseFloat(saldoTotal.toFixed(3));
+  return saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 3 });
 };
 
 const mostrarUnidadeMedida = (lancamentoItens) => {
@@ -3210,10 +3168,19 @@ const createNewItem = async () => {
 // Editar lancamento do contrato
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
+  // Crie um backup profundo (deep copy) do objeto original
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
+
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
-  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
+
+  // Faça uma cópia profunda também dos itens de lançamento
+  editingLancamento.value = {
+    ...lancamento,
+    dataMedicao: dataFormatada,
+    lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
+  };
+
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
@@ -3235,14 +3202,16 @@ const openViewLancamentoModal = (lancamento) => {
 };
 
 const closeEditLancamentoModal = () => {
+  // Verifica se existe um backup
   if (editingLancamentoBackup.value) {
-    Object.assign(editingLancamento.value, editingLancamentoBackup.value);
-    editingLancamentoBackup.value = null;
+    // Restaura o backup, incluindo os itens de lançamento
+    editingLancamento.value = JSON.parse(JSON.stringify(editingLancamentoBackup.value));
+    editingLancamentoBackup.value = null; // Limpa o backup após restaurar
   }
-  isLancamentoViewModal.value = false;
-  editingLancamento.value = {};
+
+  // Fecha o modal
   modalEditLancamento.value = false;
-  projetos.value = "";
+  isLancamentoViewModal.value = false;
 };
 
 const saveEditedLancamento = async () => {
