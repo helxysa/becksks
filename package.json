@@ -13,6 +13,7 @@
     "axios": "^1.7.2",
     "chart.js": "^4.4.4",
     "chartjs-plugin-annotation": "^3.0.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "date-fns": "^3.6.0",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.12.0",
