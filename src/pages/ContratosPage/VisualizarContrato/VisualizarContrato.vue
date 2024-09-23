@@ -1383,6 +1383,7 @@
           >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
+                <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
                 <!-- <th class="text-xl">Valor unitário</th> -->
@@ -1398,6 +1399,7 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
+                <td class="text-2xl">{{ item.contratoItemId }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <td>
@@ -3053,11 +3055,11 @@ const saveEditedItem = async () => {
     fetchContrato(contratoId);
     closeModalEditItem();
   } catch (error) {
-    toast("Não foi possível alterar o item!", {
+    toast(error.response.data.message, {
       theme: "colored",
       type: "error",
     });
-    console.error("Erro ao alterar item", error);
+    console.error("Erro ao alterar item", error.response.data.message);
   }
 };
 
@@ -3083,8 +3085,8 @@ const deleteItem = async (itemId) => {
           type: "success",
         });
       } catch (error) {
-        toast("Erro ao deletar item!", { theme: "colored", type: "error" });
-        console.error("Erro ao deletar item:", error);
+        toast(error.response.data.message, { theme: "colored", type: "error" });
+        console.error("Erro ao deletar item:", error.response.data.message);
       }
     }
   });
