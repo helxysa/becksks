@@ -21,6 +21,18 @@ const props = defineProps({
 
 const isArray = (value) => Array.isArray(value);
 
+const formatValue = (value) => {
+  if (value >= 1e9) {
+    return (value / 1e9).toFixed(2) + 'B';
+  } else if (value >= 1e6) {
+    return (value / 1e6).toFixed(2) + 'M';
+  } else if (value >= 1e3) {
+    return (value / 1e3).toFixed(2) + 'K';
+  } else {
+    return value.toFixed(2);
+  }
+};
+
 const dataBar = computed(() => {
   if (!isArray(props.top5)) {
     return {
@@ -36,15 +48,14 @@ const dataBar = computed(() => {
     };
   }
 
-  const labels = props.top5.map(item => item.nome_cliente);
-  const data = props.top5.map(item => {
+  const labels = props.top5.map(item => `${item.nome_cliente}  ${formatValue(item.saldo_contrato)}`);
+  const dataUtilizada = props.top5.map(item => {
     if (item.saldo_contrato === 0) return 0;
     return (item.totalUtilizado / item.saldo_contrato) * 100;
   });
-
-  const dataUtilizada =  props.top5.map(item => {
+  const dataRestante = props.top5.map(item => {
     if (item.saldo_contrato === 0) return 0;
-    return 100 - (item.totalUtilizado / item.saldo_contrato) * 100 ;
+    return 100 - (item.totalUtilizado / item.saldo_contrato) * 100;
   });
 
   return {
@@ -55,16 +66,15 @@ const dataBar = computed(() => {
         backgroundColor: '#00AFEF66',
         borderColor: '#00AFEF',
         borderWidth: 1,
-        data,
+        data: dataUtilizada,
         barThickness: 20
-      }, 
-
+      },
       {
         label: 'Percentual Restante',
         backgroundColor: '#57BA5EB2',
         borderColor: '#57BA5E',
         borderWidth: 1,
-        data: dataUtilizada,
+        data: dataRestante,
         barThickness: 20
       }
     ]
@@ -81,8 +91,19 @@ const optionsBar = {
     },
     tooltip: {
       callbacks: {
+        title: function(context) {
+          return context[0].label;
+        },
         label: function (context) {
-          return context.parsed.x.toFixed(2) + '%';
+          const item = props.top5[context.dataIndex];
+          const percentual = context.parsed.x.toFixed(2) + '%';
+          let valor;
+          if (context.dataset.label === 'Percentual Utilizado') {
+            valor = formatValue(item.totalUtilizado);
+          } else {
+            valor = formatValue(item.saldo_contrato - item.totalUtilizado);
+          }
+          return `${context.dataset.label}: ${percentual} (${valor})`;
         }
       }
     }
@@ -97,11 +118,10 @@ const optionsBar = {
           return value + '%';
         }
       }
-    }, 
-
+    },
     y: {
-            stacked: true
-      }
+      stacked: true
+    }
   }
 };
 </script>
