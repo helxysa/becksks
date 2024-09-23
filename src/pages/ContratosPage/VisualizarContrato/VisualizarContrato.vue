@@ -491,7 +491,10 @@
             {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
           </td> -->
           <td class="text-2xl">
-            {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
+            <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
+              <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
+                {{ subitem.quantidadeItens }}
+              </span>
           </td>
           <td class="text-2xl w-[200px]">
             {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
@@ -738,7 +741,6 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
-              maxlength="255"
               v-model="pedidoFaturamentoData.observacoes"
               rows="7"
               placeholder="Descrição..."
@@ -946,7 +948,6 @@
           <div class="gap-4 flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Descrição</label>
             <textarea
-              maxlength="255"
               :disabled="isFaturamentoViewModal"
               v-model="editingFaturamento.observacoes"
               rows="7"
@@ -1150,7 +1151,6 @@
           <div class="flex gap-12 items-center">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
-              maxlength="255"
               v-model="medicaoData.descricao"
               rows="7"
               placeholder="Descrição..."
@@ -1365,7 +1365,6 @@
           <div class="flex gap-12 items-center">
             <label class="font-bold text-3xl w-[180px]">Descrição:</label>
             <textarea
-              maxlength="255"
               v-model="editingLancamento.descricao"
               :disabled="isLancamentoViewModal"
               rows="7"
@@ -1380,6 +1379,7 @@
           >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
+                <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
                 <!-- <th class="text-xl">Valor unitário</th> -->
@@ -1395,11 +1395,9 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
+                <td class="text-2xl">{{ item.contratoItemId }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
-                <!-- <td class="text-2xl">
-                  {{ formatCurrency(item.valorUnitario) }}
-                </td> -->
                 <td>
                   <span>
                     {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
@@ -1856,7 +1854,7 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
-import { format, formatISO, startOfDay } from "date-fns";
+import { format, formatISO, startOfDay, parseISO } from "date-fns";
 
 const financialSummary = computed(() => [
   {
@@ -2240,10 +2238,14 @@ const closeModalPedidoFaturamento = () => {
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  const dataFormatada = format(
-    new Date(faturamento.dataFaturamento),
-    "yyyy-MM-dd"
-  );
+  // const dataFormatada = format(
+  //   new Date(faturamento.dataFaturamento),
+  //   "yyyy-MM-dd"
+  // );
+  let dataFormatada = ''
+  if (faturamento.dataFaturamento) {
+    dataFormatada = faturamento.dataFaturamento.split('T')[0];
+  }
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
@@ -2332,6 +2334,11 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
+  if(pedidoFaturamentoData.value.observacoes.length > 1500) {
+    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
+    return;
+  }
+
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
     data_faturamento: pedidoFaturamentoData.value.data_faturamento,
@@ -2417,7 +2424,12 @@ const updateCompetencia = async (lancamentoId, novaCompetencia) => {
 
 
 const saveEditedFaturamento = async () => {
+  if(editingFaturamento.value.observacoes.length > 1500) {
+    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingFaturamento.value.observacoes.length}`)
+    return;
+  }
   let payload = {
+    competencia: editingFaturamento.value.competencia,
     nota_fiscal: editingFaturamento.value.notaFiscal,
     data_faturamento: editingFaturamento.value.dataFaturamento,
     descricao_nota: editingFaturamento.value.descricao_nota,
@@ -2664,6 +2676,10 @@ const createLancamento = async () => {
     return;
   }
 
+  if(medicaoData.value.descricao.length > 1500) {
+    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
+    return;
+  }
   if (medicaoData.value.tipo_medicao === "Detalhada") {
     medicaoData.value.status = "Não Iniciada";
   }
@@ -3048,11 +3064,11 @@ const saveEditedItem = async () => {
     fetchContrato(contratoId);
     closeModalEditItem();
   } catch (error) {
-    toast("Não foi possível alterar o item!", {
+    toast(error.response.data.message, {
       theme: "colored",
       type: "error",
     });
-    console.error("Erro ao alterar item", error);
+    console.error("Erro ao alterar item", error.response.data.message);
   }
 };
 
@@ -3078,8 +3094,8 @@ const deleteItem = async (itemId) => {
           type: "success",
         });
       } catch (error) {
-        toast("Erro ao deletar item!", { theme: "colored", type: "error" });
-        console.error("Erro ao deletar item:", error);
+        toast(error.response.data.message, { theme: "colored", type: "error" });
+        console.error("Erro ao deletar item:", error.response.data.message);
       }
     }
   });
@@ -3163,10 +3179,19 @@ const createNewItem = async () => {
 // Editar lancamento do contrato
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
+  // Crie um backup profundo (deep copy) do objeto original
   editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
+
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
-  editingLancamento.value = { ...lancamento, dataMedicao: dataFormatada };
+
+  // Faça uma cópia profunda também dos itens de lançamento
+  editingLancamento.value = {
+    ...lancamento,
+    dataMedicao: dataFormatada,
+    lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
+  };
+
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
@@ -3188,14 +3213,16 @@ const openViewLancamentoModal = (lancamento) => {
 };
 
 const closeEditLancamentoModal = () => {
+  // Verifica se existe um backup
   if (editingLancamentoBackup.value) {
-    Object.assign(editingLancamento.value, editingLancamentoBackup.value);
-    editingLancamentoBackup.value = null;
+    // Restaura o backup, incluindo os itens de lançamento
+    editingLancamento.value = JSON.parse(JSON.stringify(editingLancamentoBackup.value));
+    editingLancamentoBackup.value = null; // Limpa o backup após restaurar
   }
-  isLancamentoViewModal.value = false;
-  editingLancamento.value = {};
+
+  // Fecha o modal
   modalEditLancamento.value = false;
-  projetos.value = "";
+  isLancamentoViewModal.value = false;
 };
 
 const saveEditedLancamento = async () => {
@@ -3281,6 +3308,10 @@ const saveEditedLancamento = async () => {
 
   if (editingLancamento.value.status === "" || editingLancamento.value.status === null) {
     toast.error("Selecione um status para a medição.")
+    return;
+  }
+   if(editingLancamento.value.descricao.length > 1500) {
+    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
     return;
   }
 
