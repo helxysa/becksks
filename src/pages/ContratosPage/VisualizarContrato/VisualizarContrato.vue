@@ -1843,6 +1843,9 @@
       </footer>
     </template>
   </JetDialogModal>
+  <div v-if="contratoId">
+    <Anexos :contratoId="contratoId" />
+  </div>
 </template>
 
 <script setup>
@@ -1855,7 +1858,9 @@ import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
+import Anexos from '../../../components/form/Anexos.vue';
 
+let contratoId = null
 const financialSummary = computed(() => [
   {
     title: "Valor Contratado",
@@ -2720,7 +2725,7 @@ const voltarListagem = () => {
 };
 
 onMounted(() => {
-  const contratoId = route.params.id;
+  contratoId = route.params.id;
   fetchContrato(contratoId);
   window.scroll({
     top: 0,
