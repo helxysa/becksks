@@ -122,14 +122,17 @@
           </td>
             <td class="text-2xl">
               <div class="flex justify-center">
-                <span v-if="contrato.statusVencimento === 'a vencer'">
+                <span v-if="contrato.statusVencimento === 'a vencer'" class="tooltip">
                   <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
+                  <span class="tooltiptext">Contrato perto de vencer</span>
                 </span>
-                <span v-else-if="contrato.statusVencimento === 'ativo'">
+                <span v-else-if="contrato.statusVencimento === 'ativo'" class="tooltip">
                   <Icon icon="line-md:confirm-circle-filled" height="30" class="text-green-300" />
+                  <span class="tooltiptext">Contrato ativo</span>
                 </span>
-                <span v-else>
+                <span v-else class="tooltip">
                   <Icon icon="ri:alert-line" height="30" class="text-red-300" />
+                  <span class="tooltiptext">Contrato em atraso</span>
                 </span>
               </div>
             </td>
@@ -335,5 +338,33 @@ watch(() => [statusAtual.value, currentPageContratos.value], ([status, page]) =>
   top: 0;
   right: 10px;
   z-index: 1000;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

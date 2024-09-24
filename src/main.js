@@ -10,6 +10,7 @@ import { MaskInput } from "vue-mask-next";
 import VueAwesomePaginate from "vue-awesome-paginate"
 import "vue-awesome-paginate/dist/style.css";
 
+
 const app = createApp(App);
 app.use(router);
 app.use(Vue3Toasity, {
@@ -20,5 +21,6 @@ app.use(Vue3Toasity, {
 app.use(money);
 app.use(VueAwesomePaginate);
 app.component("MaskInput", MaskInput);
+
 
 app.mount("#app");
