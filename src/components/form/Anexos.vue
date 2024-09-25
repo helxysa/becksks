@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <h2 class="text-[1.8rem] font-medium text-gray-800 mb-6">Anexos</h2>
-
+    
     <div class="file-input-wrapper w-full">
       <label
         class="w-full flex flex-col items-center justify-center border-2 border-[#3498db] rounded-lg p-5 text-center cursor-pointer transition-all duration-300 ease-in-out bg-[#f8fafc] hover:bg-[#e3f2fd] hover:shadow-[0_4px_12px_rgba(52,152,219,0.2)] hover:-translate-y-0.5 transform"

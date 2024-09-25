@@ -4,7 +4,7 @@
       <Sidebar v-if="isAuthenticated" class="w-[280px] h-full" />
       <div class="w-full flex flex-col h-full">
         <Header v-if="isAuthenticated" class="mb-4 rounded-md w-full h-40 flex-shrink-0" />
-        <section :class="{'bg-white p-12 rounded-md flex-grow overflow-y-auto': isAuthenticated}">
+        <section :class="{'bg-white p-8 rounded-md flex-grow overflow-y-auto': isAuthenticated}">
           <slot />
         </section>
       </div>
