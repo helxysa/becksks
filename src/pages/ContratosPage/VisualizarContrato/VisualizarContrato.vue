@@ -443,7 +443,7 @@
           <td class="text-2xl">
             <div class="flex justify-center">
               <span
-                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                class="border-2 py-2 px-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-full"
                 :class="{
                   'bg-purple-200 border-purple-400 text-purple-400':
                     lancamento.tipoMedicao === 'Estimada',
@@ -1843,6 +1843,9 @@
       </footer>
     </template>
   </JetDialogModal>
+  <div v-if="contratoId">
+    <Anexos :contratoId="contratoId" />
+  </div>
 </template>
 
 <script setup>
@@ -1855,7 +1858,9 @@ import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
+import Anexos from '../../../components/form/Anexos.vue';
 
+let contratoId = null
 const financialSummary = computed(() => [
   {
     title: "Valor Contratado",
@@ -2720,7 +2725,7 @@ const voltarListagem = () => {
 };
 
 onMounted(() => {
-  const contratoId = route.params.id;
+  contratoId = route.params.id;
   fetchContrato(contratoId);
   window.scroll({
     top: 0,
