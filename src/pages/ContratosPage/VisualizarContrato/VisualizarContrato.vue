@@ -246,17 +246,13 @@
 
 <section class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
   <div class="flex border-b border-gray-200 mb-8 pt-4">
-    <button
+    <TabButton
       v-for="tab in tabs"
       :key="tab"
-      @click="currentTab = tab"
-      :class="currentTab === tab
-        ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-100 rounded-t-lg'
-        : 'hover:bg-gray-100'"
-      class="px-4 py-2 focus:outline-none transition-colors duration-200"
-    >
-      {{ tab }}
-    </button>
+      :currentTab="currentTab"
+      :tab="tab"
+      @update:currentTab="currentTab = $event"
+    />
   </div>
 
 
@@ -690,7 +686,7 @@
     <div v-if="currentTab === 'Anexos'">
       <!-- Anexos do contrato -->
       <div v-if="contratoId">
-        <Anexos :contratoId="contratoId" />
+        <Anexos :resourceId="contratoId" :variant="'contrato'" />
       </div>
     </div>
 </section>
@@ -899,11 +895,27 @@
     :show="modalEditFaturamento"
     :withouHeader="false"
     @close="closeEditFaturamentoModal"
-    maxWidth="6xl"
+    maxWidth="8xl"
     :modalTitle="isFaturamentoViewModal ? `Visualizar Faturamento` : 'Editar Faturamento'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+          v-for="tab in editFaturamentoTabs"
+          :key="tab"
+          :currentTab="editFaturamentoCurrentTab"
+          :tab="tab"
+          @update:currentTab="editFaturamentoCurrentTab = $event"
+        />
+      </div>
+      <div v-if="editFaturamentoCurrentTab === 'Anexos'">
+        <div v-if="editingFaturamento.id">
+          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" />
+        </div>
+      </div>
       <form @submit.prevent="saveEditedFaturamento">
+      <section v-if="editFaturamentoCurrentTab === 'Formulário'">
+
         <section class="flex flex-col gap-8">
           <div class="flex justify-between items-center gap-4">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1078,7 +1090,8 @@
             </tr>
           </tbody>
         </table>
-        <div class="mt-9 flex justify-end gap-4">
+      </section>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeEditFaturamentoModal"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1092,7 +1105,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -1294,7 +1307,22 @@
     "
   >
     <template #content>
-      <form @submit.prevent="saveEditedLancamento">
+    <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+        v-for="tab in editMedicaoTabs"
+        :key="tab"
+        :currentTab="editMedicaoCurrentTab"
+        :tab="tab"
+        @update:currentTab="editMedicaoCurrentTab = $event"
+      />
+    </div>
+    <div v-if="editMedicaoCurrentTab === 'Anexos'">
+      <div v-if="editingLancamento.id">
+        <Anexos :resourceId="editingLancamento.id" :variant="'medicao'" />
+      </div>
+    </div>
+    <form @submit.prevent="saveEditedLancamento">
+      <section v-if="editMedicaoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
           <div class="flex items-center gap-12">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1398,7 +1426,7 @@
             />
           </div>
         </section>
-        <div class="mt-8">
+        <section class="mt-8">
           <table
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
@@ -1450,9 +1478,9 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <div class="mt-9 flex justify-end gap-4">
+        </section>
+      </section>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeEditLancamentoModal"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1467,8 +1495,9 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
+
     </template>
   </JetDialogModal>
 
@@ -1881,9 +1910,15 @@ import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
 import Anexos from '../../../components/form/Anexos.vue';
-
+import TabButton from '../../../components/TabButton.vue';
+// Guias das tabelas
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
+// Guias dos modais
+const editMedicaoTabs = ['Formulário', 'Anexos']
+const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
+const editFaturamentoTabs = ['Formulário', 'Anexos']
+const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 let contratoId = null
 const financialSummary = computed(() => [
   {
@@ -2303,6 +2338,7 @@ const openViewFaturamentoModal = (faturamento) => {
 
 const closeEditFaturamentoModal = () => {
   selectNovoFaturamento.value = "";
+  editFaturamentoCurrentTab.value = editFaturamentoTabs[0]
   isFaturamentoViewModal.value = false;
   editingFaturamento.value = {};
   // closeModalPedidoFaturamento()
@@ -2365,7 +2401,7 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
-  if(pedidoFaturamentoData.value.observacoes.length > 1500) {
+  if(pedidoFaturamentoData.value.observacoes && pedidoFaturamentoData.value.observacoes.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
     return;
   }
@@ -2455,7 +2491,7 @@ const updateCompetencia = async (lancamentoId, novaCompetencia) => {
 
 
 const saveEditedFaturamento = async () => {
-  if(editingFaturamento.value.observacoes.length > 1500) {
+  if(editingFaturamento.value.observacoes && editingFaturamento.value.observacoes.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingFaturamento.value.observacoes.length}`)
     return;
   }
@@ -2707,7 +2743,7 @@ const createLancamento = async () => {
     return;
   }
 
-  if(medicaoData.value.descricao.length > 1500) {
+  if(medicaoData.value.descricao && medicaoData.value.descricao.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
     return;
   }
@@ -3252,6 +3288,7 @@ const closeEditLancamentoModal = () => {
   }
 
   // Fecha o modal
+  editMedicaoCurrentTab.value = editMedicaoTabs[0]
   modalEditLancamento.value = false;
   isLancamentoViewModal.value = false;
 };
@@ -3341,7 +3378,7 @@ const saveEditedLancamento = async () => {
     toast.error("Selecione um status para a medição.")
     return;
   }
-   if(editingLancamento.value.descricao.length > 1500) {
+   if(editingLancamento.value.descricao && editingLancamento.value.descricao.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
     return;
   }
