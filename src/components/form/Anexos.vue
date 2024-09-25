@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <h2 class="text-[1.8rem] font-medium text-gray-800 mb-6">Anexos</h2>
-    
+
     <div class="file-input-wrapper w-full">
       <label
         class="w-full flex flex-col items-center justify-center border-2 border-[#3498db] rounded-lg p-5 text-center cursor-pointer transition-all duration-300 ease-in-out bg-[#f8fafc] hover:bg-[#e3f2fd] hover:shadow-[0_4px_12px_rgba(52,152,219,0.2)] hover:-translate-y-0.5 transform"
@@ -103,10 +103,15 @@ const successMessage = ref('');
 const errorMessage = ref('');
 
 const props = defineProps({
-  contratoId: {
+  resourceId: {
     type: Number,
     required: true,
   },
+  variant: {
+    type: String,
+    required: true,
+    validator: value => ['contrato', 'medicao', 'faturamento'].includes(value)
+  }
 });
 
 const handleFileSelect = (event) => {
@@ -128,8 +133,10 @@ const uploadFile = async () => {
   const formData = new FormData();
   formData.append('file', selectedFile.value);
 
+  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+
   try {
-    await api.post(`/contratos/${props.contratoId}/anexos`, formData, {
+    await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -149,7 +156,9 @@ const uploadFile = async () => {
 
 const fetchAnexos = async () => {
   try {
-    const response = await api.get(`/contratos/${props.contratoId}/anexos`);
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+
+    const response = await api.get(`/${variantUrl}/${props.resourceId}/anexos`);
     anexos.value = response.data.anexos.map((anexo) => ({
       ...anexo,
       isEditing: false,
@@ -162,7 +171,9 @@ const fetchAnexos = async () => {
 
 const deleteFile = async (id) => {
   try {
-    await api.delete(`/contratos/${props.contratoId}/anexos/${id}`);
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+
+    await api.delete(`/${variantUrl}/${props.resourceId}/anexos/${id}`);
     successMessage.value = 'Arquivo excluído com sucesso!';
     fetchAnexos();
     setTimeout(() => {
@@ -188,9 +199,10 @@ const updateFileName = async (anexo) => {
     errorMessage.value = 'O nome do arquivo não pode ser vazio.';
     return;
   }
+  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
   try {
-    await api.put(`/contratos/${props.contratoId}/anexos/${anexo.id}`, {
+    await api.put(`/${variantUrl}/${props.resourceId}/anexos/${anexo.id}`, {
       file_name: anexo.newFileName,
     });
     anexo.fileName = anexo.newFileName;
