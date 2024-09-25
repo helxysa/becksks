@@ -895,11 +895,27 @@
     :show="modalEditFaturamento"
     :withouHeader="false"
     @close="closeEditFaturamentoModal"
-    maxWidth="6xl"
+    maxWidth="8xl"
     :modalTitle="isFaturamentoViewModal ? `Visualizar Faturamento` : 'Editar Faturamento'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+          v-for="tab in editFaturamentoTabs"
+          :key="tab"
+          :currentTab="editFaturamentoCurrentTab"
+          :tab="tab"
+          @update:currentTab="editFaturamentoCurrentTab = $event"
+        />
+      </div>
+      <div v-if="editFaturamentoCurrentTab === 'Anexos'">
+        <div v-if="editingFaturamento.id">
+          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" />
+        </div>
+      </div>
       <form @submit.prevent="saveEditedFaturamento">
+      <section v-if="editFaturamentoCurrentTab === 'Formulário'">
+
         <section class="flex flex-col gap-8">
           <div class="flex justify-between items-center gap-4">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1074,7 +1090,8 @@
             </tr>
           </tbody>
         </table>
-        <div class="mt-9 flex justify-end gap-4">
+      </section>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeEditFaturamentoModal"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1088,7 +1105,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -1900,6 +1917,8 @@ const currentTab = ref(tabs[0])
 // Guias dos modais
 const editMedicaoTabs = ['Formulário', 'Anexos']
 const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
+const editFaturamentoTabs = ['Formulário', 'Anexos']
+const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 let contratoId = null
 const financialSummary = computed(() => [
   {
@@ -2319,6 +2338,7 @@ const openViewFaturamentoModal = (faturamento) => {
 
 const closeEditFaturamentoModal = () => {
   selectNovoFaturamento.value = "";
+  editFaturamentoCurrentTab.value = editFaturamentoTabs[0]
   isFaturamentoViewModal.value = false;
   editingFaturamento.value = {};
   // closeModalPedidoFaturamento()

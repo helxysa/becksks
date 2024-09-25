@@ -173,7 +173,7 @@ const deleteFile = async (id) => {
   try {
     let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
-    await api.delete(`/${variantUrl}/${props.resourceId}/anexos/${id}`);
+    await api.delete(`/${variantUrl}/anexos/${id}`);
     successMessage.value = 'Arquivo excluído com sucesso!';
     fetchAnexos();
     setTimeout(() => {
