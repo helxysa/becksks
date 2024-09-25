@@ -42,7 +42,7 @@
           <div class="flex items-center gap-2 w-full">
             <div v-if="!anexo.isEditing" class="flex items-center gap-2 w-full">
               <a
-                :href="anexo.filePath"
+                :href="anexo.file_url"
                 target="_blank"
                 class="text-[#3498db] no-underline font-normal flex-grow"
               >
