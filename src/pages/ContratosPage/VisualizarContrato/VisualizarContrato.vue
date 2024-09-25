@@ -910,7 +910,7 @@
       </div>
       <div v-if="editFaturamentoCurrentTab === 'Anexos'">
         <div v-if="editingFaturamento.id">
-          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" />
+          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
         </div>
       </div>
       <form @submit.prevent="saveEditedFaturamento">
@@ -1318,7 +1318,7 @@
     </div>
     <div v-if="editMedicaoCurrentTab === 'Anexos'">
       <div v-if="editingLancamento.id">
-        <Anexos :resourceId="editingLancamento.id" :variant="'medicao'" />
+        <Anexos :resourceId="editingLancamento.id" :variant="'medicao'" :isViewOnly="isLancamentoViewModal"/>
       </div>
     </div>
     <form @submit.prevent="saveEditedLancamento">
