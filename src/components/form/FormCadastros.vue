@@ -935,9 +935,9 @@ const saveContrato = async () => {
   contratoId.value = await createContrato();
 
   if (contratoId) {
-    const projetosCriados = await createProjetos(contratoId);
+    const projetosCriados = await createProjetos(contratoId.value);
     if (projetosCriados === "error") {
-      await deleteContrato(contratoId);
+      await deleteContrato(contratoId.value);
     } else {
       voltarListagem();
     }
