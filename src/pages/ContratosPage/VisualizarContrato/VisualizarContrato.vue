@@ -695,11 +695,24 @@
     :show="modalPedidoFaturamento"
     :withouHeader="false"
     @close="closeModalPedidoFaturamento"
-    maxWidth="6xl"
+    maxWidth="8xl"
     :modalTitle="'Novo Pedido de Faturamento'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+          <TabButton
+          v-for="tab in criarFaturamentoTabs"
+          :key="tab"
+          :currentTab="criarFaturamentoCurrentTab"
+          :tab="tab"
+          @update:currentTab="criarFaturamentoCurrentTab = $event"
+        />
+      </div>
+      <div v-if="criarFaturamentoCurrentTab === 'Anexos'">
+        <AnexoUpload :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
+      </div>
       <form @submit.prevent="createPedidoFaturamento">
+        <div v-if="criarFaturamentoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
           <div class="flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -872,7 +885,8 @@
             </tr>
           </tbody>
         </table>
-        <div class="mt-9 flex justify-end gap-4">
+      </div>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeModalPedidoFaturamento"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -885,7 +899,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -1119,7 +1133,21 @@
     :modalTitle="'Criar Nova Medição'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+        v-for="tab in criarMedicaoTabs"
+        :key="tab"
+        :currentTab="criarMedicaoCurrentTab"
+        :tab="tab"
+        @update:currentTab="criarMedicaoCurrentTab = $event"
+      />
+    </div>
+    <div v-if="criarMedicaoCurrentTab === 'Anexos'">
+      <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
+    </div>
       <form @submit.prevent="createLancamento">
+        <div v-if="criarMedicaoCurrentTab === 'Formulário'">
+
         <section class="flex flex-col gap-8">
           <div class="flex items-center gap-12">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1277,7 +1305,8 @@
             </tbody>
           </table>
         </div>
-        <div class="mt-9 flex justify-end gap-4">
+        </div>
+        <footer class=" mt-9 flex justify-end gap-4">
           <button
             @click="closeModalLancamento"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1291,7 +1320,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -1910,15 +1939,27 @@ import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
 import Anexos from '../../../components/form/Anexos.vue';
+import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
 // Guias das tabelas
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
-// Guias dos modais
+// Guias dos modais de edição
 const editMedicaoTabs = ['Formulário', 'Anexos']
 const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
 const editFaturamentoTabs = ['Formulário', 'Anexos']
 const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
+// Guias dos modais de criação
+// Medicao
+const criarMedicaoTabs = ['Formulário', 'Anexos']
+const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
+const medicaoLocalAnexos = ref([])
+const medicaoId = ref(null)
+// Faturamento
+const criarFaturamentoTabs = ['Formulário', 'Anexos']
+const criarFaturamentoCurrentTab = ref(criarFaturamentoTabs[0])
+const faturamentoLocalAnexos = ref([])
+const faturamentoId = ref(null)
 let contratoId = null
 const financialSummary = computed(() => [
   {
@@ -2249,10 +2290,7 @@ const fetchContratoFaturamentos = async (page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
-    const response = await api.get(
-      `/contratos/${contrato.value.id}/faturamentos?page=${page}`,
-      { params }
-    );
+    const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2282,7 +2320,7 @@ const changePedido = (e) => {
 
 // Faturamento
 const ExibirModalPedidoFaturamento = () => {
-  if (!selectNovoFaturamento.value) {
+  if (pedidoFaturamentoData.value.descricao_nota.length == 0) {
     toast.error("Por favor, selecione uma medição antes de continuar.");
     return;
   }
@@ -2298,7 +2336,9 @@ const closeModalPedidoFaturamento = () => {
     observacoes: "",
     status: "",
   };
-
+  criarFaturamentoCurrentTab.value = criarFaturamentoTabs[0]
+  faturamentoLocalAnexos.value = []
+  faturamentoId.value = null
   pedidosFaturamento.value = [];
 };
 
@@ -2425,13 +2465,14 @@ const createPedidoFaturamento = async () => {
     const response = await api
       .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
       .then((response) => {
+        faturamentoId.value = response.data.id;
         toast("Faturamento criado com sucesso!", {
           theme: "colored",
           type: "success",
         });
-        closeModalPedidoFaturamento();
       });
-    fetchContrato(contratoId);
+      closeModalPedidoFaturamento();
+      fetchContrato(contratoId);
   } catch (error) {
     toast("Não foi possível criar o  pedido  de faturamento!", {
       theme: "colored",
@@ -2664,6 +2705,7 @@ const closeModalLancamento = () => {
     data_medicao: "",
     itens: [],
   };
+  medicaoLocalAnexos.value = [];
   selectedItem.value = "";
   contrato.value.contratoItens.forEach((item) => {
     // item.data = null;
@@ -2676,6 +2718,8 @@ const resetForm = () => {
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
   });
+  medicaoId.value = null;
+  criarMedicaoCurrentTab.value = criarMedicaoTabs[0]
   projetos.value = "";
   closeModalLancamento();
 };
@@ -2766,9 +2810,9 @@ const createLancamento = async () => {
   try {
     const contratoId = route.params.id;
 
-    const response = await api
-      .post(`/contratos/${contrato.value.id}/lancamentos`, payload)
+    const response = await api.post(`/contratos/${contrato.value.id}/lancamentos`, payload)
       .then((response) => {
+        medicaoId.value = response.data.id;
         toast("Medição criada com sucesso!", {
           theme: "colored",
           type: "success",

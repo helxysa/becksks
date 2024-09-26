@@ -5,7 +5,7 @@
         <Icon
           icon="ic:round-arrow-back"
           height="30"
-          class=" duration-600  transition-all ease-in-out transform hover:-translate-y-[2px]"
+          class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"
         />
       </span>
       <h1 class="text-5xl font-bold">Formulário de Contrato</h1>
@@ -178,7 +178,7 @@
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-3 w-full border-gray-300 rounded-md"
           />
         </div>
-        <div class="mt-8 flex gap-8 flex-wrap justify-end">
+        <section class="mt-8 flex gap-8 flex-wrap justify-end">
           <button
             class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
@@ -215,52 +215,65 @@
             </span>
             Adicionar Projeto
           </button>
+        </section>
+        <div class="flex border-b border-gray-200 mb-8 pt-4">
+          <TabButton
+            v-for="tab in tabs"
+            :key="tab"
+            :currentTab="currentTab"
+            :tab="tab"
+            @update:currentTab="currentTab = $event"
+          />
         </div>
-        <table
-          class="mt-8 table-auto border border-slate-200 rounded-2xl w-full"
-        >
-          <thead class="h-24 bg-slate-100 border-1">
-            <tr class="">
-              <th class="text-2xl">Item</th>
-              <th class="text-2xl">Unidade de medida</th>
-              <th class="text-2xl">Valor unitário</th>
-              <th class="text-2xl">Quantidade contratada</th>
-              <th class="text-2xl">Opções</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(item, index) in contratoForm.items"
-              :key="index"
-              class="text-center"
-            >
-              <td class="text-xl p-4">{{ item.titulo }}</td>
-              <td class="text-xl p-4">{{ item.unidade_medida }}</td>
-              <td class="text-xl p-4">
-                {{ formatCurrency(item.valor_unitario) }}
-              </td>
-              <td class="text-xl p-4">
-                {{ item.saldo_quantidade_contratada }}
-              </td>
-              <td>
-                <button type="button" @click="openEditModal(index)">
-                  <Icon
-                    icon="ph:pencil"
-                    height="20"
-                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                  />
-                </button>
-                <button type="button" @click="removeItem(index)">
-                  <Icon
-                    icon="ph:trash"
-                    height="20"
-                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                  />
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-if="currentTab === 'Itens'">
+          <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
+            <thead class="h-24 bg-slate-100 border-1">
+              <tr>
+                <th class="text-2xl">Item</th>
+                <th class="text-2xl">Unidade de medida</th>
+                <th class="text-2xl">Valor unitário</th>
+                <th class="text-2xl">Quantidade contratada</th>
+                <th class="text-2xl">Opções</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(item, index) in contratoForm.items"
+                :key="index"
+                class="text-center"
+              >
+                <td class="text-xl p-4">{{ item.titulo }}</td>
+                <td class="text-xl p-4">{{ item.unidade_medida }}</td>
+                <td class="text-xl p-4">
+                  {{ formatCurrency(item.valor_unitario) }}
+                </td>
+                <td class="text-xl p-4">
+                  {{ item.saldo_quantidade_contratada }}
+                </td>
+                <td>
+                  <button type="button" @click="openEditModal(index)">
+                    <Icon
+                      icon="ph:pencil"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </button>
+                  <button type="button" @click="removeItem(index)">
+                    <Icon
+                      icon="ph:trash"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-if="currentTab === 'Anexos'">
+            <AnexoUpload :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
+        </div>
+
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
             <button
@@ -279,82 +292,111 @@
         </div>
       </form>
     </section>
-<!-- Modal unidade -->
-<JetDialogModal
-  :show="isModalUnidadeOpen"
-  :withouHeader="false"
-  @close="closeModalUnidade"
-  :modalTitle="modalTitleUnidade"
-  maxWidth="6xl"
->
-  <template #content>
-    <form @submit.prevent="handleSubmitUnidade" class="flex gap-8 px-6 h-[4.40rem]">
-      <input
-        type="text"
-        id="nome"
-        v-model="newUnidade"
-        required
-        class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-        placeholder="Digite o nome da unidade"
-      />
-      <button
-        type="button"
-        @click="handleSubmitUnidade"
-        class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-      >
-        {{ isEditingUnidade ? "Atualizar" : "Adicionar" }}
-      </button>
-    </form>
-    <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
-      <div
-        v-for="item in unidadesMedida"
-        :key="item.id"
-        class="flex items-center gap-2 border-[1px] rounded-md"
-      >
-        <div v-if="!item.isEditing" class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500">
-          <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.unidadeMedida">
-            {{ item.unidadeMedida }}
-          </span>
-          <div class="flex items-center mx-4">
-            <button @click="editUnidade(item)" class="hover:bg-gray-200 hover:rounded-full rounded-full p-4">
-              <Icon icon="heroicons-solid:pencil" height="18" class="text-blue-600 rounded-full" />
-            </button>
-            <button @click="deletarUnidade(item.id)" class="hover:bg-gray-200 hover:rounded-full rounded-full p-4">
-              <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
-            </button>
-          </div>
-        </div>
-        <div v-else class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6">
+    <!-- Modal unidade -->
+    <JetDialogModal
+      :show="isModalUnidadeOpen"
+      :withouHeader="false"
+      @close="closeModalUnidade"
+      :modalTitle="modalTitleUnidade"
+      maxWidth="6xl"
+    >
+      <template #content>
+        <form
+          @submit.prevent="handleSubmitUnidade"
+          class="flex gap-8 px-6 h-[4.40rem]"
+        >
           <input
             type="text"
-            v-model="item.unidadeMedida"
+            id="nome"
+            v-model="newUnidade"
+            required
             class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             placeholder="Digite o nome da unidade"
           />
-          <div class="ml-auto text-nowrap flex gap-4">
-            <button @click="saveUnidade(item)" class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]">
-              Salvar
-            </button>
-            <button @click="cancelEditUnidade(item)" class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]">
-              Cancelar
-            </button>
+          <button
+            type="button"
+            @click="handleSubmitUnidade"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+          >
+            {{ isEditingUnidade ? "Atualizar" : "Adicionar" }}
+          </button>
+        </form>
+        <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+          <div
+            v-for="item in unidadesMedida"
+            :key="item.id"
+            class="flex items-center gap-2 border-[1px] rounded-md"
+          >
+            <div
+              v-if="!item.isEditing"
+              class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
+            >
+              <span
+                class="ml-6 font-sans text-nowrap truncate max-w-[500px]"
+                :title="item.unidadeMedida"
+              >
+                {{ item.unidadeMedida }}
+              </span>
+              <div class="flex items-center mx-4">
+                <button
+                  @click="editUnidade(item)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
+                  <Icon
+                    icon="heroicons-solid:pencil"
+                    height="18"
+                    class="text-blue-600 rounded-full"
+                  />
+                </button>
+                <button
+                  @click="deletarUnidade(item.id)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
+                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
+                </button>
+              </div>
+            </div>
+            <div
+              v-else
+              class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6"
+            >
+              <input
+                type="text"
+                v-model="item.unidadeMedida"
+                class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+                placeholder="Digite o nome da unidade"
+              />
+              <div class="ml-auto text-nowrap flex gap-4">
+                <button
+                  @click="saveUnidade(item)"
+                  class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                >
+                  Salvar
+                </button>
+                <button
+                  @click="cancelEditUnidade(item)"
+                  class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-    <hr class="my-8" />
-    <footer class="flex justify-end h-16 mb-2">
-      <button
-        type="button"
-        @click="closeModalUnidade"
-        class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-      >
-        Salvar Unidades
-      </button>
-    </footer>
-  </template>
-</JetDialogModal>
+        <hr class="my-8" />
+        <footer class="flex justify-end h-16 mb-2">
+          <button
+            type="button"
+            @click="closeModalUnidade"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+          >
+            Salvar Unidades
+          </button>
+        </footer>
+      </template>
+    </JetDialogModal>
 
+    <!-- Modal adicioanr item -->
     <JetDialogModal
       :show="exibirModal"
       :withouHeader="false"
@@ -578,6 +620,7 @@
         </form>
       </template>
     </JetDialogModal>
+    <!-- Modal de projeto -->
     <JetDialogModal
       :show="isModalProjetoOpen"
       :withouHeader="false"
@@ -692,8 +735,14 @@ import ListItems from "../list/ListItems.vue";
 import { api } from "@/services/api";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
-import { ufs } from '../../services/ufs.js';
+import { ufs } from "../../services/ufs.js";
+import AnexoUpload from './AnexoUpload.vue';
+import TabButton from '../../components/TabButton.vue';
 
+const tabs = ['Itens', 'Anexos']
+const currentTab = ref(tabs[0])
+const contratoId = ref(null)
+const localAnexos = ref([]);
 const router = useRouter();
 const route = useRoute();
 const exibirModal = ref(false);
@@ -883,7 +932,7 @@ const deleteContrato = async (contratoId) => {
 };
 
 const saveContrato = async () => {
-  const contratoId = await createContrato();
+  contratoId.value = await createContrato();
 
   if (contratoId) {
     const projetosCriados = await createProjetos(contratoId);
@@ -935,7 +984,7 @@ const fetchUnidadesMedida = async () => {
   } catch (error) {
     console.error("Erro ao buscar unidades de medida:", error);
   }
-}
+};
 
 const openModalUnidade = () => {
   fetchUnidadesMedida().then(() => {
@@ -954,7 +1003,7 @@ const handleSubmitUnidade = async () => {
   // if (isEditingUnidade.value) {
   //   await EditarUnidade();
   // } else {
-    await CriarUnidade();
+  await CriarUnidade();
   // }
 };
 
@@ -965,7 +1014,7 @@ const CriarUnidade = async () => {
     });
     await fetchUnidadesMedida();
     toast.success("Unidade criada com sucesso!");
-    newUnidade.value = '';
+    newUnidade.value = "";
   } catch (error) {
     console.error("Erro ao criar unidade:", error);
     toast.error("Não foi possível criar a unidade.");
@@ -990,7 +1039,7 @@ const editUnidade = (item) => {
   item.isEditing = true;
 };
 
-const saveUnidade =  async (item) => {
+const saveUnidade = async (item) => {
   const unidadeNome = item.unidadeMedida.trim();
   const unidadeId = item.id;
 
@@ -1055,10 +1104,10 @@ const closeModalUnidade = () => {
 
 const isDuplicateUnidade = (nome, excludeId = null) => {
   return unidadesMedida.value.some(
-    (u) => u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
+    (u) =>
+      u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
   );
 };
-
 
 // Projeto
 const projetos = ref([]);
