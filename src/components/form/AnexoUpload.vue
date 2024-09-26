@@ -33,9 +33,9 @@
 
     <div class="attached-files mt-8">
       <h3 class="text-xl font-semibold mb-4">Documentos Anexados</h3>
-      <div v-if="anexos.length" class="flex flex-col gap-3 w-full">
+      <div v-if="anexosCombinados.length" class="flex flex-col gap-3 w-full">
         <div
-          v-for="(anexo, index) in anexos"
+          v-for="(anexo, index) in anexosCombinados"
           :key="anexo.id"
           class="bg-[#f1f8ff] rounded-lg py-3 px-4 flex justify-between items-center transition-all duration-300 ease-in-out transform hover:bg-[#e3f2fd] hover:translate-x-[5px]"
         >
@@ -70,7 +70,7 @@
               </button>
             </div>
           </div>
-          <div class="flex items-center gap-2" v-if="!isViewOnly">
+          <div class="flex items-center gap-2">
             <button
               v-if="!anexo.isEditing"
               @click="startEditing(anexo)"
@@ -94,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { api } from '@/services/api';
 
 const selectedFile = ref(null);
@@ -105,7 +105,7 @@ const errorMessage = ref('');
 const props = defineProps({
   resourceId: {
     type: Number,
-    required: true,
+    required: false,
   },
   variant: {
     type: String,
@@ -115,7 +115,11 @@ const props = defineProps({
   isViewOnly: {
     type: Boolean,
     default: false
-  }
+  },
+  localAnexos: {
+    type: Array,
+    required: true,
+  },
 });
 
 const handleFileSelect = (event) => {
@@ -134,31 +138,48 @@ const uploadFile = async () => {
     return;
   }
 
-  const formData = new FormData();
-  formData.append('file', selectedFile.value);
+  if (!props.resourceId) {
+    // Armazena localmente
+    const novoAnexo = {
+      id: Date.now(), // ID temporário
+      file: selectedFile.value,
+      fileName: selectedFile.value.name,
+      file_url: URL.createObjectURL(selectedFile.value),
+      isEditing: false,
+      newFileName: ''
+    };
 
-  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
-
-  try {
-    await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    successMessage.value = 'Arquivo enviado com sucesso!';
-    errorMessage.value = '';
-    fetchAnexos();
+    props.localAnexos.push(novoAnexo);
     selectedFile.value = null;
-    setTimeout(() => {
+  } else {
+    // Faz o upload para o servidor
+    const formData = new FormData();
+    formData.append('file', selectedFile.value);
+
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+
+    try {
+      await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      successMessage.value = 'Arquivo enviado com sucesso!';
+      errorMessage.value = '';
+      fetchAnexos();
+      selectedFile.value = null;
+      setTimeout(() => {
+        successMessage.value = '';
+      }, 3000);
+    } catch (error) {
+      errorMessage.value = 'Erro ao enviar o arquivo. Tente novamente.';
       successMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    errorMessage.value = 'Erro ao enviar o arquivo. Tente novamente.';
-    successMessage.value = '';
+    }
   }
 };
 
 const fetchAnexos = async () => {
+  if (!props.resourceId) return;
   try {
     let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
@@ -174,6 +195,12 @@ const fetchAnexos = async () => {
 };
 
 const deleteFile = async (id) => {
+  const indexLocal = props.localAnexos.findIndex(anexo => anexo.id === id);
+  if (indexLocal !== -1) {
+    props.localAnexos.splice(indexLocal, 1);
+    return;
+  }
+
   try {
     let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
@@ -203,28 +230,77 @@ const updateFileName = async (anexo) => {
     errorMessage.value = 'O nome do arquivo não pode ser vazio.';
     return;
   }
-  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
-  try {
-    await api.put(`/${variantUrl}/${props.resourceId}/anexos/${anexo.id}`, {
-      file_name: anexo.newFileName,
-    });
+  const isLocal = props.localAnexos.some(localAnexo => localAnexo.id === anexo.id);
+
+  if (isLocal) {
     anexo.fileName = anexo.newFileName;
     anexo.isEditing = false;
     anexo.newFileName = '';
-    successMessage.value = 'Nome do arquivo atualizado com sucesso!';
-    errorMessage.value = '';
-    setTimeout(() => {
+  } else {
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+
+    try {
+      await api.put(`/${variantUrl}/${props.resourceId}/anexos/${anexo.id}`, {
+        file_name: anexo.newFileName,
+      });
+      anexo.fileName = anexo.newFileName;
+      anexo.isEditing = false;
+      anexo.newFileName = '';
+      successMessage.value = 'Nome do arquivo atualizado com sucesso!';
+      errorMessage.value = '';
+      setTimeout(() => {
+        successMessage.value = '';
+      }, 3000);
+    } catch (error) {
+      errorMessage.value = 'Erro ao atualizar o nome do arquivo.';
       successMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    errorMessage.value = 'Erro ao atualizar o nome do arquivo.';
-    successMessage.value = '';
+    }
   }
 };
 
-onMounted(() => {
+const anexosCombinados = computed(() => {
+  return [...anexos.value, ...props.localAnexos];
+});
+
+watch(
+  () => props.resourceId,
+  (newVal) => {
+    if (newVal) {
+      uploadAnexosPendentes();
+      fetchAnexos();
+    }
+  }
+);
+
+const uploadAnexosPendentes = async () => {
+  if (props.localAnexos.length === 0) return;
+
+  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+
+  for (const anexo of props.localAnexos) {
+    const formData = new FormData();
+    formData.append('file', anexo.file);
+
+    try {
+      await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao enviar o arquivo:', anexo.fileName);
+    }
+  }
+
+  props.localAnexos = [];
   fetchAnexos();
+};
+
+onMounted(() => {
+  if (props.resourceId) {
+    fetchAnexos();
+  }
 });
 </script>
 
