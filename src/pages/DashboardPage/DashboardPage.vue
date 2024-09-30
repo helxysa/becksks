@@ -185,10 +185,11 @@ const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 const fetchDashboardData = async (status, page, vencimento) => {
   const validStatuses = ["Aguardando Pagamento", "Aguardando Faturamento", "Pago"];
   const statusFat = validStatuses.includes(status) ? status : '';
-  const vencimentoFat = vencimento ? vencimento : '';
+  const vencimentoFat = vencimento ? vencimento : 0;
   const pageAtual = page ? page : 1;
+  // console.log(typeof vencimentoFat, 'pageAtual')
   try {
-    if (vencimentoFat) {
+    if (!vencimentoFat) {
 
       const response = await api.get('/dashboard', {
         params: {
@@ -213,10 +214,11 @@ const fetchDashboardData = async (status, page, vencimento) => {
       resultsPerPageContratos.value = meta.perPage;
       contratoItemData.value = adicionarStatusVencimento(contratos);
     } else {
+      // console.log(vencimentoFat, 'vencimentoFat');
       const response = await api.get('/dashboard', {
         params: {
           page: pageAtual,
-          vencimento: vencimentoFat,
+          lembreteVencimento: vencimentoFat,
         }
       });
   

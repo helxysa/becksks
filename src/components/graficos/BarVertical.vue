@@ -29,9 +29,9 @@ const diasVencimento90 = ref(0);
 
 onMounted(()=> { 
   props.contratosPorVencimento.forEach((item)=> {
-     if (item.dias_restantes < 0 ) {
+     if (item.dias_restantes <= 0 ) {
       diasVencimentoUltrapassado.value += 1
-     } else  if (item.dias_restantes >= 0 && item.dias_restantes <= 5  ) {
+     } else  if (item.dias_restantes > 0 && item.dias_restantes <= 5  ) {
       diasVencimento5.value += 1
      } else if (item.dias_restantes > 5 && item.dias_restantes <= 10) {
       diasVencimento10.value += 1
@@ -51,7 +51,7 @@ const handleClick = (event, elements) => {
       if (elements.length > 0) {
         const clickedElement = elements[0];
         const dataIndex = clickedElement.index;
-        const label = data.value.labels[dataIndex];
+        const label = dataBarVertical.value.labels[dataIndex];
         emit('valor-vencimento', label.replace('d', '').replace('-', ''));
       }
     }
