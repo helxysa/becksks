@@ -68,13 +68,15 @@ const setMarkers = () => {
     const longitude = parseFloat(marker.longitude);
     const { cidade, estado, valor_total, quantidade_contratos } = marker;
 
-    L.marker([latitude, longitude], { icon: defaultIcon })
+    if(latitude && longitude){
+      L.marker([latitude, longitude], { icon: defaultIcon })
       .addTo(map)
       .bindPopup(`
         <b>${cidade} - ${estado}</b><br/>
         Valor Total: R$ ${valor_total.toFixed(2)}<br/>
         Quantidade de Contratos: ${quantidade_contratos}
       `);
+    }
   });
 };
 </script>

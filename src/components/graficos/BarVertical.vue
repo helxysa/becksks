@@ -7,7 +7,7 @@
 <script setup>
  import { Chart as ChartJS, ArcElement, Tooltip,  BarElement, CategoryScale, LinearScale } from "chart.js";
 import {  Bar } from "vue-chartjs";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, defineEmits } from "vue";
 ChartJS.register(ArcElement, Tooltip,CategoryScale, LinearScale, BarElement);
 
 const props = defineProps({
@@ -17,6 +17,7 @@ const props = defineProps({
     default: () => ([])
   }
 });
+const emit = defineEmits(['valor-vencimento']);
 
 const diasVencimentoUltrapassado = ref(0);
 const diasVencimento5 = ref(0);
@@ -28,9 +29,9 @@ const diasVencimento90 = ref(0);
 
 onMounted(()=> { 
   props.contratosPorVencimento.forEach((item)=> {
-     if (item.dias_restantes < 0 ) {
+     if (item.dias_restantes <= 0 ) {
       diasVencimentoUltrapassado.value += 1
-     } else  if (item.dias_restantes >= 0 && item.dias_restantes <= 5  ) {
+     } else  if (item.dias_restantes > 0 && item.dias_restantes <= 5  ) {
       diasVencimento5.value += 1
      } else if (item.dias_restantes > 5 && item.dias_restantes <= 10) {
       diasVencimento10.value += 1
@@ -45,6 +46,15 @@ onMounted(()=> {
      }
   })
 })
+
+const handleClick = (event, elements) => {
+      if (elements.length > 0) {
+        const clickedElement = elements[0];
+        const dataIndex = clickedElement.index;
+        const label = dataBarVertical.value.labels[dataIndex];
+        emit('valor-vencimento', label.replace('d', '').replace('-', ''));
+      }
+    }
 
 const dataBarVertical = 
 computed(()=> {
@@ -122,7 +132,9 @@ const optionsBarVertical = {
     legend: {
       display: false
     },  
-  }
+  },
+
+  onClick: handleClick
 }
 </script>
 

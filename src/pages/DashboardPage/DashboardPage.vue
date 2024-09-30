@@ -86,7 +86,7 @@
     <div class="flex flex-row w-full mt-20 gap-4">
       <Map v-if="mapLoaded" :markers="map" />
       <div class="w-1/2 relative" v-if="contratosPorVencimento">
-        <BarVertical :contratosPorVencimento="contratosPorVencimento" class="pt-20"/>
+        <BarVertical :contratosPorVencimento="contratosPorVencimento" @valor-vencimento="handleFiltragemBarVertical" class="pt-20"/>
         <div class="title-vencimento pt-2">
           <span class="font-semibold">Contratos</span>
           <p>por vencimento (dias)</p>
@@ -166,6 +166,7 @@ const statusAtual = ref('');
 const valoresTotaisStatus = ref()
 const valoresStamp = ref({})
 const  contratosPorVencimento = ref()
+const diasVencimento = ref(0)
 const top5 = ref()
 const map = ref([]);
 const mapLoaded = ref(false);
@@ -181,33 +182,62 @@ onMounted(()=> {
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-const fetchDashboardData = async (status, page) => {
+const fetchDashboardData = async (status, page, vencimento) => {
   const validStatuses = ["Aguardando Pagamento", "Aguardando Faturamento", "Pago"];
   const statusFat = validStatuses.includes(status) ? status : '';
-
+  const vencimentoFat = vencimento ? vencimento : 0;
+  const pageAtual = page ? page : 1;
+  // console.log(typeof vencimentoFat, 'pageAtual')
   try {
-    const response = await api.get('/dashboard', {
-      params: {
-        statusFaturamento: statusFat,
-        page: page
-      }
-    });
+    if (!vencimentoFat) {
 
-    valoresTotaisStatus.value = response.data.valores_totais_status;
-    valoresStamp.value = response.data.valores_totais_status;
-    contratosPorVencimento.value = response.data.contratos_por_vencimento;
-    map.value = response.data.map;
-    mapLoaded.value = true;
-    top5.value = response.data.top5;
-
-    const contratos = response.data.contratos.data;
-    const meta = response.data.contratos.meta;
-
-    contratoItemMeta.value = meta;
-    currentPageContratos.value = meta.currentPage;
-    totalContratos.value = meta.total;
-    resultsPerPageContratos.value = meta.perPage;
-    contratoItemData.value = adicionarStatusVencimento(contratos);
+      const response = await api.get('/dashboard', {
+        params: {
+          statusFaturamento: statusFat,
+          page: pageAtual
+        }
+      });
+  
+      valoresTotaisStatus.value = response.data.valores_totais_status;
+      valoresStamp.value = response.data.valores_totais_status;
+      contratosPorVencimento.value = response.data.contratos_por_vencimento;
+      map.value = response.data.map;
+      mapLoaded.value = true;
+      top5.value = response.data.top5;
+  
+      const contratos = response.data.contratos.data;
+      const meta = response.data.contratos.meta;
+  
+      contratoItemMeta.value = meta;
+      currentPageContratos.value = meta.currentPage;
+      totalContratos.value = meta.total;
+      resultsPerPageContratos.value = meta.perPage;
+      contratoItemData.value = adicionarStatusVencimento(contratos);
+    } else {
+      // console.log(vencimentoFat, 'vencimentoFat');
+      const response = await api.get('/dashboard', {
+        params: {
+          page: pageAtual,
+          lembreteVencimento: vencimentoFat,
+        }
+      });
+  
+      valoresTotaisStatus.value = response.data.valores_totais_status;
+      valoresStamp.value = response.data.valores_totais_status;
+      contratosPorVencimento.value = response.data.contratos_por_vencimento;
+      map.value = response.data.map;
+      mapLoaded.value = true;
+      top5.value = response.data.top5;
+  
+      const contratos = response.data.contratos.data;
+      const meta = response.data.contratos.meta;
+  
+      contratoItemMeta.value = meta;
+      currentPageContratos.value = meta.currentPage;
+      totalContratos.value = meta.total;
+      resultsPerPageContratos.value = meta.perPage;
+      contratoItemData.value = adicionarStatusVencimento(contratos);
+    }
 
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -254,6 +284,12 @@ const handleFiltragemDonuts = (status) => {
   fetchDashboardData(statusAtual.value, currentPageContratos.value);
 };
 
+const handleFiltragemBarVertical = (vencimento) => {
+  // statusAtual.value = status;
+  diasVencimento.value = vencimento;
+  fetchDashboardData(statusAtual.value, currentPageContratos.value, diasVencimento.value);
+};
+
 const formatCurrencyInMillions = (value) => {
   if (value === null || value === undefined) return "R$ 0,00";
 
@@ -289,8 +325,8 @@ const formatDate = (dateString) => {
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
 
-watch(() => [statusAtual.value, currentPageContratos.value], ([status, page]) => {
-  fetchDashboardData(status, page);
+watch(() => [statusAtual.value, currentPageContratos.value, diasVencimento.value], ([status, page, vencimento]) => {
+  fetchDashboardData(status, page, vencimento);
 });
 </script>
 
