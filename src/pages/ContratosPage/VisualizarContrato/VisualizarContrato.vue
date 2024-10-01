@@ -307,7 +307,7 @@
             v-for="(item) in contratoItemData"
             :key="item.id"
           >
-            <td class="text-2xl px-2">{{ item.id }}</td>
+            <td class="text-2xl px-2">{{ item.contagem_dinamica }}</td>
             <td class="text-2xl">{{ item.titulo }}</td>
             <td class="text-2xl">{{ item.unidadeMedida }}</td>
             <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
@@ -1269,7 +1269,7 @@
                 v-for="item in medicaoData.itens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.id }}</td>
+                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <!-- <td class="text-2xl">
@@ -1482,7 +1482,7 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.contratoItemId }}</td>
+                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <td>
@@ -2226,13 +2226,31 @@ const fetchContratoItens = async (page) => {
     const response = await api.get(
       `/contratos/${contrato.value.id}/items/?page=${page}`
     );
-    contratoItemData.value = response.data.data;
-    contratoItemMeta.value = response.data.meta;
+    const itens = response.data.data;
+    const meta = response.data.meta;
+
+    itens.forEach((item, index) => {
+      item.contagem_dinamica = (meta.currentPage - 1) * meta.perPage + index + 1;
+    });
+
+    contratoItemData.value = itens;
+    contratoItemMeta.value = meta;
     currentPage.value = contratoItemMeta.value.currentPage;
     totalItens.value = contratoItemMeta.value.total;
     resultsPerPageItens.value = contratoItemMeta.value.perPage;
+
+    contrato.value.contratoItens.forEach(item => {
+      const itemContrato = contratoItemData.value.find(contratoItem => contratoItem.id === item.id);
+      if(itemContrato) {
+        item.contagem_dinamica = itemContrato.contagem_dinamica;
+      }
+    })
   } catch (error) {
     console.error(error);
+    contratoItemData.value = [];
+    contratoItemMeta.value = [];
+    currentPage.value = 1;
+    totalItens.value = 0;
   }
 };
 
@@ -2272,6 +2290,21 @@ const fetchContratoMedicoes = async (page) => {
     );
     medicaoItemData.value = response.data.data;
     medicaoItemMeta.value = response.data.meta;
+
+    // Para cada medição, verifique os itens e adicione a contagem dinâmica correspondente
+    medicaoItemData.value.forEach((medicao) => {
+      medicao.lancamentoItens.forEach((lancamentoItem) => {
+        // Procura o item correspondente no contratoItemData pelo contratoItemId
+        const itemContrato = contratoItemData.value.find(
+          (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
+        );
+        if (itemContrato) {
+          // Adiciona o campo contagem_dinamica do item do contrato à medição
+          lancamentoItem.contagem_dinamica = itemContrato.contagem_dinamica;
+        }
+      });
+    });
+
     if (contrato.value.faturamentos) {
       medicaoItemData.value = await verificaIsFaturado(medicaoItemData.value,contrato.value.faturamentos);
     }
@@ -2280,6 +2313,10 @@ const fetchContratoMedicoes = async (page) => {
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
     console.error(error);
+    medicaoItemData.value = [];
+    medicaoItemMeta.value = [];
+    currentPageMedicao.value = 1;
+    totalMedicoes.value = 0;
   }
 };
 
