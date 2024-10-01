@@ -82,7 +82,7 @@ const setMarkers = () => {
       .bindPopup(`
        <div class="container-popup">
         <b>${cidade} - ${estado}</b><br/>
-        Valor Total: R$ ${formatCurrency(valor_total)}<br/>
+        Valor Total:  ${formatCurrency(valor_total)}<br/>
         Quantidade de Contratos: ${quantidade_contratos}
         </div>
       `);

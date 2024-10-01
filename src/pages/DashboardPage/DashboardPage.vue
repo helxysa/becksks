@@ -154,12 +154,11 @@
     </div>
     <div v-else class="flex justify-center items-center h-[50vh]">
       <l-tailspin
-      
-    size="200"
-    stroke="5"
-    speed="0.9" 
-    color="rgb(28, 125, 62)" 
-  ></l-tailspin>
+      size="200"
+      stroke="5"
+      speed="0.9" 
+      color="rgb(28, 125, 62)" 
+    />
 
     </div>
   </div>
@@ -173,8 +172,9 @@ import { Icon } from "@iconify/vue";
 import Map from "../../components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
-import 'ldrs/tailspin'
+import { tailspin } from 'ldrs';
 
+tailspin.register();
 const currentPageContratos = ref(1);
 const statusAtual = ref('');
 const valoresTotaisStatus = ref()
