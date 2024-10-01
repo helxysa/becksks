@@ -28,6 +28,14 @@ const props = defineProps({
   },
 });
 
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};
+
 let map = null;
 
 const defaultIcon = L.icon({
@@ -72,9 +80,11 @@ const setMarkers = () => {
       L.marker([latitude, longitude], { icon: defaultIcon })
       .addTo(map)
       .bindPopup(`
+       <div class="container-popup">
         <b>${cidade} - ${estado}</b><br/>
-        Valor Total: R$ ${valor_total.toFixed(2)}<br/>
+        Valor Total: R$ ${formatCurrency(valor_total)}<br/>
         Quantidade de Contratos: ${quantidade_contratos}
+        </div>
       `);
     }
   });
@@ -102,5 +112,10 @@ const setMarkers = () => {
   top: 0;
   right: 10px;
   z-index: 1000;
+}
+
+.container-popup {
+  font-size: 14px;
+  font-weight: 500;
 }
 </style>

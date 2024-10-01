@@ -3,151 +3,164 @@
     <div class="mb-10">
       <h1 class="text-5xl font-medium">Dashboard</h1>
     </div>
-    <div class="flex items-start w-full justify-between gap-6">
-      <section class="w-full h-full border">
-        <div class="flex h-full w-full">
-          <div class="flex flex-col w-full h-[400px]">
-            <div class="flex flex-col p-2">
-              <span class="font-semibold">Contratos</span>
-              <span>por status do pagamento</span>
-            </div>
-            <div class="h-full" v-if="valoresTotaisStatus">
-              <Doughnut :valoresTotais="valoresTotaisStatus" @status-faturamento="handleFiltragemDonuts" />
-            </div>
-            <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
-              <div class="font-semibold text-5xl">68</div>
-              <p>contratos</p>
-            </div> -->
-          </div>
-          <div class=" flex flex-col w-full h-[300px]">
-            <div class="flex flex-col p-2 items-end">
-              <span class="font-semibold">Top 5</span>
-              <span>Contratos por valor</span>
-            </div>
-            <div class="h-full mt-6">
-              <Bar :top5="top5"/>
-            </div>
-            <!-- <section class="h-full w-full">
-              <div class="flex flex-col">
+    <div v-if="!loading">
+      <div class="flex items-start w-full justify-between gap-6">
+        <section class="w-full h-full border">
+          <div class="flex h-full w-full">
+            <div class="flex flex-col w-full h-[400px]">
+              <div class="flex flex-col p-2">
+                <span class="font-semibold">Contratos</span>
+                <span>por status do pagamento</span>
               </div>
-            </section> -->
+              <div class="h-full" v-if="valoresTotaisStatus">
+                <Doughnut :valoresTotais="valoresTotaisStatus" @status-faturamento="handleFiltragemDonuts" />
+              </div>
+              <!-- <div class="w-32 flex flex-col absolute top-72 left-44 items-center">
+                <div class="font-semibold text-5xl">68</div>
+                <p>contratos</p>
+              </div> -->
+            </div>
+            <div class=" flex flex-col w-full h-[300px]">
+              <div class="flex flex-col p-2 items-end">
+                <span class="font-semibold">Top 5</span>
+                <span>Contratos por valor</span>
+              </div>
+              <div class="h-full mt-6">
+                <Bar :top5="top5"/>
+              </div>
+              <!-- <section class="h-full w-full">
+                <div class="flex flex-col">
+                </div>
+              </section> -->
+            </div>
           </div>
-        </div>
-      </section>
-   <!-- stamps -->
-<section class="flex flex-col gap-6">
-  <div
-    class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
-    bg-gradient-to-r from-cyan-50 to-cyan-400 "
-  >
-    <div>
-      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_valor_contratado) }}</p>
-      <p>valor dos contratos</p>
+        </section>
+     <!-- stamps -->
+  <section class="flex flex-col gap-6">
+    <div
+      class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
+      bg-gradient-to-r from-cyan-50 to-cyan-400 "
+    >
+      <div>
+        <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_valor_contratado) }}</p>
+        <p>valor dos contratos</p>
+      </div>
+      <span>
+        <Icon icon="fluent:notepad-32-filled" height="35" class="text-white "  />
+      </span>
     </div>
-    <span>
-      <Icon icon="fluent:notepad-32-filled" height="35" class="text-white "  />
-    </span>
-  </div>
-  <div
-    class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
-     bg-gradient-to-r from-blue-300 to-pink-200"
-  >
-    <div>
-      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_faturamento) }}</p>
-      <p>Aguardando Faturamento</p>
+    <div
+      class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg
+       bg-gradient-to-r from-blue-300 to-pink-200"
+    >
+      <div>
+        <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_faturamento) }}</p>
+        <p>Aguardando Faturamento</p>
+      </div>
+      <div>
+        <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento) }}</p>
+        <p>Aguardando Pagamento</p>
+      </div>
+      <span>
+        <Icon icon="ph:calculator-fill" height="35" class="text-white" />
+      </span>
     </div>
-    <div>
-      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento) }}</p>
-      <p>Aguardando Pagamento</p>
+    <div
+      class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
+       bg-gradient-to-r from-orange-200 to-green-200"
+    >
+      <div>
+        <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_pago) }}</p>
+        <p>Pago</p>
+      </div>
+      <div>
+        <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_saldo_disponível) }}</p>
+        <p>Saldo</p>
+      </div>
+      <span>
+        <Icon icon="rivet-icons:money" height="35" class="text-white" />
+      </span>
     </div>
-    <span>
-      <Icon icon="ph:calculator-fill" height="35" class="text-white" />
-    </span>
-  </div>
-  <div
-    class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg
-     bg-gradient-to-r from-orange-200 to-green-200"
-  >
-    <div>
-      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_pago) }}</p>
-      <p>Pago</p>
-    </div>
-    <div>
-      <p class="font-semibold">{{ formatCurrencyInMillions(valoresStamp.total_saldo_disponível) }}</p>
-      <p>Saldo</p>
-    </div>
-    <span>
-      <Icon icon="rivet-icons:money" height="35" class="text-white" />
-    </span>
-  </div>
-</section>
-
-    </div>
-    <div class="flex flex-row w-full mt-20 gap-4">
-      <Map v-if="mapLoaded" :markers="map" />
-      <div class="w-1/2 relative" v-if="contratosPorVencimento">
-        <BarVertical :contratosPorVencimento="contratosPorVencimento" @valor-vencimento="handleFiltragemBarVertical" class="pt-20"/>
-        <div class="title-vencimento pt-2">
-          <span class="font-semibold">Contratos</span>
-          <p>por vencimento (dias)</p>
-        </div> 
+  </section>
   
       </div>
-    </div>
-    <div>
-      <table
-        class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
-      >
-        <thead class="h-20 bg-slate-100 border-1">
-          <tr>
-            <th class="text-xl px-2">Id</th>
-            <th class="text-xl">Nome</th>
-            <th class="text-xl">Cliente</th>
-            <th class="text-xl">Valor</th>
-            <th class="text-xl">Data inicial</th>
-            <th class="text-xl">Data final</th>
-            <th class="text-xl">Status</th>
-          </tr>
-        </thead>
-        <tbody v-if="contratoItemData">
-          <tr class="h-24 text-center"  v-for="(contrato, index) in contratoItemData" :key="contrato.id">
-            <td class="text-2xl px-2">{{index + 1}}</td>
-            <td class="text-2xl">{{contrato.nomeContrato}}</td>
-            <td class="text-2xl">{{contrato.nomeCliente}}</td>
-            <td class="text-2xl">{{formatCurrency(contrato.saldoContrato)}}</td>
-            <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
-            <td class="text-2xl"
-            :class="{'text-red-600' : contrato.statusVencimento === 'atraso' }"            
-            >{{formatDate(contrato.dataFim)}}
-          </td>
-            <td class="text-2xl">
-              <div class="flex justify-center">
-                <span v-if="contrato.statusVencimento === 'a vencer'" class="tooltip">
-                  <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
-                  <span class="tooltiptext">Contrato perto de vencer</span>
-                </span>
-                <span v-else-if="contrato.statusVencimento === 'ativo'" class="tooltip">
-                  <Icon icon="line-md:confirm-circle-filled" height="30" class="text-green-300" />
-                  <span class="tooltiptext">Contrato ativo</span>
-                </span>
-                <span v-else class="tooltip">
-                  <Icon icon="ri:alert-line" height="30" class="text-red-300" />
-                  <span class="tooltiptext">Contrato em atraso</span>
-                </span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="flex justify-center" v-if="contratoItemData">
-        <vue-awesome-paginate
-          :total-items="totalContratos"
-          :max-pages-shown="5"
-          :items-per-page="resultsPerPageContratos"
-          v-model="currentPageContratos"
-          @click="changePageContratos"
-        />
+      <div class="flex flex-row w-full mt-20 gap-4">
+        <Map v-if="mapLoaded" :markers="map" />
+        <div class="w-1/2 relative" v-if="contratosPorVencimento">
+          <BarVertical :contratosPorVencimento="contratosPorVencimento" @valor-vencimento="handleFiltragemBarVertical" class="pt-20"/>
+          <div class="title-vencimento pt-2">
+            <span class="font-semibold">Contratos</span>
+            <p>por vencimento (dias)</p>
+          </div> 
+    
+        </div>
       </div>
+      <div>
+        <table
+          class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+        >
+          <thead class="h-20 bg-slate-100 border-1">
+            <tr>
+              <th class="text-xl px-2">Id</th>
+              <th class="text-xl">Nome</th>
+              <th class="text-xl">Cliente</th>
+              <th class="text-xl">Valor</th>
+              <th class="text-xl">Data inicial</th>
+              <th class="text-xl">Data final</th>
+              <th class="text-xl">Status</th>
+            </tr>
+          </thead>
+          <tbody v-if="contratoItemData">
+            <tr class="h-24 text-center"  v-for="(contrato, index) in contratoItemData" :key="contrato.id">
+              <td class="text-2xl px-2">{{index + 1}}</td>
+              <td class="text-2xl">{{contrato.nomeContrato}}</td>
+              <td class="text-2xl">{{contrato.nomeCliente}}</td>
+              <td class="text-2xl">{{formatCurrency(contrato.saldoContrato)}}</td>
+              <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
+              <td class="text-2xl"
+              :class="{'text-red-600' : contrato.statusVencimento === 'atraso' }"            
+              >{{formatDate(contrato.dataFim)}}
+            </td>
+              <td class="text-2xl">
+                <div class="flex justify-center">
+                  <span v-if="contrato.statusVencimento === 'a vencer'" class="tooltip">
+                    <Icon icon="fluent:alert-on-16-filled" height="30" class="text-yellow-300" />
+                    <span class="tooltiptext">Contrato perto de vencer</span>
+                  </span>
+                  <span v-else-if="contrato.statusVencimento === 'ativo'" class="tooltip">
+                    <Icon icon="line-md:confirm-circle-filled" height="30" class="text-green-300" />
+                    <span class="tooltiptext">Contrato ativo</span>
+                  </span>
+                  <span v-else class="tooltip">
+                    <Icon icon="ri:alert-line" height="30" class="text-red-300" />
+                    <span class="tooltiptext">Contrato em atraso</span>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="flex justify-center" v-if="contratoItemData">
+          <vue-awesome-paginate
+            :total-items="totalContratos"
+            :max-pages-shown="5"
+            :items-per-page="resultsPerPageContratos"
+            v-model="currentPageContratos"
+            @click="changePageContratos"
+          />
+        </div>
+      </div>
+
+    </div>
+    <div v-else class="flex justify-center items-center h-[50vh]">
+      <l-tailspin
+      
+    size="200"
+    stroke="5"
+    speed="0.9" 
+    color="rgb(28, 125, 62)" 
+  ></l-tailspin>
+
     </div>
   </div>
 </template>
@@ -160,6 +173,7 @@ import { Icon } from "@iconify/vue";
 import Map from "../../components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
+import 'ldrs/tailspin'
 
 const currentPageContratos = ref(1);
 const statusAtual = ref('');
@@ -175,6 +189,7 @@ const resultsPerPageContratos= ref()
 let contratoItemData =  ref([]);
 let contratoItemMeta = ref({});
 let statusVencimento = ref('')
+const loading = ref(false);
 
 onMounted(()=> {
   fetchDashboardData()
@@ -190,14 +205,14 @@ const fetchDashboardData = async (status, page, vencimento) => {
   // console.log(typeof vencimentoFat, 'pageAtual')
   try {
     if (!vencimentoFat) {
-
+      loading.value = true;
       const response = await api.get('/dashboard', {
         params: {
           statusFaturamento: statusFat,
           page: pageAtual
         }
       });
-  
+      loading.value = false;
       valoresTotaisStatus.value = response.data.valores_totais_status;
       valoresStamp.value = response.data.valores_totais_status;
       contratosPorVencimento.value = response.data.contratos_por_vencimento;
@@ -215,13 +230,14 @@ const fetchDashboardData = async (status, page, vencimento) => {
       contratoItemData.value = adicionarStatusVencimento(contratos);
     } else {
       // console.log(vencimentoFat, 'vencimentoFat');
+      loading.value = true;
       const response = await api.get('/dashboard', {
         params: {
           page: pageAtual,
           lembreteVencimento: vencimentoFat,
         }
       });
-  
+      loading.value = false;
       valoresTotaisStatus.value = response.data.valores_totais_status;
       valoresStamp.value = response.data.valores_totais_status;
       contratosPorVencimento.value = response.data.contratos_por_vencimento;
