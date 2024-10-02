@@ -8,15 +8,24 @@
 <script setup>
 import { computed, defineProps } from 'vue';
 import { Bar } from 'vue-chartjs';
-import { Chart as ChartJS, BarElement, Tooltip, CategoryScale, LinearScale, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  BarElement,
+  Tooltip,
+  CategoryScale,
+  LinearScale,
+  Legend,
+} from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
-ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale, Legend);
+// Registre os componentes necessários e o plugin ChartDataLabels
+ChartJS.register(BarElement, Tooltip, CategoryScale, LinearScale, Legend, ChartDataLabels);
 
 const props = defineProps({
   top5: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const isArray = (value) => Array.isArray(value);
@@ -33,33 +42,40 @@ const formatValue = (value) => {
   }
 };
 
+// Função para truncar o nome do cliente
+const truncateLabel = (label, maxLength) => {
+  if (label.length > maxLength) {
+    return label.slice(0, maxLength) + '...';
+  }
+  return label;
+};
+
+// Armazenar os nomes completos e os truncados
+const fullLabels = props.top5.map((item) => `${item.nome_cliente}`);
+const truncatedLabels = fullLabels.map((label) => truncateLabel(label, 15)); // Limite de 15 caracteres
+
+// Armazenar os valores dos contratos formatados
+const contratoValues = props.top5.map((item) => formatValue(item.saldo_contrato));
+
 const dataBar = computed(() => {
   if (!isArray(props.top5)) {
     return {
       labels: [],
-      datasets: [
-        {
-          label: 'Percentual Utilizado',
-          backgroundColor: '#f87979',
-          data: [],
-          barThickness: 20
-        }
-      ]
+      datasets: [],
     };
   }
 
-  const labels = props.top5.map(item => `${item.nome_cliente}  ${formatValue(item.saldo_contrato)}`);
-  const dataUtilizada = props.top5.map(item => {
+  const dataUtilizada = props.top5.map((item) => {
     if (item.saldo_contrato === 0) return 0;
     return (item.totalUtilizado / item.saldo_contrato) * 100;
   });
-  const dataRestante = props.top5.map(item => {
+  const dataRestante = props.top5.map((item) => {
     if (item.saldo_contrato === 0) return 0;
     return 100 - (item.totalUtilizado / item.saldo_contrato) * 100;
   });
 
   return {
-    labels,
+    labels: truncatedLabels,
     datasets: [
       {
         label: 'Percentual Utilizado',
@@ -67,7 +83,7 @@ const dataBar = computed(() => {
         borderColor: '#00AFEF',
         borderWidth: 1,
         data: dataUtilizada,
-        barThickness: 20
+        // barThickness: 20,
       },
       {
         label: 'Percentual Restante',
@@ -75,9 +91,9 @@ const dataBar = computed(() => {
         borderColor: '#57BA5E',
         borderWidth: 1,
         data: dataRestante,
-        barThickness: 20
-      }
-    ]
+        // barThickness: 20,
+      },
+    ],
   };
 });
 
@@ -87,12 +103,13 @@ const optionsBar = {
   indexAxis: 'y',
   plugins: {
     legend: {
-      display: false
+      display: false,
     },
     tooltip: {
       callbacks: {
-        title: function(context) {
-          return context[0].label;
+        title: function (context) {
+          const index = context[0].dataIndex;
+          return fullLabels[index];
         },
         label: function (context) {
           const item = props.top5[context.dataIndex];
@@ -104,9 +121,28 @@ const optionsBar = {
             valor = formatValue(item.saldo_contrato - item.totalUtilizado);
           }
           return `${context.dataset.label}: ${percentual} (${valor})`;
+        },
+      },
+    },
+    datalabels: {
+      anchor: 'end',
+      align: 'end',
+      color: '#000',
+      formatter: function (value, context) {
+        // Exibir o valor do contrato no final do dataset
+        if (context.datasetIndex === context.chart.data.datasets.length - 1) {
+          const index = context.dataIndex;
+          return contratoValues[index];
+        } else {
+          return '';
         }
-      }
-    }
+      },
+    },
+  },
+  layout: {
+    padding: {
+      right: 70,
+    },
   },
   scales: {
     x: {
@@ -116,12 +152,19 @@ const optionsBar = {
       ticks: {
         callback: function (value) {
           return value + '%';
-        }
-      }
+        },
+      },
     },
     y: {
-      stacked: true
-    }
-  }
+      stacked: true,
+      ticks: {
+        callback: function (value, index) {
+          return truncatedLabels[index];
+        },
+      },
+    },
+  },
+  barPercentage: 0.8,
+  categoryPercentage: 0.9,
 };
 </script>
