@@ -102,7 +102,7 @@ const setMarkers = () => {
 #mapContainer {
   border: 1px solid black;
   border-radius: 9px;
-  height: 100%;
+  height: 400px;
 }
 
 .title-map {

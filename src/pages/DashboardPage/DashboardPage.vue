@@ -2,10 +2,10 @@
   <div>
     <h1 class="text-5xl font-medium mb-10">Dashboard</h1>
     <!-- Stamps -->
-    <section class="flex justify-evenly mb-8 w-full">
+    <section class="flex flex-wrap justify-evenly mb-8 w-full gap-4">
       <!-- Primeiro Stamp -->
       <div
-        class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg bg-gradient-to-r from-cyan-50 to-cyan-400"
+        class="w-[350px] h-[96px] flex sm:flex-row justify-between items-center px-4 rounded-lg bg-gradient-to-r from-cyan-100 to-cyan-400"
       >
         <div>
           <p class="font-semibold">
@@ -80,9 +80,10 @@
       </div>
     </section>
     <section class="flex flex-col gap-6">
-
-      <div class="flex items-start w-full justify-between ">
-        <section class="w-full h-[400px] flex gap-5">
+      <div class="flex items-start w-full justify-between">
+        <section
+          class="w-full h-full lg:h-[400px] flex flex-col lg:flex-row gap-5"
+        >
           <!-- Gráfico de Rosca -->
           <div class="flex flex-col w-full h-full p-8 border">
             <div class="flex flex-col p-2">
@@ -107,7 +108,11 @@
             </div>
             <div class="h-full w-full">
               <div v-if="top5" class="w-full h-full">
-                <Bar :top5="top5" class="w-full h-full" style="width: 100%; height: 100%;" />
+                <Bar
+                  :top5="top5"
+                  class="w-full h-full"
+                  style="width: 100%; height: 100%"
+                />
               </div>
               <div v-else class="skeleton h-full w-full"></div>
             </div>
@@ -116,9 +121,9 @@
       </div>
 
       <!-- Mapa e Gráfico Vertical -->
-      <div class="w-full h-[400px] flex">
-        <section class="w-full h-full z-50">
-          <div class="w-[95%] h-full" v-if="mapLoaded">
+      <div class="w-full h-full lg:h-[400px] flex flex-col lg:flex-row">
+        <section class="w-full h-full lg:h-[400px] z-50">
+          <div class="w-[95%] h-full lg:h-[400px]" v-if="mapLoaded">
             <Map :markers="map" />
           </div>
           <div v-else class="skeleton h-[377px] w-full"></div>
@@ -143,7 +148,9 @@
     <!-- Tabela -->
     <div>
       <div v-if="contratoItemData && contratoItemData.length">
-        <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+        <table
+          class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
+        >
           <!-- Cabeçalho da tabela -->
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
@@ -179,7 +186,10 @@
               </td>
               <td class="text-2xl">
                 <div class="flex justify-center">
-                  <span v-if="contrato.statusVencimento === 'a vencer'" title="Contrato perto de vencer">
+                  <span
+                    v-if="contrato.statusVencimento === 'a vencer'"
+                    title="Contrato perto de vencer"
+                  >
                     <Icon
                       icon="fluent:alert-on-16-filled"
                       height="30"
@@ -187,7 +197,8 @@
                     />
                   </span>
                   <span
-                    v-else-if="contrato.statusVencimento === 'ativo'" title="Contrato ativo"
+                    v-else-if="contrato.statusVencimento === 'ativo'"
+                    title="Contrato ativo"
                   >
                     <Icon
                       icon="line-md:confirm-circle-filled"
@@ -288,6 +299,7 @@ const fetchDashboardData = async (status, page, vencimento) => {
       });
       loading.value = false;
       valoresTotaisStatus.value = response.data.valores_totais_status;
+      console.log('valores', valoresTotaisStatus.value)
       valoresStamp.value = response.data.valores_totais_status;
       contratosPorVencimento.value = response.data.contratos_por_vencimento;
       map.value = response.data.map;
