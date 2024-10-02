@@ -10,6 +10,7 @@ const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
 import ResetPassword from "@/pages/Login/ResetPassword.vue";
+import UsersPage from '@/pages/UsersPage/UsersPage.vue';
 
 const routes = [
   {
@@ -59,6 +60,12 @@ const routes = [
     path: "/visualizar/contratos/:id",
     name: "visualizarContrato",
     component: ViewContratoTabs,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/usuarios",
+    name: "Usuarios",
+    component: UsersPage,
     meta: { requiresAuth: true },
   },
   {
