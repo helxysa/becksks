@@ -472,7 +472,7 @@
               <div class="flex justify-center">
                 <span
                   v-if="lancamento.tipoMedicao !== 'Detalhada'"
-                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-full"
+                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-slate-200 border-slate-400 text-orange-400':
                       lancamento.status === 'Não Autorizada',
@@ -488,7 +488,7 @@
                 </span>
                 <span
                   v-else
-                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%] "
+                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-red-200 border-red-400 text-red-400':
                       lancamento.status === 'Não Iniciada',
