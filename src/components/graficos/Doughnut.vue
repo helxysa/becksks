@@ -131,9 +131,9 @@ const data = computed(() => {
           // props.valoresTotais.total_saldo_disponível
         ],
         customText: [
-          'Aguardando Pagamento',
-          'Aguardando Faturamento',
-          'Pago',
+          '',
+          '',
+          '',
           // 'Saldo'
         ]
       }
@@ -164,6 +164,9 @@ const options = {
     legend: {
       display: false
     },
+    datalabels: {
+      display: false,
+    }
    },
   layout: {
     padding: {
