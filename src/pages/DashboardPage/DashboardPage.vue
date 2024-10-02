@@ -299,7 +299,6 @@ const fetchDashboardData = async (status, page, vencimento) => {
       });
       loading.value = false;
       valoresTotaisStatus.value = response.data.valores_totais_status;
-      console.log('valores', valoresTotaisStatus.value)
       valoresStamp.value = response.data.valores_totais_status;
       contratosPorVencimento.value = response.data.contratos_por_vencimento;
       map.value = response.data.map;
