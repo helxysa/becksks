@@ -157,7 +157,7 @@ const options = {
           const percentage = totalValorContratado > 0 ? ((value / totalValorContratado) * 100).toFixed(2) : '0';
 
           const customText = customTexts[context.dataIndex] || '';
-          return `\nR$ ${value.toFixed(2)}`;
+          return `${formatCurrency(value)}`;
         }
       }
     },
