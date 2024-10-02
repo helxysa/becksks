@@ -82,7 +82,7 @@
       </span>
     </div>
   </section>
-  
+
       </div>
       <div class="flex flex-row w-full mt-20 gap-4">
         <Map v-if="mapLoaded" :markers="map" />
@@ -91,8 +91,8 @@
           <div class="title-vencimento pt-2">
             <span class="font-semibold">Contratos</span>
             <p>por vencimento (dias)</p>
-          </div> 
-    
+          </div>
+
         </div>
       </div>
       <div>
@@ -118,7 +118,7 @@
               <td class="text-2xl">{{formatCurrency(contrato.saldoContrato)}}</td>
               <td class="text-2xl">{{formatDate(contrato.dataInicio)}}</td>
               <td class="text-2xl"
-              :class="{'text-red-600' : contrato.statusVencimento === 'atraso' }"            
+              :class="{'text-red-600' : contrato.statusVencimento === 'atraso' }"
               >{{formatDate(contrato.dataFim)}}
             </td>
               <td class="text-2xl">
@@ -152,14 +152,13 @@
       </div>
 
     </div>
-    <div v-else class="flex justify-center items-center h-[50vh]">
-      <l-tailspin
-      size="200"
-      stroke="5"
-      speed="0.9" 
-      color="rgb(28, 125, 62)" 
-    />
-
+    <div v-else class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm">
+      <l-waveform
+        size="40"
+        stroke="3.5"
+        speed="1"
+        color="white"
+      ></l-waveform>
     </div>
   </div>
 </template>
@@ -172,9 +171,9 @@ import { Icon } from "@iconify/vue";
 import Map from "../../components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
-import { tailspin } from 'ldrs';
+import { waveform } from 'ldrs'
 
-tailspin.register();
+waveform.register()
 const currentPageContratos = ref(1);
 const statusAtual = ref('');
 const valoresTotaisStatus = ref()
@@ -219,10 +218,10 @@ const fetchDashboardData = async (status, page, vencimento) => {
       map.value = response.data.map;
       mapLoaded.value = true;
       top5.value = response.data.top5;
-  
+
       const contratos = response.data.contratos.data;
       const meta = response.data.contratos.meta;
-  
+
       contratoItemMeta.value = meta;
       currentPageContratos.value = meta.currentPage;
       totalContratos.value = meta.total;
@@ -244,10 +243,10 @@ const fetchDashboardData = async (status, page, vencimento) => {
       map.value = response.data.map;
       mapLoaded.value = true;
       top5.value = response.data.top5;
-  
+
       const contratos = response.data.contratos.data;
       const meta = response.data.contratos.meta;
-  
+
       contratoItemMeta.value = meta;
       currentPageContratos.value = meta.currentPage;
       totalContratos.value = meta.total;
