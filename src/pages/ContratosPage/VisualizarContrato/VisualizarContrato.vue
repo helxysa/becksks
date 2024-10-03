@@ -307,7 +307,7 @@
             v-for="(item) in contratoItemData"
             :key="item.id"
           >
-            <td class="text-2xl px-2">{{ item.id }}</td>
+            <td class="text-2xl px-2">{{ item.contagem_dinamica }}</td>
             <td class="text-2xl">{{ item.titulo }}</td>
             <td class="text-2xl">{{ item.unidadeMedida }}</td>
             <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
@@ -472,7 +472,7 @@
               <div class="flex justify-center">
                 <span
                   v-if="lancamento.tipoMedicao !== 'Detalhada'"
-                  class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-slate-200 border-slate-400 text-orange-400':
                       lancamento.status === 'Não Autorizada',
@@ -480,12 +480,15 @@
                       lancamento.status === 'Autorizada',
                     'bg-red-200 border-red-400 text-red-400':
                       lancamento.status === 'Cancelada',
+                    'bg-slate-200 border-slate-400 text-slate-600':
+                      lancamento.status === 'Finalizada',
                   }"
                 >
                   {{ lancamento.status }}
                 </span>
                 <span
-                  class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                  v-else
+                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-red-200 border-red-400 text-red-400':
                       lancamento.status === 'Não Iniciada',
@@ -493,8 +496,9 @@
                       lancamento.status === 'Em Andamento',
                       'bg-green-200 border-green-400 text-green-400':
                       lancamento.status === 'Disponível para Faturamento',
+                      'bg-slate-200 border-slate-400 text-slate-600':
+                      lancamento.status === 'Finalizada',
                   }"
-                  v-else
                 >
                   {{ lancamento.status }}
                 </span>
@@ -1265,7 +1269,7 @@
                 v-for="item in medicaoData.itens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.id }}</td>
+                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <!-- <td class="text-2xl">
@@ -1361,7 +1365,7 @@
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <select
               v-model="editingLancamento.projetos"
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             >
               <option disabled hidden value="">Selecione o projeto</option>
@@ -1393,7 +1397,7 @@
               v-model="editingLancamento.tipoMedicao"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
             >
               <option disabled hidden value="">
                 Selecione o tipo da medição
@@ -1410,7 +1414,7 @@
             >
             <select
               v-model="editingLancamento.status"
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             >
               <option disabled hidden value="">Selecione o status da medição</option>
@@ -1421,6 +1425,7 @@
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível para Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada">Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -1439,7 +1444,7 @@
               type="date"
               placeholder="Informe a  data da medição"
               required
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.dataMedicao"
             />
@@ -1477,7 +1482,7 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.contratoItemId }}</td>
+                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <td>
@@ -1497,7 +1502,7 @@
                   <money3
                     v-model="item.quantidadeItens"
                     type="number"
-                    :disabled="isLancamentoViewModal"
+                    :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
                     :class="{ 'border-none bg-white': isLancamentoViewModal }"
                     class="border-2 text-center max-w-60"
                     min="0"
@@ -1942,6 +1947,8 @@ import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
 // Guias das tabelas
+let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
+
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
 // Guias dos modais de edição
@@ -2219,13 +2226,31 @@ const fetchContratoItens = async (page) => {
     const response = await api.get(
       `/contratos/${contrato.value.id}/items/?page=${page}`
     );
-    contratoItemData.value = response.data.data;
-    contratoItemMeta.value = response.data.meta;
+    const itens = response.data.data;
+    const meta = response.data.meta;
+
+    itens.forEach((item, index) => {
+      item.contagem_dinamica = (meta.currentPage - 1) * meta.perPage + index + 1;
+    });
+
+    contratoItemData.value = itens;
+    contratoItemMeta.value = meta;
     currentPage.value = contratoItemMeta.value.currentPage;
     totalItens.value = contratoItemMeta.value.total;
     resultsPerPageItens.value = contratoItemMeta.value.perPage;
+
+    contrato.value.contratoItens.forEach(item => {
+      const itemContrato = contratoItemData.value.find(contratoItem => contratoItem.id === item.id);
+      if(itemContrato) {
+        item.contagem_dinamica = itemContrato.contagem_dinamica;
+      }
+    })
   } catch (error) {
     console.error(error);
+    contratoItemData.value = [];
+    contratoItemMeta.value = [];
+    currentPage.value = 1;
+    totalItens.value = 0;
   }
 };
 
@@ -2265,17 +2290,33 @@ const fetchContratoMedicoes = async (page) => {
     );
     medicaoItemData.value = response.data.data;
     medicaoItemMeta.value = response.data.meta;
+
+    // Para cada medição, verifique os itens e adicione a contagem dinâmica correspondente
+    medicaoItemData.value.forEach((medicao) => {
+      medicao.lancamentoItens.forEach((lancamentoItem) => {
+        // Procura o item correspondente no contratoItemData pelo contratoItemId
+        const itemContrato = contratoItemData.value.find(
+          (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
+        );
+        if (itemContrato) {
+          // Adiciona o campo contagem_dinamica do item do contrato à medição
+          lancamentoItem.contagem_dinamica = itemContrato.contagem_dinamica;
+        }
+      });
+    });
+
     if (contrato.value.faturamentos) {
-      medicaoItemData.value = verificaIsFaturado(
-        medicaoItemData.value,
-        contrato.value.faturamentos
-      );
+      medicaoItemData.value = await verificaIsFaturado(medicaoItemData.value,contrato.value.faturamentos);
     }
     currentPageMedicao.value = medicaoItemMeta.value.currentPage;
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
     console.error(error);
+    medicaoItemData.value = [];
+    medicaoItemMeta.value = [];
+    currentPageMedicao.value = 1;
+    totalMedicoes.value = 0;
   }
 };
 
@@ -2298,9 +2339,17 @@ const fetchContratoFaturamentos = async (page) => {
     totalFaturamentos.value = faturamentoItemMeta.value.total;
   } catch (error) {
     console.error(error.response.data.message);
+    faturamentoItemData.value = [];
+    faturamentoItemMeta.value = [];
+    currentPageFaturamento.value = 1;
+    totalFaturamentos.value = 0;
   }
 };
 
+watch(()=> alterouStatus.value, () =>{
+  fetchContratoMedicoes(currentPageMedicao.value )
+  alterouStatus.value = false;
+})
 watch(
   () => currentPage.value,
   () => fetchContratoItens(currentPage.value)
@@ -2725,8 +2774,7 @@ const resetForm = () => {
 };
 const addItemToTable = (selectedItem) => {
   if (selectedItem) {
-    // Substitui o item existente ou adiciona o novo item
-    medicaoData.value.itens = [selectedItem]; // Garante que apenas o item selecionado esteja na lista
+    medicaoData.value.itens = [selectedItem];
   } else {
     console.log("Nenhum item selecionado");
   }
@@ -2858,22 +2906,45 @@ const fetchContrato = async (id) => {
   }
 };
 
-const verificaIsFaturado = (lancamentos, faturamentos) => {
+const verificaIsFaturado = async (lancamentos, faturamentos) => {
   lancamentos.forEach((lancamento) => {
     lancamento.isFaturado = false;
   });
 
-  faturamentos.forEach((faturamento) => {
-    faturamento.faturamentoItens.forEach((item) => {
-      const lancamento = lancamentos.find(
-        (lancamento) => lancamento.id === item.lancamentoId
-      );
-      if (lancamento) {
-        lancamento.isFaturado = true;
-      }
+  if (faturamentos && faturamentos.length > 0) {
+    faturamentos.forEach((faturamento) => {
+      faturamento.faturamentoItens.forEach((item) => {
+        const lancamento = lancamentos.find(
+          (lancamento) => lancamento.id === item.lancamentoId
+        );
+        if (lancamento) {
+          lancamento.isFaturado = true;
+        }
+      });
     });
-  });
+  }
+
+  for (const lancamento of lancamentos) {
+    if (lancamento.isFaturado && lancamento.status !== 'Finalizada') {
+      await alterarStatusMedicao(lancamento.id, 'Finalizada');
+      alterouStatus.value = true;
+    } else if (lancamento.status === 'Finalizada' && !lancamento.isFaturado) {
+      await alterarStatusMedicao(lancamento.id, 'Disponível para Faturamento');
+      alterouStatus.value = true;
+    }
+  }
+
   return lancamentos;
+};
+
+const alterarStatusMedicao = async (id, novoStatus) => {
+  try {
+    const response = await api.patch(`/lancamentos/${id}/status`, {
+      status: novoStatus,
+    });
+  } catch (error) {
+    console.error(`Erro ao alterar status da medição ${id}:`, error);
+  }
 };
 
 const deleteLancamento = (lancamentoId) => {
@@ -3490,7 +3561,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
       editingLancamento.value.status = '';
     }
   } else if (newTipo === 'Detalhada') {
-    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento'].includes(editingLancamento.value.status)) {
+    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento', 'Finalizada'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
   }
