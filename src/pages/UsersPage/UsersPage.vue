@@ -419,7 +419,7 @@ const salvarUsuario = async () => {
     cargo: newUser.value.cargo,
     setor: newUser.value.setor,
     email: newUser.value.email,
-    profile_id: newUser.value.profileId
+    profileId: newUser.value.profileId
   };
   if (newUser.value.email !== confirmEmail.value) {
     toast.error('Os e-mails não coincidem. Por favor, verifique.', { theme: "colored" });
