@@ -136,9 +136,9 @@
               />
             </div>
             <div class="mb-4">
-              <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
+              <label for="role" class="font-bold text-3xl mb-2">Perfil</label>           
               <select
-                v-model="newUser.profileId"
+                v-model=" newUser.profileId"
                 id="role"
                 class="w-full p-2 focus:border-[#FF6600] border-2 focus:outline-none px-4 py-2 border-gray-300 rounded-md h-16"
                 required
@@ -149,7 +149,17 @@
                 </option>
               </select>
             </div>
-            <p class="text-xl text-gray-600 mb-6">Uma senha padrão será encaminhada para o email cadastrado.</p>
+            <div class="mb-4 flex justify-between" >
+              <button
+              v-if="isEditing"
+              type="button"
+              @click="resetPassword"
+              class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-red-500 border border-gray-300 rounded-md font-bold text-xl text-gray-100 tracking-widest shadow-sm  focus:outline-none hover:bg-red-700 h-16 w-50"
+            >
+              Resetar Senha
+            </button>
+              <p class="text-xl text-gray-600 mb-6">Uma senha padrão será encaminhada para o email cadastrado.</p>
+            </div>
             <div class="flex justify-end gap-4">
               <button
                 type="button"
@@ -228,7 +238,7 @@
                 disabled
               />
             </div>
-            <div class="mb-4">
+            <!-- <div class="mb-4">
               <label for="confirmEmail" class="font-bold text-3xl mb-2">Confirmação de E-mail</label>
               <input
                 v-model="userVisualizado.confirmEmail"
@@ -239,19 +249,18 @@
                 placeholder="Confirme o email"
                 disabled
               />
-            </div>
-            <div class="mb-4">
+            </div> -->
+            <div class="mb-4">              
               <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
-              <select
-                v-model="userVisualizado.role"
-                id="role"
-                class="w-full p-2 focus:border-[#FF6600] border-2 focus:outline-none px-4 py-2 border-gray-300 rounded-md h-16"
-                disabled
-              >
-                <option value="">Selecione um perfil</option>
-                <option value="admin">Administrador</option>
-                <option value="user">Usuário</option>
-              </select>
+              <input
+              v-model="userVisualizado.profile.name"
+              id="perfil"
+              type="text"
+              class="w-full p-2 focus:border-[#FF6600] border-2 focus:outline-none px-4 py-2 border-gray-300 rounded-md h-16"
+              required
+              placeholder="Informe o email"
+              disabled
+            />
             </div>
             <p class="text-xl text-gray-600 mb-6">Uma senha padrão será encaminhada para o email cadastrado.</p>
             <div class="flex justify-end gap-4">
@@ -321,6 +330,7 @@ const closeModal = () => {
   showModal.value = false;
   isEditing.value = false;
   resetNewUser();
+  confirmEmail.value = '';
 };
 
 const viewUser = (user) => {
@@ -337,7 +347,7 @@ const editUser = (user) => {
     cargo: user.cargo,
     setor: user.setor,
     email: user.email,
-    profileId: user.profile_id,
+    profileId: user.profile ? user.profile.id : '',
     id: user.id
   };
 };
@@ -367,6 +377,32 @@ const deleteUser = (id) => {
   });
 };
 
+const resetPassword = () => {
+  Swal.fire({
+    title: "Confirmar reset de senha",
+    text: "Tem certeza que deseja resetar a senha deste usuário?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Confirmar",
+    cancelButtonText: "Cancelar"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      api.put(`/users/reset-password`, { email: newUser.value.email })
+      .then(() => {
+        toast.success("Senha resetada com sucesso!", { theme: "colored" });
+        closeModal();
+      })
+      .catch((error) => {
+        toast.error("Não foi possível resetar a senha!", { theme: "colored" });
+        console.error("Erro ao resetar senha:", error);
+      });
+      
+    }
+  }); 
+}
+
 const resetNewUser = () => {
   newUser.value = {
     nome: '',
@@ -383,7 +419,7 @@ const salvarUsuario = async () => {
     cargo: newUser.value.cargo,
     setor: newUser.value.setor,
     email: newUser.value.email,
-    profile_id: newUser.value.profileId
+    profileId: newUser.value.profileId
   };
   if (newUser.value.email !== confirmEmail.value) {
     toast.error('Os e-mails não coincidem. Por favor, verifique.', { theme: "colored" });
@@ -391,7 +427,7 @@ const salvarUsuario = async () => {
   }
   try {
     if (isEditing.value) {
-      await api.put(`/user/${newUser.value.id}`, userData);
+      await api.put(`/users/update/${newUser.value.id}`, userData);
       toast.success("Usuário editado com sucesso!", { theme: "colored" });
     } else {
       await api.post("/register", userData);
