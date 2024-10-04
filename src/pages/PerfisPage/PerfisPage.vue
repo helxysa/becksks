@@ -1,211 +1,462 @@
 <template>
-    <div class="menu-lateral-perfis">
-        <div class="flex justify-between mt-12 px-6">
-           <h1 class="text-5xl font-medium">Tipos de Perfil</h1>
-           <button   class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-           @click="openModal">
-            <Icon
-            icon="la:file-contract"
-            class="text-zinc-50"
-            height="25"
-          />
-          <span>Novo Perfil</span> 
-          </button>
-        </div>
-    
-      <div v-if="carregando" class="flex justify-center items-center mt-8">
-        <l-tailspin size="200" stroke="5" speed="0.9" color="rgb(28, 125, 62)" />
-      </div>
-
-      <table v-else class="w-full mt-8 table-auto border border-slate-200 rounded-2xl">
-        <thead class="h-20 bg-slate-100 border-1">
-          <tr >
-            <th class="text-xl">ID</th>
-            <th class="text-xl">Nome</th>
-            <th class="text-xl">Permissões</th>
-            <th class="text-xl">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="perfil in perfis" :key="perfil.id" class="border-b">
-            <td class="px-4 py-2">{{ perfil.id }}</td>
-            <td class="px-4 py-2">{{ perfil.nome }}</td>
-            <td class="px-4 py-2">
-              {{ Object.keys(perfil.permissoes).filter(key => perfil.permissoes[key]).join(', ') }}
-            </td>
-            <td class="px-4 py-2">
-              <span v-for="(acoes, funcionalidade) in perfil.acoes" :key="funcionalidade">
-                {{ funcionalidade }}: 
-                {{ Object.keys(acoes).filter(acao => acoes[acao]).join(', ') }};
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    
+  <div>
+    <div class="flex justify-between mt-12 px-6">
+      <h1 class="text-5xl font-medium">Tipos de Perfil</h1>
+      <button
+        class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        @click="openModal"
+      >
+        <Icon icon="la:file-contract" class="text-zinc-50" height="25" />
+        <span>Novo Perfil</span>
+      </button>
     </div>
-    <JetDialogModal
-    :show="showModal"
-    :withouHeader="false"
-    @close="closeModal"
-    maxWidth="6xl"
-    :modalTitle="'Adicionar Novo Perfil'"
+
+    <div
+      v-if="carregando"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
     >
-     <template #content>
-      <form @submit.prevent="salvarPerfil">
-        <div class="mb-4">
-          <label for="nome" class="block text-sm font-medium text-gray-700">Nome</label>
-          <input type="text" id="nome" v-model="novoPerfil.nome" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+      <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
+    </div>
+
+    <table
+      v-else
+      class="w-full mt-8 table-auto border border-slate-200 rounded-2xl"
+    >
+      <thead class="h-20 bg-slate-100 border-1">
+        <tr>
+          <th class="text-xl">ID</th>
+          <th class="text-xl">Nome</th>
+          <th class="text-xl">Permissões</th>
+          <th class="text-xl">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="perfil in perfis" :key="perfil.id" class="border-b">
+          <td class="p-4">{{ perfil.id }}</td>
+          <td class="p-4">{{ perfil.name }}</td>
+          <td class="p-4">
+            <span
+              v-for="permissao in perfil.permissions.filter((p) => p.canCreate || p.canEdit || p.canView || p.canDelete)"
+              :key="permissao.id"
+              class="inline-flex items-center mb-2"
+            >
+            <span class="font-medium">{{ permissoesNomeMap[permissao.name] || permissao.name }}</span>:
+            <span class="flex items-center mx-2">
+            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Criar">
+              <Icon
+              v-if="permissao.canCreate"
+              icon="octicon:feed-plus-16"
+              class="text-blue-500"
+              height="16"
+            />
+            </span>
+            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Editar">
+              <Icon
+              v-if="permissao.canEdit"
+              icon="bx:edit"
+              class="text-green-500"
+              height="18"
+            />
+            </span>
+            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Visualizar">
+            <Icon
+              v-if="permissao.canView"
+              icon="ph:eye"
+              class="text-blue-500"
+              height="20"
+            />
+            </span>
+            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Deletar">
+              <Icon
+              v-if="permissao.canDelete"
+              icon="ph:trash"
+              class="text-red-500"
+              height="20"
+            />
+            </span>
+          </span>
+        </span>
+          </td>
+          <td class="p-4 flex justify-center items-center h-full">
+            <span @click="viewPerfil(perfil)">
+            <Icon
+              icon="ph:eye"
+              height="20"
+              class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            />
+            </span>
+            <span @click="editPerfil(perfil)"
+            >
+            <Icon
+              icon="bx:edit"
+              height="18"
+              class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            />
+            </span>
+            <span @click="deletePerfil(perfil.id)"
+            >
+              <Icon icon="ph:trash" height="20" class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]" />
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Modal de criação/edição -->
+    <JetDialogModal
+      :show="showModal"
+      :withouHeader="false"
+      @close="closeModal"
+      maxWidth="6xl"
+      :modalTitle="isEditing.value ? 'Editar Perfil' : 'Criar Novo Perfil'"
+    >
+      <template #content>
+        <form @submit.prevent="salvarPerfil">
+          <div class="mb-4 flex items-center gap-4">
+            <input
+              type="text"
+              id="nome"
+              v-model="novoPerfil.name"
+              class="text-2xl font-sans pl-4 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              placeholder="Digite o nome do perfil"
+            />
+          </div>
+
+          <div class="mb-4">
+            <h3 class="text-2xl font-medium text-gray-700 mb-2">Permissões</h3>
+            <div
+              v-for="(permissao, index) in permissoes"
+              :key="index"
+              class="mb-2"
+            >
+              <div
+                class="flex items-center justify-between p-4 bg-gray-100 rounded-md transition-all duration-300"
+              >
+                <span class="text-md font-medium text-gray-700">{{
+                  permissao.nome
+                }}</span>
+                <label class="flex cursor-pointer select-none items-center">
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      class="sr-only"
+                      v-model="novoPerfil.permissions[permissao.chave].active"
+                    />
+                    <div class="block h-8 w-14 rounded-full bg-[#E5E7EB]"></div>
+                    <div
+                      :class="{
+                        'translate-x-full !bg-blue-500':
+                          novoPerfil.permissions[permissao.chave].active,
+                      }"
+                      class="dot absolute left-1 top-1 h-6 w-6 rounded-full bg-white transition-transform duration-300 ease-in-out"
+                    ></div>
+                  </div>
+                </label>
+              </div>
+
+              <div
+                v-if="novoPerfil.permissions[permissao.chave].active"
+                class="mt-2 ml-4"
+              >
+                <label
+                  v-for="action in actions"
+                  :key="action"
+                  class="flex items-center"
+                >
+                  <input
+                    type="checkbox"
+                    v-model="novoPerfil.permissions[permissao.chave][action]"
+                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  />
+                  <span class="ml-2 text-md text-gray-600">{{ action }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <footer class="flex justify-end gap-4 mt-4">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            >
+              Fechar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            >
+              Salvar
+            </button>
+          </footer>
+        </form>
+      </template>
+    </JetDialogModal>
+
+    <!-- Modal de visualização -->
+    <JetDialogModal
+      :show="showViewModal"
+      :withouHeader="false"
+      @close="closeViewModal"
+      maxWidth="6xl"
+      modalTitle="Visualizar Perfil"
+    >
+      <template #content>
+        <div class="mb-4 flex gap-4 items-center">
+          <label class="font-medium text-gray-700">Nome</label>
+          <p class="font-medium text-3xl">{{ perfilVisualizado.name }}</p>
         </div>
 
         <div class="mb-4">
-          <h3 class="text-lg font-medium text-gray-700 mb-2">Permissões</h3>
-          <div v-for="(permissao, index) in permissoes" :key="index" class="mb-2">
-            <div class="flex items-center justify-between p-4 bg-gray-100 rounded-md">
-              <span class="text-sm font-medium text-gray-700">{{ permissao.nome }}</span>
-              <label class="switch">
-                <input type="checkbox" v-model="novoPerfil.permissoes[permissao.chave]">
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <div v-if="novoPerfil.permissoes[permissao.chave]" class="mt-2 ml-4">
-              <label v-for="acao in acoes" :key="acao" class="flex items-center">
-                <input type="checkbox" v-model="novoPerfil.acoes[permissao.chave][acao]" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                <span class="ml-2 text-sm text-gray-600">{{ acao }}</span>
-              </label>
-            </div>
+          <h3 class="font-medium text-gray-700 my-4 text-4xl">Permissões</h3>
+          <div
+            v-for="(permissao, index) in permissoesAtivas"
+            :key="index"
+            class="mb-2"
+          >
+            <p class="text-md font-medium text-gray-700">{{ permissao.nome }}</p>
+            <ul class="ml-8 list-disc">
+              <li
+                v-for="acao in permissao.acoes"
+                :key="acao"
+                class="text-md text-gray-600"
+              >
+                {{ acao }}
+              </li>
+            </ul>
           </div>
         </div>
 
         <div class="flex justify-end">
-          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Salvar</button>
+          <button
+            type="button"
+            @click="closeViewModal"
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+          >
+            Fechar
+          </button>
         </div>
-      </form>
-    </template>
+      </template>
     </JetDialogModal>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
+  </div>
+</template>
+
+
+<script setup>
+  import { ref, onMounted } from "vue";
   import { Icon } from "@iconify/vue";
   import JetDialogModal from "@/components/modals/DialogModal.vue";
-  import { tailspin } from 'ldrs';
-  import { api } from '@/services/api';
+  import Swal from "sweetalert2";
+  import { api } from "@/services/api";
+  import { toast } from "vue3-toastify";
+  import { waveform } from "ldrs";
 
-  tailspin.register();
+  waveform.register();
 
   const perfis = ref([]);
   const carregando = ref(true);
   const showModal = ref(false);
+  const isEditing = ref(false);
+
+  // Variáveis para visualização
+  const showViewModal = ref(false);
+  const perfilVisualizado = ref({});
+  const permissoesAtivas = ref([]);
+
+  const permissoes = [
+    { nome: "Usuários", chave: "usuarios" },
+    { nome: "Contratos", chave: "contratos" },
+    { nome: "Itens de contrato", chave: "itens_contrato" },
+    { nome: "Medições", chave: "medicoes" },
+    { nome: "Faturamentos", chave: "faturamentos" },
+    { nome: "Projetos", chave: "projetos" },
+  ];
+
+  // Criar o mapeamento de chaves para nomes
+  const permissoesNomeMap = Object.fromEntries(
+    permissoes.map((permissao) => [permissao.chave, permissao.nome])
+  );
 
   const buscarPerfis = async () => {
     try {
-      const resposta = await api.get('/perfil');
-      console.log(resposta.data, 'resposta')
+      const resposta = await api.get("/perfil");
       perfis.value = resposta.data;
       carregando.value = false;
     } catch (erro) {
-      console.error('Erro ao buscar perfis:', erro);
       carregando.value = false;
+      toast.error("Erro ao carregar os perfis.", { theme: "colored" });
     }
   };
 
   const openModal = () => {
+    isEditing.value = false;
     showModal.value = true;
+
+    novoPerfil.value = {
+      name: "",
+      permissions: {},
+    };
+
+    permissoes.forEach((permissao) => {
+      novoPerfil.value.permissions[permissao.chave] = {
+        active: false,
+        Criar: false,
+        Visualizar: false,
+        Editar: false,
+        Deletar: false,
+      };
+    });
   };
+
   const closeModal = () => {
     showModal.value = false;
+    isEditing.value = false;
   };
 
   const novoPerfil = ref({
-    nome: '',
-    permissoes: {},
-    acoes: {}
+    name: "",
+    permissions: {},
   });
 
-  const permissoes = [
-    { nome: 'Usuários', chave: 'usuarios' },
-    { nome: 'Produtos', chave: 'produtos' },
-    // Adicione mais permissões conforme necessário
-  ];
+  const actions = ["Criar", "Visualizar", "Editar", "Deletar"];
 
-  const acoes = ['Criar', 'Visualizar', 'Editar', 'Deletar'];
-
-  permissoes.forEach(permissao => {
-    novoPerfil.value.permissoes[permissao.chave] = false;
-    novoPerfil.value.acoes[permissao.chave] = {
+  // Inicializa as permissões para um novo perfil
+  permissoes.forEach((permissao) => {
+    novoPerfil.value.permissions[permissao.chave] = {
+      active: false,
       Criar: false,
       Visualizar: false,
       Editar: false,
-      Deletar: false
+      Deletar: false,
     };
   });
 
   const salvarPerfil = async () => {
+    const perfilData = {
+      name: novoPerfil.value.name,
+      permissions: Object.entries(novoPerfil.value.permissions).map(
+        ([key, value]) => ({
+          name: key,
+          can_create: value.Criar,
+          can_edit: value.Editar,
+          can_view: value.Visualizar,
+          can_delete: value.Deletar,
+        })
+      ),
+    };
+
     try {
-      await api.post('/perfil', novoPerfil.value);
+      if (isEditing.value) {
+        await api.put(`/perfil/${novoPerfil.value.id}`, perfilData);
+        toast.success("Perfil editado com sucesso!", { theme: "colored" });
+      } else {
+        await api.post("/perfil", perfilData);
+        toast.success("Perfil criado com sucesso!", { theme: "colored" });
+      }
       closeModal();
       buscarPerfis();
     } catch (erro) {
-      console.error('Erro ao salvar perfil:', erro);
+      const errorMessage =
+        erro.response?.data?.message ||
+        "Erro ao salvar o perfil. Por favor, tente novamente.";
+      toast.error(errorMessage, { theme: "colored" });
     }
+  };
+
+  const viewPerfil = (perfil) => {
+    perfilVisualizado.value = perfil;
+    permissoesAtivas.value = [];
+
+    permissoes.forEach((permissao) => {
+      const permData = perfil.permissions.find((p) => p.name === permissao.chave);
+      if (permData) {
+        const acoesAtivas = [];
+        if (permData.canCreate) acoesAtivas.push("Criar");
+        if (permData.canView) acoesAtivas.push("Visualizar");
+        if (permData.canEdit) acoesAtivas.push("Editar");
+        if (permData.canDelete) acoesAtivas.push("Deletar");
+
+        if (acoesAtivas.length > 0) {
+          permissoesAtivas.value.push({
+            nome: permissao.nome,
+            acoes: acoesAtivas,
+          });
+        }
+      }
+    });
+
+    showViewModal.value = true;
+  };
+
+  const closeViewModal = () => {
+    showViewModal.value = false;
+    perfilVisualizado.value = {};
+    permissoesAtivas.value = [];
+  };
+
+  const editPerfil = (perfil) => {
+    isEditing.value = true;
+    showModal.value = true;
+
+    novoPerfil.value = {
+      id: perfil.id,
+      name: perfil.name,
+      permissions: {},
+    };
+
+    permissoes.forEach((permissao) => {
+      const permData = perfil.permissions.find((p) => p.name === permissao.chave);
+      if (permData) {
+        novoPerfil.value.permissions[permissao.chave] = {
+          active:
+            permData.canCreate ||
+            permData.canEdit ||
+            permData.canView ||
+            permData.canDelete,
+          Criar: permData.canCreate,
+          Visualizar: permData.canView,
+          Editar: permData.canEdit,
+          Deletar: permData.canDelete,
+        };
+      } else {
+        novoPerfil.value.permissions[permissao.chave] = {
+          active: false,
+          Criar: false,
+          Visualizar: false,
+          Editar: false,
+          Deletar: false,
+        };
+      }
+    });
+  };
+
+  const deletePerfil = (id) => {
+    Swal.fire({
+      title: "Confirmar exclusão",
+      text: "Tem certeza que deseja excluir este perfil?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Excluir",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        api
+          .delete(`/perfil/${id}`)
+          .then((response) => {
+            buscarPerfis();
+            toast.success("Perfil deletado com sucesso!", { theme: "colored" });
+          })
+          .catch((error) => {
+            toast.error("Não foi possível deletar o perfil!", { theme: "colored" });
+            console.error("Erro ao deletar perfil:", error);
+          });
+      }
+    });
   };
 
   onMounted(() => {
     buscarPerfis();
   });
-  
   </script>
-  
-  <style scoped>
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-  }
-  
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-  }
-  
-  input:checked + .slider {
-    background-color: #2196F3;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(26px);
-  }
-  
-  .slider.round {
-    border-radius: 34px;
-  }
-  
-  .slider.round:before {
-    border-radius: 50%;
-  }
-  </style>
