@@ -50,6 +50,7 @@
                       icon="bx:edit"
                       height="20"
                       class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                      @click="openUserEditModal(user)"
                     />
                   </span>
                   <span >
@@ -128,7 +129,65 @@
     </div>
       </template>
     </JetDialogModal>
-  
+       <!-- Modal para editar usuário -->
+       <JetDialogModal
+       :show="modalEditUser"
+       :withouHeader="false"
+       @close="closeModalEditUser"
+       maxWidth="6xl"
+       :modalTitle="'Editar Usuário'"
+     >
+       <template #content>
+      <div>
+       <div class="bg-white rounded-lg p-8 ">
+       
+         <form @submit.prevent="addUser">
+           <div class="mb-4">
+             <label for="name" class="font-bold text-3xl mb-2">Nome</label>
+             <input v-model="editUser.name" id="name" type="text" class="w-full p-2  focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2  border-gray-300 rounded-md h-16" required
+             placeholder="Informe o nome do usuário">
+           </div>
+           <div class="mb-4">
+             <label for="cargo" class="font-bold text-3xl mb-2">Cargo</label>
+             <input v-model="editUser.cargo" id="cargo" type="text" class="w-full p-2  rounded focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2  border-gray-300  h-16" required
+             placeholder="Informe o cargo">
+           </div>
+           <div class="mb-4">
+             <label for="setor" class="font-bold text-3xl mb-2">Setor</label>
+             <input v-model="editUser.setor" id="setor" type="text" class="w-full p-2   focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2  border-gray-300 rounded-md  h-16" required
+             placeholder="Informe o setor">
+           </div>
+           <div class="mb-4">
+             <label for="email" class="font-bold text-3xl mb-2">E-mail</label>
+             <input v-model="editUser.email" id="email" type="email" class="w-full p-2  focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2  border-gray-300 rounded-md h-16" required
+             placeholder="Informe o email">
+           </div>
+           <div class="mb-4">
+             <label for="confirmEmail" class="font-bold text-3xl mb-2">Confirmação de E-mail</label>
+             <input v-model="editUser.confirmEmail" id="confirmEmail" type="email" class="w-full p-2 focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2  border-gray-300 rounded-md h-16" required
+             placeholder="Confirme o email">
+           </div>
+           <div class="mb-4">
+             <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
+             <select v-model="editUser.role" id="role" class="w-full p-2  focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2  border-gray-300 rounded-md h-16" required>
+               <option value="">Selecione um perfil</option>
+               <option value="admin">Administrador</option>
+               <option value="user">Usuário</option>
+             </select>
+           </div>
+           <p class="text-xl text-gray-600 mb-6">Uma senha padrão será encaminhada para o email cadastrado.</p>
+           <div class="flex justify-end gap-4">
+             <button type="button" @click="closeModalEditUser" class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40">Cancelar</button>
+             <button type="submit" class="  bg-blue-500 hover:bg-blue-600
+             inline-flex ml-3 items-center justify-center px-4 py-4 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14  w-40">
+             Salvar
+           </button>
+           </div>
+         </form>
+       </div>
+     </div>
+       </template>
+     </JetDialogModal>
     </div>
   </template>
   
@@ -144,6 +203,7 @@
   const users = ref([]);
   const loading = ref(true);
   const showModal = ref(false);
+  const modalEditUser = ref(false);
   const newUser = ref({
     name: '',
     cargo: '',
@@ -153,8 +213,20 @@
     role: ''
   });
 
+  const editUser = ref({});
+
   const openModal = () => {
     showModal.value = true;
+  };
+
+  const openUserEditModal = (item) => {
+  editUser.value = { ...item };
+  modalEditUser.value = true;  
+};
+  
+  const closeModalEditUser = () => {
+    modalEditUser.value = false;
+    editUser.value = {};
   };
 
   const closeModal = () => {
