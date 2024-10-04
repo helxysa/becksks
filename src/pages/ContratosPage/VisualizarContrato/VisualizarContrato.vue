@@ -334,7 +334,7 @@
                   <Icon
                     icon="ph:eye"
                     height="20"
-                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    class="hover:text-blue-500 text-black hover:rounded-md cursor-pointer"
                   />
                 </span>
                 <span @click="openItemEditModal(item)">
