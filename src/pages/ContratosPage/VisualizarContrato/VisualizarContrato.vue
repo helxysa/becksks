@@ -1,684 +1,722 @@
 <template>
+<!-- Detalhes do contrato -->
+<section>
+  <div
+    class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
+  >
+  <h1 class="text-4xl font-medium text-gray-800 mb-6 sm:mb-0">
+      Detalhes do Contrato
+    </h1>
+    <div class="flex flex-wrap gap-3">
+      <button
+        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+      >
+        <router-link
+          :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
+        >
+          Editar
+        </router-link>
+      </button>
+      <button
+        @click="deleteContrato(contrato)"
+        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+      >
+        Excluir
+      </button>
+    </div>
+  </div>
+
   <!-- Detalhes do contrato -->
-  <section>
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
     <div
-      class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
+      class="border border-gray-100 bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
-      <h1 class="text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
-        Detalhes do Contrato
-      </h1>
-      <div class="flex flex-wrap gap-3">
-        <button
-          class="flex items-center justify-center px-8 py-3 rounded-md text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        >
-          <i class="fas fa-edit mr-2"></i>
-          <router-link
-            :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
-          >
-            Editar
-          </router-link>
-        </button>
-        <button
-          @click="deleteContrato(contrato)"
-          class="flex items-center justify-center px-8 py-3 rounded-md text-2xl font-medium text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        >
-          <i class="fas fa-trash-alt mr-2"></i>Excluir
-        </button>
-      </div>
-    </div>
-
-    <!-- Detalhes do contrato -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-      <div
-        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
-      >
-        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
-          Informações do Contrato
-        </h3>
-        <div class="space-y-4">
-          <div class="flex items-center">
-            <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
-              <i class="fas fa-file-contract"></i>
-              <Icon
-                icon="fa6-solid:file-contract"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-blue-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Contrato</p>
-              <p class="font-medium text-gray-700">
-                {{ contrato.nomeContrato }}
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
-              <i class="fas fa-user"></i>
-              <Icon
-                icon="fa-solid:user"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-green-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Cliente</p>
-              <p class="font-medium text-gray-700">
-                {{ contrato.nomeCliente }}
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
-              <i class="fas fa-calendar-alt"></i>
-              <Icon
-                icon="fa-solid:calendar-alt"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-purple-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Vigência</p>
-              <p class="font-medium text-gray-700">
-                {{ formatDate(contrato.dataInicio) }} até
-                {{ formatDate(contrato.dataFim) }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <section
-        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
-      >
-        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
-        <div class="space-y-4">
-          <div class="flex items-center">
-            <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
-              <i class="fas fa-user-tie"></i>
-              <Icon
-                icon="fa-solid:user-tie"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-indigo-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Nome</p>
-              <p class="font-medium text-gray-700">
-                {{ contrato?.fiscal?.nome }}
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
-              <i class="fas fa-phone"></i>
-              <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Contato</p>
-              <p
-                class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
-                @click="openWhatsApp(contrato.fiscal.telefone)"
-              >
-                {{ contrato?.fiscal?.telefone }}
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
-              <Icon
-                icon="fa:envelope"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-red-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">E-mail</p>
-              <p class="font-medium text-gray-700">
-                {{ contrato?.fiscal?.email }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
-      >
-        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
-          Detalhes Adicionais
-        </h3>
-        <div class="space-y-4">
-          <div class="flex items-center">
-            <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
-              <Icon
-                icon="fa-solid:bullseye"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-teal-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Ponto Focal</p>
-              <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
-              <Icon
-                icon="fa6-solid:city"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-pink-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Cidade</p>
-              <p class="font-medium text-gray-700">
-                {{ contrato.cidade }} ({{ contrato.estado }})
-              </p>
-            </div>
-          </div>
-          <div class="flex items-center">
-            <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
-              <Icon
-                icon="fa-solid:file-alt"
-                width="1.5rem"
-                height="1.5rem"
-                class="text-orange-400"
-              />
-            </div>
-            <div>
-              <p class="text-lg text-gray-500">Objeto do Contrato</p>
-              <p class="font-medium text-gray-700">
-                {{ contrato.objetoContrato }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-
-    <!-- Resumo Financeiro -->
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
-    <section
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8"
-    >
-      <div
-        v-for="(item, index) in financialSummary"
-        :key="index"
-        :class="`bg-gradient-to-br ${item.bgColor} rounded-xl shadow-lg p-6 text-white transition duration-300 ease-in-out hover:shadow-xl`"
-      >
-        <section class="flex flex-col h-full justify-between">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-semibold">{{ item.title }}</h3>
-            <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
-          </div>
-          <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
-        </section>
-      </div>
-    </section>
-
-    <!-- Observações -->
-    <section
-      class="bg-white rounded-xl shadow-md p-6 transition duration-300 ease-in-out hover:shadow-lg"
-    >
-      <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
-      <div class="flex items-center">
-        <div class="bg-gray-100 text-gray-500 rounded-md p-3 mr-3">
-          <Icon
-            icon="fa-solid:comment-alt"
-            width="1.5rem"
-            height="1.5rem"
-            class="text-gray-400"
-          />
-        </div>
-        <div>
-          <p class="text-lg text-gray-500">Detalhes adicionais</p>
-          <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <!-- Tabela itens do contrato-->
-  <section class="mt-16">
-    <div class="flex justify-between items-center">
-      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
-        Itens do Contrato
-      </h1>
-      <div class="flex gap-4">
-        <button
-          @click="openCreateItemModal"
-          class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        >
-          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
-          Adicionar Item
-        </button>
-        <button
-          class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-          type="button"
-          @click="openModalUnidade"
-        >
-          <span class="mr-2 pb-[1px]">
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+        Informações do Contrato
+      </h3>
+      <div class="space-y-4">
+        <div class="flex items-center">
+          <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
+            <i class="fas fa-file-contract"></i>
             <Icon
-              icon="material-symbols-light:grid-on-outline"
-              height="20"
-              class="text-zinc-50"
+              icon="fa6-solid:file-contract"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-blue-400"
             />
-          </span>
-          Adicionar Unidade
-        </button>
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Contrato</p>
+            <p class="font-medium text-gray-700">
+              {{ contrato.nomeContrato }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
+            <i class="fas fa-user"></i>
+            <Icon
+              icon="fa-solid:user"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-green-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Cliente</p>
+            <p class="font-medium text-gray-700">
+              {{ contrato.nomeCliente }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
+            <i class="fas fa-calendar-alt"></i>
+            <Icon
+              icon="fa-solid:calendar-alt"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-purple-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Vigência</p>
+            <p class="font-medium text-gray-700">
+              {{ formatDate(contrato.dataInicio) }} até
+              {{ formatDate(contrato.dataFim) }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
-      <thead class="h-20 bg-slate-100 border-1">
-        <tr>
-          <th class="text-xl px-2">#</th>
-          <th class="text-xl">Item</th>
-          <th class="text-xl">U.M (Unidade de Medida)</th>
-          <th class="text-xl">Quantidade Contratada</th>
-          <th class="text-xl">Valor Unitário</th>
-          <th class="text-xl">Valor Total (Item)</th>
-          <th class="text-xl min-w-44">Quantidade itens disponíveis</th>
-          <th class="text-xl">Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- {{contratoItemData}} -->
-        <tr
-          class="h-24 text-center"
-          v-for="(item) in contratoItemData"
-          :key="item.id"
-        >
-          <td class="text-2xl px-2">{{ item.id }}</td>
-          <td class="text-2xl">{{ item.titulo }}</td>
-          <td class="text-2xl">{{ item.unidadeMedida }}</td>
-          <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
-          <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
-          <td class="text-2xl">
-            {{
-              formatCurrency(
-                item.valorUnitario * item.saldoQuantidadeContratada
-              )
-            }}
-          </td>
-          <!-- {{ (contrato?.lancamentos?.lancamentoItens) }} -->
-          <td class="text-2xl">
-            {{
-              calcularItensRestante(
-                item.id,
-                item.saldoQuantidadeContratada
-              ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
-            }}
-          </td>
-          <td>
-            <div class="flex justify-center items-center gap-2">
-              <span @click="openItemViewModal(item)">
-                <Icon
-                  icon="ph:eye"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-              <span @click="openItemEditModal(item)">
-                <Icon
-                  icon="bx:edit"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-              <span @click="deleteItem(item.id)">
-                <Icon
-                  icon="ph:trash"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="flex justify-center">
-      <vue-awesome-paginate
-        :total-items="totalItens"
-        :items-per-page="resultsPerPageItens"
-        :max-pages-shown="5"
-        v-model="currentPage"
-        @click="changePageItem"
-      />
+
+    <section
+      class="border border-gray-100 bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+    >
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
+      <div class="space-y-4">
+        <div class="flex items-center">
+          <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
+            <i class="fas fa-user-tie"></i>
+            <Icon
+              icon="fa-solid:user-tie"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-indigo-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Nome</p>
+            <p class="font-medium text-gray-700">
+              {{ contrato?.fiscal?.nome }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
+            <i class="fas fa-phone"></i>
+            <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Contato</p>
+            <p
+              class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
+              @click="openWhatsApp(contrato.fiscal.telefone)"
+            >
+              {{ contrato?.fiscal?.telefone }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
+            <Icon
+              icon="fa:envelope"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-red-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">E-mail</p>
+            <p class="font-medium text-gray-700">
+              {{ contrato?.fiscal?.email }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="border border-gray-100 bg-white rounded-sm shadow-md p-6 transition duration-300 ease-in-out hover:shadow-md"
+    >
+      <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+        Detalhes Adicionais
+      </h3>
+      <div class="space-y-4">
+        <div class="flex items-center">
+          <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
+            <Icon
+              icon="fa-solid:bullseye"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-teal-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Ponto Focal</p>
+            <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+            <Icon
+              icon="fa6-solid:city"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-pink-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Cidade</p>
+            <p class="font-medium text-gray-700">
+              {{ contrato.cidade }} ({{ contrato.estado }})
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
+            <Icon
+              icon="fa-solid:file-alt"
+              width="1.5rem"
+              height="1.5rem"
+              class="text-orange-400"
+            />
+          </div>
+          <div>
+            <p class="text-lg text-gray-500">Objeto do Contrato</p>
+            <p class="font-medium text-gray-700">
+              {{ contrato.objetoContrato }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- Resumo Financeiro -->
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+    <div
+      v-for="(item, index) in financialSummary"
+      :key="index"
+      :class="`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`"
+    >
+      <section class="flex flex-col h-full justify-between">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+          <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+        </div>
+        <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
+      </section>
     </div>
   </section>
 
-  <!-- Tabela Medições-->
-  <section>
-    <div class="flex justify-between mt-12">
-      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
-        Medição
-      </h1>
-      <div class="mt-8 flex gap-8 flex-wrap justify-end">
-        <button
-          class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-          @click="ExibirModalLancamento"
-        >
-          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
-          Nova Medição
-        </button>
-        <button
-          class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-          @click="ExibirModalPedidoFaturamento"
-        >
-          <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
-          Novo faturamento
-        </button>
+
+  <!-- Observações -->
+  <section
+    class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+  >
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
+    <div class="flex items-center">
+      <div class="bg-gray-100 text-gray-500 rounded-md p-3 mr-3">
+        <Icon
+          icon="fa-solid:comment-alt"
+          width="1.5rem"
+          height="1.5rem"
+          class="text-gray-400"
+        />
+      </div>
+      <div>
+        <p class="text-lg text-gray-500">Detalhes adicionais</p>
+        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
       </div>
     </div>
-    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
-      <thead class="h-20 bg-slate-100 border-1">
-        <tr>
-          <th></th>
-          <th class="text-xl">#</th>
-          <th
-            class="text-xl cursor-pointer"
-            @click="changeSorting('data_medicao', 'medicoes')"
+  </section>
+</section>
+
+<section class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
+  <div class="flex border-b border-gray-200 mb-8 pt-4">
+    <TabButton
+      v-for="tab in tabs"
+      :key="tab"
+      :currentTab="currentTab"
+      :tab="tab"
+      @update:currentTab="currentTab = $event"
+    />
+  </div>
+
+
+  <div v-if="currentTab === 'Itens'">
+    <!-- Tabela itens do contrato-->
+    <section class="mt-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-[1.8rem] font-medium text-gray-800">
+          Itens do Contrato
+        </h1>
+        <div class="flex gap-8">
+          <button
+            @click="openCreateItemModal"
+            class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           >
-            Data
-            <span>
-              {{ sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
+            <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+            Adicionar Item
+          </button>
+          <button
+            class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            type="button"
+            @click="openModalUnidade"
+          >
+            <span class="mr-2 pb-[1px]">
+              <Icon
+                icon="material-symbols-light:grid-on-outline"
+                height="20"
+                class="text-zinc-50"
+              />
             </span>
-          </th>
-          <th class="text-xl">Competência</th>
-          <th class="text-xl">Projeto</th>
-          <th class="text-xl">Tarefa</th>
-          <th class="text-xl">Tipo</th>
-          <th class="text-xl">Status</th>
-          <!-- <th class="text-xl">Quantidade itens</th> -->
-          <th class="text-xl">Resultado</th>
-          <th class="text-xl">Unidade de medida</th>
-          <!-- <th class="text-xl">Itens disponíveis</th> -->
-          <!-- <th class="text-xl">Situação</th> -->
-          <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
-          <th class="text-xl">Ações</th>
-        </tr>
-      </thead>
-      <tbody v-if="medicaoItemData">
-        <tr
-          class="h-24 text-center"
-          v-for="(lancamento) in medicaoItemData"
-          :key="lancamento.id"
-          :class="{
-            'bg-indigo-100':
-              lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado,
-          }"
-        >
-          <td>
-            <input
-              type="checkbox"
-              class="w-6 h-6"
-              v-model="pedidosFaturamento"
-              :value="lancamento.id"
-              @change="changePedido"
-              :disabled="
-                lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado
-              "
-            />
-          </td>
-
-          <td class="text-2xl">{{ lancamento.id }}</td>
-          <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
-          <td class="text-2xl">{{ lancamento.competencia }}</td>
-          <td class="text-2xl">{{ lancamento.projetos }}</td>
-          <td
-            class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300"
-            @click="redirectToRedmine(lancamento.tarefaMedicao)"
+            Adicionar Unidade
+          </button>
+        </div>
+      </div>
+      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+        <thead class="h-20 bg-slate-100 border-1">
+          <tr>
+            <th class="text-xl px-2">#</th>
+            <th class="text-xl">Item</th>
+            <th class="text-xl">U.M (Unidade de Medida)</th>
+            <th class="text-xl">Quantidade Contratada</th>
+            <th class="text-xl">Valor Unitário</th>
+            <th class="text-xl">Valor Total (Item)</th>
+            <th class="text-xl min-w-44">Quantidade itens disponíveis</th>
+            <th class="text-xl">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- {{contratoItemData}} -->
+          <tr
+            class="h-24 text-center"
+            v-for="(item) in contratoItemData"
+            :key="item.id"
           >
-            {{ lancamento.tarefaMedicao }}
-          </td>
-          <td class="text-2xl">
-            <div class="flex justify-center">
-              <span
-                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
-                :class="{
-                  'bg-purple-200 border-purple-400 text-purple-400':
-                    lancamento.tipoMedicao === 'Estimada',
-                  'bg-blue-200 border-blue-400 text-blue-400':
-                    lancamento.tipoMedicao === 'Detalhada',
-                }"
-              >
-                {{ lancamento.tipoMedicao }}
+            <td class="text-2xl px-2">{{ item.contagem_dinamica }}</td>
+            <td class="text-2xl">{{ item.titulo }}</td>
+            <td class="text-2xl">{{ item.unidadeMedida }}</td>
+            <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
+            <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
+            <td class="text-2xl">
+              {{
+                formatCurrency(
+                  item.valorUnitario * item.saldoQuantidadeContratada
+                )
+              }}
+            </td>
+            <!-- {{ (contrato?.lancamentos?.lancamentoItens) }} -->
+            <td class="text-2xl">
+              {{
+                calcularItensRestante(
+                  item.id,
+                  item.saldoQuantidadeContratada
+                ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
+              }}
+            </td>
+            <td>
+              <div class="flex justify-center items-center gap-2">
+                <span @click="openItemViewModal(item)">
+                  <Icon
+                    icon="ph:eye"
+                    height="20"
+                    class="hover:text-blue-500 text-black hover:rounded-md cursor-pointer"
+                  />
+                </span>
+                <span @click="openItemEditModal(item)">
+                  <Icon
+                    icon="bx:edit"
+                    height="20"
+                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+                <span @click="deleteItem(item.id)">
+                  <Icon
+                    icon="ph:trash"
+                    height="20"
+                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="flex justify-center">
+        <vue-awesome-paginate
+          :total-items="totalItens"
+          :items-per-page="resultsPerPageItens"
+          :max-pages-shown="5"
+          v-model="currentPage"
+          @click="changePageItem"
+        />
+      </div>
+    </section>
+  </div>
+
+    <div v-if="currentTab === 'Medições'">
+    <!-- Tabela Medições-->
+    <section class="mt-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-[1.8rem] font-medium text-gray-800">
+          Medição
+        </h1>
+        <div class="flex gap-8">
+          <button
+            class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            @click="ExibirModalLancamento"
+          >
+            <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+            Nova Medição
+          </button>
+          <button
+            class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            @click="ExibirModalPedidoFaturamento"
+          >
+            <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+            Novo faturamento
+          </button>
+        </div>
+      </div>
+      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+        <thead class="h-20 bg-slate-100 border-1">
+          <tr>
+            <th></th>
+            <th class="text-xl">#</th>
+            <th
+              class="text-xl cursor-pointer"
+              @click="changeSorting('data_medicao', 'medicoes')"
+            >
+              Data
+              <span>
+                {{ sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
               </span>
-            </div>
-          </td>
-          <td class="text-2xl">
-            <div class="flex justify-center">
-              <span
-                v-if="lancamento.tipoMedicao !== 'Detalhada'"
-                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
-                :class="{
-                  'bg-slate-200 border-slate-400 text-orange-400':
-                    lancamento.status === 'Não Autorizada',
-                  'bg-green-200 border-green-400 text-green-400':
-                    lancamento.status === 'Autorizada',
-                  'bg-red-200 border-red-400 text-red-400':
-                    lancamento.status === 'Cancelada',
-                }"
-              >
-                {{ lancamento.status }}
-              </span>
-              <span
-                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
-                :class="{
-                  'bg-red-200 border-red-400 text-red-400':
-                    lancamento.status === 'Não Iniciada',
-                    'bg-orange-200 border-orange-400 text-orange-400':
-                    lancamento.status === 'Em Andamento',
+            </th>
+            <th class="text-xl">Competência</th>
+            <th class="text-xl">Projeto</th>
+            <th class="text-xl">Tarefa</th>
+            <th class="text-xl">Tipo</th>
+            <th class="text-xl">Status</th>
+            <!-- <th class="text-xl">Quantidade itens</th> -->
+            <th class="text-xl">Resultado</th>
+            <th class="text-xl">Unidade de medida</th>
+            <!-- <th class="text-xl">Itens disponíveis</th> -->
+            <!-- <th class="text-xl">Situação</th> -->
+            <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
+            <th class="text-xl">Ações</th>
+          </tr>
+        </thead>
+        <tbody v-if="medicaoItemData">
+          <tr
+            class="h-24 text-center"
+            v-for="(lancamento) in medicaoItemData"
+            :key="lancamento.id"
+            :class="{
+              'bg-indigo-100':
+                lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado,
+            }"
+          >
+            <td>
+              <input
+                type="checkbox"
+                class="w-6 h-6"
+                v-model="pedidosFaturamento"
+                :value="lancamento.id"
+                @change="changePedido"
+                :disabled="
+                  lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado
+                "
+              />
+            </td>
+
+            <td class="text-2xl">{{ lancamento.id }}</td>
+            <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
+            <td class="text-2xl">{{ lancamento.competencia }}</td>
+            <td class="text-2xl">{{ lancamento.projetos }}</td>
+            <td
+              class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300"
+              @click="redirectToRedmine(lancamento.tarefaMedicao)"
+            >
+              {{ lancamento.tarefaMedicao }}
+            </td>
+            <td class="text-2xl">
+              <div class="flex justify-center">
+                <span
+                  class="border-2 py-2 px-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-full"
+                  :class="{
+                    'bg-purple-200 border-purple-400 text-purple-400':
+                      lancamento.tipoMedicao === 'Estimada',
+                    'bg-blue-200 border-blue-400 text-blue-400':
+                      lancamento.tipoMedicao === 'Detalhada',
+                  }"
+                >
+                  {{ lancamento.tipoMedicao }}
+                </span>
+              </div>
+            </td>
+            <td class="text-2xl">
+              <div class="flex justify-center">
+                <span
+                  v-if="lancamento.tipoMedicao !== 'Detalhada'"
+                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                  :class="{
+                    'bg-slate-200 border-slate-400 text-orange-400':
+                      lancamento.status === 'Não Autorizada',
                     'bg-green-200 border-green-400 text-green-400':
-                    lancamento.status === 'Disponível para Faturamento',
-                }"
-                v-else
-              >
-                {{ lancamento.status }}
-              </span>
-            </div>
-          </td>
-          <!-- <td class="text-2xl">
-            {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
-          </td> -->
-          <td class="text-2xl">
-            <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
-              <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
-                {{ subitem.quantidadeItens }}
-              </span>
-          </td>
-          <td class="text-2xl w-[200px]">
-            {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
-          </td>
-          <td class="text-2xl">
-            <div class="flex justify-center items-center gap-2">
-              <span @click="openViewLancamentoModal(lancamento)">
-                <Icon
-                  icon="ph:eye"
-                  height="20"
-                  class="hover:text-blue-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
+                      lancamento.status === 'Autorizada',
+                    'bg-red-200 border-red-400 text-red-400':
+                      lancamento.status === 'Cancelada',
+                    'bg-slate-200 border-slate-400 text-slate-600':
+                      lancamento.status === 'Finalizada',
+                  }"
+                >
+                  {{ lancamento.status }}
+                </span>
+                <span
+                  v-else
+                  class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                  :class="{
+                    'bg-red-200 border-red-400 text-red-400':
+                      lancamento.status === 'Não Iniciada',
+                      'bg-orange-200 border-orange-400 text-orange-400':
+                      lancamento.status === 'Em Andamento',
+                      'bg-green-200 border-green-400 text-green-400':
+                      lancamento.status === 'Disponível para Faturamento',
+                      'bg-slate-200 border-slate-400 text-slate-600':
+                      lancamento.status === 'Finalizada',
+                  }"
+                >
+                  {{ lancamento.status }}
+                </span>
+              </div>
+            </td>
+            <!-- <td class="text-2xl">
+              {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
+            </td> -->
+            <td class="text-2xl">
+              <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
+                <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
+                  {{ subitem.quantidadeItens }}
+                </span>
+            </td>
+            <td class="text-2xl w-[200px]">
+              {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
+            </td>
+            <td class="text-2xl">
+              <div class="flex justify-center items-center gap-2">
+                <span @click="openViewLancamentoModal(lancamento)">
+                  <Icon
+                    icon="ph:eye"
+                    height="20"
+                    class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
 
-              <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-              <!-- <span>
-                <Icon
-                  icon="bx:edit"
-                  height="20"
-                  class="text-gray-500 hover:rounded-md cursor-pointer"
-                />
-              </span> -->
-              <!-- <span @click="openEditLancamentoModal(lancamento)" v-else> -->
-              <span @click="openEditLancamentoModal(lancamento)">
-                <Icon
-                  icon="bx:edit"
-                  height="20"
-                  class="hover:text-blue-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-              <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-              <!-- <span>
-                <Icon
-                  icon="ph:trash"
-                  height="20"
-                  class="text-gray-500 hover:rounded-md cursor-pointer"
-                />
-              </span> -->
+                <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
+                <!-- <span>
+                  <Icon
+                    icon="bx:edit"
+                    height="20"
+                    class="text-gray-500 hover:rounded-md cursor-pointer"
+                  />
+                </span> -->
+                <!-- <span @click="openEditLancamentoModal(lancamento)" v-else> -->
+                <span @click="openEditLancamentoModal(lancamento)">
+                  <Icon
+                    icon="bx:edit"
+                    height="20"
+                    class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+                <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
+                <!-- <span>
+                  <Icon
+                    icon="ph:trash"
+                    height="20"
+                    class="text-gray-500 hover:rounded-md cursor-pointer"
+                  />
+                </span> -->
 
-              <span @click="deleteLancamento(lancamento.id)">
-                <Icon
-                  icon="ph:trash"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="flex justify-center" v-if="medicaoItemData">
-      <vue-awesome-paginate
-        :total-items="totalMedicoes"
-        :items-per-page="resultsPerPageMedicoes"
-        :max-pages-shown="5"
-        v-model="currentPageMedicao"
-        @click="changePageMedicao"
-      />
+                <span @click="deleteLancamento(lancamento.id)">
+                  <Icon
+                    icon="ph:trash"
+                    height="20"
+                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="flex justify-center" v-if="medicaoItemData">
+        <vue-awesome-paginate
+          :total-items="totalMedicoes"
+          :items-per-page="resultsPerPageMedicoes"
+          :max-pages-shown="5"
+          v-model="currentPageMedicao"
+          @click="changePageMedicao"
+        />
+      </div>
+    </section>
     </div>
-  </section>
 
-  <!-- Tabela Faturamentos-->
-  <section>
-    <div class="flex justify-between mt-12">
-      <h1 class="mt-12 text-4xl font-bold text-gray-800 mb-4 sm:mb-0">
+    <div v-if="currentTab === 'Faturamentos'">
+    <!-- Tabela Faturamentos-->
+    <section>
+      <h1 class="text-[1.8rem] font-medium text-gray-800">
         Faturamentos
       </h1>
-    </div>
-    <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
-      <thead class="h-20 bg-slate-100 border-1">
-        <tr>
-          <th class="text-xl">#</th>
-          <th
-            class="text-xl cursor-pointer"
-            @click="changeSorting('data_faturamento', 'faturamentos')"
+      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+        <thead class="h-20 bg-slate-100 border-1">
+          <tr>
+            <th class="text-xl">#</th>
+            <th
+              class="text-xl cursor-pointer"
+              @click="changeSorting('data_faturamento', 'faturamentos')"
+            >
+              Data
+              <span>
+                {{ sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+            <th class="text-xl">Competência</th>
+            <th class="text-xl">Nota Fiscal</th>
+            <th class="text-xl">Total</th>
+            <th class="text-xl">Situação</th>
+            <th class="text-xl">Ações</th>
+          </tr>
+        </thead>
+        <tbody v-if="faturamentoItemData">
+          <tr
+            class="h-28 text-center"
+            v-for="(faturamento) in faturamentoItemData"
+            :key="faturamento.id"
           >
-            Data
-            <span>
-              {{ sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
-            </span>
-          </th>
-          <th class="text-xl">Competência</th>
-          <th class="text-xl">Nota Fiscal</th>
-          <th class="text-xl">Total</th>
-          <th class="text-xl">Situação</th>
-          <th class="text-xl">Ações</th>
-        </tr>
-      </thead>
-      <tbody v-if="faturamentoItemData">
-        <tr
-          class="h-28 text-center"
-          v-for="(faturamento) in faturamentoItemData"
-          :key="faturamento.id"
-        >
-          <td class="text-2xl">{{ faturamento.id }}</td>
-          <td class="text-2xl">
-            {{ formatDatePTBR(faturamento.dataFaturamento) }}
-          </td>
-          <td class="text-2xl">
-            {{ faturamento.competencia }}
-          </td>
-          <td
-            class="text-2xl"
-            v-if="faturamento.status !== 'Aguardando Faturamento'"
-          >
-            {{ faturamento.notaFiscal }}
-          </td>
-          <td v-else>-</td>
+            <td class="text-2xl">{{ faturamento.id }}</td>
+            <td class="text-2xl">
+              {{ formatDatePTBR(faturamento.dataFaturamento) }}
+            </td>
+            <td class="text-2xl">
+              {{ faturamento.competencia }}
+            </td>
+            <td
+              class="text-2xl"
+              v-if="faturamento.status !== 'Aguardando Faturamento'"
+            >
+              {{ faturamento.notaFiscal }}
+            </td>
+            <td v-else>-</td>
 
-          <td class="text-2xl">
-            {{
-              formatCurrency(
-                calcularSaldoFaturamentoItens(faturamento.faturamentoItens)
-              )
-            }}
-          </td>
-          <td class="text-2xl text-center">
-            <div class="flex justify-center">
-              <span
-                class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
-                :class="{
-                  'bg-green-200 border-green-400':
-                    faturamento.status === 'Pago',
-                  'bg-yellow-200 border-yellow-400':
-                    faturamento.status === 'Aguardando Pagamento',
-                  'bg-blue-200 border-blue-400':
-                    faturamento.status === 'Aguardando Faturamento',
-                }"
-              >
-                {{ faturamento.status }}
-              </span>
-            </div>
-          </td>
+            <td class="text-2xl">
+              {{
+                formatCurrency(
+                  calcularSaldoFaturamentoItens(faturamento.faturamentoItens)
+                )
+              }}
+            </td>
+            <td class="text-2xl text-center">
+              <div class="flex justify-center">
+                <span
+                  class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                  :class="{
+                    'bg-green-200 border-green-400':
+                      faturamento.status === 'Pago',
+                    'bg-yellow-200 border-yellow-400':
+                      faturamento.status === 'Aguardando Pagamento',
+                    'bg-blue-200 border-blue-400':
+                      faturamento.status === 'Aguardando Faturamento',
+                  }"
+                >
+                  {{ faturamento.status }}
+                </span>
+              </div>
+            </td>
 
-          <td class="text-2xl">
-            <div class="flex justify-center items-center gap-2">
-              <span @click="openViewFaturamentoModal(faturamento)">
-                <Icon
-                  icon="ph:eye"
-                  height="20"
-                  class="hover:text-blue-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-              <span @click="openEditFaturamentoModal(faturamento)">
-                <Icon
-                  icon="bx:edit"
-                  height="20"
-                  class="hover:text-blue-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-              <span @click="deleteFaturamento(faturamento.id)">
-                <Icon
-                  icon="ph:trash"
-                  height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
-                />
-              </span>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="flex justify-center" v-if="faturamentoItemData">
-      <vue-awesome-paginate
-        :total-items="totalFaturamentos"
-        :max-pages-shown="5"
-        :items-per-page="resultsPerPageFaturamentos"
-        v-model="currentPageFaturamento"
-        @click="changePageFaturamento"
-      />
+            <td class="text-2xl">
+              <div class="flex justify-center items-center gap-2">
+                <span @click="openViewFaturamentoModal(faturamento)">
+                  <Icon
+                    icon="ph:eye"
+                    height="20"
+                    class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+                <span @click="openEditFaturamentoModal(faturamento)">
+                  <Icon
+                    icon="bx:edit"
+                    height="20"
+                    class="hover:text-blue-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+                <span @click="deleteFaturamento(faturamento.id)">
+                  <Icon
+                    icon="ph:trash"
+                    height="20"
+                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  />
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="flex justify-center" v-if="faturamentoItemData">
+        <vue-awesome-paginate
+          :total-items="totalFaturamentos"
+          :max-pages-shown="5"
+          :items-per-page="resultsPerPageFaturamentos"
+          v-model="currentPageFaturamento"
+          @click="changePageFaturamento"
+        />
+      </div>
+    </section>
     </div>
-  </section>
 
+    <div v-if="currentTab === 'Anexos'">
+      <!-- Anexos do contrato -->
+      <div v-if="contratoId">
+        <Anexos :resourceId="contratoId" :variant="'contrato'" />
+      </div>
+    </div>
+</section>
   <!-- Modal novo pedido de faturamento-->
   <JetDialogModal
     :show="modalPedidoFaturamento"
     :withouHeader="false"
     @close="closeModalPedidoFaturamento"
-    maxWidth="6xl"
+    maxWidth="8xl"
     :modalTitle="'Novo Pedido de Faturamento'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+          <TabButton
+          v-for="tab in criarFaturamentoTabs"
+          :key="tab"
+          :currentTab="criarFaturamentoCurrentTab"
+          :tab="tab"
+          @update:currentTab="criarFaturamentoCurrentTab = $event"
+        />
+      </div>
+      <div v-if="criarFaturamentoCurrentTab === 'Anexos'">
+        <AnexoUpload :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
+      </div>
       <form @submit.prevent="createPedidoFaturamento">
+        <div v-if="criarFaturamentoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
           <div class="flex items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -851,7 +889,8 @@
             </tr>
           </tbody>
         </table>
-        <div class="mt-9 flex justify-end gap-4">
+      </div>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeModalPedidoFaturamento"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -864,7 +903,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -874,11 +913,27 @@
     :show="modalEditFaturamento"
     :withouHeader="false"
     @close="closeEditFaturamentoModal"
-    maxWidth="6xl"
+    maxWidth="8xl"
     :modalTitle="isFaturamentoViewModal ? `Visualizar Faturamento` : 'Editar Faturamento'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+          v-for="tab in editFaturamentoTabs"
+          :key="tab"
+          :currentTab="editFaturamentoCurrentTab"
+          :tab="tab"
+          @update:currentTab="editFaturamentoCurrentTab = $event"
+        />
+      </div>
+      <div v-if="editFaturamentoCurrentTab === 'Anexos'">
+        <div v-if="editingFaturamento.id">
+          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
+        </div>
+      </div>
       <form @submit.prevent="saveEditedFaturamento">
+      <section v-if="editFaturamentoCurrentTab === 'Formulário'">
+
         <section class="flex flex-col gap-8">
           <div class="flex justify-between items-center gap-4">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1053,7 +1108,8 @@
             </tr>
           </tbody>
         </table>
-        <div class="mt-9 flex justify-end gap-4">
+      </section>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeEditFaturamentoModal"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1067,7 +1123,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -1081,7 +1137,21 @@
     :modalTitle="'Criar Nova Medição'"
   >
     <template #content>
+      <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+        v-for="tab in criarMedicaoTabs"
+        :key="tab"
+        :currentTab="criarMedicaoCurrentTab"
+        :tab="tab"
+        @update:currentTab="criarMedicaoCurrentTab = $event"
+      />
+    </div>
+    <div v-if="criarMedicaoCurrentTab === 'Anexos'">
+      <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
+    </div>
       <form @submit.prevent="createLancamento">
+        <div v-if="criarMedicaoCurrentTab === 'Formulário'">
+
         <section class="flex flex-col gap-8">
           <div class="flex items-center gap-12">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1199,7 +1269,7 @@
                 v-for="item in medicaoData.itens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.id }}</td>
+                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <!-- <td class="text-2xl">
@@ -1239,7 +1309,8 @@
             </tbody>
           </table>
         </div>
-        <div class="mt-9 flex justify-end gap-4">
+        </div>
+        <footer class=" mt-9 flex justify-end gap-4">
           <button
             @click="closeModalLancamento"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1253,7 +1324,7 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
     </template>
   </JetDialogModal>
@@ -1269,7 +1340,22 @@
     "
   >
     <template #content>
-      <form @submit.prevent="saveEditedLancamento">
+    <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <TabButton
+        v-for="tab in editMedicaoTabs"
+        :key="tab"
+        :currentTab="editMedicaoCurrentTab"
+        :tab="tab"
+        @update:currentTab="editMedicaoCurrentTab = $event"
+      />
+    </div>
+    <div v-if="editMedicaoCurrentTab === 'Anexos'">
+      <div v-if="editingLancamento.id">
+        <Anexos :resourceId="editingLancamento.id" :variant="'medicao'" :isViewOnly="isLancamentoViewModal"/>
+      </div>
+    </div>
+    <form @submit.prevent="saveEditedLancamento">
+      <section v-if="editMedicaoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
           <div class="flex items-center gap-12">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1279,7 +1365,7 @@
             <label class="font-bold text-3xl w-[200px]">Projeto:</label>
             <select
               v-model="editingLancamento.projetos"
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             >
               <option disabled hidden value="">Selecione o projeto</option>
@@ -1311,7 +1397,7 @@
               v-model="editingLancamento.tipoMedicao"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
             >
               <option disabled hidden value="">
                 Selecione o tipo da medição
@@ -1328,7 +1414,7 @@
             >
             <select
               v-model="editingLancamento.status"
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
             >
               <option disabled hidden value="">Selecione o status da medição</option>
@@ -1339,6 +1425,7 @@
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível para Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada">Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -1357,7 +1444,7 @@
               type="date"
               placeholder="Informe a  data da medição"
               required
-              :disabled="isLancamentoViewModal"
+              :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="editingLancamento.dataMedicao"
             />
@@ -1373,7 +1460,7 @@
             />
           </div>
         </section>
-        <div class="mt-8">
+        <section class="mt-8">
           <table
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
@@ -1395,7 +1482,7 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.contratoItemId }}</td>
+                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <td>
@@ -1415,7 +1502,7 @@
                   <money3
                     v-model="item.quantidadeItens"
                     type="number"
-                    :disabled="isLancamentoViewModal"
+                    :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
                     :class="{ 'border-none bg-white': isLancamentoViewModal }"
                     class="border-2 text-center max-w-60"
                     min="0"
@@ -1425,9 +1512,9 @@
               </tr>
             </tbody>
           </table>
-        </div>
-
-        <div class="mt-9 flex justify-end gap-4">
+        </section>
+      </section>
+        <footer class="mt-9 flex justify-end gap-4">
           <button
             @click="closeEditLancamentoModal"
             class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
@@ -1442,8 +1529,9 @@
           >
             Salvar
           </button>
-        </div>
+        </footer>
       </form>
+
     </template>
   </JetDialogModal>
 
@@ -1855,7 +1943,31 @@ import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
+import Anexos from '../../../components/form/Anexos.vue';
+import AnexoUpload from '../../../components/form/AnexoUpload.vue';
+import TabButton from '../../../components/TabButton.vue';
+// Guias das tabelas
+let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
 
+const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
+const currentTab = ref(tabs[0])
+// Guias dos modais de edição
+const editMedicaoTabs = ['Formulário', 'Anexos']
+const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
+const editFaturamentoTabs = ['Formulário', 'Anexos']
+const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
+// Guias dos modais de criação
+// Medicao
+const criarMedicaoTabs = ['Formulário', 'Anexos']
+const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
+const medicaoLocalAnexos = ref([])
+const medicaoId = ref(null)
+// Faturamento
+const criarFaturamentoTabs = ['Formulário', 'Anexos']
+const criarFaturamentoCurrentTab = ref(criarFaturamentoTabs[0])
+const faturamentoLocalAnexos = ref([])
+const faturamentoId = ref(null)
+let contratoId = null
 const financialSummary = computed(() => [
   {
     title: "Valor Contratado",
@@ -1936,7 +2048,6 @@ const pedidoFaturamentoData = ref({
   competencia: "",
   observacoes: "",
 });
-
 const medicaoData = ref({
   tarefa_medicao: "",
   tipo_medicao: "",
@@ -1946,7 +2057,6 @@ const medicaoData = ref({
   data_medicao: "",
   itens: [],
 });
-
 const totalItens = ref();
 const resultsPerPageItens = ref();
 let contratoItemData = ref([]);
@@ -2116,13 +2226,31 @@ const fetchContratoItens = async (page) => {
     const response = await api.get(
       `/contratos/${contrato.value.id}/items/?page=${page}`
     );
-    contratoItemData.value = response.data.data;
-    contratoItemMeta.value = response.data.meta;
+    const itens = response.data.data;
+    const meta = response.data.meta;
+
+    itens.forEach((item, index) => {
+      item.contagem_dinamica = (meta.currentPage - 1) * meta.perPage + index + 1;
+    });
+
+    contratoItemData.value = itens;
+    contratoItemMeta.value = meta;
     currentPage.value = contratoItemMeta.value.currentPage;
     totalItens.value = contratoItemMeta.value.total;
     resultsPerPageItens.value = contratoItemMeta.value.perPage;
+
+    contrato.value.contratoItens.forEach(item => {
+      const itemContrato = contratoItemData.value.find(contratoItem => contratoItem.id === item.id);
+      if(itemContrato) {
+        item.contagem_dinamica = itemContrato.contagem_dinamica;
+      }
+    })
   } catch (error) {
     console.error(error);
+    contratoItemData.value = [];
+    contratoItemMeta.value = [];
+    currentPage.value = 1;
+    totalItens.value = 0;
   }
 };
 
@@ -2162,17 +2290,33 @@ const fetchContratoMedicoes = async (page) => {
     );
     medicaoItemData.value = response.data.data;
     medicaoItemMeta.value = response.data.meta;
+
+    // Para cada medição, verifique os itens e adicione a contagem dinâmica correspondente
+    medicaoItemData.value.forEach((medicao) => {
+      medicao.lancamentoItens.forEach((lancamentoItem) => {
+        // Procura o item correspondente no contratoItemData pelo contratoItemId
+        const itemContrato = contratoItemData.value.find(
+          (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
+        );
+        if (itemContrato) {
+          // Adiciona o campo contagem_dinamica do item do contrato à medição
+          lancamentoItem.contagem_dinamica = itemContrato.contagem_dinamica;
+        }
+      });
+    });
+
     if (contrato.value.faturamentos) {
-      medicaoItemData.value = verificaIsFaturado(
-        medicaoItemData.value,
-        contrato.value.faturamentos
-      );
+      medicaoItemData.value = await verificaIsFaturado(medicaoItemData.value,contrato.value.faturamentos);
     }
     currentPageMedicao.value = medicaoItemMeta.value.currentPage;
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
     console.error(error);
+    medicaoItemData.value = [];
+    medicaoItemMeta.value = [];
+    currentPageMedicao.value = 1;
+    totalMedicoes.value = 0;
   }
 };
 
@@ -2187,10 +2331,7 @@ const fetchContratoFaturamentos = async (page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
-    const response = await api.get(
-      `/contratos/${contrato.value.id}/faturamentos?page=${page}`,
-      { params }
-    );
+    const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2198,9 +2339,17 @@ const fetchContratoFaturamentos = async (page) => {
     totalFaturamentos.value = faturamentoItemMeta.value.total;
   } catch (error) {
     console.error(error.response.data.message);
+    faturamentoItemData.value = [];
+    faturamentoItemMeta.value = [];
+    currentPageFaturamento.value = 1;
+    totalFaturamentos.value = 0;
   }
 };
 
+watch(()=> alterouStatus.value, () =>{
+  fetchContratoMedicoes(currentPageMedicao.value )
+  alterouStatus.value = false;
+})
 watch(
   () => currentPage.value,
   () => fetchContratoItens(currentPage.value)
@@ -2220,6 +2369,10 @@ const changePedido = (e) => {
 
 // Faturamento
 const ExibirModalPedidoFaturamento = () => {
+  if (pedidoFaturamentoData.value.descricao_nota.length == 0) {
+    toast.error("Por favor, selecione uma medição antes de continuar.");
+    return;
+  }
   modalPedidoFaturamento.value = true;
 };
 const closeModalPedidoFaturamento = () => {
@@ -2232,7 +2385,9 @@ const closeModalPedidoFaturamento = () => {
     observacoes: "",
     status: "",
   };
-
+  criarFaturamentoCurrentTab.value = criarFaturamentoTabs[0]
+  faturamentoLocalAnexos.value = []
+  faturamentoId.value = null
   pedidosFaturamento.value = [];
 };
 
@@ -2272,6 +2427,7 @@ const openViewFaturamentoModal = (faturamento) => {
 
 const closeEditFaturamentoModal = () => {
   selectNovoFaturamento.value = "";
+  editFaturamentoCurrentTab.value = editFaturamentoTabs[0]
   isFaturamentoViewModal.value = false;
   editingFaturamento.value = {};
   // closeModalPedidoFaturamento()
@@ -2334,7 +2490,7 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
-  if(pedidoFaturamentoData.value.observacoes.length > 1500) {
+  if(pedidoFaturamentoData.value.observacoes && pedidoFaturamentoData.value.observacoes.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
     return;
   }
@@ -2358,13 +2514,14 @@ const createPedidoFaturamento = async () => {
     const response = await api
       .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
       .then((response) => {
+        faturamentoId.value = response.data.id;
         toast("Faturamento criado com sucesso!", {
           theme: "colored",
           type: "success",
         });
-        closeModalPedidoFaturamento();
       });
-    fetchContrato(contratoId);
+      closeModalPedidoFaturamento();
+      fetchContrato(contratoId);
   } catch (error) {
     toast("Não foi possível criar o  pedido  de faturamento!", {
       theme: "colored",
@@ -2424,7 +2581,7 @@ const updateCompetencia = async (lancamentoId, novaCompetencia) => {
 
 
 const saveEditedFaturamento = async () => {
-  if(editingFaturamento.value.observacoes.length > 1500) {
+  if(editingFaturamento.value.observacoes && editingFaturamento.value.observacoes.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingFaturamento.value.observacoes.length}`)
     return;
   }
@@ -2597,6 +2754,7 @@ const closeModalLancamento = () => {
     data_medicao: "",
     itens: [],
   };
+  medicaoLocalAnexos.value = [];
   selectedItem.value = "";
   contrato.value.contratoItens.forEach((item) => {
     // item.data = null;
@@ -2609,13 +2767,14 @@ const resetForm = () => {
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
   });
+  medicaoId.value = null;
+  criarMedicaoCurrentTab.value = criarMedicaoTabs[0]
   projetos.value = "";
   closeModalLancamento();
 };
 const addItemToTable = (selectedItem) => {
   if (selectedItem) {
-    // Substitui o item existente ou adiciona o novo item
-    medicaoData.value.itens = [selectedItem]; // Garante que apenas o item selecionado esteja na lista
+    medicaoData.value.itens = [selectedItem];
   } else {
     console.log("Nenhum item selecionado");
   }
@@ -2676,7 +2835,7 @@ const createLancamento = async () => {
     return;
   }
 
-  if(medicaoData.value.descricao.length > 1500) {
+  if(medicaoData.value.descricao && medicaoData.value.descricao.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
     return;
   }
@@ -2699,9 +2858,9 @@ const createLancamento = async () => {
   try {
     const contratoId = route.params.id;
 
-    const response = await api
-      .post(`/contratos/${contrato.value.id}/lancamentos`, payload)
+    const response = await api.post(`/contratos/${contrato.value.id}/lancamentos`, payload)
       .then((response) => {
+        medicaoId.value = response.data.id;
         toast("Medição criada com sucesso!", {
           theme: "colored",
           type: "success",
@@ -2720,7 +2879,7 @@ const voltarListagem = () => {
 };
 
 onMounted(() => {
-  const contratoId = route.params.id;
+  contratoId = route.params.id;
   fetchContrato(contratoId);
   window.scroll({
     top: 0,
@@ -2747,22 +2906,45 @@ const fetchContrato = async (id) => {
   }
 };
 
-const verificaIsFaturado = (lancamentos, faturamentos) => {
+const verificaIsFaturado = async (lancamentos, faturamentos) => {
   lancamentos.forEach((lancamento) => {
     lancamento.isFaturado = false;
   });
 
-  faturamentos.forEach((faturamento) => {
-    faturamento.faturamentoItens.forEach((item) => {
-      const lancamento = lancamentos.find(
-        (lancamento) => lancamento.id === item.lancamentoId
-      );
-      if (lancamento) {
-        lancamento.isFaturado = true;
-      }
+  if (faturamentos && faturamentos.length > 0) {
+    faturamentos.forEach((faturamento) => {
+      faturamento.faturamentoItens.forEach((item) => {
+        const lancamento = lancamentos.find(
+          (lancamento) => lancamento.id === item.lancamentoId
+        );
+        if (lancamento) {
+          lancamento.isFaturado = true;
+        }
+      });
     });
-  });
+  }
+
+  for (const lancamento of lancamentos) {
+    if (lancamento.isFaturado && lancamento.status !== 'Finalizada') {
+      await alterarStatusMedicao(lancamento.id, 'Finalizada');
+      alterouStatus.value = true;
+    } else if (lancamento.status === 'Finalizada' && !lancamento.isFaturado) {
+      await alterarStatusMedicao(lancamento.id, 'Disponível para Faturamento');
+      alterouStatus.value = true;
+    }
+  }
+
   return lancamentos;
+};
+
+const alterarStatusMedicao = async (id, novoStatus) => {
+  try {
+    const response = await api.patch(`/lancamentos/${id}/status`, {
+      status: novoStatus,
+    });
+  } catch (error) {
+    console.error(`Erro ao alterar status da medição ${id}:`, error);
+  }
 };
 
 const deleteLancamento = (lancamentoId) => {
@@ -3221,6 +3403,7 @@ const closeEditLancamentoModal = () => {
   }
 
   // Fecha o modal
+  editMedicaoCurrentTab.value = editMedicaoTabs[0]
   modalEditLancamento.value = false;
   isLancamentoViewModal.value = false;
 };
@@ -3310,7 +3493,7 @@ const saveEditedLancamento = async () => {
     toast.error("Selecione um status para a medição.")
     return;
   }
-   if(editingLancamento.value.descricao.length > 1500) {
+   if(editingLancamento.value.descricao && editingLancamento.value.descricao.length > 1500) {
     toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
     return;
   }
@@ -3378,7 +3561,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
       editingLancamento.value.status = '';
     }
   } else if (newTipo === 'Detalhada') {
-    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento'].includes(editingLancamento.value.status)) {
+    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento', 'Finalizada'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
   }

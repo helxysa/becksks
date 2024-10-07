@@ -71,7 +71,7 @@ const percentagePlugin = {
           let lineY = y + Math.sin(angle) * (radius + 50);
 
           // Ajustar posição se muito perto de outros textos
-          const distanceThreshold = 50; // Distância mínima para evitar sobreposição
+          const distanceThreshold = 20; // Distância mínima para evitar sobreposição
           let isNear;
 
           do {
@@ -87,7 +87,7 @@ const percentagePlugin = {
             }
           } while (isNear);
 
-          const fontSize = Math.max(10, Math.min(20, (outerRadius - innerRadius) / 2));
+          const fontSize = Math.max(10, Math.min(16, (outerRadius - innerRadius) / 2));
           ctx.font = `normal ${fontSize}px Arial`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -95,7 +95,7 @@ const percentagePlugin = {
           ctx.fillStyle = '#000000';
           ctx.fillText(`${percentage}%`, lineX, lineY - 10);
           ctx.fillText(label, lineX, lineY + 10);
-
+          // ctx.fillText(`${percentage}%`, x, y);
           // Adiciona as coordenadas do texto à lista
           texts.push([lineX, lineY]);
         }
@@ -157,13 +157,16 @@ const options = {
           const percentage = totalValorContratado > 0 ? ((value / totalValorContratado) * 100).toFixed(2) : '0';
 
           const customText = customTexts[context.dataIndex] || '';
-          return `\nR$ ${value.toFixed(2)}`;
+          return `${formatCurrency(value)}`;
         }
       }
     },
     legend: {
       display: false
     },
+    datalabels: {
+      display: false,
+    }
    },
   layout: {
     padding: {

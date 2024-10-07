@@ -1,8 +1,8 @@
 <template>
-  <div class="flex gap-4 cursor-pointer mb-12 hover:text-gray-500 ease-out" @click="voltarListagem">
+  <!-- <div class="flex gap-4 cursor-pointer mb-12 hover:text-gray-500 ease-out" @click="voltarListagem">
     <Icon icon="ic:round-arrow-back" height="20" />
     <h1 class="text-3xl font-medium">Voltar</h1>
-  </div>
+  </div> -->
   <div>
     <!-- <div class="tabs-scroll flex border-b overflow-x-auto whitespace-nowrap pb-4">
       <button
@@ -16,7 +16,7 @@
       </button>
     </div> -->
 
-    <div v-if="selectedTab === 'Contrato'" class="p-4">
+    <div v-if="selectedTab === 'Contrato'">
        <VisualizarContrato @renovacaoCriada="handleRenovacaoCriada"/>
     </div>
 

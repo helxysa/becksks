@@ -16,9 +16,9 @@ app.use(Vue3Toasity, {
   autoClose: 3000,
   // ...
 });
-
 app.use(money);
 app.use(VueAwesomePaginate);
 app.component("MaskInput", MaskInput);
+
 
 app.mount("#app");

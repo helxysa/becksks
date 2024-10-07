@@ -1,13 +1,13 @@
 <template>
-    <div class="h-[300px]" >        
-        <Bar :data="dataBarVertical" :options="optionsBarVertical"/>        
+    <div class="h-[300px]" >
+        <Bar :data="dataBarVertical" :options="optionsBarVertical"/>
     </div>
 </template>
 
 <script setup>
  import { Chart as ChartJS, ArcElement, Tooltip,  BarElement, CategoryScale, LinearScale } from "chart.js";
 import {  Bar } from "vue-chartjs";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, defineEmits } from "vue";
 ChartJS.register(ArcElement, Tooltip,CategoryScale, LinearScale, BarElement);
 
 const props = defineProps({
@@ -17,6 +17,7 @@ const props = defineProps({
     default: () => ([])
   }
 });
+const emit = defineEmits(['valor-vencimento']);
 
 const diasVencimentoUltrapassado = ref(0);
 const diasVencimento5 = ref(0);
@@ -26,11 +27,11 @@ const diasVencimento30 = ref(0);
 const diasVencimento60 = ref(0);
 const diasVencimento90 = ref(0);
 
-onMounted(()=> { 
+onMounted(()=> {
   props.contratosPorVencimento.forEach((item)=> {
-     if (item.dias_restantes < 0 ) {
+     if (item.dias_restantes <= 0 ) {
       diasVencimentoUltrapassado.value += 1
-     } else  if (item.dias_restantes >= 0 && item.dias_restantes <= 5  ) {
+     } else  if (item.dias_restantes > 0 && item.dias_restantes <= 5  ) {
       diasVencimento5.value += 1
      } else if (item.dias_restantes > 5 && item.dias_restantes <= 10) {
       diasVencimento10.value += 1
@@ -46,7 +47,16 @@ onMounted(()=> {
   })
 })
 
-const dataBarVertical = 
+const handleClick = (event, elements) => {
+      if (elements.length > 0) {
+        const clickedElement = elements[0];
+        const dataIndex = clickedElement.index;
+        const label = dataBarVertical.value.labels[dataIndex];
+        emit('valor-vencimento', label.replace('d', '').replace('-', ''));
+      }
+    }
+
+const dataBarVertical =
 computed(()=> {
   return {
   labels: [
@@ -54,36 +64,36 @@ computed(()=> {
     '5d',
     '10d',
     '15d',
-    '30d',    
+    '30d',
     '60d',
-    '90d',   
+    '90d',
   ],
   datasets: [
-    {    
-     
+    {
+
       backgroundColor: [ '#f87979', '#add8e6', '#add8e6', '#add8e6', '#add8e6', '#add8e6', '#add8e6'],
-      
+
       data: [
       diasVencimentoUltrapassado.value,
        diasVencimento5.value,
-       diasVencimento10.value, 
+       diasVencimento10.value,
        diasVencimento15.value,
-       diasVencimento30.value , 
-       diasVencimento60.value, 
+       diasVencimento30.value ,
+       diasVencimento60.value,
        diasVencimento90.value,
        ],
 
        customText: [
-      'Contratos vencidos', 
+      'Contratos vencidos',
       'Contratos com vencimento  em até 5 dias',
       'Contratos com vencimento  em até 10 dias',
       'Contratos com vencimento  em até 15 dias',
-      'Contratos com vencimento  em até 30 dias',     
+      'Contratos com vencimento  em até 30 dias',
       'Contratos com vencimento  em até 60 dias',
       'Contratos com vencimento  acima 90 dias',
         ]
     }
-  ], 
+  ],
 
 
 }
@@ -92,7 +102,7 @@ computed(()=> {
 
 const optionsBarVertical = {
   responsive: true,
-  maintainAspectRatio: false, 
+  maintainAspectRatio: false,
   scales: {
     y: {
       ticks: {
@@ -112,17 +122,22 @@ const optionsBarVertical = {
           const dataset = context.dataset;
           const customTexts = dataset.customText || [];
           const label = context.label || '';
-          const value = context.raw;      
+          const value = context.raw;
 
           const customText = customTexts[context.dataIndex] || '';
           return `${customText}`;
         }
       }
-    }, 
+    },
     legend: {
       display: false
-    },  
-  }
+    },
+    datalabels: {
+      display: false,
+    }
+  },
+
+  onClick: handleClick
 }
 </script>
 

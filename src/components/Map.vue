@@ -1,14 +1,14 @@
 <template >
   <div class="containerMap" >
     <div id="mapContainer">
-    </div> 
+    </div>
       <div class="title-map pt-2">
         <span class="font-semibold">Contratos</span>
         <p>por localização</p>
-      </div> 
+      </div>
 
   </div>
- 
+
 </template>
 
 <script setup>
@@ -27,6 +27,14 @@ const props = defineProps({
     default: () => ({ latitude: 0.0344566, longitude: -51.0666 }),
   },
 });
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
+};
 
 let map = null;
 
@@ -68,13 +76,17 @@ const setMarkers = () => {
     const longitude = parseFloat(marker.longitude);
     const { cidade, estado, valor_total, quantidade_contratos } = marker;
 
-    L.marker([latitude, longitude], { icon: defaultIcon })
+    if(latitude && longitude){
+      L.marker([latitude, longitude], { icon: defaultIcon })
       .addTo(map)
       .bindPopup(`
+       <div class="container-popup">
         <b>${cidade} - ${estado}</b><br/>
-        Valor Total: R$ ${valor_total.toFixed(2)}<br/>
+        Valor Total:  ${formatCurrency(valor_total)}<br/>
         Quantidade de Contratos: ${quantidade_contratos}
+        </div>
       `);
+    }
   });
 };
 </script>
@@ -83,16 +95,14 @@ const setMarkers = () => {
 
 .containerMap {
   position: relative;
-  width:50%;
+  width:104%;
+  height: 100%;
 }
 
 #mapContainer {
   border: 1px solid black;
   border-radius: 9px;
-  width: 100%;
-  height: 300px;
-  
-  
+  height: 400px;
 }
 
 .title-map {
@@ -100,5 +110,10 @@ const setMarkers = () => {
   top: 0;
   right: 10px;
   z-index: 1000;
+}
+
+.container-popup {
+  font-size: 14px;
+  font-weight: 500;
 }
 </style>
