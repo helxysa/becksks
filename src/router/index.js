@@ -63,18 +63,18 @@ const routes = [
     component: ViewContratoTabs,
     meta: { requiresAuth: true },
   },
-  {
-    path: "/perfis",
-    name: "Perfis",
-    component: PerfisPage,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/usuarios",
-    name: "Usuarios",
-    component: UsersPage,
-    meta: { requiresAuth: true },
-  },
+  // {
+  //   path: "/perfis",
+  //   name: "Perfis",
+  //   component: PerfisPage,
+  //   meta: { requiresAuth: true },
+  // },
+  // {
+  //   path: "/usuarios",
+  //   name: "Usuarios",
+  //   component: UsersPage,
+  //   meta: { requiresAuth: true },
+  // },
   {
     path: "/:pathMatch(.*)*",
     redirect: '{ name: "Dashboard" }',
