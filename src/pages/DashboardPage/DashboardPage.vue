@@ -1,91 +1,11 @@
 <template>
   <div>
     <h1 class="text-5xl font-medium mb-10">Dashboard</h1>
-    <!-- Stamps -->
-    <section class="flex flex-wrap justify-evenly mb-8 w-full gap-4">
-      <!-- Primeiro Stamp -->
-      <div
-        class="w-[350px] h-[96px] flex sm:flex-row justify-between items-center px-4 rounded-lg bg-gradient-to-r from-cyan-100 to-cyan-400"
-      >
-        <div>
-          <p class="font-semibold">
-            <span v-if="valoresStamp.total_valor_contratado">{{
-              formatCurrencyInMillions(valoresStamp.total_valor_contratado)
-            }}</span>
-            <span v-else class="skeleton w-32 h-6 block"></span>
-          </p>
-          <p>valor dos contratos</p>
-        </div>
-        <span>
-          <Icon
-            icon="fluent:notepad-32-filled"
-            height="35"
-            class="text-white"
-          />
-        </span>
-      </div>
-      <!-- Segundo Stamp -->
-      <div
-        class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg bg-gradient-to-r from-blue-300 to-pink-200"
-      >
-        <div>
-          <p class="font-semibold">
-            <span v-if="valoresStamp.total_aguardando_faturamento">{{
-              formatCurrencyInMillions(
-                valoresStamp.total_aguardando_faturamento
-              )
-            }}</span>
-            <span v-else class="skeleton w-32 h-6 block"></span>
-          </p>
-          <p>Aguardando Faturamento</p>
-        </div>
-        <div>
-          <p class="font-semibold">
-            <span v-if="valoresStamp.total_aguardando_pagamento">{{
-              formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento)
-            }}</span>
-            <span v-else class="skeleton w-32 h-6 block"></span>
-          </p>
-          <p>Aguardando Pagamento</p>
-        </div>
-        <span>
-          <Icon icon="ph:calculator-fill" height="35" class="text-white" />
-        </span>
-      </div>
-      <!-- Terceiro Stamp -->
-      <div
-        class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg bg-gradient-to-r from-orange-200 to-green-200"
-      >
-        <div>
-          <p class="font-semibold">
-            <span v-if="valoresStamp.total_pago">{{
-              formatCurrencyInMillions(valoresStamp.total_pago)
-            }}</span>
-            <span v-else class="skeleton w-32 h-6 block"></span>
-          </p>
-          <p>Pago</p>
-        </div>
-        <div>
-          <p class="font-semibold">
-            <span v-if="valoresStamp.total_saldo_disponível">{{
-              formatCurrencyInMillions(valoresStamp.total_saldo_disponível)
-            }}</span>
-            <span v-else class="skeleton w-32 h-6 block"></span>
-          </p>
-          <p>Saldo</p>
-        </div>
-        <span>
-          <Icon icon="rivet-icons:money" height="35" class="text-white" />
-        </span>
-      </div>
-    </section>
     <section class="flex flex-col gap-6">
-      <div class="flex items-start w-full justify-between">
-        <section
-          class="w-full h-full lg:h-[400px] flex flex-col lg:flex-row gap-5"
-        >
+      <div class="flex w-full">
+        <section class="w-full h-full lg:h-[400px] flex flex-col lg:flex-row gap-5 border">
           <!-- Gráfico de Rosca -->
-          <div class="flex flex-col w-full h-full p-8 border">
+          <div class="flex flex-col w-full h-full p-8">
             <div class="flex flex-col p-2">
               <span class="font-semibold">Contratos</span>
               <span>por status do pagamento</span>
@@ -101,7 +21,7 @@
             </div>
           </div>
           <!-- Gráfico de Barras -->
-          <div class="flex flex-col w-full h-full p-8 border">
+          <div class="flex flex-col w-full h-full p-8">
             <div class="flex flex-col p-2 items-end">
               <span class="font-semibold">Top 5</span>
               <span>Contratos por valor</span>
@@ -116,6 +36,84 @@
               </div>
               <div v-else class="skeleton h-full w-full"></div>
             </div>
+          </div>
+        </section>
+        <!-- Stamps -->
+        <section class="flex flex-col flex-wrap justify-evenly items-end w-full max-w-[30%]">
+          <!-- Primeiro Stamp -->
+          <div
+            class="w-[350px] h-[96px] flex sm:flex-row justify-between items-center px-4 rounded-lg bg-gradient-to-r from-cyan-100 to-cyan-400"
+          >
+            <div>
+              <p class="font-semibold">
+                <span v-if="valoresStamp.total_valor_contratado">{{
+                  formatCurrencyInMillions(valoresStamp.total_valor_contratado)
+                }}</span>
+                <span v-else class="skeleton w-32 h-6 block"></span>
+              </p>
+              <p>valor dos contratos</p>
+            </div>
+            <span>
+              <Icon
+                icon="fluent:notepad-32-filled"
+                height="35"
+                class="text-white"
+              />
+            </span>
+          </div>
+          <!-- Segundo Stamp -->
+          <div
+            class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg bg-gradient-to-r from-blue-300 to-pink-200"
+          >
+            <div>
+              <p class="font-semibold">
+                <span v-if="valoresStamp.total_aguardando_faturamento">{{
+                  formatCurrencyInMillions(
+                    valoresStamp.total_aguardando_faturamento
+                  )
+                }}</span>
+                <span v-else class="skeleton w-32 h-6 block"></span>
+              </p>
+              <p>Aguardando Faturamento</p>
+            </div>
+            <div>
+              <p class="font-semibold">
+                <span v-if="valoresStamp.total_aguardando_pagamento">{{
+                  formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento)
+                }}</span>
+                <span v-else class="skeleton w-32 h-6 block"></span>
+              </p>
+              <p>Aguardando Pagamento</p>
+            </div>
+            <span>
+              <Icon icon="ph:calculator-fill" height="35" class="text-white" />
+            </span>
+          </div>
+          <!-- Terceiro Stamp -->
+          <div
+            class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg bg-gradient-to-r from-orange-200 to-green-200"
+          >
+            <div>
+              <p class="font-semibold">
+                <span v-if="valoresStamp.total_pago">{{
+                  formatCurrencyInMillions(valoresStamp.total_pago)
+                }}</span>
+                <span v-else class="skeleton w-32 h-6 block"></span>
+              </p>
+              <p>Pago</p>
+            </div>
+            <div>
+              <p class="font-semibold">
+                <span v-if="valoresStamp.total_saldo_disponível">{{
+                  formatCurrencyInMillions(valoresStamp.total_saldo_disponível)
+                }}</span>
+                <span v-else class="skeleton w-32 h-6 block"></span>
+              </p>
+              <p>Saldo</p>
+            </div>
+            <span>
+              <Icon icon="rivet-icons:money" height="35" class="text-white" />
+            </span>
           </div>
         </section>
       </div>
