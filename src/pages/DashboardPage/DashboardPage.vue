@@ -46,9 +46,9 @@
           >
             <div>
               <p class="font-semibold">
-                <span v-if="valoresStamp.total_valor_contratado">{{
-                  formatCurrencyInMillions(valoresStamp.total_valor_contratado)
-                }}</span>
+                <span v-if="valoresStamp.total_valor_contratado !== null && valoresStamp.total_valor_contratado !== undefined">
+                  {{ formatCurrencyInMillions(valoresStamp.total_valor_contratado) }}
+                </span>
                 <span v-else class="skeleton w-32 h-6 block"></span>
               </p>
               <p>valor dos contratos</p>
@@ -67,20 +67,18 @@
           >
             <div>
               <p class="font-semibold">
-                <span v-if="valoresStamp.total_aguardando_faturamento">{{
-                  formatCurrencyInMillions(
-                    valoresStamp.total_aguardando_faturamento
-                  )
-                }}</span>
+                <span v-if="valoresStamp.total_aguardando_faturamento !== null && valoresStamp.total_aguardando_faturamento !== undefined">
+                  {{ formatCurrencyInMillions(valoresStamp.total_aguardando_faturamento) }}
+                </span>
                 <span v-else class="skeleton w-32 h-6 block"></span>
               </p>
               <p>Aguardando Faturamento</p>
             </div>
             <div>
               <p class="font-semibold">
-                <span v-if="valoresStamp.total_aguardando_pagamento">{{
-                  formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento)
-                }}</span>
+                <span v-if="valoresStamp.total_saldo_disponível !== null && valoresStamp.total_saldo_disponível !== undefined">
+                  {{ formatCurrencyInMillions(valoresStamp.total_aguardando_pagamento) }}
+                </span>
                 <span v-else class="skeleton w-32 h-6 block"></span>
               </p>
               <p>Aguardando Pagamento</p>
@@ -95,9 +93,9 @@
           >
             <div>
               <p class="font-semibold">
-                <span v-if="valoresStamp.total_pago">{{
-                  formatCurrencyInMillions(valoresStamp.total_pago)
-                }}</span>
+                <span v-if="valoresStamp.total_pago !== null && valoresStamp.total_pago !== undefined">
+                  {{ formatCurrencyInMillions(valoresStamp.total_pago) }}
+                </span>
                 <span v-else class="skeleton w-32 h-6 block"></span>
               </p>
               <p>Pago</p>
