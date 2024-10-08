@@ -10,6 +10,7 @@
     <div class="flex flex-wrap gap-3">
       <button
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+         v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
       >
         <router-link
           :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
@@ -20,6 +21,7 @@
       <button
         @click="deleteContrato(contrato)"
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+         v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canDelete === true)"
       >
         Excluir
       </button>
@@ -29,7 +31,7 @@
   <!-- Detalhes do contrato -->
   <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
     <div
-      class="border border-gray-100 bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
       <h3 class="text-2xl font-semibold text-gray-800 mb-4">
         Informações do Contrato
@@ -91,7 +93,7 @@
     </div>
 
     <section
-      class="border border-gray-100 bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
       <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
       <div class="space-y-4">
@@ -147,7 +149,7 @@
     </section>
 
     <section
-      class="border border-gray-100 bg-white rounded-sm shadow-md p-6 transition duration-300 ease-in-out hover:shadow-md"
+      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
       <h3 class="text-2xl font-semibold text-gray-800 mb-4">
         Detalhes Adicionais
@@ -244,7 +246,7 @@
   </section>
 </section>
 
-<section class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
+<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
   <div class="flex border-b border-gray-200 mb-8 pt-4">
     <TabButton
       v-for="tab in tabs"
@@ -267,6 +269,7 @@
           <button
             @click="openCreateItemModal"
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+             v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
@@ -287,7 +290,7 @@
           </button>
         </div>
       </div>
-      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12" >
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
             <th class="text-xl px-2">#</th>
@@ -330,21 +333,25 @@
             </td>
             <td>
               <div class="flex justify-center items-center gap-2">
-                <span @click="openItemViewModal(item)">
+                <span @click="openItemViewModal(item)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canView === true)">
                   <Icon
                     icon="ph:eye"
                     height="20"
                     class="hover:text-blue-500 text-black hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="openItemEditModal(item)">
+                <span @click="openItemEditModal(item)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)"
+                >
                   <Icon
                     icon="bx:edit"
                     height="20"
                     class="hover:text-red-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="deleteItem(item.id)">
+                <span @click="deleteItem(item.id)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canDelete === true)">
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -379,6 +386,7 @@
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalLancamento"
+            v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canCreate === true)"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Nova Medição
@@ -386,6 +394,7 @@
           <button
             class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalPedidoFaturamento"
+            v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canCreate === true)"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Novo faturamento
@@ -518,7 +527,8 @@
             </td>
             <td class="text-2xl">
               <div class="flex justify-center items-center gap-2">
-                <span @click="openViewLancamentoModal(lancamento)">
+                <span @click="openViewLancamentoModal(lancamento)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canView === true)">
                   <Icon
                     icon="ph:eye"
                     height="20"
@@ -535,7 +545,8 @@
                   />
                 </span> -->
                 <!-- <span @click="openEditLancamentoModal(lancamento)" v-else> -->
-                <span @click="openEditLancamentoModal(lancamento)">
+                <span @click="openEditLancamentoModal(lancamento)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canEdit === true)">
                   <Icon
                     icon="bx:edit"
                     height="20"
@@ -551,7 +562,8 @@
                   />
                 </span> -->
 
-                <span @click="deleteLancamento(lancamento.id)">
+                <span @click="deleteLancamento(lancamento.id)"
+                 v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canDelete === true)">
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -649,21 +661,24 @@
 
             <td class="text-2xl">
               <div class="flex justify-center items-center gap-2">
-                <span @click="openViewFaturamentoModal(faturamento)">
+                <span @click="openViewFaturamentoModal(faturamento)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canView === true)">
                   <Icon
                     icon="ph:eye"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="openEditFaturamentoModal(faturamento)">
+                <span @click="openEditFaturamentoModal(faturamento)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canEdit === true)">
                   <Icon
                     icon="bx:edit"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="deleteFaturamento(faturamento.id)">
+                <span @click="deleteFaturamento(faturamento.id)"
+                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canDelete === true)">
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -1946,6 +1961,10 @@ import { format, formatISO, startOfDay, parseISO } from "date-fns";
 import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
+import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
+
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
 

@@ -232,6 +232,8 @@
           <button
             type="submit"
             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canCreate === true
+            || item.name === 'projetos' && item.canEdit === true )"
           >
             {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
           </button>
@@ -271,6 +273,7 @@
                 <button
                   @click="editProjeto(item)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                  v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canEdit === true)"
                 >
                   <Icon
                     icon="heroicons-solid:pencil"
@@ -281,6 +284,7 @@
                 <button
                   @click="deletarProjeto(item.id, item)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                  v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canDelete === true)"
                 >
                   <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
                 </button>
@@ -314,6 +318,10 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { format } from "date-fns";
 import { Money3Component } from "v-money3";
 import { ufs } from "../../services/ufs.js";
+import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
+ 
 
 const router = useRouter();
 const route = useRoute();

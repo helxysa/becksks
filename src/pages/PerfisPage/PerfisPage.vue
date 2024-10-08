@@ -5,6 +5,7 @@
       <button
         class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
         @click="openModal"
+        v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canCreate === true)"
       >
         <Icon icon="la:file-contract" class="text-zinc-50" height="25" />
         <span>Novo Perfil</span>
@@ -78,23 +79,21 @@
         </span>
           </td>
           <td class="p-4 flex justify-center items-center h-full">
-            <span @click="viewPerfil(perfil)">
+            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canView === true)" @click="viewPerfil(perfil)">
             <Icon
               icon="ph:eye"
               height="20"
               class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
             />
             </span>
-            <span @click="editPerfil(perfil)"
-            >
+            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canEdit === true)" @click="editPerfil(perfil)">
             <Icon
               icon="bx:edit"
               height="18"
               class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
             />
             </span>
-            <span @click="deletePerfil(perfil.id)"
-            >
+            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canDelete === true)" @click="deletePerfil(perfil.id)">
               <Icon icon="ph:trash" height="20" class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]" />
             </span>
           </td>
@@ -249,10 +248,11 @@
   import Swal from "sweetalert2";
   import { api } from "@/services/api";
   import { toast } from "vue3-toastify";
+  import { useProfileStore } from "@/stores/ProfileStore";
   import { waveform } from "ldrs";
 
   waveform.register();
-
+  const store = useProfileStore()
   const perfis = ref([]);
   const carregando = ref(true);
   const showModal = ref(false);
@@ -265,6 +265,7 @@
 
   const permissoes = [
     { nome: "Usuários", chave: "usuarios" },
+    { nome: "Perfil", chave: "perfil" },
     { nome: "Contratos", chave: "contratos" },
     { nome: "Itens de contrato", chave: "itens_contrato" },
     { nome: "Medições", chave: "medicoes" },
@@ -281,12 +282,35 @@
     try {
       const resposta = await api.get("/perfil");
       perfis.value = resposta.data;
+      atualizarUsuarioLogado()
       carregando.value = false;
     } catch (erro) {
       carregando.value = false;
       toast.error("Erro ao carregar os perfis.", { theme: "colored" });
     }
   };
+
+  const atualizarUsuarioLogado = async () => {
+  try {
+    const profileUser = localStorage.getItem("profileUser");
+    const userId = JSON.parse(profileUser).id
+
+    if (!userId) {
+      throw new Error("ID do usuário não encontrado.");
+    }
+    const response = await api.get(`/users/${userId}`);
+    const perfilAtualizado = response.data;
+    const store = useProfileStore();
+    const perfilAtual = store.profile;
+    if (JSON.stringify(perfilAtual) !== JSON.stringify(perfilAtualizado)) {
+      store.$patch({
+        ...perfilAtualizado,
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao buscar perfil atualizado:", error);
+  }
+};
 
   const openModal = () => {
     isEditing.value = false;

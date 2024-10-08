@@ -5,6 +5,7 @@
       <button
         @click="openModal"
         class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+         v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canCreate === true)"
       >
         <Icon icon="la:file-contract" class="text-zinc-50" height="25" />
         <span>Novo Usuário</span>
@@ -39,7 +40,7 @@
             <td class="text-2xl">{{ user?.profile?.name }}</td>
             <td>
               <div class="flex justify-center items-center gap-2">
-                <span>
+                <span  v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canView === true)">
                   <Icon
                     icon="ph:eye"
                     height="20"
@@ -47,7 +48,7 @@
                     @click="viewUser(user)"
                   />
                 </span>
-                <span>
+                <span  v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canEdit === true)">
                   <Icon
                     icon="bx:edit"
                     height="20"
@@ -55,7 +56,7 @@
                     @click="editUser(user)"
                   />
                 </span>
-                <span>
+                <span  v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canDelete === true)">
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -136,7 +137,7 @@
               />
             </div>
             <div class="mb-4">
-              <label for="role" class="font-bold text-3xl mb-2">Perfil</label>           
+              <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
               <select
                 v-model=" newUser.profileId"
                 id="role"
@@ -250,7 +251,7 @@
                 disabled
               />
             </div> -->
-            <div class="mb-4">              
+            <div class="mb-4">
               <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
               <input
               v-model="userVisualizado.profile.name"
@@ -287,6 +288,9 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import { waveform } from "ldrs";
 import Swal from "sweetalert2";
+import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
 
 waveform.register();
 
@@ -398,9 +402,9 @@ const resetPassword = () => {
         toast.error("Não foi possível resetar a senha!", { theme: "colored" });
         console.error("Erro ao resetar senha:", error);
       });
-      
+
     }
-  }); 
+  });
 }
 
 const resetNewUser = () => {
@@ -448,9 +452,33 @@ const fetchUsers = async () => {
     const response = await api.get('/users');
     users.value = response.data;
     loading.value = false;
+
+    await atualizarUsuarioLogado();
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     loading.value = false;
+  }
+};
+
+const atualizarUsuarioLogado = async () => {
+  try {
+    const profileUser = localStorage.getItem("profileUser");
+    const userId = JSON.parse(profileUser).id
+
+    if (!userId) {
+      throw new Error("ID do usuário não encontrado.");
+    }
+    const response = await api.get(`/users/${userId}`);
+    const perfilAtualizado = response.data;
+    const store = useProfileStore();
+    const perfilAtual = store.profile;
+    if (JSON.stringify(perfilAtual) !== JSON.stringify(perfilAtualizado)) {
+      store.$patch({
+        ...perfilAtualizado,
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao buscar perfil atualizado:", error);
   }
 };
 

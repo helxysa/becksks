@@ -69,6 +69,9 @@
   import { isAuthenticated } from "@/state/auth";
   import { toast } from "vue3-toastify";
   import { api } from "@/services/api";
+  import { useProfileStore } from '@/stores/ProfileStore';
+
+  const store = useProfileStore()
 
   const router = useRouter();
   const isDropdownOpen = ref(false);
@@ -90,7 +93,8 @@
   };
 
   const logout = async () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("token");   
+    localStorage.removeItem('profileUser');
     isAuthenticated.value = false;
     try {
       const response = await api.delete("/logout");
