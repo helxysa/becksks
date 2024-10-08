@@ -83,7 +83,7 @@ const dataBar = computed(() => {
         borderColor: '#00AFEF',
         borderWidth: 1,
         data: dataUtilizada,
-        // barThickness: 20,
+        barThickness: 20,
       },
       {
         label: 'Percentual Restante',
@@ -91,7 +91,21 @@ const dataBar = computed(() => {
         borderColor: '#57BA5E',
         borderWidth: 1,
         data: dataRestante,
-        // barThickness: 20,
+        borderRadius: 10,
+        barThickness: 20,
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: '#000',
+          formatter: function (value, context) {
+            if (context.datasetIndex === 1) {
+              // Exibir o valor do contrato ao lado direito da barra verde
+              const index = context.dataIndex;
+              return contratoValues[index]; // Valor do contrato
+            }
+            return '';
+          },
+        },
       },
     ],
   };
@@ -125,23 +139,23 @@ const optionsBar = {
       },
     },
     datalabels: {
-      anchor: 'end',
-      align: 'end',
-      color: '#000',
+      anchor: 'center', // Centralizado dentro das barras
+      align: 'center',
+      color: function (context) {
+        return context.datasetIndex === 1 ? '#fff' : '#000'; // Branco nas barras verdes, preto nas barras azuis
+      },
       formatter: function (value, context) {
-        // Exibir o valor do contrato no final do dataset
-        if (context.datasetIndex === context.chart.data.datasets.length - 1) {
-          const index = context.dataIndex;
-          return contratoValues[index];
-        } else {
-          return '';
+        // Se for o segundo dataset (barras verdes), mostrar a porcentagem dentro da barra
+        if (context.datasetIndex === 1) {
+          return value.toFixed(0) + '%'; // Mostrar porcentagem dentro das barras verdes
         }
+        return ''; // Não mostrar nada nas barras azuis
       },
     },
   },
   layout: {
     padding: {
-      right: 70,
+      right: 60,
     },
   },
   scales: {
