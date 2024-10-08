@@ -21,7 +21,16 @@ export  const useProfileStore = defineStore('profileUser', {
         ]
     }
         }
-    )
+    ),
+    persist: {
+        enabled: true,
+        strategies: [
+            {
+                key: 'profileUser', //o nome do seu store
+                storage: localStorage, // onde você quer salvar localStorage ou sessionStorage
+            },
+        ],
+    },
 }
     
 )

@@ -17,6 +17,7 @@
     "date-fns": "^3.6.0",
     "ldrs": "^1.0.2",
     "pinia": "^2.2.4",
+    "pinia-plugin-persistedstate": "^4.1.1",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.12.0",
     "tailwindcss-primeui": "^0.3.4",

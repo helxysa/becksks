@@ -10,9 +10,12 @@ import { MaskInput } from "vue-mask-next";
 import { createPinia } from "pinia";
 import VueAwesomePaginate from "vue-awesome-paginate"
 import "vue-awesome-paginate/dist/style.css";
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 const app = createApp(App);
 const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+
 app.use(router);
 app.use(Vue3Toasity, {
   autoClose: 3000,
