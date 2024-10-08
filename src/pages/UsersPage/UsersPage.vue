@@ -292,7 +292,6 @@ import { useProfileStore } from '@/stores/ProfileStore';
 
  const store = useProfileStore()
 
-
 waveform.register();
 
 const users = ref([]);

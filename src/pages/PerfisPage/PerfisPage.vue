@@ -5,6 +5,7 @@
       <button
         class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
         @click="openModal"
+        v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canCreate === true)"
       >
         <Icon icon="la:file-contract" class="text-zinc-50" height="25" />
         <span>Novo Perfil</span>
@@ -78,23 +79,21 @@
         </span>
           </td>
           <td class="p-4 flex justify-center items-center h-full">
-            <span @click="viewPerfil(perfil)">
+            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canView === true)" @click="viewPerfil(perfil)">
             <Icon
               icon="ph:eye"
               height="20"
               class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
             />
             </span>
-            <span @click="editPerfil(perfil)"
-            >
+            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canEdit === true)" @click="editPerfil(perfil)">
             <Icon
               icon="bx:edit"
               height="18"
               class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
             />
             </span>
-            <span @click="deletePerfil(perfil.id)"
-            >
+            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canDelete === true)" @click="deletePerfil(perfil.id)">
               <Icon icon="ph:trash" height="20" class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]" />
             </span>
           </td>
@@ -253,7 +252,7 @@
   import { waveform } from "ldrs";
 
   waveform.register();
-
+  const store = useProfileStore()
   const perfis = ref([]);
   const carregando = ref(true);
   const showModal = ref(false);
@@ -266,6 +265,7 @@
 
   const permissoes = [
     { nome: "Usuários", chave: "usuarios" },
+    { nome: "Perfil", chave: "perfil" },
     { nome: "Contratos", chave: "contratos" },
     { nome: "Itens de contrato", chave: "itens_contrato" },
     { nome: "Medições", chave: "medicoes" },
