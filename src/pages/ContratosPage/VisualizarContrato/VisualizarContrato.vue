@@ -31,7 +31,7 @@
   <!-- Detalhes do contrato -->
   <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
     <div
-      class="border border-gray-100 bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
       <h3 class="text-2xl font-semibold text-gray-800 mb-4">
         Informações do Contrato
@@ -93,7 +93,7 @@
     </div>
 
     <section
-      class="border border-gray-100 bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
       <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
       <div class="space-y-4">
@@ -149,7 +149,7 @@
     </section>
 
     <section
-      class="border border-gray-100 bg-white rounded-sm shadow-md p-6 transition duration-300 ease-in-out hover:shadow-md"
+      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
     >
       <h3 class="text-2xl font-semibold text-gray-800 mb-4">
         Detalhes Adicionais
@@ -246,7 +246,7 @@
   </section>
 </section>
 
-<section class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
+<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
   <div class="flex border-b border-gray-200 mb-8 pt-4">
     <TabButton
       v-for="tab in tabs"
@@ -343,7 +343,7 @@
                 </span>
                 <span @click="openItemEditModal(item)"
                 v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)"
-                >              
+                >
                   <Icon
                     icon="bx:edit"
                     height="20"
@@ -1964,7 +1964,7 @@ import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
  const store = useProfileStore()
- 
+
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
 
