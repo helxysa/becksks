@@ -90,7 +90,7 @@
   };
 
   const logout = async () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("token");   
     isAuthenticated.value = false;
     try {
       const response = await api.delete("/logout");

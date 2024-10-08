@@ -5,6 +5,7 @@
       <button
         @click="openModal"
         class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+         v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canCreate === true)"
       >
         <Icon icon="la:file-contract" class="text-zinc-50" height="25" />
         <span>Novo Usuário</span>
@@ -39,7 +40,7 @@
             <td class="text-2xl">{{ user?.profile?.name }}</td>
             <td>
               <div class="flex justify-center items-center gap-2">
-                <span>
+                <span  v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canView === true)">
                   <Icon
                     icon="ph:eye"
                     height="20"
@@ -47,7 +48,7 @@
                     @click="viewUser(user)"
                   />
                 </span>
-                <span>
+                <span  v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canEdit === true)">
                   <Icon
                     icon="bx:edit"
                     height="20"
@@ -55,7 +56,7 @@
                     @click="editUser(user)"
                   />
                 </span>
-                <span>
+                <span  v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canDelete === true)">
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -287,6 +288,10 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import { toast } from "vue3-toastify";
 import { waveform } from "ldrs";
 import Swal from "sweetalert2";
+import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
+ 
 
 waveform.register();
 
@@ -333,7 +338,7 @@ const closeModal = () => {
   confirmEmail.value = '';
 };
 
-const viewUser = (user) => {
+const viewUser = (user) => { 
   userVisualizado.value = user;
   showViewModal.value = true;
 };

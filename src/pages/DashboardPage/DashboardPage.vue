@@ -254,6 +254,7 @@ import Map from "../../components/Map.vue";
 import { onMounted, ref, watch } from "vue";
 import { api } from "@/services/api";
 import { waveform } from "ldrs";
+import { useProfileStore } from "@/stores/ProfileStore";
 
 waveform.register();
 const currentPageContratos = ref(1);
@@ -272,9 +273,12 @@ let contratoItemMeta = ref({});
 let statusVencimento = ref("");
 const loading = ref(false);
 
+
 onMounted(() => {
-  fetchDashboardData();
+  fetchDashboardData();  
 });
+
+
 
 const getCurrentDateString = () => new Date().toISOString().split("T")[0];
 
