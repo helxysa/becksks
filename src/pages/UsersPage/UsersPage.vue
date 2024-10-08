@@ -137,7 +137,7 @@
               />
             </div>
             <div class="mb-4">
-              <label for="role" class="font-bold text-3xl mb-2">Perfil</label>           
+              <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
               <select
                 v-model=" newUser.profileId"
                 id="role"
@@ -251,7 +251,7 @@
                 disabled
               />
             </div> -->
-            <div class="mb-4">              
+            <div class="mb-4">
               <label for="role" class="font-bold text-3xl mb-2">Perfil</label>
               <input
               v-model="userVisualizado.profile.name"
@@ -291,7 +291,7 @@ import Swal from "sweetalert2";
 import { useProfileStore } from '@/stores/ProfileStore';
 
  const store = useProfileStore()
- 
+
 
 waveform.register();
 
@@ -338,7 +338,7 @@ const closeModal = () => {
   confirmEmail.value = '';
 };
 
-const viewUser = (user) => { 
+const viewUser = (user) => {
   userVisualizado.value = user;
   showViewModal.value = true;
 };
@@ -403,9 +403,9 @@ const resetPassword = () => {
         toast.error("Não foi possível resetar a senha!", { theme: "colored" });
         console.error("Erro ao resetar senha:", error);
       });
-      
+
     }
-  }); 
+  });
 }
 
 const resetNewUser = () => {
@@ -453,9 +453,33 @@ const fetchUsers = async () => {
     const response = await api.get('/users');
     users.value = response.data;
     loading.value = false;
+
+    await atualizarUsuarioLogado();
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
     loading.value = false;
+  }
+};
+
+const atualizarUsuarioLogado = async () => {
+  try {
+    const profileUser = localStorage.getItem("profileUser");
+    const userId = JSON.parse(profileUser).id
+
+    if (!userId) {
+      throw new Error("ID do usuário não encontrado.");
+    }
+    const response = await api.get(`/users/${userId}`);
+    const perfilAtualizado = response.data;
+    const store = useProfileStore();
+    const perfilAtual = store.profile;
+    if (JSON.stringify(perfilAtual) !== JSON.stringify(perfilAtualizado)) {
+      store.$patch({
+        ...perfilAtualizado,
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao buscar perfil atualizado:", error);
   }
 };
 

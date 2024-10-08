@@ -249,6 +249,7 @@
   import Swal from "sweetalert2";
   import { api } from "@/services/api";
   import { toast } from "vue3-toastify";
+  import { useProfileStore } from "@/stores/ProfileStore";
   import { waveform } from "ldrs";
 
   waveform.register();
@@ -281,12 +282,35 @@
     try {
       const resposta = await api.get("/perfil");
       perfis.value = resposta.data;
+      atualizarUsuarioLogado()
       carregando.value = false;
     } catch (erro) {
       carregando.value = false;
       toast.error("Erro ao carregar os perfis.", { theme: "colored" });
     }
   };
+
+  const atualizarUsuarioLogado = async () => {
+  try {
+    const profileUser = localStorage.getItem("profileUser");
+    const userId = JSON.parse(profileUser).id
+
+    if (!userId) {
+      throw new Error("ID do usuário não encontrado.");
+    }
+    const response = await api.get(`/users/${userId}`);
+    const perfilAtualizado = response.data;
+    const store = useProfileStore();
+    const perfilAtual = store.profile;
+    if (JSON.stringify(perfilAtual) !== JSON.stringify(perfilAtualizado)) {
+      store.$patch({
+        ...perfilAtualizado,
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao buscar perfil atualizado:", error);
+  }
+};
 
   const openModal = () => {
     isEditing.value = false;
