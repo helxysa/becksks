@@ -18,23 +18,25 @@
            </router-link>
          </li>
          <li>
-           <router-link to="/contratos" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group">
+           <router-link to="/contratos" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group"
+           v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canView === true)">
              <Icon icon="eos-icons:project" height="20"/>
              <span class="ms-3 text-3xl font-bold">Contratos</span>
            </router-link>
          </li>
-         <!-- <li>
+         <li>
            <router-link to="/perfis" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group">
              <Icon icon="eos-icons:admin-outlined" height="20"/>
              <span class="ms-3 text-3xl font-bold">Perfis</span>
            </router-link>
          </li>
          <li>
-           <router-link to="/usuarios" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group" >
+           <router-link to="/usuarios" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group"
+           v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && item.canView === true)">
              <Icon icon="mdi:account-group" height="20" />
              <span  class="ms-3 text-3xl font-bold">Usuários</span>
            </router-link>
-         </li> -->
+         </li>                
        </ul>
      </div>
    </aside>
@@ -43,4 +45,8 @@
  <script setup>
  import { Icon } from '@iconify/vue';
  import { RouterLink } from 'vue-router';
+ import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
+
  </script>

@@ -4,6 +4,7 @@
       <h1 class="text-5xl font-medium">Contratos</h1>
         <button
           class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+          v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canCreate === true)"
         >
           <Icon
             icon="la:file-contract"
@@ -23,6 +24,10 @@
 import ListContratos from "@/components/list/ListContratos.vue";
 import { RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
+import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
+ 
 </script>
 
 <style scoped>

@@ -183,6 +183,7 @@
             class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="showExibirModalItems"
+            v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
@@ -251,14 +252,16 @@
                   {{ item.saldo_quantidade_contratada }}
                 </td>
                 <td>
-                  <button type="button" @click="openEditModal(index)">
+                  <button type="button" @click="openEditModal(index)"
+                  v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)">
                     <Icon
                       icon="ph:pencil"
                       height="20"
                       class="hover:text-red-500 hover:rounded-md cursor-pointer"
                     />
                   </button>
-                  <button type="button" @click="removeItem(index)">
+                  <button type="button" @click="removeItem(index)"
+                    v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canDelete === true)">
                     <Icon
                       icon="ph:trash"
                       height="20"
@@ -644,6 +647,8 @@
           <button
             type="button"
             @click="handleSubmitProjeto"
+             v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canCreate === true
+            || item.name === 'projetos' && item.canEdit === true )"
             class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           >
             {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
@@ -668,6 +673,7 @@
                 <button
                   @click="editProjeto(item)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                  v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canEdit === true)"
                 >
                   <Icon
                     icon="heroicons-solid:pencil"
@@ -678,6 +684,7 @@
                 <button
                   @click="deletarProjeto(item.id)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                  v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canDelete === true)"
                 >
                   <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
                 </button>
@@ -738,6 +745,11 @@ import { Money3Component } from "v-money3";
 import { ufs } from "../../services/ufs.js";
 import AnexoUpload from './AnexoUpload.vue';
 import TabButton from '../../components/TabButton.vue';
+import { useProfileStore } from '@/stores/ProfileStore';
+
+ const store = useProfileStore()
+ console.log(store.profile, 'storecontrato')
+
 
 const tabs = ['Itens', 'Anexos']
 const currentTab = ref(tabs[0])

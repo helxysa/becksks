@@ -72,11 +72,13 @@ import { api } from "@/services/api";
 import { isAuthenticated } from "@/state/auth";
 import { toast } from 'vue3-toastify';
 import ResetPasswordForm from './ResetPasswordForm.vue';
+import { useProfileStore } from "@/stores/ProfileStore";
 
 const email = ref("");
 const password = ref("");
 const router = useRouter();
 const showResetPassword = ref(false);
+const store = useProfileStore();
 
 const handleLogin = async () => {
   try {
@@ -85,7 +87,9 @@ const handleLogin = async () => {
       password: password.value,
     });
     isAuthenticated.value = true;
-    localStorage.setItem("token", response.data.token.token);
+    localStorage.setItem("token", response.data.token.token);   
+    store.$patch(response.data.user)
+   
 
     if (!response.data.user.passwordChanged) {
       localStorage.setItem("userId", response.data.user.id);
