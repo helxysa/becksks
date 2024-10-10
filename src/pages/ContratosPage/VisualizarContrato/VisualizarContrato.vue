@@ -9,6 +9,16 @@
     </h1>
     <div class="flex flex-wrap gap-3">
       <button
+      class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+     
+    >
+      <router-link
+        :to="{ name: 'Formulário Aditivo' }"
+      >
+        Adicionar aditivo
+      </router-link>
+    </button>
+      <button
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
          v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
       >
