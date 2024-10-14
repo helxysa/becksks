@@ -4,9 +4,18 @@
   <div
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
   >
-  <h1 class="text-4xl font-medium text-gray-800 mb-6 sm:mb-0">
+  <div class="flex items-center gap-2">
+    <span @click="voltarListagem" class="cursor-pointer">
+      <Icon
+      icon="ic:round-arrow-back"
+      height="28"
+      class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"
+      />
+    </span>
+    <h1 class="text-4xl font-medium text-gray-800 mb-6 sm:mb-0">
       Detalhes do Contrato
     </h1>
+  </div>
     <div class="flex flex-wrap gap-3">
       <button
       class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
