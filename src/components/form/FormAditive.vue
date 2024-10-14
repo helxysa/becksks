@@ -8,30 +8,30 @@
           class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"
         />
       </span>
-      <h1 class="text-5xl font-bold">Formulário de Contrato</h1>
+      <h1 class="text-5xl font-bold">Cadastro  Termo Aditivo</h1>
     </div>
 
     <section class="">
-      <form class="mt-12" @submit.prevent="saveContrato">
+      <form class="mt-12" @submit.prevent="saveTermoADitive">
         <div class="flex flex-col items-start gap-3">
-          <label class="font-semibold">Nome do contrato</label>
+          <label class="font-semibold">Nome do Termo</label>
           <input
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             required
             type="text"
-            placeholder="Informe o nome do contrato"
-            v-model="contratoForm.nome_contrato"
+            placeholder="Informe o nome do termo  aditivo"
+            v-model="contratoForm.nome_termo"
             maxlength="120"
           />
         </div>
-        <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-semibold">Nome do cliente</label>
+        <div class="flex flex-col items-start gap-3 mt-8">      
+          <label class="font-semibold">Nome do cliente</label>        
           <input
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-            required
+            disabled
             type="text"
             placeholder="Informe o nome do cliente"
-            v-model="contratoForm.nome_cliente"
+            v-model="contratoForm.nomeCliente"
             maxlength="120"
           />
         </div>
@@ -70,7 +70,7 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Fiscal do contrato</label>
           <input
-            required
+            disabled
             type="text"
             placeholder="Informe o fiscal do contrato"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -81,7 +81,7 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Telefone do fiscal</label>
           <input
-            required
+            disabled
             type="tel"
             placeholder="Informe o telefone do fiscal"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -93,7 +93,7 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">E-mail do fiscal</label>
           <input
-            required
+            disabled
             type="email"
             placeholder="Informe o email do fiscal"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -104,18 +104,18 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Ponto focal</label>
           <input
-            required
+            disabled
             type="text"
             placeholder="Informe o ponto focal"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-            v-model="contratoForm.ponto_focal"
+            v-model="contratoForm.pontoFocal"
             maxlength="120"
           />
         </div>
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="block font-semibold mb-2">Cidade</label>
           <input
-            required
+            disabled
             type="text"
             placeholder="Informe a cidade do contrato"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -126,7 +126,7 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="block font-semibold mb-2">Estado</label>
           <select
-            required
+            disabled
             v-model="contratoForm.estado"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
           >
@@ -147,7 +147,7 @@
             maxlength="120"
           />
         </div>
-        <div class="flex flex-col items-start gap-3 mt-8">
+        <!-- <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Lembrete vencimento:</label>
           <select
             v-model="contratoForm.lembrete_vencimento"
@@ -168,16 +168,17 @@
             <option>90</option>
             <option>120</option>
           </select>
-        </div>
-        <div class="flex flex-col items-start gap-3 mt-8">
+        </div> -->
+        <!-- <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Observações</label>
+          {{ contratoForm }}
           <textarea
             v-model="contratoForm.observacoes"
             rows="7"
             placeholder="Observações..."
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-3 w-full border-gray-300 rounded-md"
           />
-        </div>
+        </div> -->
         <section class="mt-8 flex gap-8 flex-wrap justify-end">
           <button
             class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
@@ -188,7 +189,7 @@
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
           </button>
-          <button
+          <!-- <button
             class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="openModalUnidade"
@@ -201,8 +202,8 @@
               />
             </span>
             Adicionar Unidade
-          </button>
-          <button
+          </button> -->
+          <!-- <button
             class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="openModalProjeto()"
@@ -215,7 +216,7 @@
               />
             </span>
             Adicionar Projeto
-          </button>
+          </button> -->
         </section>
         <div class="flex border-b border-gray-200 mb-8 pt-4">
           <TabButton
@@ -225,7 +226,7 @@
             :tab="tab"
             @update:currentTab="currentTab = $event"
           />
-        </div>
+        </div>       
         <div v-if="currentTab === 'Itens'">
           <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
             <thead class="h-24 bg-slate-100 border-1">
@@ -239,7 +240,7 @@
             </thead>
             <tbody>
               <tr
-                v-for="(item, index) in contratoForm.items"
+                v-for="(item, index) in termoAditivoItens"
                 :key="index"
                 class="text-center"
               >
@@ -249,7 +250,7 @@
                   {{ formatCurrency(item.valor_unitario) }}
                 </td>
                 <td class="text-xl p-4">
-                  {{ item.saldo_quantidade_contratada }}
+                  {{ item.quantidade_contratada }}
                 </td>
                 <td>
                   <button type="button" @click="openEditModal(index)"
@@ -276,6 +277,52 @@
         <div v-if="currentTab === 'Anexos'">
             <AnexoUpload :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
         </div>
+        <div v-if="currentTab === 'Projetos'">
+          <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
+            <thead class="h-24 bg-slate-100 border-1">
+              <tr>
+                <th class="text-2xl">Id</th>
+                <th class="text-2xl">Projeto</th>     
+                <th></th>   
+                <th></th> 
+                <th></th>       
+              
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(projeto, index) in contratoForm.projetos"
+                :key="index"
+                class="text-center"
+              >
+                <td class="text-2xl p-4">{{ projeto.id }}</td>
+                <td class="text-2xl p-4">{{ projeto.projeto }}</td> 
+                <td class="text-2xl p-4"></td>  
+                <td class="text-2xl p-4"></td> 
+                <td class="text-2xl p-4"></td> 
+
+                <!-- <td>
+                  <button type="button" @click="openEditModal(index)"
+                  v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)">
+                    <Icon
+                      icon="ph:pencil"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </button>
+                  <button type="button" @click="removeItem(index)"
+                    v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canDelete === true)">
+                    <Icon
+                      icon="ph:trash"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </button>
+                </td> -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
@@ -290,7 +337,7 @@
             class="flex items-center justify-center px-8 py-3 rounded-md w-56 text-2xl font-medium text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="submit"
           >
-            {{ route.params.id ? "Editar" : "Salvar" }}
+            Salvar
           </button>
         </div>
       </form>
@@ -482,7 +529,7 @@
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Quantidade Contratada:</label>
               <money3
-                v-model="novoItem.saldo_quantidade_contratada"
+                v-model="novoItem.quantidade_contratada"
                 type="number"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                 required
@@ -595,7 +642,7 @@
             <div class="flex gap-4 justify-between items-center">
               <label class="font-bold text-3xl">Quantidade Contratada:</label>
               <money3
-                v-model="editItem.saldo_quantidade_contratada"
+                v-model="editItem.quantidade_contratada"
                 type="number"
                 class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                 required
@@ -655,6 +702,7 @@
           </button>
         </form>
         <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
+          {{ projetos }}
           <div
             v-for="item in projetos"
             :key="item.id"
@@ -751,7 +799,7 @@ import { useProfileStore } from '@/stores/ProfileStore';
  console.log(store.profile, 'storecontrato')
 
 
-const tabs = ['Itens', 'Anexos']
+const tabs = ['Itens', 'Anexos', 'Projetos']
 const currentTab = ref(tabs[0])
 const contratoId = ref(null)
 const localAnexos = ref([]);
@@ -777,8 +825,10 @@ const decimalConfig = {
 };
 
 let editIndex = ref(-1);
-let contratoForm = reactive({
-  nome_cliente: "",
+const termoAditivoItens = ref([])
+
+let contratoForm = ref({
+  nomeCliente: "",
   data_inicio: "",
   data_fim: "",
   saldo_contrato: "",
@@ -787,26 +837,25 @@ let contratoForm = reactive({
     telefone: "",
     email: "",
   },
-  ponto_focal: "",
+  pontoFocal: "",
   cidade: "",
   estado: "",
-  objeto_contrato: "",
-  items: [],
-  observacoes: "",
-  nome_contrato: "",
-  lembrete_vencimento: "",
+  objeto_contrato: "", 
+  // observacoes: "",
+  nome_termo: "",
+  // lembrete_vencimento: "",
 });
 let novoItem = ref({
   titulo: "",
   unidade_medida: "",
   valor_unitario: "",
-  saldo_quantidade_contratada: "",
+  quantidade_contratada: "",
 });
 let editItem = ref({
   titulo: "",
   unidade_medida: "",
   valor_unitario: "",
-  saldo_quantidade_contratada: "",
+  quantidade_contratada: "",
 });
 
 onMounted(() => {
@@ -819,8 +868,9 @@ onMounted(() => {
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    contratoEdit.value = response.data;
-    contratoForm.value = contratoEdit.value;
+    console.log(response.data, 'termo adit')   
+    contratoForm.value = response.data;   
+
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
@@ -839,7 +889,7 @@ const closeEditModal = () => {
 };
 const saveEditModal = () => {
   if (editIndex.value !== -1) {
-    contratoForm.items[editIndex.value] = { ...editItem.value };
+    termoAditivoItens.value[editIndex.value] = { ...editItem.value };
     closeEditModal();
   } else {
     console.error("Índice inválido para edição");
@@ -847,24 +897,24 @@ const saveEditModal = () => {
 };
 const openEditModal = (index) => {
   editIndex.value = index;
-  editItem.value = { ...contratoForm.items[index] };
+  editItem.value = { ...termoAditivoItens.value[index] };
   exibirEditModal.value = true;
   fetchUnidadesMedida();
 };
-const saveItem = () => {
-  contratoForm.items.push({ ...novoItem.value });
+const saveItem = () => { 
+  termoAditivoItens.value.push({ ...novoItem.value });
   novoItem.value = {
     titulo: "",
     unidade_medida: "",
     valor_unitario: "",
-    saldo_quantidade_contratada: "",
+    quantidade_contratada: "",
   };
   closeModal();
 };
 const removeItem = (index) => {
   Swal.fire({
     title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este item do contrato?",
+    text: "Tem certeza que deseja excluir este item do termo  aditivo?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -873,13 +923,13 @@ const removeItem = (index) => {
     cancelButtonText: "Cancelar",
   }).then((result) => {
     if (result.isConfirmed) {
-      contratoForm.items.splice(index, 1);
+      termoAditivoItens.value.splice(index, 1);
     }
   });
 };
 
-const createContrato = async () => {
-  if (contratoForm.fiscal.telefone.length < 15) {
+const createTermoAditivo = async (contratoId) => {
+  if (contratoForm.value.fiscal.telefone.length < 15) {
     toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
       theme: "colored",
       type: "error",
@@ -888,75 +938,91 @@ const createContrato = async () => {
   }
 
   try {
-    const response = await api.post("/contratos", contratoForm);
-    return response.data.id;
+    termoAditivoItens.value = termoAditivoItens.value.map((item)=> {
+        return {
+          ...item,
+          valor_unitario: parseFloat(item.valor_unitario)
+        }
+    })
+
+    console.log(termoAditivoItens.value, 'termo')
+    
+    let payload = {
+      contrato_id: Number(contratoId),
+      nome_termo: contratoForm.value.nome_termo,
+      data_inicio: contratoForm.value.data_inicio,
+      data_fim: contratoForm.value.data_fim,
+      objeto_contrato: contratoForm.value.objeto_contrato,
+      termo_aditivo_itens: termoAditivoItens.value,
+    }
+    const response = await api.post("/termo-aditivo", payload);
+    console.log(response, 'resposta')
+    toast("Termo aditivo cadastrado com  sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+    voltarListagem()
   } catch (error) {
     toast("Não foi possível cadastrar o contrato!", {
       theme: "colored",
       type: "error",
     });
     console.error("Erro ao cadastrar contrato:", error);
-    return null;
+  
   }
 };
 
-const createProjetos = async (contratoId) => {
-  try {
-    const projetosArray = projetos.value.map((p) => p.projeto);
+// const createProjetos = async (contratoId) => {
+//   try {
+//     const projetosArray = projetos.value.map((p) => p.projeto);
 
-    if (projetosArray.length > 0) {
-      await api.post(`/contratos/${contratoId}/projetos/multiplos`, {
-        projetos: projetosArray,
-      });
-    } else {
-      toast.info("Nenhum projeto para adicionar.");
-    }
-  } catch (error) {
-    console.log("Erro ao criar projetos:", error);
-    toast("Não foi possível criar os projetos associados.", {
-      theme: "colored",
-      type: "error",
-    });
-    return "error";
-  }
-};
+//     if (projetosArray.length > 0) {
+//       await api.post(`/contratos/${contratoId}/projetos/multiplos`, {
+//         projetos: projetosArray,
+//       });
+//     } else {
+//       toast.info("Nenhum projeto para adicionar.");
+//     }
+//   } catch (error) {
+//     console.log("Erro ao criar projetos:", error);
+//     toast("Não foi possível criar os projetos associados.", {
+//       theme: "colored",
+//       type: "error",
+//     });
+//     return "error";
+//   }
+// };
 
-const deleteContrato = async (contratoId) => {
-  try {
-    await api.delete(`/contratos/${contratoId}`);
-    toast(
-      "Não foi possível salvar o contrato devido à falha na criação dos projetos.",
-      {
-        theme: "colored",
-        type: "info",
-      }
-    );
-  } catch (error) {
-    console.error("Erro ao deletar contrato:", error);
-    toast(
-      "Não foi possível deletar o contrato após falha na criação dos projetos.",
-      {
-        theme: "colored",
-        type: "error",
-      }
-    );
-  }
-};
+// const deleteContrato = async (contratoId) => {
+//   try {
+//     await api.delete(`/contratos/${contratoId}`);
+//     toast(
+//       "Não foi possível salvar o contrato devido à falha na criação dos projetos.",
+//       {
+//         theme: "colored",
+//         type: "info",
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Erro ao deletar contrato:", error);
+//     toast(
+//       "Não foi possível deletar o contrato após falha na criação dos projetos.",
+//       {
+//         theme: "colored",
+//         type: "error",
+//       }
+//     );
+//   }
+// };
 
-const saveContrato = async () => {
-  contratoId.value = await createContrato();
-
-  if (contratoId) {
-    const projetosCriados = await createProjetos(contratoId.value);
-    if (projetosCriados === "error") {
-      await deleteContrato(contratoId.value);
-    } else {
-      voltarListagem();
-    }
-  }
+const saveTermoADitive = async () => {
+  contratoId.value =  route.params.id
+  createTermoAditivo(contratoId.value)
+  
 };
 
 const voltarListagem = () => {
+
   router.push({ name: "Contratos" });
 };
 
@@ -998,129 +1064,6 @@ const fetchUnidadesMedida = async () => {
   }
 };
 
-const openModalUnidade = () => {
-  fetchUnidadesMedida().then(() => {
-    newUnidade.value = "";
-    isModalUnidadeOpen.value = true;
-  });
-};
-
-const handleSubmitUnidade = async () => {
-  const unidadeNome = newUnidade.value.trim();
-  if (unidadeNome === "") {
-    toast.error("O nome da unidade não pode estar vazio.");
-    return;
-  }
-
-  // if (isEditingUnidade.value) {
-  //   await EditarUnidade();
-  // } else {
-  await CriarUnidade();
-  // }
-};
-
-const CriarUnidade = async () => {
-  try {
-    await api.post("/unidade_medida", {
-      unidade_medida: newUnidade.value,
-    });
-    await fetchUnidadesMedida();
-    toast.success("Unidade criada com sucesso!");
-    newUnidade.value = "";
-  } catch (error) {
-    console.error("Erro ao criar unidade:", error);
-    toast.error("Não foi possível criar a unidade.");
-  }
-};
-
-// const EditarUnidade = async () => {
-//   try {
-//     await api.put(`/unidade_medida/${currentUnidadeId.value}`, {
-//       unidade_medida: newUnidade.value,
-//     });
-//     await fetchUnidadesMedida();
-//     toast.success("Unidade editada com sucesso!");
-//   } catch (error) {
-//     console.error("Erro ao editar unidade:", error);
-//     toast.error("Não foi possível editar a unidade.");
-//   }
-// };
-
-const editUnidade = (item) => {
-  item.originalUnidadeMedida = item.unidadeMedida;
-  item.isEditing = true;
-};
-
-const saveUnidade = async (item) => {
-  const unidadeNome = item.unidadeMedida.trim();
-  const unidadeId = item.id;
-
-  if (unidadeNome === "") {
-    toast.error("O nome da unidade não pode estar vazio.");
-    return;
-  }
-
-  if (isDuplicateUnidade(unidadeNome, item.id)) {
-    toast.error("Já existe uma unidade com esse nome.");
-    return;
-  }
-  try {
-    await api.put(`/unidade_medida/${unidadeId}`, {
-      unidade_medida: unidadeNome,
-    });
-    await fetchUnidadesMedida();
-    toast.success("Unidade editada com sucesso!");
-  } catch (error) {
-    console.error("Erro ao editar unidade:", error);
-    toast.error("Não foi possível editar a unidade.");
-  }
-
-  item.isEditing = false;
-};
-
-const cancelEditUnidade = (item) => {
-  item.isEditing = false;
-  item.unidadeMedida = item.originalUnidadeMedida;
-};
-
-const deletarUnidade = (id) => {
-  Swal.fire({
-    title: "Você tem certeza?",
-    text: `Deseja remover a unidade de medida?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sim, remover!",
-    cancelButtonText: "Cancelar",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await api.delete(`/unidade_medida/${id}`);
-        await fetchUnidadesMedida();
-        toast.success("Unidade removida com sucesso!");
-      } catch (error) {
-        console.error("Erro ao remover unidade:", error);
-        toast.error("Erro ao remover unidade.");
-      }
-    }
-  });
-};
-
-const closeModalUnidade = () => {
-  newUnidade.value = "";
-  isEditingUnidade.value = false;
-  // currentUnidadeId.value = null;
-  isModalUnidadeOpen.value = false;
-};
-
-const isDuplicateUnidade = (nome, excludeId = null) => {
-  return unidadesMedida.value.some(
-    (u) =>
-      u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
-  );
-};
-
 // Projeto
 const projetos = ref([]);
 const newProjeto = ref("");
@@ -1130,125 +1073,125 @@ const currentProjetoId = ref(null);
 const modalTitleProjeto = "Adicionar Projetos";
 const originalProjetoValue = ref("");
 
-const openModalProjeto = (projeto = null) => {
-  if (projeto) {
-    newProjeto.value = projeto.projeto;
-    currentProjetoId.value = projeto.id;
-    isEditingProjeto.value = true;
-  } else {
-    newProjeto.value = "";
-    isEditingProjeto.value = false;
-  }
-  isModalProjetoOpen.value = true;
-};
+// const openModalProjeto = (projeto = null) => {
+//   if (projeto) {
+//     newProjeto.value = projeto.projeto;
+//     currentProjetoId.value = projeto.id;
+//     isEditingProjeto.value = true;
+//   } else {
+//     newProjeto.value = "";
+//     isEditingProjeto.value = false;
+//   }
+//   isModalProjetoOpen.value = true;
+// };
 
-const handleSubmitProjeto = () => {
-  const projetoNome = newProjeto.value.trim();
+// const handleSubmitProjeto = () => {
+//   const projetoNome = newProjeto.value.trim();
 
-  if (projetoNome === "") {
-    toast.error("O nome do projeto não pode estar vazio.");
-    return;
-  }
+//   if (projetoNome === "") {
+//     toast.error("O nome do projeto não pode estar vazio.");
+//     return;
+//   }
 
-  if (
-    isDuplicateProjeto(
-      projetoNome,
-      isEditingProjeto.value ? currentProjetoId.value : null
-    )
-  ) {
-    toast.error("Já existe um projeto com esse nome.");
-    return;
-  }
+//   if (
+//     isDuplicateProjeto(
+//       projetoNome,
+//       isEditingProjeto.value ? currentProjetoId.value : null
+//     )
+//   ) {
+//     toast.error("Já existe um projeto com esse nome.");
+//     return;
+//   }
 
-  if (isEditingProjeto.value) {
-    const index = projetos.value.findIndex(
-      (p) => p.id === currentProjetoId.value
-    );
-    if (index !== -1) {
-      projetos.value[index].projeto = projetoNome;
-    }
-    isEditingProjeto.value = false;
-    currentProjetoId.value = null;
-  } else {
-    projetos.value.push({
-      id: Date.now(),
-      projeto: projetoNome,
-      isEditing: false,
-    });
-  }
-  newProjeto.value = "";
-};
+//   if (isEditingProjeto.value) {
+//     const index = projetos.value.findIndex(
+//       (p) => p.id === currentProjetoId.value
+//     );
+//     if (index !== -1) {
+//       projetos.value[index].projeto = projetoNome;
+//     }
+//     isEditingProjeto.value = false;
+//     currentProjetoId.value = null;
+//   } else {
+//     projetos.value.push({
+//       id: Date.now(),
+//       projeto: projetoNome,
+//       isEditing: false,
+//     });
+//   }
+//   newProjeto.value = "";
+// };
 
-const editProjeto = (item) => {
-  item.isEditing = true;
-  originalProjetoValue.value = item.projeto;
-};
+// const editProjeto = (item) => {
+//   item.isEditing = true;
+//   originalProjetoValue.value = item.projeto;
+// };
 
-const saveProjeto = (item) => {
-  const projetoNome = item.projeto.trim();
+// const saveProjeto = (item) => {
+//   const projetoNome = item.projeto.trim();
 
-  if (projetoNome === "") {
-    toast.error("O nome do projeto não pode estar vazio.");
-    return;
-  }
+//   if (projetoNome === "") {
+//     toast.error("O nome do projeto não pode estar vazio.");
+//     return;
+//   }
 
-  if (isDuplicateProjeto(projetoNome, item.id)) {
-    toast.error("Já existe um projeto com esse nome.");
-    return;
-  }
+//   if (isDuplicateProjeto(projetoNome, item.id)) {
+//     toast.error("Já existe um projeto com esse nome.");
+//     return;
+//   }
 
-  item.isEditing = false;
-};
+//   item.isEditing = false;
+// };
 
-const cancelEdit = (item) => {
-  item.projeto = originalProjetoValue.value;
-  item.isEditing = false;
-};
+// const cancelEdit = (item) => {
+//   item.projeto = originalProjetoValue.value;
+//   item.isEditing = false;
+// };
 
-const deletarProjeto = (id) => {
-  Swal.fire({
-    title: "Você tem certeza?",
-    text: `Deseja remover o projeto ?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sim, remover!",
-    cancelButtonText: "Cancelar",
-    position: "top",
-    backdrop: true,
-    customClass: {
-      container: "p-20",
-    },
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      projetos.value = projetos.value.filter((p) => p.id !== id);
-    }
-  });
-};
+// const deletarProjeto = (id) => {
+//   Swal.fire({
+//     title: "Você tem certeza?",
+//     text: `Deseja remover o projeto ?`,
+//     icon: "warning",
+//     showCancelButton: true,
+//     confirmButtonColor: "#3085d6",
+//     cancelButtonColor: "#d33",
+//     confirmButtonText: "Sim, remover!",
+//     cancelButtonText: "Cancelar",
+//     position: "top",
+//     backdrop: true,
+//     customClass: {
+//       container: "p-20",
+//     },
+//   }).then(async (result) => {
+//     if (result.isConfirmed) {
+//       projetos.value = projetos.value.filter((p) => p.id !== id);
+//     }
+//   });
+// };
 
-const closeModalProjeto = () => {
-  restoreOriginalValues();
-  newProjeto.value = "";
-  isEditingProjeto.value = false;
-  currentProjetoId.value = null;
-  isModalProjetoOpen.value = false;
-};
+// const closeModalProjeto = () => {
+//   restoreOriginalValues();
+//   newProjeto.value = "";
+//   isEditingProjeto.value = false;
+//   currentProjetoId.value = null;
+//   isModalProjetoOpen.value = false;
+// };
 
-const restoreOriginalValues = () => {
-  projetos.value.forEach((item) => {
-    if (item.isEditing) {
-      item.projeto = originalProjetoValue.value;
-      item.isEditing = false;
-    }
-  });
-};
+// const restoreOriginalValues = () => {
+//   projetos.value.forEach((item) => {
+//     if (item.isEditing) {
+//       item.projeto = originalProjetoValue.value;
+//       item.isEditing = false;
+//     }
+//   });
+// };
 
-const isDuplicateProjeto = (nome, excludeId = null) => {
-  return projetos.value.some(
-    (p) => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId
-  );
-};
+// const isDuplicateProjeto = (nome, excludeId = null) => {
+//   return projetos.value.some(
+//     (p) => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId
+//   );
+// };
 </script>
 
 <style scoped>

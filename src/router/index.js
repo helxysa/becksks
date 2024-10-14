@@ -60,7 +60,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/cadastro/aditivo",
+    path: "/cadastro/contratos/aditivo/:id",
     name: "Formulário Aditivo",
     component: FormAditive,
     meta: { requiresAuth: true },

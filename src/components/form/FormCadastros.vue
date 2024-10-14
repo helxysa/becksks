@@ -237,7 +237,7 @@
                 <th class="text-2xl">Opções</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody>            
               <tr
                 v-for="(item, index) in contratoForm.items"
                 :key="index"

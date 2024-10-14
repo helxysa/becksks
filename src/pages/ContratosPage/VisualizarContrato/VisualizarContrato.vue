@@ -13,7 +13,7 @@
      
     >
       <router-link
-        :to="{ name: 'Formulário Aditivo' }"
+        :to="{ name: 'Formulário Aditivo', params: { id: contrato.id } }"
       >
         Adicionar aditivo
       </router-link>
@@ -235,7 +235,7 @@
 
 
   <!-- Observações -->
-  <section
+  <!-- <section
     class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
   >
     <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
@@ -251,6 +251,33 @@
       <div>
         <p class="text-lg text-gray-500">Detalhes adicionais</p>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+      </div>
+    </div>
+  </section> -->
+  <section class="mt-8">
+    <div class="flex items-start justify-between gap-12">
+      <div class="w-3/4 border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md">
+        <h2 class="text-3xl font-bold mb-4">Descrição:</h2>
+        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+      </div>
+      <div class="w-1/4 flex justify-end">
+        <div class="relative">
+          <button @click="toggleTermosAditivosDropdown" class="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center">
+            Histórico - Aditivos
+            <Icon icon="mdi:chevron-down" class="ml-2" />
+          </button>
+          <!-- {{termosAditivos}} -->
+          <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10">
+            <ul class="py-2">
+              <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
+                {{ termo.nomeTermo }}
+              </li>
+              <li class="px-4 py-2 hover:bg-gray-100">
+                <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1956,6 +1983,35 @@
       </footer>
     </template>
   </JetDialogModal>
+    <!-- Modal Termos Aditivos -->
+    <JetDialogModal
+    :show="modalTermosAditivos"
+    :withouHeader="false"
+    @close="closeModalTermosAditivos"
+    maxWidth="6xl"
+    :modalTitle="'Termos Aditivos'"
+  >
+    <template #content>
+      <div class="mt-4">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border p-2">Título</th>
+              <th class="border p-2">Data</th>
+              <th class="border p-2">Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="termo in termosAditivos" :key="termo.id">
+              <td class="border p-2">{{ termo.titulo }}</td>
+              <td class="border p-2">{{ formatDate(termo.data) }}</td>
+              <td class="border p-2">{{ termo.descricao }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+  </JetDialogModal>
 </template>
 
 <script setup>
@@ -2086,6 +2142,10 @@ const medicaoData = ref({
   data_medicao: "",
   itens: [],
 });
+const termosAditivos = ref([]);
+const showTermosAditivosDropdown = ref(false);
+const modalTermosAditivos = ref(false);
+
 const totalItens = ref();
 const resultsPerPageItens = ref();
 let contratoItemData = ref([]);
@@ -2791,6 +2851,19 @@ const closeModalLancamento = () => {
   });
 };
 
+const toggleTermosAditivosDropdown = () => {
+  showTermosAditivosDropdown.value = !showTermosAditivosDropdown.value;
+};
+
+const openTermosAditivosModal = () => {
+  modalTermosAditivos.value = true;
+  showTermosAditivosDropdown.value = false;
+};
+
+const closeModalTermosAditivos = () => {
+  modalTermosAditivos.value = false;
+};
+
 const resetForm = () => {
   selectNovoLancamento.value = "";
   contrato.value.contratoItens.forEach((item) => {
@@ -2910,6 +2983,7 @@ const voltarListagem = () => {
 onMounted(() => {
   contratoId = route.params.id;
   fetchContrato(contratoId);
+  fetchTermoAditivo(contratoId)
   window.scroll({
     top: 0,
     // left: 100,
@@ -2935,6 +3009,17 @@ const fetchContrato = async (id) => {
   }
 };
 
+const fetchTermoAditivo =  async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/termo-aditivo`);
+    console.log(response.data, 'termo aditivos')   
+    termosAditivos.value = response.data;
+    // contratoForm.value = response.data;
+
+  } catch (error) {
+    console.error("Erro ao buscar contrato:", error);
+  }
+}
 const verificaIsFaturado = async (lancamentos, faturamentos) => {
   lancamentos.forEach((lancamento) => {
     lancamento.isFaturado = false;
