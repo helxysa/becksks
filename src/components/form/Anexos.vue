@@ -23,7 +23,6 @@
         />
       </label>
     </div>
-
     <div v-if="successMessage" class="mt-4 text-[#2ecc71] font-medium animate-fadeInOut">
       {{ successMessage }}
     </div>
