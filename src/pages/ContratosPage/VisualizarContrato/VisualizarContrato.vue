@@ -18,7 +18,7 @@
   </div>
     <div class="flex flex-wrap gap-3">
       <button
-      class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+      class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
      
     >
       <router-link
@@ -3383,11 +3383,13 @@ const closeModalEditItem = () => {
 const openFormViewAditivo = (aditivo) => { 
   isFormViewAditivo.value = true;
   editingAditivo.value = { ...aditivo };
+  router.push({ name: 'visualisarAditivo', params: { id: aditivo.id } })
  
 };
 
 const openFormEditAditivo = (aditivo) => { 
  editingAditivo.value = { ...aditivo };
+ router.push({ name: 'editarAditivo', params: { id: aditivo.id } })
 };
 
 const closeFormAditivo = () => {

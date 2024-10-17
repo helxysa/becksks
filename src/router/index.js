@@ -9,6 +9,7 @@ const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
 const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
+const FormViewAditive = () => import("../components/form/FormViewAditive.vue")
 
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
@@ -63,6 +64,18 @@ const routes = [
     path: "/cadastro/contratos/aditivo/:id",
     name: "Formulário Aditivo",
     component: FormAditive,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cadastro/contratos/visualizar/aditivo/:id",
+    name: "visualisarAditivo",
+    component: FormViewAditive,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cadastro/contratos/editar/aditivo/:id",
+    name: "editarAditivo",
+    component: FormViewAditive,
     meta: { requiresAuth: true },
   },
   {
