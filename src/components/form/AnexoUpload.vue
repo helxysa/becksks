@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full">
-    <h2 class="text-[1.8rem] font-medium text-gray-800 mb-6">Anexos</h2>
+  <div class="w-full mt-6">
+    <h2 class=" font-bold text-3xl  mb-6">Anexos :</h2>
 
     <div v-if="!isViewOnly" class="file-input-wrapper w-full">
       <label
