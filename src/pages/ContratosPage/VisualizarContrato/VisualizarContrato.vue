@@ -736,9 +736,7 @@
           @update:currentTab="criarFaturamentoCurrentTab = $event"
         />
       </div>
-      <div v-if="criarFaturamentoCurrentTab === 'Anexos'">
-        <AnexoUpload :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
-      </div>
+   
       <form @submit.prevent="createPedidoFaturamento">
         <div v-if="criarFaturamentoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
@@ -913,6 +911,9 @@
             </tr>
           </tbody>
         </table>
+        <div>
+          <AnexoUpload :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
+        </div>
       </div>
         <footer class="mt-9 flex justify-end gap-4">
           <button
@@ -950,11 +951,11 @@
           @update:currentTab="editFaturamentoCurrentTab = $event"
         />
       </div>
-      <div v-if="editFaturamentoCurrentTab === 'Anexos'">
+      <!-- <div v-if="editFaturamentoCurrentTab === 'Anexos'">
         <div v-if="editingFaturamento.id">
           <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
         </div>
-      </div>
+      </div> -->
       <form @submit.prevent="saveEditedFaturamento">
       <section v-if="editFaturamentoCurrentTab === 'Formulário'">
 
@@ -1132,6 +1133,11 @@
             </tr>
           </tbody>
         </table>
+        <div>
+          <div v-if="editingFaturamento.id">
+            <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
+          </div>
+        </div>
       </section>
         <footer class="mt-9 flex justify-end gap-4">
           <button
@@ -1169,10 +1175,7 @@
         :tab="tab"
         @update:currentTab="criarMedicaoCurrentTab = $event"
       />
-    </div>
-    <div v-if="criarMedicaoCurrentTab === 'Anexos'">
-      <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
-    </div>
+    </div> 
       <form @submit.prevent="createLancamento">
         <div v-if="criarMedicaoCurrentTab === 'Formulário'">
 
@@ -1332,6 +1335,9 @@
               </tr>
             </tbody>
           </table>
+          <div>
+            <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
+          </div>
         </div>
         </div>
         <footer class=" mt-9 flex justify-end gap-4">
@@ -1373,11 +1379,7 @@
         @update:currentTab="editMedicaoCurrentTab = $event"
       />
     </div>
-    <div v-if="editMedicaoCurrentTab === 'Anexos'">
-      <div v-if="editingLancamento.id">
-        <Anexos :resourceId="editingLancamento.id" :variant="'medicao'" :isViewOnly="isLancamentoViewModal"/>
-      </div>
-    </div>
+ 
     <form @submit.prevent="saveEditedLancamento">
       <section v-if="editMedicaoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
@@ -1536,6 +1538,9 @@
               </tr>
             </tbody>
           </table>
+          <div v-if="editingLancamento.id">
+            <Anexos :resourceId="editingLancamento.id" :variant="'medicao'" :isViewOnly="isLancamentoViewModal"/>
+          </div>
         </section>
       </section>
         <footer class="mt-9 flex justify-end gap-4">
@@ -1980,18 +1985,18 @@ let alterouStatus = ref(false); // Flag para verificar se houve alteração no s
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
 // Guias dos modais de edição
-const editMedicaoTabs = ['Formulário', 'Anexos']
+const editMedicaoTabs = ['Formulário']
 const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
-const editFaturamentoTabs = ['Formulário', 'Anexos']
+const editFaturamentoTabs = ['Formulário']
 const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 // Guias dos modais de criação
 // Medicao
-const criarMedicaoTabs = ['Formulário', 'Anexos']
+const criarMedicaoTabs = ['Formulário']
 const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
 const medicaoLocalAnexos = ref([])
 const medicaoId = ref(null)
 // Faturamento
-const criarFaturamentoTabs = ['Formulário', 'Anexos']
+const criarFaturamentoTabs = ['Formulário']
 const criarFaturamentoCurrentTab = ref(criarFaturamentoTabs[0])
 const faturamentoLocalAnexos = ref([])
 const faturamentoId = ref(null)
