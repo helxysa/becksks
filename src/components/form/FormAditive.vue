@@ -967,7 +967,7 @@ const createTermoAditivo = async (contratoId) => {
       theme: "colored",
       type: "error",
     });
-    console.error("Erro ao cadastrar contrato:", error);
+    // console.error("Erro ao cadastrar contrato:", error);
   
   }
 };

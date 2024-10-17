@@ -266,20 +266,37 @@
   <section class="mt-8">
     <div class="flex items-start justify-between gap-12">
       <div class="w-3/4 border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md">
-        <h2 class="text-3xl font-bold mb-4">Descrição:</h2>
+        <div class="flex">
+         <span>
+            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+          </span>
+          <h2 class="text-3xl font-bold mb-4 text-blue-800 ">
+            Descrição:
+          </h2>
+
+        </div>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
       </div>
-      <div class="w-1/4 flex justify-end">
-        <div class="relative">
-          <button @click="toggleTermosAditivosDropdown" class="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center">
+      <div class="w-1/4 flex justify-end border rounded-xl shadow-sm ">
+        <div class="relative w-full">
+          <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
+            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
             Histórico - Aditivos
             <Icon icon="mdi:chevron-down" class="ml-2" />
           </button>
           <!-- {{termosAditivos}} -->
-          <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-10">
+          <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
                 {{ termo.nomeTermo }}
+                <span>
+                  <button
+                  @click="deletarTermoAditivo(termo.id)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"                
+                >
+                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
+                </button>
+                </span>
               </li>
               <li class="px-4 py-2 hover:bg-gray-100">
                 <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
@@ -2002,19 +2019,44 @@
   >
     <template #content>
       <div class="mt-4">
-        <table class="w-full border-collapse">
-          <thead>
-            <tr class="bg-gray-100">
-              <th class="border p-2">Título</th>
-              <th class="border p-2">Data</th>
-              <th class="border p-2">Descrição</th>
+        <table class="table-auto border border-slate-200 rounded-2xl w-full ">
+          <thead class="h-20 bg-slate-100 border-1">
+            <tr>
+              <th class="border p-2 text-2xl">Termo  Aditivo</th>
+              <th class="border p-2 text-2xl">Período</th>
+              <th class="border p-2 text-2xl">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="termo in termosAditivos" :key="termo.id">
-              <td class="border p-2">{{ termo.titulo }}</td>
-              <td class="border p-2">{{ formatDate(termo.data) }}</td>
-              <td class="border p-2">{{ termo.descricao }}</td>
+            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">             
+              <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
+              <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
+              <td class="border p-2 ">
+               <div class="flex justify-center items-center gap-2">
+                  <span @click="openFormViewAditivo(termo)">
+                    <Icon
+                      icon="ph:eye"
+                      height="20"
+                      class="hover:text-blue-500 text-black hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                  <span @click="openFormEditAditivo(termo)">
+                    <Icon
+                      icon="bx:edit"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                  <span  >
+                    <Icon
+                      icon="material-symbols-light:download"
+                      height="30"
+                      class="hover:text-gray-500 hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                </div>
+              </td>
+              <!-- <td class="border p-2 text-2xl">{{ termo.descricao }}</td> -->
             </tr>
           </tbody>
         </table>
@@ -2122,12 +2164,14 @@ const newItem = ref({
 });
 const modalEditItem = ref(false);
 const editingItem = ref({});
+const editingAditivo =  ref({});
 const modalEditLancamento = ref(false);
 const modalEditFaturamento = ref(false);
 const editingLancamento = ref({});
 const isLancamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
 const isFaturamentoViewModal = ref(false);
+const isFormViewAditivo =  ref(false);
 const editingFaturamento = ref({});
 const podeRenovar = ref(false);
 const projetos = ref("");
@@ -2292,6 +2336,31 @@ const isDuplicateUnidade = (nome, excludeId = null) => {
     (u) =>
       u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
   );
+};
+
+const deletarTermoAditivo = (id) => {
+  Swal.fire({
+    title: "Confirmar  exclusão",
+    text: `tem certeza que deseja remover o  termo  aditivo?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/termo-aditivo/${id}`);
+        fetchTermoAditivo(contratoId)
+       
+        toast.success("Termo aditivo removido com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover termo  aditivo:", error);
+        toast.error("Erro ao remover termo aditivo.");
+      }
+    }
+  });
 };
 
 const fetchProjetos = async (id) => {
@@ -3305,6 +3374,22 @@ const closeModalEditItem = () => {
   isItemViewModal.value = false;
   modalEditItem.value = false;
 };
+
+const openFormViewAditivo = (aditivo) => { 
+  isFormViewAditivo.value = true;
+  editingAditivo.value = { ...aditivo };
+ 
+};
+
+const openFormEditAditivo = (aditivo) => { 
+ editingAditivo.value = { ...aditivo };
+};
+
+const closeFormAditivo = () => {
+  isFormViewAditivo.value = false;
+ 
+};
+
 
 const saveEditedItem = async () => {
   const contratoId = route.params.id;
