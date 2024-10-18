@@ -41,7 +41,7 @@
           <div class="flex items-center gap-2 w-full">
             <div v-if="!anexo.isEditing" class="flex items-center gap-2 w-full">
               <a
-                :href="anexo.file_url"
+                :href="convertUrl(anexo.file_url)"
                 target="_blank"
                 class="text-[#3498db] no-underline font-normal flex-grow"
               >
@@ -116,6 +116,14 @@ const props = defineProps({
     default: false
   }
 });
+
+const  convertUrl = (fileUrl) => {
+   if (String(fileUrl).includes('https')) {
+       return fileUrl
+   } else {
+     return  'https://api-boss.msbtec.app' + fileUrl
+   }
+}
 
 const handleFileSelect = (event) => {
   selectedFile.value = event.target.files[0];
