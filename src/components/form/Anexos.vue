@@ -11,7 +11,7 @@
       >
         <div class="text-[2.5rem] text-[#3498db] mb-3">📤</div>
         <span>Arraste ou clique para escolher um arquivo</span>
-        <div class="text-sm text-gray-600 mt-3 font-light">
+        <div class="text-sm text-gray-600 mt-3 font-light">        
           {{ selectedFile ? selectedFile.name : 'Nenhum arquivo selecionado' }}
         </div>
         <input
@@ -135,10 +135,13 @@ const uploadFile = async () => {
 
   const formData = new FormData();
   formData.append('file', selectedFile.value);
+  console.log(selectedFile.value, 'arquivo  selecionado')
+  console.log(formData, 'form data')
 
   let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
   try {
+    console.log(api, 'api')
     await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -162,11 +165,13 @@ const fetchAnexos = async () => {
     let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
     const response = await api.get(`/${variantUrl}/${props.resourceId}/anexos`);
+    console.log(response.data, 'resposta')
     anexos.value = response.data.anexos.map((anexo) => ({
       ...anexo,
       isEditing: false,
       newFileName: '',
     }));
+    console.log(anexos.value, 'anexos  retorno')
   } catch (error) {
     errorMessage.value = 'Erro ao carregar os anexos.';
   }
