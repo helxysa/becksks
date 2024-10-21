@@ -943,9 +943,7 @@ const createTermoAditivo = async (contratoId) => {
           ...item,
           valor_unitario: parseFloat(item.valor_unitario)
         }
-    })
-
-    console.log(termoAditivoItens.value, 'termo')
+    })   
     
     let payload = {
       contrato_id: Number(contratoId),
@@ -954,16 +952,17 @@ const createTermoAditivo = async (contratoId) => {
       data_fim: contratoForm.value.data_fim,
       objeto_contrato: contratoForm.value.objeto_contrato,
       termo_aditivo_itens: termoAditivoItens.value,
+      saldo_contrato: contratoForm.value.saldo_contrato
     }
     const response = await api.post("/termo-aditivo", payload);
-    console.log(response, 'resposta')
+   
     toast("Termo aditivo cadastrado com  sucesso!", {
       theme: "colored",
       type: "success",
     });
     voltarListagem()
   } catch (error) {
-    toast("Não foi possível cadastrar o contrato!", {
+    toast("Não foi possível cadastrar o termo  aditivo!", {
       theme: "colored",
       type: "error",
     });

@@ -2068,6 +2068,37 @@
       </div>
     </template>
   </JetDialogModal>
+
+  <!-- Modal para visualizar aditivo -->
+  <JetDialogModal
+    :show="modalViewAditivo"
+    :withouHeader="false"
+    @close="closeModalViewAditivo"
+    maxWidth="4xl"
+    :modalTitle="'Visualizar Termo Aditivo'"
+  >
+    <template #content>
+      <ViewAditivoForm :aditivo="selectedAditivo" v-if="selectedAditivo" />
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal para editar aditivo -->
+  <JetDialogModal
+    :show="modalEditAditivo"
+    :withouHeader="false"
+    @close="closeModalEditAditivo"
+    maxWidth="4xl"
+    :modalTitle="'Editar Termo Aditivo'"
+  >
+    <template #content>
+      <EditAditivoForm 
+        :aditivo="selectedAditivo" 
+        @submit="handleEditAditivoSubmit"
+        @cancel="closeModalEditAditivo"
+        v-if="selectedAditivo"
+      />
+    </template>
+  </JetDialogModal>
 </template>
 
 <script setup>
@@ -2084,6 +2115,8 @@ import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
+import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
+import EditAditivoForm from '@/components/EditAditivoForm.vue';
 
  const store = useProfileStore()
 
@@ -2092,6 +2125,10 @@ let alterouStatus = ref(false); // Flag para verificar se houve alteração no s
 
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
+
+const modalViewAditivo = ref(false);
+const modalEditAditivo = ref(false);
+const selectedAditivo = ref(null);
 // Guias dos modais de edição
 const editMedicaoTabs = ['Formulário']
 const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
@@ -2219,6 +2256,36 @@ const totalFaturamentos = ref(0);
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
+
+const handleEditAditivoSubmit = async (termoAditivo) => {    
+
+  let payload = {
+    nome_termo: termoAditivo.nomeTermo,
+    data_inicio: termoAditivo.dataInicio,
+    data_fim:termoAditivo.dataFim,
+    saldo_contrato: termoAditivo.saldoContrato,
+    objeto_contrato: termoAditivo.objetoContrato
+  }
+
+  try {
+    const response = await api
+      .put(`/termo-aditivo/${termoAditivo.id}`, payload)
+      .then((response) => {
+        console.log(response, 'response')
+        toast("Termo aditivo editado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });      
+        closeModalEditAditivo();
+      });
+  } catch (error) {
+    console.log(error, 'erro')
+    toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
+      position: "top-right",
+    });
+  } 
+  
+};
 
 // UNIDADE DE MEDIDA
 const unidadesMedida = ref([]);
@@ -2517,6 +2584,10 @@ const fetchContratoFaturamentos = async (page) => {
     totalFaturamentos.value = 0;
   }
 };
+
+watch( ()=> modalTermosAditivos.value,
+() => fetchTermoAditivo(route.params.id)
+ )
 
 watch(()=> alterouStatus.value, () =>{
   fetchContratoMedicoes(currentPageMedicao.value )
@@ -3380,21 +3451,28 @@ const closeModalEditItem = () => {
   modalEditItem.value = false;
 };
 
-const openFormViewAditivo = (aditivo) => { 
-  isFormViewAditivo.value = true;
-  editingAditivo.value = { ...aditivo };
-  router.push({ name: 'visualisarAditivo', params: { id: aditivo.id } })
- 
+const openFormViewAditivo = (aditivo) => {
+  selectedAditivo.value = { ...aditivo };
+  modalViewAditivo.value = true;
+  modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
 };
 
-const openFormEditAditivo = (aditivo) => { 
- editingAditivo.value = { ...aditivo };
- router.push({ name: 'editarAditivo', params: { id: aditivo.id } })
+const openFormEditAditivo = (aditivo) => {
+  selectedAditivo.value = { ...aditivo };
+  modalEditAditivo.value = true;
+  modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
 };
 
-const closeFormAditivo = () => {
-  isFormViewAditivo.value = false;
- 
+const closeModalViewAditivo = () => {
+  modalViewAditivo.value = false;
+  selectedAditivo.value = null;
+  modalTermosAditivos.value = true; // Reabre o modal de termos aditivos
+};
+
+const closeModalEditAditivo = () => {
+  modalEditAditivo.value = false;
+  selectedAditivo.value = null;
+  modalTermosAditivos.value = true; // Reabre o modal de termos aditivos
 };
 
 
