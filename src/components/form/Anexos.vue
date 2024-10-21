@@ -11,7 +11,7 @@
       >
         <div class="text-[2.5rem] text-[#3498db] mb-3">📤</div>
         <span>Arraste ou clique para escolher um arquivo</span>
-        <div class="text-sm text-gray-600 mt-3 font-light">
+        <div class="text-sm text-gray-600 mt-3 font-light">        
           {{ selectedFile ? selectedFile.name : 'Nenhum arquivo selecionado' }}
         </div>
         <input
@@ -23,7 +23,6 @@
         />
       </label>
     </div>
-
     <div v-if="successMessage" class="mt-4 text-[#2ecc71] font-medium animate-fadeInOut">
       {{ successMessage }}
     </div>
@@ -42,7 +41,7 @@
           <div class="flex items-center gap-2 w-full">
             <div v-if="!anexo.isEditing" class="flex items-center gap-2 w-full">
               <a
-                :href="anexo.file_url"
+                :href="convertUrl(anexo.file_url)"
                 target="_blank"
                 class="text-[#3498db] no-underline font-normal flex-grow"
               >
@@ -118,6 +117,14 @@ const props = defineProps({
   }
 });
 
+const  convertUrl = (fileUrl) => {
+   if (String(fileUrl).includes('https')) {
+       return fileUrl
+   } else {
+     return  'https://api-boss.msbtec.app' + fileUrl
+   }
+}
+
 const handleFileSelect = (event) => {
   selectedFile.value = event.target.files[0];
   uploadFile();
@@ -135,11 +142,11 @@ const uploadFile = async () => {
   }
 
   const formData = new FormData();
-  formData.append('file', selectedFile.value);
+  formData.append('file', selectedFile.value); 
 
   let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
-  try {
+  try { 
     await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -163,11 +170,13 @@ const fetchAnexos = async () => {
     let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
     const response = await api.get(`/${variantUrl}/${props.resourceId}/anexos`);
+   
     anexos.value = response.data.anexos.map((anexo) => ({
       ...anexo,
       isEditing: false,
       newFileName: '',
     }));
+ 
   } catch (error) {
     errorMessage.value = 'Erro ao carregar os anexos.';
   }
