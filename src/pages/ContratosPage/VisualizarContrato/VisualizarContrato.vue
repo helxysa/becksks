@@ -289,14 +289,14 @@
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
                 {{ termo.nomeTermo }}
-                <span>
+                <!-- <span>
                   <button
                   @click="deletarTermoAditivo(termo.id)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"                
                 >
                   <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
                 </button>
-                </span>
+                </span> -->
               </li>
               <li class="px-4 py-2 hover:bg-gray-100">
                 <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
@@ -2033,7 +2033,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">             
+            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center"> 
+              <!-- {{termo}}             -->
               <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
               <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
               <td class="border p-2 ">
@@ -2051,6 +2052,9 @@
                       height="20"
                       class="hover:text-red-500 hover:rounded-md cursor-pointer"
                     />
+                  </span>
+                  <span  @click="deletarTermoAditivo(termo.id)">
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
                   </span>
                   <span  >
                     <Icon
