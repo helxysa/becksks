@@ -289,14 +289,14 @@
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
                 {{ termo.nomeTermo }}
-                <span>
+                <!-- <span>
                   <button
                   @click="deletarTermoAditivo(termo.id)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
                 >
                   <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
                 </button>
-                </span>
+                </span> -->
               </li>
               <li class="px-4 py-2 hover:bg-gray-100">
                 <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
