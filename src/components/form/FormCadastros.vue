@@ -237,7 +237,7 @@
                 <th class="text-2xl">Opções</th>
               </tr>
             </thead>
-            <tbody>            
+            <tbody>
               <tr
                 v-for="(item, index) in contratoForm.items"
                 :key="index"
@@ -747,10 +747,7 @@ import AnexoUpload from './AnexoUpload.vue';
 import TabButton from '../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
- const store = useProfileStore()
- console.log(store.profile, 'storecontrato')
-
-
+const store = useProfileStore()
 const tabs = ['Itens', 'Anexos']
 const currentTab = ref(tabs[0])
 const contratoId = ref(null)

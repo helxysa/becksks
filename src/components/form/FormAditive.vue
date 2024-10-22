@@ -24,8 +24,8 @@
             maxlength="120"
           />
         </div>
-        <div class="flex flex-col items-start gap-3 mt-8">      
-          <label class="font-semibold">Nome do cliente</label>        
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Nome do cliente</label>
           <input
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             disabled
@@ -226,7 +226,7 @@
             :tab="tab"
             @update:currentTab="currentTab = $event"
           />
-        </div>       
+        </div>
         <div v-if="currentTab === 'Itens'">
           <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
             <thead class="h-24 bg-slate-100 border-1">
@@ -275,18 +275,18 @@
           </table>
         </div>
         <div v-if="currentTab === 'Anexos'">
-            <AnexoUpload :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
+            <AnexoUpload :resourceId="termoAditivoId" variant="aditivo" :localAnexos="localAnexos" />
         </div>
         <div v-if="currentTab === 'Projetos'">
           <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
             <thead class="h-24 bg-slate-100 border-1">
               <tr>
                 <th class="text-2xl">Id</th>
-                <th class="text-2xl">Projeto</th>     
-                <th></th>   
-                <th></th> 
-                <th></th>       
-              
+                <th class="text-2xl">Projeto</th>
+                <th></th>
+                <th></th>
+                <th></th>
+
               </tr>
             </thead>
             <tbody>
@@ -296,10 +296,10 @@
                 class="text-center"
               >
                 <td class="text-2xl p-4">{{ projeto.id }}</td>
-                <td class="text-2xl p-4">{{ projeto.projeto }}</td> 
-                <td class="text-2xl p-4"></td>  
-                <td class="text-2xl p-4"></td> 
-                <td class="text-2xl p-4"></td> 
+                <td class="text-2xl p-4">{{ projeto.projeto }}</td>
+                <td class="text-2xl p-4"></td>
+                <td class="text-2xl p-4"></td>
+                <td class="text-2xl p-4"></td>
 
                 <!-- <td>
                   <button type="button" @click="openEditModal(index)"
@@ -795,13 +795,11 @@ import AnexoUpload from './AnexoUpload.vue';
 import TabButton from '../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
- const store = useProfileStore()
- console.log(store.profile, 'storecontrato')
-
-
+const store = useProfileStore()
 const tabs = ['Itens', 'Anexos', 'Projetos']
 const currentTab = ref(tabs[0])
 const contratoId = ref(null)
+const termoAditivoId = ref(null);
 const localAnexos = ref([]);
 const router = useRouter();
 const route = useRoute();
@@ -840,7 +838,7 @@ let contratoForm = ref({
   pontoFocal: "",
   cidade: "",
   estado: "",
-  objeto_contrato: "", 
+  objeto_contrato: "",
   // observacoes: "",
   nome_termo: "",
   // lembrete_vencimento: "",
@@ -868,8 +866,7 @@ onMounted(() => {
 const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
-    console.log(response.data, 'termo adit')   
-    contratoForm.value = response.data;   
+    contratoForm.value = response.data;
 
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
@@ -901,7 +898,7 @@ const openEditModal = (index) => {
   exibirEditModal.value = true;
   fetchUnidadesMedida();
 };
-const saveItem = () => { 
+const saveItem = () => {
   termoAditivoItens.value.push({ ...novoItem.value });
   novoItem.value = {
     titulo: "",
@@ -943,8 +940,8 @@ const createTermoAditivo = async (contratoId) => {
           ...item,
           valor_unitario: parseFloat(item.valor_unitario)
         }
-    })   
-    
+    })
+
     let payload = {
       contrato_id: Number(contratoId),
       nome_termo: contratoForm.value.nome_termo,
@@ -955,7 +952,7 @@ const createTermoAditivo = async (contratoId) => {
       saldo_contrato: contratoForm.value.saldo_contrato
     }
     const response = await api.post("/termo-aditivo", payload);
-   
+    termoAditivoId.value = response.data.id;
     toast("Termo aditivo cadastrado com  sucesso!", {
       theme: "colored",
       type: "success",
@@ -967,7 +964,7 @@ const createTermoAditivo = async (contratoId) => {
       type: "error",
     });
     // console.error("Erro ao cadastrar contrato:", error);
-  
+
   }
 };
 
@@ -1017,7 +1014,7 @@ const createTermoAditivo = async (contratoId) => {
 const saveTermoADitive = async () => {
   contratoId.value =  route.params.id
   createTermoAditivo(contratoId.value)
-  
+
 };
 
 const voltarListagem = () => {
