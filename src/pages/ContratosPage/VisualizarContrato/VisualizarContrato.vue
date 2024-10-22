@@ -19,7 +19,7 @@
     <div class="flex flex-wrap gap-3">
       <button
       class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-     
+
     >
       <router-link
         :to="{ name: 'Formulário Aditivo', params: { id: contrato.id } }"
@@ -292,7 +292,7 @@
                 <span>
                   <button
                   @click="deletarTermoAditivo(termo.id)"
-                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"                
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
                 >
                   <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
                 </button>
@@ -790,7 +790,7 @@
           @update:currentTab="criarFaturamentoCurrentTab = $event"
         />
       </div>
-   
+
       <form @submit.prevent="createPedidoFaturamento">
         <div v-if="criarFaturamentoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
@@ -1229,7 +1229,7 @@
         :tab="tab"
         @update:currentTab="criarMedicaoCurrentTab = $event"
       />
-    </div> 
+    </div>
       <form @submit.prevent="createLancamento">
         <div v-if="criarMedicaoCurrentTab === 'Formulário'">
 
@@ -1433,7 +1433,7 @@
         @update:currentTab="editMedicaoCurrentTab = $event"
       />
     </div>
- 
+
     <form @submit.prevent="saveEditedLancamento">
       <section v-if="editMedicaoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
@@ -2033,7 +2033,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">             
+            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">
               <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
               <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
               <td class="border p-2 ">
@@ -2052,7 +2052,7 @@
                       class="hover:text-red-500 hover:rounded-md cursor-pointer"
                     />
                   </span>
-                  <span  >
+                  <span @click="downloadZip(termo.id)">
                     <Icon
                       icon="material-symbols-light:download"
                       height="30"
@@ -2091,8 +2091,8 @@
     :modalTitle="'Editar Termo Aditivo'"
   >
     <template #content>
-      <EditAditivoForm 
-        :aditivo="selectedAditivo" 
+      <EditAditivoForm
+        :aditivo="selectedAditivo"
         @submit="handleEditAditivoSubmit"
         @cancel="closeModalEditAditivo"
         v-if="selectedAditivo"
@@ -2257,7 +2257,7 @@ const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
 
-const handleEditAditivoSubmit = async (termoAditivo) => {    
+const handleEditAditivoSubmit = async (termoAditivo) => {
 
   let payload = {
     nome_termo: termoAditivo.nomeTermo,
@@ -2275,7 +2275,7 @@ const handleEditAditivoSubmit = async (termoAditivo) => {
         toast("Termo aditivo editado com sucesso!", {
           theme: "colored",
           type: "success",
-        });      
+        });
         closeModalEditAditivo();
       });
   } catch (error) {
@@ -2283,8 +2283,8 @@ const handleEditAditivoSubmit = async (termoAditivo) => {
     toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
       position: "top-right",
     });
-  } 
-  
+  }
+
 };
 
 // UNIDADE DE MEDIDA
@@ -2425,7 +2425,7 @@ const deletarTermoAditivo = (id) => {
       try {
         await api.delete(`/termo-aditivo/${id}`);
         fetchTermoAditivo(contratoId)
-       
+
         toast.success("Termo aditivo removido com sucesso!");
       } catch (error) {
         console.error("Erro ao remover termo  aditivo:", error);
@@ -3166,7 +3166,7 @@ const fetchContrato = async (id) => {
 const fetchTermoAditivo =  async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    console.log(response.data, 'termo aditivos')   
+    console.log(response.data, 'termo aditivos')
     termosAditivos.value = response.data;
     // contratoForm.value = response.data;
 
@@ -3847,6 +3847,42 @@ const openWhatsApp = (telefone) => {
   const url = `https://wa.me/${telefoneFormatado}`;
   window.open(url, "_blank");
 };
+
+const downloadZip = async (id) => {
+  try {
+    const response = await api.get(`/termo-aditivos/${id}/anexos/zip`, {
+      responseType: 'blob',
+    });
+
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = 'download.zip';
+
+    if (contentDisposition && contentDisposition.includes('filename')) {
+      const fileNameMatch = contentDisposition.match(/filename\*?=(?:UTF-8''|")?([^;\r\n"]+)/i);
+      if (fileNameMatch && fileNameMatch.length > 1) {
+        fileName = decodeURIComponent(fileNameMatch[1].replace(/"/g, ''));
+      }
+    }
+
+    const blob = new Blob([response.data], { type: 'application/zip' });
+
+    const url = window.URL.createObjectURL(blob);
+    console.log('URL do blob:', url);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Erro ao baixar o arquivo:', error);
+    alert('Ocorreu um erro ao baixar o arquivo.');
+  }
+};
+
 
 watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
   if (newTipo === 'Estimada') {
