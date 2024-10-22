@@ -2052,6 +2052,9 @@
                       class="hover:text-red-500 hover:rounded-md cursor-pointer"
                     />
                   </span>
+                  <span  @click="deletarTermoAditivo(termo.id)">
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
+                  </span>
                   <span @click="downloadZip(termo.id)">
                     <Icon
                       icon="material-symbols-light:download"
