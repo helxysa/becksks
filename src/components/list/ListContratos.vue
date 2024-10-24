@@ -7,13 +7,13 @@
         <input
           v-model="dataInicio"
           type="date"
-          class="border rounded px-4 py-2 mr-4"
+          class="border rounded px-4 py-1 mr-4"
           placeholder="Data de Início"
         />
         <input
           v-model="dataFim"
           type="date"
-          class="border rounded px-4 py-2"
+          class="border rounded px-4 py-1"
           placeholder="Data de Fim"
         />
         <label>Tipo</label>
@@ -35,7 +35,7 @@
         v-model="filterName"
         type="text"
         placeholder="Pesquisar..."
-        class="border rounded px-4 py-2 pl-16 mr-4 w-full"
+        class="border rounded px-4 p-2 pl-16 mr-4 w-full"
         />
       </div>
     </div>
