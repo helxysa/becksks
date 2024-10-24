@@ -285,7 +285,7 @@ const fetchContratos = async () => {
       tipo: filterType.value,
       dataInicio: dataInicio.value,
       dataFim: dataFim.value,
-      sortBy: 'created_at',
+      sortBy: 'createdAt',
       sortOrder: 'desc',
       page: 1,
       limit: 50,
