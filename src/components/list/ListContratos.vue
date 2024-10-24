@@ -288,7 +288,7 @@ const fetchContratos = async () => {
       sortBy: 'createdAt',
       sortOrder: 'desc',
       page: 1,
-      limit: 50,
+      limit: 500,
     };
 
     const response = await api.get("/contratos-e-termos", { params });
