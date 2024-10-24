@@ -1,14 +1,43 @@
 <template>
   <div class="px-6 py-8 2xl:max-w-[2000px] 2xl:mx-auto">
     <!-- Filtragem -->
-    <div class="flex mb-4">
-      <input
+    <div class="flex mb-12 gap-4 justify-between">
+      <section class="flex justify-around gap-5 items-center">
+        <label>Período</label>
+        <input
+          v-model="dataInicio"
+          type="date"
+          class="border rounded px-4 py-2 mr-4"
+          placeholder="Data de Início"
+        />
+        <input
+          v-model="dataFim"
+          type="date"
+          class="border rounded px-4 py-2"
+          placeholder="Data de Fim"
+        />
+        <label>Tipo</label>
+        <select v-model="filterType" class="border rounded px-4 py-2">
+          <option value="Todos">Todos</option>
+          <option value="Contratos">Contratos</option>
+          <option value="Termos Aditivos">Termos Aditivos</option>
+        </select>
+        <span @click="resetFilters" class="p-2 rounded-full cursor-pointer transition-transform duration-75 ease-in-out active:scale-125 active:-rotate-180">
+          <Icon icon="system-uicons:reset" width="2rem" class="text-slate-800" />
+        </span>
+      </section>
+
+      <div class="relative w-full max-w-[20%] items-center">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+          <Icon icon="mdi:magnify" width="2rem" class="text-gray-400" />
+        </span>
+        <input
         v-model="filterName"
         type="text"
-        placeholder="Filtrar por nome do contrato ou nome termo"
-        class="border rounded px-4 py-2 mr-4 w-full"
-      />
-
+        placeholder="Pesquisar..."
+        class="border rounded px-4 py-2 pl-16 mr-4 w-full"
+        />
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
@@ -159,6 +188,7 @@ import { ref, onMounted, watch,  } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { api } from "@/services/api";
 import { toast } from "vue3-toastify";
+import { Icon } from "@iconify/vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -167,6 +197,19 @@ const faturamentos = ref([]);
 const itens = ref([]);
 const medicoes = ref([]);
 const filterName = ref('');
+const filterType = ref('Todos');
+const dataInicio = ref('');
+const dataFim = ref('');
+
+const resetFilters = () => {
+  dataInicio.value = '';
+  dataFim.value = '';
+  filterType.value = 'Todos';
+  filterName.value = '';
+
+  // Após resetar os valores, chamamos a função para buscar os dados novamente
+  // fetchContratos();
+};
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
@@ -239,6 +282,9 @@ const fetchContratos = async () => {
   try {
     const params = {
       search: filterName.value,
+      tipo: filterType.value,
+      dataInicio: dataInicio.value,
+      dataFim: dataFim.value,
       sortBy: 'created_at',
       sortOrder: 'desc',
       page: 1,
@@ -246,14 +292,13 @@ const fetchContratos = async () => {
     };
 
     const response = await api.get("/contratos-e-termos", { params });
-    console.log('response', response)
     contratos.value = response.data.data;
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
 };
 
-watch(filterName, () => {
+watch([filterName, filterType, dataInicio, dataFim], () => {
   fetchContratos();
 });
 
