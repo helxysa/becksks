@@ -42,7 +42,7 @@
         <section class="flex flex-col flex-wrap justify-evenly items-end w-full max-w-[30%]">
           <!-- Primeiro Stamp -->
           <div
-            class="w-[350px] h-[96px] flex sm:flex-row justify-between items-center px-4 rounded-lg bg-gradient-to-r from-cyan-100 to-cyan-400"
+            class="w-[300px] 2xl:w-[350px] h-[96px] flex sm:flex-row justify-between items-center px-4 rounded-lg bg-gradient-to-r from-cyan-100 to-cyan-400"
           >
             <div>
               <p class="font-semibold">
@@ -63,7 +63,7 @@
           </div>
           <!-- Segundo Stamp -->
           <div
-            class="w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg bg-gradient-to-r from-blue-300 to-pink-200"
+            class="w-[300px] 2xl:w-[350px] h-[96px] flex justify-between items-center px-4 rounded-lg bg-gradient-to-r from-blue-300 to-pink-200"
           >
             <div>
               <p class="font-semibold">
@@ -89,7 +89,7 @@
           </div>
           <!-- Terceiro Stamp -->
           <div
-            class="w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg bg-gradient-to-r from-orange-200 to-green-200"
+            class="w-[300px] 2xl:w-[350px] h-[96px] flex bg-orange-200 justify-between items-center px-4 rounded-lg bg-gradient-to-r from-orange-200 to-green-200"
           >
             <div>
               <p class="font-semibold">
