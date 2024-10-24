@@ -18,6 +18,16 @@
   </div>
     <div class="flex flex-wrap gap-3">
       <button
+      class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+
+    >
+      <router-link
+        :to="{ name: 'Formulário Aditivo', params: { id: contrato.id } }"
+      >
+        Adicionar aditivo
+      </router-link>
+    </button>
+      <button
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
          v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
       >
@@ -234,7 +244,7 @@
 
 
   <!-- Observações -->
-  <section
+  <!-- <section
     class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
   >
     <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
@@ -250,6 +260,50 @@
       <div>
         <p class="text-lg text-gray-500">Detalhes adicionais</p>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+      </div>
+    </div>
+  </section> -->
+  <section class="mt-8">
+    <div class="flex items-start justify-between gap-12">
+      <div class="w-3/4 border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md">
+        <div class="flex">
+         <span>
+            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+          </span>
+          <h2 class="text-3xl font-bold mb-4 text-blue-800 ">
+            Descrição:
+          </h2>
+
+        </div>
+        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+      </div>
+      <div class="w-1/4 flex justify-end border rounded-xl shadow-sm ">
+        <div class="relative w-full">
+          <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
+            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+            Histórico - Aditivos
+            <Icon icon="mdi:chevron-down" class="ml-2" />
+          </button>
+          <!-- {{termosAditivos}} -->
+          <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
+            <ul class="py-2">
+              <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
+                {{ termo.nomeTermo }}
+                <!-- <span>
+                  <button
+                  @click="deletarTermoAditivo(termo.id)"
+                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
+                >
+                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
+                </button>
+                </span> -->
+              </li>
+              <li class="px-4 py-2 hover:bg-gray-100">
+                <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -736,7 +790,7 @@
           @update:currentTab="criarFaturamentoCurrentTab = $event"
         />
       </div>
-   
+
       <form @submit.prevent="createPedidoFaturamento">
         <div v-if="criarFaturamentoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
@@ -1175,7 +1229,7 @@
         :tab="tab"
         @update:currentTab="criarMedicaoCurrentTab = $event"
       />
-    </div> 
+    </div>
       <form @submit.prevent="createLancamento">
         <div v-if="criarMedicaoCurrentTab === 'Formulário'">
 
@@ -1379,7 +1433,7 @@
         @update:currentTab="editMedicaoCurrentTab = $event"
       />
     </div>
- 
+
     <form @submit.prevent="saveEditedLancamento">
       <section v-if="editMedicaoCurrentTab === 'Formulário'">
         <section class="flex flex-col gap-8">
@@ -1960,6 +2014,94 @@
       </footer>
     </template>
   </JetDialogModal>
+    <!-- Modal Termos Aditivos -->
+    <JetDialogModal
+    :show="modalTermosAditivos"
+    :withouHeader="false"
+    @close="closeModalTermosAditivos"
+    maxWidth="6xl"
+    :modalTitle="'Termos Aditivos'"
+  >
+    <template #content>
+      <div class="mt-4">
+        <table class="table-auto border border-slate-200 rounded-2xl w-full ">
+          <thead class="h-20 bg-slate-100 border-1">
+            <tr>
+              <th class="border p-2 text-2xl">Termo  Aditivo</th>
+              <th class="border p-2 text-2xl">Período</th>
+              <th class="border p-2 text-2xl">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">
+              <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
+              <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
+              <td class="border p-2 ">
+               <div class="flex justify-center items-center gap-2">
+                  <span @click="openFormViewAditivo(termo)">
+                    <Icon
+                      icon="ph:eye"
+                      height="20"
+                      class="hover:text-blue-500 text-black hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                  <span @click="openFormEditAditivo(termo)">
+                    <Icon
+                      icon="bx:edit"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                  <span  @click="deletarTermoAditivo(termo.id)">
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
+                  </span>
+                  <span @click="downloadZip(termo.id)">
+                    <Icon
+                      icon="material-symbols-light:download"
+                      height="30"
+                      class="hover:text-gray-500 hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                </div>
+              </td>
+              <!-- <td class="border p-2 text-2xl">{{ termo.descricao }}</td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal para visualizar aditivo -->
+  <JetDialogModal
+    :show="modalViewAditivo"
+    :withouHeader="false"
+    @close="closeModalViewAditivo"
+    maxWidth="4xl"
+    :modalTitle="'Visualizar Termo Aditivo'"
+  >
+    <template #content>
+      <ViewAditivoForm :aditivo="selectedAditivo" v-if="selectedAditivo" />
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal para editar aditivo -->
+  <JetDialogModal
+    :show="modalEditAditivo"
+    :withouHeader="false"
+    @close="closeModalEditAditivo"
+    maxWidth="4xl"
+    :modalTitle="'Editar Termo Aditivo'"
+  >
+    <template #content>
+      <EditAditivoForm
+        :aditivo="selectedAditivo"
+        @submit="handleEditAditivoSubmit"
+        @cancel="closeModalEditAditivo"
+        v-if="selectedAditivo"
+      />
+    </template>
+  </JetDialogModal>
 </template>
 
 <script setup>
@@ -1976,6 +2118,8 @@ import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
+import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
+import EditAditivoForm from '@/components/EditAditivoForm.vue';
 
  const store = useProfileStore()
 
@@ -1984,6 +2128,10 @@ let alterouStatus = ref(false); // Flag para verificar se houve alteração no s
 
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
+
+const modalViewAditivo = ref(false);
+const modalEditAditivo = ref(false);
+const selectedAditivo = ref(null);
 // Guias dos modais de edição
 const editMedicaoTabs = ['Formulário']
 const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
@@ -2061,12 +2209,14 @@ const newItem = ref({
 });
 const modalEditItem = ref(false);
 const editingItem = ref({});
+const editingAditivo =  ref({});
 const modalEditLancamento = ref(false);
 const modalEditFaturamento = ref(false);
 const editingLancamento = ref({});
 const isLancamentoViewModal = ref(false);
 const isItemViewModal = ref(false);
 const isFaturamentoViewModal = ref(false);
+const isFormViewAditivo =  ref(false);
 const editingFaturamento = ref({});
 const podeRenovar = ref(false);
 const projetos = ref("");
@@ -2090,6 +2240,10 @@ const medicaoData = ref({
   data_medicao: "",
   itens: [],
 });
+const termosAditivos = ref([]);
+const showTermosAditivosDropdown = ref(false);
+const modalTermosAditivos = ref(false);
+
 const totalItens = ref();
 const resultsPerPageItens = ref();
 let contratoItemData = ref([]);
@@ -2105,6 +2259,36 @@ const totalFaturamentos = ref(0);
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
+
+const handleEditAditivoSubmit = async (termoAditivo) => {
+
+  let payload = {
+    nome_termo: termoAditivo.nomeTermo,
+    data_inicio: termoAditivo.dataInicio,
+    data_fim:termoAditivo.dataFim,
+    saldo_contrato: termoAditivo.saldoContrato,
+    objeto_contrato: termoAditivo.objetoContrato
+  }
+
+  try {
+    const response = await api
+      .put(`/termo-aditivo/${termoAditivo.id}`, payload)
+      .then((response) => {
+        console.log(response, 'response')
+        toast("Termo aditivo editado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+        closeModalEditAditivo();
+      });
+  } catch (error) {
+    console.log(error, 'erro')
+    toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
+      position: "top-right",
+    });
+  }
+
+};
 
 // UNIDADE DE MEDIDA
 const unidadesMedida = ref([]);
@@ -2227,6 +2411,31 @@ const isDuplicateUnidade = (nome, excludeId = null) => {
     (u) =>
       u.unidadeMedida.toLowerCase() === nome.toLowerCase() && u.id !== excludeId
   );
+};
+
+const deletarTermoAditivo = (id) => {
+  Swal.fire({
+    title: "Confirmar  exclusão",
+    text: `tem certeza que deseja remover o  termo  aditivo?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/termo-aditivo/${id}`);
+        fetchTermoAditivo(contratoId)
+
+        toast.success("Termo aditivo removido com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover termo  aditivo:", error);
+        toast.error("Erro ao remover termo aditivo.");
+      }
+    }
+  });
 };
 
 const fetchProjetos = async (id) => {
@@ -2378,6 +2587,10 @@ const fetchContratoFaturamentos = async (page) => {
     totalFaturamentos.value = 0;
   }
 };
+
+watch( ()=> modalTermosAditivos.value,
+() => fetchTermoAditivo(route.params.id)
+ )
 
 watch(()=> alterouStatus.value, () =>{
   fetchContratoMedicoes(currentPageMedicao.value )
@@ -2795,6 +3008,19 @@ const closeModalLancamento = () => {
   });
 };
 
+const toggleTermosAditivosDropdown = () => {
+  showTermosAditivosDropdown.value = !showTermosAditivosDropdown.value;
+};
+
+const openTermosAditivosModal = () => {
+  modalTermosAditivos.value = true;
+  showTermosAditivosDropdown.value = false;
+};
+
+const closeModalTermosAditivos = () => {
+  modalTermosAditivos.value = false;
+};
+
 const resetForm = () => {
   selectNovoLancamento.value = "";
   contrato.value.contratoItens.forEach((item) => {
@@ -2914,6 +3140,7 @@ const voltarListagem = () => {
 onMounted(() => {
   contratoId = route.params.id;
   fetchContrato(contratoId);
+  fetchTermoAditivo(contratoId)
   window.scroll({
     top: 0,
     // left: 100,
@@ -2939,6 +3166,17 @@ const fetchContrato = async (id) => {
   }
 };
 
+const fetchTermoAditivo =  async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/termo-aditivo`);
+    console.log(response.data, 'termo aditivos')
+    termosAditivos.value = response.data;
+    // contratoForm.value = response.data;
+
+  } catch (error) {
+    console.error("Erro ao buscar contrato:", error);
+  }
+}
 const verificaIsFaturado = async (lancamentos, faturamentos) => {
   lancamentos.forEach((lancamento) => {
     lancamento.isFaturado = false;
@@ -3215,6 +3453,31 @@ const closeModalEditItem = () => {
   isItemViewModal.value = false;
   modalEditItem.value = false;
 };
+
+const openFormViewAditivo = (aditivo) => {
+  selectedAditivo.value = { ...aditivo };
+  modalViewAditivo.value = true;
+  modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
+};
+
+const openFormEditAditivo = (aditivo) => {
+  selectedAditivo.value = { ...aditivo };
+  modalEditAditivo.value = true;
+  modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
+};
+
+const closeModalViewAditivo = () => {
+  modalViewAditivo.value = false;
+  selectedAditivo.value = null;
+  modalTermosAditivos.value = true; // Reabre o modal de termos aditivos
+};
+
+const closeModalEditAditivo = () => {
+  modalEditAditivo.value = false;
+  selectedAditivo.value = null;
+  modalTermosAditivos.value = true; // Reabre o modal de termos aditivos
+};
+
 
 const saveEditedItem = async () => {
   const contratoId = route.params.id;
@@ -3587,6 +3850,42 @@ const openWhatsApp = (telefone) => {
   const url = `https://wa.me/${telefoneFormatado}`;
   window.open(url, "_blank");
 };
+
+const downloadZip = async (id) => {
+  try {
+    const response = await api.get(`/termo-aditivos/${id}/anexos/zip`, {
+      responseType: 'blob',
+    });
+
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = 'download.zip';
+
+    if (contentDisposition && contentDisposition.includes('filename')) {
+      const fileNameMatch = contentDisposition.match(/filename\*?=(?:UTF-8''|")?([^;\r\n"]+)/i);
+      if (fileNameMatch && fileNameMatch.length > 1) {
+        fileName = decodeURIComponent(fileNameMatch[1].replace(/"/g, ''));
+      }
+    }
+
+    const blob = new Blob([response.data], { type: 'application/zip' });
+
+    const url = window.URL.createObjectURL(blob);
+    console.log('URL do blob:', url);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Erro ao baixar o arquivo:', error);
+    alert('Ocorreu um erro ao baixar o arquivo.');
+  }
+};
+
 
 watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
   if (newTipo === 'Estimada') {

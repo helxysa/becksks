@@ -156,8 +156,7 @@ const uploadFile = async () => {
     const formData = new FormData();
     formData.append('file', selectedFile.value);
 
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
-
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
     try {
       await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
         headers: {
@@ -181,8 +180,7 @@ const uploadFile = async () => {
 const fetchAnexos = async () => {
   if (!props.resourceId) return;
   try {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
-
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
     const response = await api.get(`/${variantUrl}/${props.resourceId}/anexos`);
     anexos.value = response.data.anexos.map((anexo) => ({
       ...anexo,
@@ -202,7 +200,7 @@ const deleteFile = async (id) => {
   }
 
   try {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
 
     await api.delete(`/${variantUrl}/anexos/${id}`);
     successMessage.value = 'Arquivo excluído com sucesso!';
@@ -238,7 +236,7 @@ const updateFileName = async (anexo) => {
     anexo.isEditing = false;
     anexo.newFileName = '';
   } else {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
 
     try {
       await api.put(`/${variantUrl}/${props.resourceId}/anexos/${anexo.id}`, {
@@ -276,7 +274,7 @@ watch(
 const uploadAnexosPendentes = async () => {
   if (props.localAnexos.length === 0) return;
 
-  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
 
   for (const anexo of props.localAnexos) {
     const formData = new FormData();
