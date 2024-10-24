@@ -1,72 +1,154 @@
 <template>
   <div class="px-6 py-8 2xl:max-w-[2000px] 2xl:mx-auto">
+    <!-- Filtragem -->
+    <div class="flex mb-4">
+      <input
+        v-model="filterName"
+        type="text"
+        placeholder="Filtrar por nome do contrato ou nome termo"
+        class="border rounded px-4 py-2 mr-4 w-full"
+      />
+
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
       <div
         v-for="contrato in contratos"
         :key="contrato.id"
         class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 transform hover:scale-105 hover:shadow-xl"
         >
-        <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
-          <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
-          <div class="p-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
+        <section v-if="contrato.tag === 'Contrato'">
+          <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
+            <div class="relative">
+              <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
+              <div class="absolute top-0 right-0 bg-blue-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
+            </div>
+            <div class="p-6">
+              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
 
-            <div class="mb-4">
-              <div class="flex justify-between text-xl mb-1">
-                <span class="text-gray-600">Progresso:</span>
-                <span class="font-semibold text-msb-blue">
-                  {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
-                </span>
+              <div class="mb-4">
+                <div class="flex justify-between text-xl mb-1">
+                  <span class="text-gray-600">Progresso:</span>
+                  <span class="font-semibold text-msb-blue">
+                    {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
+                  </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    class="bg-[#0066cc] h-2.5 rounded-full"
+                    :style="{ width: `${(calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0)}%` }"
+                  >
+                  </div>
+                </div>
               </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  class="bg-[#0066cc] h-2.5 rounded-full"
-                  :style="{ width: `${(calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0)}%` }"
-                >
+
+              <div class="space-y-2 text-xl">
+                <div class="mb-3">
+                  <p class="text-gray-600 font-semibold whitespace-nowrap">Nome cliente:</p>
+                  <p class="text-gray-800 break-words truncate" :title="contrato.nomeCliente">{{ contrato.nomeCliente }}</p>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Vigência:</span>
+                  <span class="text-gray-800">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Valor contratado:</span>
+                  <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Aguardando faturamento:</span>
+                  <span class="font-semibold text-yellow-600">
+                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Aguardando pagamento:</span>
+                  <span class="font-semibold text-orange-600">
+                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Valor pago:</span>
+                  <span class="font-semibold text-green-600">
+                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Saldo disponível:</span>
+                  <span class="font-semibold text-msb-blue">
+                    {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
+                  </span>
                 </div>
               </div>
             </div>
+          </router-link>
+        </section>
+        <section v-else>
+          <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
+            <div class="relative">
+              <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
+              <div class="absolute top-0 right-0 bg-orange-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
+            </div>
+            <div class="p-6">
+              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeTermo">{{ contrato.nomeTermo }}</h2>
 
-            <div class="space-y-2 text-xl">
-              <div class="mb-3">
-                <p class="text-gray-600 font-semibold whitespace-nowrap">Nome cliente:</p>
-                <p class="text-gray-800 break-words truncate" :title="contrato.nomeCliente">{{ contrato.nomeCliente }}</p>
+              <div class="mb-4">
+                <div class="flex justify-between text-xl mb-1">
+                  <span class="text-gray-600">Progresso:</span>
+                  <span class="font-semibold text-msb-blue">
+                    {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
+                  </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    class="bg-[#0066cc] h-2.5 rounded-full"
+                    :style="{ width: `${(calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0)}%` }"
+                  >
+                  </div>
+                </div>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Vigência:</span>
-                <span class="text-gray-800">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Valor contratado:</span>
-                <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Aguardando faturamento:</span>
-                <span class="font-semibold text-yellow-600">
-                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Aguardando pagamento:</span>
-                <span class="font-semibold text-orange-600">
-                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Valor pago:</span>
-                <span class="font-semibold text-green-600">
-                  {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Saldo disponível:</span>
-                <span class="font-semibold text-msb-blue">
-                  {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
-                </span>
+
+              <div class="space-y-2 text-xl">
+                <div class="mb-3">
+                  <p class="text-gray-600 font-semibold whitespace-nowrap">Nome cliente:</p>
+                  <p class="text-gray-800 break-words truncate" :title="contrato.contrato.nomeCliente">{{ contrato.contrato.nomeCliente }}</p>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Vigência:</span>
+                  <span class="text-gray-800">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Valor contratado:</span>
+                  <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Aguardando faturamento:</span>
+                  <span class="font-semibold text-yellow-600">
+                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Aguardando pagamento:</span>
+                  <span class="font-semibold text-orange-600">
+                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Valor pago:</span>
+                  <span class="font-semibold text-green-600">
+                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
+                  </span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Saldo disponível:</span>
+                  <span class="font-semibold text-msb-blue">
+                    {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        </router-link>
+          </router-link>
+        </section>
       </div>
     </div>
   </div>
@@ -84,6 +166,7 @@ const contratos = ref([]);
 const faturamentos = ref([]);
 const itens = ref([]);
 const medicoes = ref([]);
+const filterName = ref('');
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
@@ -154,12 +237,25 @@ const formatDate = (dateString) => {
 
 const fetchContratos = async () => {
   try {
-    const response = await api.get("/contratos");
-    contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const params = {
+      search: filterName.value,
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+      page: 1,
+      limit: 50,
+    };
+
+    const response = await api.get("/contratos-e-termos", { params });
+    console.log('response', response)
+    contratos.value = response.data.data;
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
 };
+
+watch(filterName, () => {
+  fetchContratos();
+});
 
 onMounted(() => {
   fetchContratos();
@@ -168,7 +264,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-  /* Adicione estas classes ao seu arquivo Tailwind ou inclua-as aqui se necessário */
   .text-msb-blue {
     color: #0066cc;
   }
