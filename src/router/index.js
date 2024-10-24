@@ -26,6 +26,7 @@ const routes = [
   {
     path: "/login",
     component: Login,
+    name:'Login'
   },
   {
     path: "/alterar-senha",
