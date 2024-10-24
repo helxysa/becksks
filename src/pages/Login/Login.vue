@@ -1,5 +1,12 @@
 <template>
   <div class="h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-700">
+    <!-- Waveform Loading -->
+    <div
+      v-if="loading"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
+    >
+      <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
+    </div>
     <div class="bg-white p-8 h-auto rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4 animate-fadein">
         <transition name="fade" mode="out-in">
           <div v-if="!showResetPassword">
@@ -73,7 +80,11 @@ import { isAuthenticated } from "@/state/auth";
 import { toast } from 'vue3-toastify';
 import ResetPasswordForm from './ResetPasswordForm.vue';
 import { useProfileStore } from "@/stores/ProfileStore";
+import { waveform } from "ldrs";
 
+waveform.register();
+
+const loading = ref(false);
 const email = ref("");
 const password = ref("");
 const router = useRouter();
@@ -82,10 +93,12 @@ const store = useProfileStore();
 
 const handleLogin = async () => {
   try {
+    loading.value = true;
     const response = await api.post("/login", {
       email: email.value,
       password: password.value,
     });
+    loading.value = false;
     isAuthenticated.value = true;
     localStorage.setItem("token", response.data.token.token);   
     store.$patch(response.data.user)
@@ -129,5 +142,28 @@ const handleVoltar = () => {
 .fade-enter-to, .fade-leave {
   opacity: 1;
   transform: scale(1);
+}
+
+.skeleton {
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  height: 100%;
+  width: 150px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: loading 1.2s infinite;
 }
 </style>
