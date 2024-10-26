@@ -3134,7 +3134,7 @@ const createLancamento = async () => {
 };
 
 const voltarListagem = () => {
-  router.push({ name: "Contratos" });
+ window.location.href = '/contratos'
 };
 
 onMounted(() => {
