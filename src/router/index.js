@@ -7,6 +7,7 @@ const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
 const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue");
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
+const ViewTermoAditivoPage = () => import("../pages/ContratosPage/VisualizarTermoAditivo/VisualizarTermoAditivo.vue")
 const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
 
@@ -74,6 +75,13 @@ const routes = [
     component: ViewContratoTabs,
     meta: { requiresAuth: true },
   },
+  {
+    path: "/visualizar/termoAditivo/:id",
+    name: "visualizarTermoAditivo",
+    component: ViewTermoAditivoPage,
+    meta: { requiresAuth: true },
+  },
+
   {
     path: "/perfis",
     name: "Perfis",
