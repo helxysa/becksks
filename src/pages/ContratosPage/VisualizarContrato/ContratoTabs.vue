@@ -120,7 +120,7 @@ const handleRenovacaoDeletada = async (renovacaoId) => {
 };
 
 const voltarListagem = () => {
-  router.push({ name: "Contratos" });
+ window.location.href = '/contratos'
 };
 
 </script>

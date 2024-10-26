@@ -2666,7 +2666,8 @@
     };
     
     const voltarListagem = () => {
-      router.push({ name: "Contratos" });
+      // router.push({ name: "Contratos" });
+      window.location.href = '/contratos'
     };
     
     onMounted(() => {

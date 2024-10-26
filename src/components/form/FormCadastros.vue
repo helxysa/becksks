@@ -954,7 +954,7 @@ const saveContrato = async () => {
 };
 
 const voltarListagem = () => {
-  router.push({ name: "Contratos" });
+ window.location.href = '/contratos'
 };
 
 const formatCurrency = (value) => {
