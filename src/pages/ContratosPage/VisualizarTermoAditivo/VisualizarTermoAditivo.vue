@@ -251,7 +251,16 @@
             <h1 class="text-[1.8rem] font-medium text-gray-800">
               Itens do Contrato
             </h1>
-           
+            <div class="flex gap-8">
+              <button
+                @click="openCreateItemModal"
+                class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                 v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
+              >
+                <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+                Adicionar Item
+              </button>        
+            </div>
           </div>
           <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12" >
             <thead class="h-20 bg-slate-100 border-1">
@@ -1593,7 +1602,7 @@
               <div class="flex gap-4 justify-between items-center">
                 <label class="font-bold text-3xl">Quantidade Contratada:</label>
                 <money3
-                  v-model="newItem.saldo_quantidade_contratada"
+                  v-model="newItem.quantidade_contratada"
                   type="number"
                   class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                   required
@@ -1929,9 +1938,10 @@
     let totalFaturado = 0;
     const newItem = ref({
       titulo: "",
-      unidadeMedida: "",
-      valorUnitario: "",
-      saldoQuantidadeContratada: "",
+      unidade_medida: "",
+      valor_unitario: "",
+      quantidade_contratada: "",
+      termo_aditivo_id: null
     });
     const modalEditItem = ref(false);
     const editingItem = ref({});
@@ -3056,6 +3066,7 @@
     
     const openItemEditModal = (item) => {
       editingItem.value = { ...item };
+      console.log(editingItem.value, 'edit');
       modalEditItem.value = true;
       fetchUnidadesMedida();
     };
@@ -3111,15 +3122,17 @@
         (i) => i.id === editingItem.value.id
       );
       let itemEditado = { ...editingItem.value };
+      console.log(itemEditado, 'item editado')
+      
     
       let valorTotalItens = 0;
       let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
     
-      if (contrato.value.contratoItens) {
-        contrato.value.contratoItens.forEach((item) => {
+      if (contrato.value.termoAditivoItem) {
+        contrato.value.termoAditivoItem.forEach((item) => {
           if (item.id !== itemEditado.id) {
             valorTotalItens +=
-              parseFloat(item.saldoQuantidadeContratada) *
+              parseFloat(item.quantidadeContratada) *
               parseFloat(item.valorUnitario);
           }
         });
@@ -3127,7 +3140,7 @@
         console.warn("Itens de contrato não definidos.");
       }
     
-      let itemEditadoQuantidade = parseFloat(itemEditado.saldoQuantidadeContratada);
+      let itemEditadoQuantidade = parseFloat(itemEditado.quantidadeContratada);
       let itemEditadoValorUnitario = parseFloat(itemEditado.valorUnitario);
     
       valorTotalItens += itemEditadoQuantidade * itemEditadoValorUnitario;
@@ -3141,7 +3154,7 @@
         return;
       }
     
-      if (itemEditado.saldoQuantidadeContratada == 0) {
+      if (itemEditado.quantidadeContratada == 0) {
         toast.error(`quantidade contratada não pode ser zero.`);
         return;
       } else if (itemEditado.valorUnitario == 0) {
@@ -3153,8 +3166,12 @@
         titulo: itemEditado.titulo,
         unidade_medida: itemEditado.unidadeMedida,
         valor_unitario: itemEditado.valorUnitario,
-        saldo_quantidade_contratada: itemEditado.saldoQuantidadeContratada,
+        quantidade_contratada: itemEditado.quantidadeContratada,
+        // valor_unitario: parseFloat(itemEditado.valorUnitario),
+        // quantidade_contratada: parseFloat(itemEditado.quantidadeContratada),
       };
+
+      console.log(objEditado, 'objeto editado')
     
       try {
         const response = await api.put(
@@ -3217,9 +3234,10 @@
       modalCreateItem.value = false;
       newItem.value = {
         titulo: "",
-        unidadeMedida: "",
-        valorUnitario: "",
-        saldoQuantidadeContratada: "",
+        unidade_medida: "",
+        valor_unitario: "",
+        quantidade_contratada: "",
+        termo_aditivo_id: null
       };
     };
     
@@ -3228,17 +3246,23 @@
       let valorTotalItens = 0;
       let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
     
-      if (contrato.value.contratoItens) {
-        contrato.value.contratoItens.map((item) => {
-          valorTotalItens +=
-            parseFloat(item.saldoQuantidadeContratada) *
-            parseFloat(item.valorUnitario);
-        });
-      } else {
-        console.error("itens de contrato não definidos.");
-      }
+      // if (contrato.value.contratoItens) {
+      //   contrato.value.contratoItens.map((item) => {
+      //     valorTotalItens +=
+      //       parseFloat(item.saldoQuantidadeContratada) *
+      //       parseFloat(item.valorUnitario);
+      //   });
+      // } else {
+      //   console.error("itens de contrato não definidos.");
+      // }
     
-      let novoItemQuantidade = newItem.value.saldo_quantidade_contratada;
+      newItem.value.termo_aditivo_id =  parseFloat(contratoId)
+      newItem.value.valor_unitario =  parseFloat(newItem.value.valor_unitario)
+      newItem.value.quantidade_contratada =  parseFloat(newItem.value.quantidade_contratada)
+
+      
+
+      let novoItemQuantidade = newItem.value.quantidade_contratada;
       let novoItemValorUnitario = newItem.value.valor_unitario;
     
       valorTotalItens += novoItemQuantidade * novoItemValorUnitario;
@@ -3262,7 +3286,7 @@
     
       try {
         const response = await api.post(
-          `/contratos/${route.params.id}/items`,
+          `/termo-aditivo/itens`,
           newItem.value
         );
         toast("Item criado com sucesso!", {
