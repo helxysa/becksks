@@ -3090,11 +3090,10 @@
     };
     
     const openFormEditAditivo = async(id) => {
-      // selectedAditivo.value = { ...aditivo };
+        
      try {
-      const response = await api.get(`termo-aditivo/${id}`)
-      console.log(response,'res')
-        selectedAditivo.value =  response.data;
+      const response = await api.get(`termo-aditivo/${id}`)    
+       selectedAditivo.value =  response.data;
        modalEditAditivo.value = true;
        modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
      } catch (error) {
