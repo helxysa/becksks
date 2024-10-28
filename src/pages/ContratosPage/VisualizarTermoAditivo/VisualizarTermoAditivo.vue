@@ -17,26 +17,14 @@
         </h1>
       </div>
         <div class="flex flex-wrap gap-3">
-          <!-- <button
-          class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-    
-        >
-          <router-link
-            :to="{ name: 'Formulário Aditivo', params: { id: contrato.id } }"
-          >
-            Adicionar aditivo
-          </router-link>
-        </button> -->
-          <!-- <button
+       
+          <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
              v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
+             @click="openFormEditAditivo(contrato.id)"
           >
-            <router-link
-              :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
-            >
-              Editar
-            </router-link>
-          </button> -->
+            Editar
+          </button>
           <button
             @click="deletarTermoAditivo(contrato.id)"
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
@@ -67,7 +55,7 @@
                 />
               </div>
               <div>
-                <p class="text-lg text-gray-500">Contrato</p>
+                <p class="text-lg text-gray-500">Termo  aditivo</p>
                 <p class="font-medium text-gray-700">
                   {{ contrato.nomeTermo }}
                 </p>
@@ -188,7 +176,22 @@
                 <p class="font-medium text-gray-700">{{ contrato?.contrato?.pontoFocal }}</p>
               </div>
             </div>
-          
+            <div class="flex items-center">
+              <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+                <Icon
+                  icon="fa6-solid:city"
+                  width="1.5rem"
+                  height="1.5rem"
+                  class="text-pink-400"
+                />
+              </div>
+              <div>
+                <p class="text-lg text-gray-500">Cidade</p>
+                <p class="font-medium text-gray-700">
+                  {{ contrato?.contrato?.cidade }} ({{ contrato?.contrato?.estado }})
+                </p>
+              </div>
+            </div>
             <div class="flex items-center">
               <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
                 <Icon
@@ -259,38 +262,38 @@
                 <th class="text-xl">Quantidade Contratada</th>
                 <th class="text-xl">Valor Unitário</th>
                 <th class="text-xl">Valor Total (Item)</th>
-                <th class="text-xl min-w-44">Quantidade itens disponíveis</th>
+                <!-- <th class="text-xl min-w-44">Quantidade itens disponíveis</th> -->
                 <th class="text-xl">Ações</th>
               </tr>
             </thead>
-            <tbody>
-              <!-- {{contratoItemData}} -->
+            <tbody>                       
               <tr
                 class="h-24 text-center"
                 v-for="(item) in contratoItemData"
                 :key="item.id"
               >
+            
                 <td class="text-2xl px-2">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
-                <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
+                <td class="text-2xl">{{ parseFloat(item.quantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
                 <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
                 <td class="text-2xl">
                   {{
                     formatCurrency(
-                      item.valorUnitario * item.saldoQuantidadeContratada
+                      item.valorUnitario * item.quantidadeContratada
                     )
                   }}
                 </td>
                 <!-- {{ (contrato?.lancamentos?.lancamentoItens) }} -->
-                <td class="text-2xl">
+                <!-- <td class="text-2xl">
                   {{
                     calcularItensRestante(
                       item.id,
                       item.saldoQuantidadeContratada
                     ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
-                </td>
+                </td> -->
                 <td>
                   <div class="flex justify-center items-center gap-2">
                     <span @click="openItemViewModal(item)"
@@ -1688,7 +1691,7 @@
                 </div>
               </div>
               <div class="flex gap-4 justify-between items-center">
-                <label class="font-bold text-3xl">Valor Unitário:</label>
+                <label class="font-bold text-3xl">Valor Unitário:</label>               
                 <money3
                   :disabled="isItemViewModal"
                   v-model="editingItem.valorUnitario"
@@ -1703,7 +1706,7 @@
               <div class="flex gap-4 justify-between items-center">
                 <label class="font-bold text-3xl">Quantidade Contratada:</label>
                 <money3
-                  v-model="editingItem.saldoQuantidadeContratada"
+                  v-model="editingItem.quantidadeContratada"
                   :disabled="isItemViewModal"
                   type="number"
                   class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -1733,7 +1736,93 @@
           </form>
         </template>
       </JetDialogModal>
-    
+    <!-- Modal Termos Aditivos -->
+    <JetDialogModal
+    :show="modalTermosAditivos"
+    :withouHeader="false"
+    @close="closeModalTermosAditivos"
+    maxWidth="6xl"
+    :modalTitle="'Termos Aditivos'"
+  >
+    <template #content>
+      <div class="mt-4">
+        <table class="table-auto border border-slate-200 rounded-2xl w-full ">
+          <thead class="h-20 bg-slate-100 border-1">
+            <tr>
+              <th class="border p-2 text-2xl">Termo  Aditivo</th>
+              <th class="border p-2 text-2xl">Período</th>
+              <th class="border p-2 text-2xl">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">
+              <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
+              <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
+              <td class="border p-2 ">
+               <div class="flex justify-center items-center gap-2">
+                  <span @click="openFormViewAditivo(termo)">
+                    <Icon
+                      icon="ph:eye"
+                      height="20"
+                      class="hover:text-blue-500 text-black hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                  <span @click="openFormEditAditivo(termo)">
+                    <Icon
+                      icon="bx:edit"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                  <span  @click="deletarTermoAditivo(termo.id)">
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
+                  </span>
+                  <span @click="downloadZip(termo.id)">
+                    <Icon
+                      icon="material-symbols-light:download"
+                      height="30"
+                      class="hover:text-gray-500 hover:rounded-md cursor-pointer"
+                    />
+                  </span>
+                </div>
+              </td>
+              <!-- <td class="border p-2 text-2xl">{{ termo.descricao }}</td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal para visualizar aditivo -->
+  <JetDialogModal
+    :show="modalViewAditivo"
+    :withouHeader="false"
+    @close="closeModalViewAditivo"
+    maxWidth="4xl"
+    :modalTitle="'Visualizar Termo Aditivo'"
+  >
+    <template #content>
+      <ViewAditivoForm :aditivo="selectedAditivo" v-if="selectedAditivo" />
+    </template>
+  </JetDialogModal>
+  <!-- Modal para editar aditivo -->
+  <JetDialogModal
+  :show="modalEditAditivo"
+  :withouHeader="false"
+  @close="closeModalEditAditivo"
+  maxWidth="4xl"
+  :modalTitle="'Editar Termo Aditivo'"
+>
+  <template #content>
+    <EditAditivoForm
+      :aditivo="selectedAditivo"
+      @submit="handleEditAditivoSubmit"
+      @cancel="closeModalEditAditivo"
+      v-if="selectedAditivo"
+    />
+  </template>
+</JetDialogModal>
         
      
     
@@ -1785,6 +1874,7 @@
     const faturamentoLocalAnexos = ref([])
     const faturamentoId = ref(null)
     let contratoId = null
+   
     const financialSummary = computed(() => [
       {
         title: "Valor Contratado",
@@ -1910,7 +2000,7 @@
         const response = await api
           .put(`/termo-aditivo/${termoAditivo.id}`, payload)
           .then((response) => {
-            console.log(response, 'response')
+            fetchContrato(contratoId);         
             toast("Termo aditivo editado com sucesso!", {
               theme: "colored",
               type: "success",
@@ -1998,7 +2088,7 @@
     const fetchContratoItens = async (page) => {
       try {
         const response = await api.get(
-          `/contratos/${contrato.value.id}/items/?page=${page}`
+          `/termo-aditivo/${contrato.value.id}/itens/?page=${page}`
         );
         const itens = response.data.data;
         const meta = response.data.meta;
@@ -2007,18 +2097,13 @@
           item.contagem_dinamica = (meta.currentPage - 1) * meta.perPage + index + 1;
         });
     
-        contratoItemData.value = itens;
+        contratoItemData.value = itens;      
         contratoItemMeta.value = meta;
         currentPage.value = contratoItemMeta.value.currentPage;
         totalItens.value = contratoItemMeta.value.total;
         resultsPerPageItens.value = contratoItemMeta.value.perPage;
-    
-        contrato.value.contratoItens.forEach(item => {
-          const itemContrato = contratoItemData.value.find(contratoItem => contratoItem.id === item.id);
-          if(itemContrato) {
-            item.contagem_dinamica = itemContrato.contagem_dinamica;
-          }
-        })
+
+       
       } catch (error) {
         console.error(error);
         contratoItemData.value = [];
@@ -2120,9 +2205,9 @@
       }
     };
     
-    watch( ()=> modalTermosAditivos.value,
-    () => fetchTermoAditivo(route.params.id)
-     )
+    // watch( ()=> modalTermosAditivos.value,
+    // () => fetchTermoAditivo(route.params.id)
+    //  )
     
     watch(()=> alterouStatus.value, () =>{
       fetchContratoMedicoes(currentPageMedicao.value )
@@ -2689,7 +2774,7 @@
         // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
     
         contrato.value = contratoData;
-        // fetchContratoItens(currentPage.value);
+        fetchContratoItens(currentPage.value);
         // fetchContratoMedicoes(currentPageMedicao.value);
         // fetchContratoFaturamentos(currentPageFaturamento.value);
     
@@ -2924,29 +3009,29 @@
       };
     };
     
-    const calcularItensRestante = (idItem, quantidadeContratada) => {
-      let quantidadeUtilizada = 0;
-      let quantidadeRestante = 0;
+    // const calcularItensRestante = (idItem, quantidadeContratada) => {
+    //   let quantidadeUtilizada = 0;
+    //   let quantidadeRestante = 0;
     
-      contrato.value.lancamentos.forEach((lancamento) => {
-        if (
-          lancamento.status === "Autorizada" ||
-          lancamento.status === "Não Autorizada" ||
-          lancamento.status === "Cancelada" ||
-          lancamento.status === "Não Iniciada" ||
-          lancamento.status === "Em Andamento"
-        ) {
-          return;
-        }
-        lancamento.lancamentoItens.forEach((lancamentoItem) => {
-          if (idItem === lancamentoItem.contratoItemId) {
-            quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
-          }
-        });
-      });
-      quantidadeRestante = parseFloat(quantidadeContratada) - quantidadeUtilizada;
-      return quantidadeRestante;
-    };
+    //   contrato.value.lancamentos.forEach((lancamento) => {
+    //     if (
+    //       lancamento.status === "Autorizada" ||
+    //       lancamento.status === "Não Autorizada" ||
+    //       lancamento.status === "Cancelada" ||
+    //       lancamento.status === "Não Iniciada" ||
+    //       lancamento.status === "Em Andamento"
+    //     ) {
+    //       return;
+    //     }
+    //     lancamento.lancamentoItens.forEach((lancamentoItem) => {
+    //       if (idItem === lancamentoItem.contratoItemId) {
+    //         quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
+    //       }
+    //     });
+    //   });
+    //   quantidadeRestante = parseFloat(quantidadeContratada) - quantidadeUtilizada;
+    //   return quantidadeRestante;
+    // };
     
     const calcularQuantidadeItens = (lancamentoItens) => {
       let saldoTotal = 0;
@@ -2993,28 +3078,36 @@
       modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
     };
     
-    const openFormEditAditivo = (aditivo) => {
-      selectedAditivo.value = { ...aditivo };
-      modalEditAditivo.value = true;
-      modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
+    const openFormEditAditivo = async(id) => {
+      // selectedAditivo.value = { ...aditivo };
+     try {
+      const response = await api.get(`termo-aditivo/${id}`)
+      console.log(response,'res')
+        selectedAditivo.value =  response.data;
+       modalEditAditivo.value = true;
+       modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
+     } catch (error) {
+       console.log(error, 'error')
+     }
     };
     
     const closeModalViewAditivo = () => {
       modalViewAditivo.value = false;
       selectedAditivo.value = null;
-      modalTermosAditivos.value = true; // Reabre o modal de termos aditivos
+   
     };
     
     const closeModalEditAditivo = () => {
       modalEditAditivo.value = false;
       selectedAditivo.value = null;
-      modalTermosAditivos.value = true; // Reabre o modal de termos aditivos
+    
     };
     
     
     const saveEditedItem = async () => {
       const contratoId = route.params.id;
-      const itemIndex = contrato.value.contratoItens.findIndex(
+      
+      const itemIndex = contrato.value.termoAditivoItem.findIndex(
         (i) => i.id === editingItem.value.id
       );
       let itemEditado = { ...editingItem.value };
@@ -3065,7 +3158,7 @@
     
       try {
         const response = await api.put(
-          `/contratos/items/${itemEditado.id}`,
+          `/termo-aditivo/itens/${itemEditado.id}`,
           objEditado
         );
         toast("Item alterado com sucesso!", {
@@ -3098,7 +3191,7 @@
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            const response = await api.delete(`/contratos/items/${itemId}`);
+            const response = await api.delete(`/termo-aditivo/itens/${itemId}`);
             fetchContrato(contratoId);
             toast("Item deletado com sucesso!", {
               theme: "colored",
