@@ -10,46 +10,70 @@
      </section>
 
      <div class="pt-12 overflow-y-auto bg-white flex justify-center">
-       <ul class="space-y-8">
-         <li>
-           <router-link to="/" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group">
-             <Icon icon="mdi:graph-pie" height="20"/>
-             <span class="ms-3 text-3xl font-bold">Dashboard</span>
-           </router-link>
-         </li>
-         <li>
-           <router-link to="/contratos" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group"
-           v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canView === true)">
-             <Icon icon="eos-icons:project" height="20"/>
-             <span class="ms-3 text-3xl font-bold">Contratos</span>
-           </router-link>
-         </li>
-         <li>
-           <router-link to="/perfis" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group"
-            v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && (item.canView || item.canEdit || item.canCreate || item.canDelete))">
-             <Icon icon="eos-icons:admin-outlined" height="20"/>
-             <span class="ms-3 text-3xl font-bold">Perfis</span>
-           </router-link>
-         </li>
-         <li>
-           <router-link to="/usuarios" class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group"
-           v-if="store.profile.permissions.some((item)=> item.name === 'usuarios' && (item.canView || item.canEdit || item.canCreate || item.canDelete))">
-             <Icon icon="mdi:account-group" height="20" />
-             <span  class="ms-3 text-3xl font-bold">Usuários</span>
-           </router-link>
-         </li>
-       </ul>
-     </div>
+      <ul class="space-y-8">
+        <li v-for="route in accessibleRoutes" :key="route.path">
+          <a
+            @click.prevent="navigateTo(route.path)"
+            :href="route.path"
+            class="flex items-center p-4 text-gray-900 rounded-lg hover:bg-blue-50 hover:text-blue-400 group"
+          >
+            <Icon :icon="route.icon" height="20" />
+            <span class="ms-3 text-3xl font-bold">{{ route.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
    </aside>
  </template>
 
  <script setup>
  import { Icon } from '@iconify/vue';
  import { RouterLink } from 'vue-router';
+ import { computed } from 'vue'
  import { useProfileStore } from '@/stores/ProfileStore';
 
  const store = useProfileStore()
+ const routes = [
+  {
+    path: '/',
+    label: 'Dashboard',
+    icon: 'mdi:graph-pie',
+    permission: null 
+  },
+  {
+    path: '/contratos',
+    label: 'Contratos',
+    icon: 'eos-icons:project',
+    permission: { name: 'contratos', canView: true }
+  },
+  {
+    path: '/perfis',
+    label: 'Perfis',
+    icon: 'eos-icons:admin-outlined',
+    permission: { name: 'perfil', canAccess: ['canView', 'canEdit', 'canCreate', 'canDelete'] }
+  },
+  {
+    path: '/usuarios',
+    label: 'Usuários',
+    icon: 'mdi:account-group',
+    permission: { name: 'usuarios', canAccess: ['canView', 'canEdit', 'canCreate', 'canDelete'] }
+  }
+]
 
- 
+function hasPermission(permission) {
+  if (!permission) return true
 
- </script>
+  return store.profile.permissions.some((item) => {
+    if (item.name !== permission.name) return false
+    if (permission.canView) return item.canView === true
+    if (permission.canAccess) return permission.canAccess.some((perm) => item[perm] === true)
+    return false
+  })
+}
+
+const accessibleRoutes = computed(() => routes.filter(route => hasPermission(route.permission)))
+
+function navigateTo(routePath) {
+  window.location.href = routePath
+}
+</script>
