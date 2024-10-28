@@ -17,7 +17,7 @@
         </h1>
       </div>
         <div class="flex flex-wrap gap-3">
-       
+
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
              v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
@@ -28,13 +28,13 @@
           <button
             @click="deletarTermoAditivo(contrato.id)"
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-           
+
           >
             Excluir
           </button>
         </div>
       </div>
-    
+
       <!-- Detalhes do contrato -->
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <div
@@ -98,7 +98,7 @@
             </div>
           </div>
         </div>
-    
+
         <section
           class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
         >
@@ -154,7 +154,7 @@
             </div>
           </div>
         </section>
-    
+
         <section
           class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
         >
@@ -211,7 +211,7 @@
           </div>
         </section>
       </section>
-    
+
       <!-- Resumo Financeiro -->
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
@@ -228,10 +228,10 @@
             <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
           </section>
         </div>
-      </section>     
-    
+      </section>
+
     </section>
-    
+
     <section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
       <div class="flex border-b border-gray-200 mb-8 pt-4">
         <TabButton
@@ -242,8 +242,8 @@
           @update:currentTab="currentTab = $event"
         />
       </div>
-    
-    
+
+
       <div v-if="currentTab === 'Itens'">
         <!-- Tabela itens do contrato-->
         <section class="mt-8">
@@ -251,7 +251,16 @@
             <h1 class="text-[1.8rem] font-medium text-gray-800">
               Itens do Contrato
             </h1>
-           
+            <div class="flex gap-8">
+              <button
+                @click="openCreateItemModal"
+                class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                 v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
+              >
+                <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
+                Adicionar Item
+              </button>
+            </div>
           </div>
           <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12" >
             <thead class="h-20 bg-slate-100 border-1">
@@ -266,13 +275,13 @@
                 <th class="text-xl">Ações</th>
               </tr>
             </thead>
-            <tbody>                       
+            <tbody>
               <tr
                 class="h-24 text-center"
                 v-for="(item) in contratoItemData"
                 :key="item.id"
               >
-            
+
                 <td class="text-2xl px-2">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
@@ -337,7 +346,7 @@
           </div>
         </section>
       </div>
-    
+
         <div v-if="currentTab === 'Medições'">
         <!-- Tabela Medições-->
         <section class="mt-8">
@@ -414,7 +423,7 @@
                     "
                   />
                 </td>
-    
+
                 <td class="text-2xl">{{ lancamento.id }}</td>
                 <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
                 <td class="text-2xl">{{ lancamento.competencia }}</td>
@@ -498,7 +507,7 @@
                         class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                       />
                     </span>
-    
+
                     <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
                     <!-- <span>
                       <Icon
@@ -524,7 +533,7 @@
                         class="text-gray-500 hover:rounded-md cursor-pointer"
                       />
                     </span> -->
-    
+
                     <span @click="deleteLancamento(lancamento.id)"
                      v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canDelete === true)">
                       <Icon
@@ -549,7 +558,7 @@
           </div>
         </section>
         </div>
-    
+
         <div v-if="currentTab === 'Faturamentos'">
         <!-- Tabela Faturamentos-->
         <section>
@@ -596,7 +605,7 @@
                   {{ faturamento.notaFiscal }}
                 </td>
                 <td v-else>-</td>
-    
+
                 <td class="text-2xl">
                   {{
                     formatCurrency(
@@ -621,7 +630,7 @@
                     </span>
                   </div>
                 </td>
-    
+
                 <td class="text-2xl">
                   <div class="flex justify-center items-center gap-2">
                     <span @click="openViewFaturamentoModal(faturamento)"
@@ -664,7 +673,7 @@
           </div>
         </section>
         </div>
-    
+
         <div v-if="currentTab === 'Anexos'">
           <!-- Anexos do contrato -->
           <div v-if="contratoId">
@@ -690,7 +699,7 @@
               @update:currentTab="criarFaturamentoCurrentTab = $event"
             />
           </div>
-    
+
           <form @submit.prevent="createPedidoFaturamento">
             <div v-if="criarFaturamentoCurrentTab === 'Formulário'">
             <section class="flex flex-col gap-8">
@@ -886,7 +895,7 @@
           </form>
         </template>
       </JetDialogModal>
-    
+
       <!-- Modal editar  pedido de  faturamento -->
       <JetDialogModal
         :show="modalEditFaturamento"
@@ -912,7 +921,7 @@
           </div> -->
           <form @submit.prevent="saveEditedFaturamento">
           <section v-if="editFaturamentoCurrentTab === 'Formulário'">
-    
+
             <section class="flex flex-col gap-8">
               <div class="flex justify-between items-center gap-4">
                 <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1111,7 +1120,7 @@
           </form>
         </template>
       </JetDialogModal>
-    
+
       <!-- Modal criar Medição -->
       <JetDialogModal
         :show="modalLancamento"
@@ -1132,7 +1141,7 @@
         </div>
           <form @submit.prevent="createLancamento">
             <div v-if="criarMedicaoCurrentTab === 'Formulário'">
-    
+
             <section class="flex flex-col gap-8">
               <div class="flex items-center gap-12">
                 <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1312,7 +1321,7 @@
           </form>
         </template>
       </JetDialogModal>
-    
+
       <!-- Modal editar medição-->
       <JetDialogModal
         :show="modalEditLancamento"
@@ -1333,7 +1342,7 @@
             @update:currentTab="editMedicaoCurrentTab = $event"
           />
         </div>
-    
+
         <form @submit.prevent="saveEditedLancamento">
           <section v-if="editMedicaoCurrentTab === 'Formulário'">
             <section class="flex flex-col gap-8">
@@ -1401,7 +1410,7 @@
                   <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Autorizada">Autorizada</option>
                   <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Não Autorizada">Não Autorizada</option>
                   <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Cancelada">Cancelada</option>
-    
+
                   <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
                   <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
                   <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível para Faturamento">Disponível para Faturamento</option>
@@ -1514,10 +1523,10 @@
               </button>
             </footer>
           </form>
-    
+
         </template>
       </JetDialogModal>
-    
+
       <!-- Modal criar item -->
       <JetDialogModal
         :show="modalCreateItem"
@@ -1593,7 +1602,7 @@
               <div class="flex gap-4 justify-between items-center">
                 <label class="font-bold text-3xl">Quantidade Contratada:</label>
                 <money3
-                  v-model="newItem.saldo_quantidade_contratada"
+                  v-model="newItem.quantidade_contratada"
                   type="number"
                   class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
                   required
@@ -1621,7 +1630,7 @@
           </form>
         </template>
       </JetDialogModal>
-    
+
       <!-- Modal editar item -->
       <JetDialogModal
         :show="modalEditItem"
@@ -1691,7 +1700,7 @@
                 </div>
               </div>
               <div class="flex gap-4 justify-between items-center">
-                <label class="font-bold text-3xl">Valor Unitário:</label>               
+                <label class="font-bold text-3xl">Valor Unitário:</label>
                 <money3
                   :disabled="isItemViewModal"
                   v-model="editingItem.valorUnitario"
@@ -1775,7 +1784,7 @@
                     />
                   </span>
                   <span  @click="deletarTermoAditivo(termo.id)">
-                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />
                   </span>
                   <span @click="downloadZip(termo.id)">
                     <Icon
@@ -1823,12 +1832,12 @@
     />
   </template>
 </JetDialogModal>
-        
-     
-    
-     
+
+
+
+
     </template>
-    
+
     <script setup>
     import { ref, onMounted, computed, defineEmits, watch } from "vue";
     import { useRoute, useRouter, RouterLink } from "vue-router";
@@ -1845,15 +1854,15 @@
     import { useProfileStore } from '@/stores/ProfileStore';
     import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
     import EditAditivoForm from '@/components/EditAditivoForm.vue';
-    
+
      const store = useProfileStore()
-    
+
     // Guias das tabelas
     let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
-    
+
     const tabs = ['Itens']
     const currentTab = ref(tabs[0])
-    
+
     const modalViewAditivo = ref(false);
     const modalEditAditivo = ref(false);
     const selectedAditivo = ref(null);
@@ -1874,7 +1883,7 @@
     const faturamentoLocalAnexos = ref([])
     const faturamentoId = ref(null)
     let contratoId = null
-   
+
     const financialSummary = computed(() => [
       {
         title: "Valor Contratado",
@@ -1929,9 +1938,10 @@
     let totalFaturado = 0;
     const newItem = ref({
       titulo: "",
-      unidadeMedida: "",
-      valorUnitario: "",
-      saldoQuantidadeContratada: "",
+      unidade_medida: "",
+      valor_unitario: "",
+      quantidade_contratada: "",
+      termo_aditivo_id: null
     });
     const modalEditItem = ref(false);
     const editingItem = ref({});
@@ -1969,25 +1979,25 @@
     const termosAditivos = ref([]);
     const showTermosAditivosDropdown = ref(false);
     const modalTermosAditivos = ref(false);
-    
+
     const totalItens = ref();
     const resultsPerPageItens = ref();
     let contratoItemData = ref([]);
     let contratoItemMeta = ref([]);
-    
+
     const totalMedicoes = ref();
     const resultsPerPageMedicoes = ref();
-    
+
     let medicaoItemData = ref([]);
     let medicaoItemMeta = ref([]);
-    
+
     const totalFaturamentos = ref(0);
     const resultsPerPageFaturamentos = ref();
     let faturamentoItemData = ref([]);
     let faturamentoItemMeta = ref([]);
-    
+
     const handleEditAditivoSubmit = async (termoAditivo) => {
-    
+
       let payload = {
         nome_termo: termoAditivo.nomeTermo,
         data_inicio: termoAditivo.dataInicio,
@@ -1995,12 +2005,12 @@
         saldo_contrato: termoAditivo.saldoContrato,
         objeto_contrato: termoAditivo.objetoContrato
       }
-    
+
       try {
         const response = await api
           .put(`/termo-aditivo/${termoAditivo.id}`, payload)
           .then((response) => {
-            fetchContrato(contratoId);         
+            fetchContrato(contratoId);
             toast("Termo aditivo editado com sucesso!", {
               theme: "colored",
               type: "success",
@@ -2013,9 +2023,9 @@
           position: "top-right",
         });
       }
-    
+
     };
-    
+
     // UNIDADE DE MEDIDA
     const unidadesMedida = ref([]);
     const newUnidade = ref("");
@@ -2023,7 +2033,7 @@
     const isEditingUnidade = ref(false);
     // const currentUnidadeId = ref(null);
     const modalTitleUnidade = "Adicionar Unidade";
-    
+
     const fetchUnidadesMedida = async () => {
       try {
         const response = await api.get("/unidade_medida");
@@ -2031,10 +2041,10 @@
       } catch (error) {
         console.error("Erro ao buscar unidades de medida:", error);
       }
-    }; 
-    
-   
-    
+    };
+
+
+
     const deletarTermoAditivo = (id) => {
       Swal.fire({
         title: "Confirmar  exclusão",
@@ -2051,7 +2061,7 @@
             await api.delete(`/termo-aditivo/${id}`);
             toast.success("Termo aditivo removido com sucesso!");
             voltarListagem()
-    
+
           } catch (error) {
             console.error("Erro ao remover termo  aditivo:", error);
             toast.error("Erro ao remover termo aditivo.");
@@ -2059,7 +2069,7 @@
         }
       });
     };
-    
+
     const fetchProjetos = async (id) => {
       try {
         const response = await api.get(`/contratos/${id}/projetos`);
@@ -2068,23 +2078,23 @@
         console.error("Erro ao contratos:", error);
       }
     };
-    
+
     const changePageItem = (page) => {
       currentPage.value = page;
     };
-    
+
     const changePageMedicao = (page) => {
       currentPageMedicao.value = page;
     };
-    
+
     const changePageFaturamento = (page) => {
       currentPageFaturamento.value = page;
     };
-    
+
     const currentPage = ref(1);
     const currentPageMedicao = ref(1);
     const currentPageFaturamento = ref(1);
-    
+
     const fetchContratoItens = async (page) => {
       try {
         const response = await api.get(
@@ -2092,18 +2102,18 @@
         );
         const itens = response.data.data;
         const meta = response.data.meta;
-    
+
         itens.forEach((item, index) => {
           item.contagem_dinamica = (meta.currentPage - 1) * meta.perPage + index + 1;
         });
-    
-        contratoItemData.value = itens;      
+
+        contratoItemData.value = itens;
         contratoItemMeta.value = meta;
         currentPage.value = contratoItemMeta.value.currentPage;
         totalItens.value = contratoItemMeta.value.total;
         resultsPerPageItens.value = contratoItemMeta.value.perPage;
 
-       
+
       } catch (error) {
         console.error(error);
         contratoItemData.value = [];
@@ -2112,10 +2122,10 @@
         totalItens.value = 0;
       }
     };
-    
+
     const sortBy = ref({ medicoes: null, faturamentos: null });
     const sortOrder = ref({ medicoes: null, faturamentos: null });
-    
+
     const changeSorting = (column, type) => {
       if (sortBy.value[type] === column) {
         sortOrder.value[type] = sortOrder.value[type] === "asc" ? "desc" : "asc";
@@ -2123,14 +2133,14 @@
         sortBy.value[type] = column;
         sortOrder.value[type] = "asc";
       }
-    
+
       if (type === "medicoes") {
         fetchContratoMedicoes(currentPageMedicao.value);
       } else if (type === "faturamentos") {
         fetchContratoFaturamentos(currentPageFaturamento.value);
       }
     };
-    
+
     const fetchContratoMedicoes = async (page) => {
       try {
         const params = {
@@ -2149,7 +2159,7 @@
         );
         medicaoItemData.value = response.data.data;
         medicaoItemMeta.value = response.data.meta;
-    
+
         // Para cada medição, verifique os itens e adicione a contagem dinâmica correspondente
         medicaoItemData.value.forEach((medicao) => {
           medicao.lancamentoItens.forEach((lancamentoItem) => {
@@ -2163,7 +2173,7 @@
             }
           });
         });
-    
+
         if (contrato.value.faturamentos) {
           medicaoItemData.value = await verificaIsFaturado(medicaoItemData.value,contrato.value.faturamentos);
         }
@@ -2178,7 +2188,7 @@
         totalMedicoes.value = 0;
       }
     };
-    
+
     const fetchContratoFaturamentos = async (page) => {
       try {
         const params = {
@@ -2204,11 +2214,11 @@
         totalFaturamentos.value = 0;
       }
     };
-    
+
     // watch( ()=> modalTermosAditivos.value,
     // () => fetchTermoAditivo(route.params.id)
     //  )
-    
+
     watch(()=> alterouStatus.value, () =>{
       fetchContratoMedicoes(currentPageMedicao.value )
       alterouStatus.value = false;
@@ -2225,11 +2235,11 @@
     //   () => currentPageFaturamento.value,
     //   () => fetchContratoFaturamentos(currentPageFaturamento.value)
     // );
-    
+
     const changePedido = (e) => {
       pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
     };
-    
+
     // Faturamento
     const ExibirModalPedidoFaturamento = () => {
       if (pedidoFaturamentoData.value.descricao_nota.length == 0) {
@@ -2253,7 +2263,7 @@
       faturamentoId.value = null
       pedidosFaturamento.value = [];
     };
-    
+
     // Editar faturamento do contrato
     const openEditFaturamentoModal = (faturamento) => {
       // const dataFormatada = format(
@@ -2277,7 +2287,7 @@
       };
       modalEditFaturamento.value = true;
     };
-    
+
     const openViewFaturamentoModal = (faturamento) => {
       isFaturamentoViewModal.value = true;
       const dataFormatada = format(
@@ -2287,7 +2297,7 @@
       editingFaturamento.value = { ...faturamento, dataFaturamento: dataFormatada };
       modalEditFaturamento.value = true;
     };
-    
+
     const closeEditFaturamentoModal = () => {
       selectNovoFaturamento.value = "";
       editFaturamentoCurrentTab.value = editFaturamentoTabs[0]
@@ -2296,14 +2306,14 @@
       // closeModalPedidoFaturamento()
       modalEditFaturamento.value = false;
     };
-    
+
     const calcularTotalLancamento = (lancamentos) => {
       let total = 0;
-    
+
       const lancamentosFiltrados = lancamentos.filter((lancamento) =>
         pedidosFaturamento.value.includes(lancamento.id)
       );
-    
+
       lancamentosFiltrados.forEach((lancamento) => {
         lancamento.lancamentoItens.forEach((lancamentoItem) => {
           total +=
@@ -2311,13 +2321,13 @@
             parseFloat(lancamentoItem.quantidadeItens);
         });
       });
-    
+
       return total;
     };
-    
+
     const calcularTotalFaturamento = (faturamento) => {
       let total = 0;
-    
+
       faturamento.faturamentoItens.forEach((faturamentoItem) => {
         faturamentoItem.lancamento.lancamentoItens.forEach((lancamentoItem) => {
           total +=
@@ -2327,7 +2337,7 @@
       });
       return total;
     };
-    
+
     const calcularSaldoFaturamentoItens = (faturamento) => {
       let saldoTotal = 0;
       faturamento.forEach((item) => {
@@ -2340,24 +2350,24 @@
       });
       return saldoTotal;
     };
-    
+
     const formatDatePTBR = (isoString) => {
       const [datePart] = isoString.split("T");
-    
+
       const [ano, mes, dia] = datePart.split("-");
-    
+
       return `${dia}/${mes}/${ano}`;
     };
-    
+
     const createPedidoFaturamento = async () => {
       // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
       // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
-    
+
       if(pedidoFaturamentoData.value.observacoes && pedidoFaturamentoData.value.observacoes.length > 1500) {
         toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
         return;
       }
-    
+
       let payload = {
         nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
         data_faturamento: pedidoFaturamentoData.value.data_faturamento,
@@ -2366,12 +2376,12 @@
         competencia: pedidoFaturamentoData.value.competencia,
         observacoes: pedidoFaturamentoData.value.observacoes,
       };
-    
+
       if (payload.descricao_nota.length <= 0) {
         toast.error("Selecione pelo menos um lançamento para gerar o faturamento.");
         return;
       }
-    
+
       try {
         const contratoId = route.params.id;
         const response = await api
@@ -2392,10 +2402,10 @@
         });
       }
     };
-    
+
     const deleteFaturamento = (faturamentoId) => {
       const contratoId = route.params.id;
-    
+
       Swal.fire({
         title: "Confirmar exclusão",
         text: "Tem certeza que deseja excluir este faturamento?",
@@ -2426,13 +2436,13 @@
         }
       });
     };
-    
+
     const updateCompetencia = async (lancamentoId, novaCompetencia) => {
       try {
         const response = await api.patch(`/lancamentos/${lancamentoId}/competencia`, {
           competencia: novaCompetencia
         });
-    
+
       } catch (error) {
         console.error("Erro ao atualizar competência:", error);
         toast("Erro ao atualizar competência", {
@@ -2441,8 +2451,8 @@
         });
       }
     };
-    
-    
+
+
     const saveEditedFaturamento = async () => {
       if(editingFaturamento.value.observacoes && editingFaturamento.value.observacoes.length > 1500) {
         toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingFaturamento.value.observacoes.length}`)
@@ -2456,7 +2466,7 @@
         status: editingFaturamento.value.status,
         observacoes: editingFaturamento.value.observacoes,
       };
-    
+
       try {
         let contratoId = route.params.id;
         const response = await api
@@ -2479,7 +2489,7 @@
         console.error(error);
       }
     };
-    
+
     // Renovação de contrato
     const modalRenovacao = ref(false);
     const renovacaoData = ref({
@@ -2489,11 +2499,11 @@
       porcentagem_renovacao: "",
     });
     const emit = defineEmits(["renovacaoCriada"]);
-    
+
     const showRenovacaoModal = () => {
       modalRenovacao.value = true;
     };
-    
+
     const closeModalRenovacao = () => {
       modalRenovacao.value = false;
       renovacaoData.value = {
@@ -2503,7 +2513,7 @@
         porcentagem_renovacao: "",
       };
     };
-    
+
     const createRenovacao = async () => {
       const contratoId = route.params.id;
       let payload = {
@@ -2531,7 +2541,7 @@
         console.error("Erro ao criar renovação:", error);
       }
     };
-    
+
     const moneyConfig = {
       precision: 2,
       decimal: ",",
@@ -2539,7 +2549,7 @@
       prefix: "R$ ",
       masked: false,
     };
-    
+
     const decimalConfig = {
       precision: 3,
       decimal: ",",
@@ -2547,7 +2557,7 @@
       prefix: "",
       masked: false,
     };
-    
+
     const deleteContrato = (contratoAtual) => {
       Swal.fire({
         title: "Confirmar exclusão",
@@ -2579,11 +2589,11 @@
         }
       });
     };
-    
+
     const closeModal = () => {
       excluirModal.value = false;
     };
-    
+
     const ExibirModalLancamento = () => {
       fetchProjetos(route.params.id);
       if (contrato.value.contratoItens.length === 0) {
@@ -2598,13 +2608,13 @@
       }
       modalLancamento.value = true;
     };
-    
+
     const isSaldoNegativo = computed(() => {
       return contrato.value.contratoItens.some(
         (item) => calcularSaldoAtual(item) < 0
       );
     });
-    
+
     const closeModalLancamento = () => {
       modalLancamento.value = false;
       projetos.value = "";
@@ -2624,20 +2634,20 @@
         item.quantidadeItens = null;
       });
     };
-    
+
     const toggleTermosAditivosDropdown = () => {
       showTermosAditivosDropdown.value = !showTermosAditivosDropdown.value;
     };
-    
+
     const openTermosAditivosModal = () => {
       modalTermosAditivos.value = true;
       showTermosAditivosDropdown.value = false;
     };
-    
+
     const closeModalTermosAditivos = () => {
       modalTermosAditivos.value = false;
     };
-    
+
     const resetForm = () => {
       selectNovoLancamento.value = "";
       contrato.value.contratoItens.forEach((item) => {
@@ -2663,7 +2673,7 @@
         });
         return;
       }
-    
+
       let itensQuantidadePreenchida = contrato.value.contratoItens
         .map((item) => ({
           id_item: item.id,
@@ -2672,7 +2682,7 @@
         .filter(
           (item) => item.quantidade_itens && parseFloat(item.quantidade_itens) > 0
         );
-    
+
       if (itensQuantidadePreenchida.length === 0) {
         toast(
           "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
@@ -2683,7 +2693,7 @@
         );
         return;
       }
-    
+
       const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
         const quantidadeRestante = calcularItensRestante(
           item.id,
@@ -2691,18 +2701,18 @@
         );
         return item.quantidadeItens > quantidadeRestante;
       });
-    
+
       if (quantidadeExcedida) {
         toast.error(
           "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
         );
         return;
       }
-    
+
       let novoSaldoContrato =
         calcularSaldoAtualContrato() -
         calcularSaldoLancamentoItens(itensQuantidadePreenchida);
-    
+
       if (novoSaldoContrato < 0) {
         toast("O saldo contratado não pode ser excedido.", {
           theme: "colored",
@@ -2710,7 +2720,7 @@
         });
         return;
       }
-    
+
       if(medicaoData.value.descricao && medicaoData.value.descricao.length > 1500) {
         toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
         return;
@@ -2733,7 +2743,7 @@
       };
       try {
         const contratoId = route.params.id;
-    
+
         const response = await api.post(`/contratos/${contrato.value.id}/lancamentos`, payload)
           .then((response) => {
             medicaoId.value = response.data.id;
@@ -2749,12 +2759,12 @@
         toast.error("Não foi possível criar a medição", error);
       }
     };
-    
+
     const voltarListagem = () => {
       // router.push({ name: "Contratos" });
       window.location.href = '/contratos'
     };
-    
+
     onMounted(() => {
       contratoId = route.params.id;
       fetchContrato(contratoId);
@@ -2765,32 +2775,32 @@
         // behavior: "smooth",
       });
     });
-    
+
     const fetchContrato = async (id) => {
       try {
         const response = await api.get(`/termo-aditivo/${id}`);
         let contratoData = response.data;
-    
+
         // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
-    
+
         contrato.value = contratoData;
         fetchContratoItens(currentPage.value);
         // fetchContratoMedicoes(currentPageMedicao.value);
         // fetchContratoFaturamentos(currentPageFaturamento.value);
-    
+
         podeRenovar.value = calcularPodeRenovar();
       } catch (error) {
         console.error("Erro ao buscar contrato:", error);
       }
     };
-    
+
     // const fetchTermoAditivo =  async (id) => {
     //   try {
     //     const response = await api.get(`/contratos/${id}/termo-aditivo`);
     //     console.log(response.data, 'termo aditivos')
     //     termosAditivos.value = response.data;
     //     // contratoForm.value = response.data;
-    
+
     //   } catch (error) {
     //     console.error("Erro ao buscar contrato:", error);
     //   }
@@ -2799,7 +2809,7 @@
       lancamentos.forEach((lancamento) => {
         lancamento.isFaturado = false;
       });
-    
+
       if (faturamentos && faturamentos.length > 0) {
         faturamentos.forEach((faturamento) => {
           faturamento.faturamentoItens.forEach((item) => {
@@ -2812,7 +2822,7 @@
           });
         });
       }
-    
+
       for (const lancamento of lancamentos) {
         if (lancamento.isFaturado && lancamento.status !== 'Finalizada') {
           await alterarStatusMedicao(lancamento.id, 'Finalizada');
@@ -2822,10 +2832,10 @@
           alterouStatus.value = true;
         }
       }
-    
+
       return lancamentos;
     };
-    
+
     const alterarStatusMedicao = async (id, novoStatus) => {
       try {
         const response = await api.patch(`/lancamentos/${id}/status`, {
@@ -2835,7 +2845,7 @@
         console.error(`Erro ao alterar status da medição ${id}:`, error);
       }
     };
-    
+
     const deleteLancamento = (lancamentoId) => {
       const contratoId = route.params.id;
       Swal.fire({
@@ -2868,7 +2878,7 @@
         }
       });
     };
-    
+
     const formatCurrency = (value) => {
       return new Intl.NumberFormat("pt-BR", {
         style: "currency",
@@ -2876,7 +2886,7 @@
         minimumFractionDigits: 2,
       }).format(value);
     };
-    
+
     const formatDate = (dateString) => {
       if (!dateString) return "";
       const date = new Date(dateString);
@@ -2884,69 +2894,69 @@
         ? ""
         : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
     };
-    
+
     // Cálculos de saldo
     const calcularSaldoAtual = () => {
       let saldoTotal = calcularSaldoAtualContrato();
-    
+
       contrato.value.contratoItens.forEach((item) => {
         const valorTotalItem = item.quantidadeItens
           ? item.quantidadeItens * item.valorUnitario
           : 0;
-    
+
         saldoTotal -= valorTotalItem;
       });
-    
+
       return saldoTotal;
     };
-    
+
     const calcularSaldoAtualEditLancamento = () => {
       let saldoTotal = contrato.value.saldoContrato;
-    
+
       editingLancamento.value.lancamentoItens.forEach((item) => {
         const valorTotalItem = item.quantidadeItens
           ? item.quantidadeItens * item.valorUnitario
           : 0;
-    
+
         saldoTotal -= valorTotalItem;
       });
-    
+
       return saldoTotal;
     };
-    
+
     const calcularSaldoAtualContrato = () => {
       let saldoTotal = contrato.value.saldoContrato;
-    
+
       contrato.value.lancamentos.forEach((lancamento) => {
         saldoTotal -= calcularSaldoLancamentoItens(lancamento.lancamentoItens);
       });
-    
+
       return saldoTotal;
     };
-    
+
     const saldoMaiorQueContrato = (item) => {
       const saldoAtual = calcularSaldoAtual(item);
-    
+
       return saldoAtual < 0;
     };
-    
+
     const saldoMaiorQueContratoEditLancamento = (item) => {
       const saldoAtual = calcularSaldoAtualEditLancamento(item);
-    
+
       return saldoAtual < 0;
     };
-    
+
     const calcularSaldoItem = (item) => {
       let valor = 0;
       if (!item.quantidadeItens) {
         item.quantidadeItens = 0;
       }
-    
+
       valor = item.valorUnitario * item.quantidadeItens;
-    
+
       return valor;
     };
-    
+
     const calcularSaldoLancamentoItens = (lancamento) => {
       let saldoTotal = 0;
       lancamento.forEach((item) => {
@@ -2957,13 +2967,13 @@
       });
       return saldoTotal;
     };
-    
+
     const calcularSaldoDisponivel = (faturamento) => {
       let saldoTotal = 0;
       let valorAguardandoFaturamento = 0;
       let valorAguardandoPagamento = 0;
       let valorPago = 0;
-    
+
       faturamento?.forEach((item) => {
         if (item.status === "Aguardando Faturamento") {
           item.faturamentoItens.forEach((subItem) => {
@@ -3000,7 +3010,7 @@
           });
         }
       });
-    
+
       return {
         aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
         aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
@@ -3008,11 +3018,11 @@
         valorPago: parseFloat(valorPago.toFixed(2)),
       };
     };
-    
+
     // const calcularItensRestante = (idItem, quantidadeContratada) => {
     //   let quantidadeUtilizada = 0;
     //   let quantidadeRestante = 0;
-    
+
     //   contrato.value.lancamentos.forEach((lancamento) => {
     //     if (
     //       lancamento.status === "Autorizada" ||
@@ -3032,106 +3042,108 @@
     //   quantidadeRestante = parseFloat(quantidadeContratada) - quantidadeUtilizada;
     //   return quantidadeRestante;
     // };
-    
+
     const calcularQuantidadeItens = (lancamentoItens) => {
       let saldoTotal = 0;
-    
+
       lancamentoItens.forEach((item) => {
         const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
         saldoTotal += quantidadeItens;
       });
       return saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 3 });
     };
-    
+
     const mostrarUnidadeMedida = (lancamentoItens) => {
       let unidadeMedida = "";
-    
+
       lancamentoItens.forEach((item) => {
         unidadeMedida = item.unidadeMedida;
       });
       return unidadeMedida;
     };
-    
+
     // Editar Item do contrato
-    
+
     const openItemEditModal = (item) => {
       editingItem.value = { ...item };
+      console.log(editingItem.value, 'edit');
       modalEditItem.value = true;
       fetchUnidadesMedida();
     };
-    
+
     const openItemViewModal = (item) => {
       fetchUnidadesMedida();
       isItemViewModal.value = true;
       editingItem.value = { ...item };
       modalEditItem.value = true;
     };
-    
+
     const closeModalEditItem = () => {
       isItemViewModal.value = false;
       modalEditItem.value = false;
     };
-    
+
     const openFormViewAditivo = (aditivo) => {
       selectedAditivo.value = { ...aditivo };
       modalViewAditivo.value = true;
       modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
     };
-    
+
     const openFormEditAditivo = async(id) => {
-      // selectedAditivo.value = { ...aditivo };
+        
      try {
-      const response = await api.get(`termo-aditivo/${id}`)
-      console.log(response,'res')
-        selectedAditivo.value =  response.data;
+      const response = await api.get(`termo-aditivo/${id}`)    
+       selectedAditivo.value =  response.data;
        modalEditAditivo.value = true;
        modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
      } catch (error) {
        console.log(error, 'error')
      }
     };
-    
+
     const closeModalViewAditivo = () => {
       modalViewAditivo.value = false;
       selectedAditivo.value = null;
-   
+
     };
-    
+
     const closeModalEditAditivo = () => {
       modalEditAditivo.value = false;
       selectedAditivo.value = null;
-    
+
     };
-    
-    
+
+
     const saveEditedItem = async () => {
       const contratoId = route.params.id;
-      
+
       const itemIndex = contrato.value.termoAditivoItem.findIndex(
         (i) => i.id === editingItem.value.id
       );
       let itemEditado = { ...editingItem.value };
-    
+      console.log(itemEditado, 'item editado')
+
+
       let valorTotalItens = 0;
       let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
-    
-      if (contrato.value.contratoItens) {
-        contrato.value.contratoItens.forEach((item) => {
+
+      if (contrato.value.termoAditivoItem) {
+        contrato.value.termoAditivoItem.forEach((item) => {
           if (item.id !== itemEditado.id) {
             valorTotalItens +=
-              parseFloat(item.saldoQuantidadeContratada) *
+              parseFloat(item.quantidadeContratada) *
               parseFloat(item.valorUnitario);
           }
         });
       } else {
         console.warn("Itens de contrato não definidos.");
       }
-    
-      let itemEditadoQuantidade = parseFloat(itemEditado.saldoQuantidadeContratada);
+
+      let itemEditadoQuantidade = parseFloat(itemEditado.quantidadeContratada);
       let itemEditadoValorUnitario = parseFloat(itemEditado.valorUnitario);
-    
+
       valorTotalItens += itemEditadoQuantidade * itemEditadoValorUnitario;
-    
+
       if (valorTotalItens > valorContratado) {
         toast.error(
           `Valor total do item excedendo o valor contratado em R$ ${
@@ -3140,22 +3152,24 @@
         );
         return;
       }
-    
-      if (itemEditado.saldoQuantidadeContratada == 0) {
+
+      if (itemEditado.quantidadeContratada == 0) {
         toast.error(`quantidade contratada não pode ser zero.`);
         return;
       } else if (itemEditado.valorUnitario == 0) {
         toast.error(`Valor unitário não pode ser zero.`);
         return;
       }
-    
+
       let objEditado = {
         titulo: itemEditado.titulo,
         unidade_medida: itemEditado.unidadeMedida,
         valor_unitario: itemEditado.valorUnitario,
-        saldo_quantidade_contratada: itemEditado.saldoQuantidadeContratada,
+        quantidade_contratada: parseFloat(itemEditado.quantidadeContratada),
       };
-    
+
+      console.log(objEditado, 'objeto editado')
+
       try {
         const response = await api.put(
           `/termo-aditivo/itens/${itemEditado.id}`,
@@ -3175,7 +3189,7 @@
         console.error("Erro ao alterar item", error.response.data.message);
       }
     };
-    
+
     // Deletar Item do contrato
     const deleteItem = async (itemId) => {
       const contratoId = route.params.id;
@@ -3204,45 +3218,52 @@
         }
       });
     };
-    
+
     // Criar item do contrato
-    
+
     const openCreateItemModal = () => {
       modalCreateItem.value = true;
       // showNewUnitInput.value = false;
       fetchUnidadesMedida();
     };
-    
+
     const closeModalCreateItem = () => {
       modalCreateItem.value = false;
       newItem.value = {
         titulo: "",
-        unidadeMedida: "",
-        valorUnitario: "",
-        saldoQuantidadeContratada: "",
+        unidade_medida: "",
+        valor_unitario: "",
+        quantidade_contratada: "",
+        termo_aditivo_id: null
       };
     };
-    
+
     const createNewItem = async () => {
       const contratoId = route.params.id;
       let valorTotalItens = 0;
       let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
-    
-      if (contrato.value.contratoItens) {
-        contrato.value.contratoItens.map((item) => {
-          valorTotalItens +=
-            parseFloat(item.saldoQuantidadeContratada) *
-            parseFloat(item.valorUnitario);
-        });
-      } else {
-        console.error("itens de contrato não definidos.");
-      }
-    
-      let novoItemQuantidade = newItem.value.saldo_quantidade_contratada;
+
+      // if (contrato.value.contratoItens) {
+      //   contrato.value.contratoItens.map((item) => {
+      //     valorTotalItens +=
+      //       parseFloat(item.saldoQuantidadeContratada) *
+      //       parseFloat(item.valorUnitario);
+      //   });
+      // } else {
+      //   console.error("itens de contrato não definidos.");
+      // }
+
+      newItem.value.termo_aditivo_id =  parseFloat(contratoId)
+      newItem.value.valor_unitario =  parseFloat(newItem.value.valor_unitario)
+      newItem.value.quantidade_contratada =  parseFloat(newItem.value.quantidade_contratada)
+
+
+
+      let novoItemQuantidade = newItem.value.quantidade_contratada;
       let novoItemValorUnitario = newItem.value.valor_unitario;
-    
+
       valorTotalItens += novoItemQuantidade * novoItemValorUnitario;
-    
+
       if (valorTotalItens > valorContratado) {
         toast.error(
           `Valor total do item excedendo o valor contratado em R$ ${
@@ -3251,7 +3272,7 @@
         );
         return;
       }
-    
+
       if (newItem.saldoQuantidadeContratada == 0) {
         toast.error(`quantidade contratada não pode ser zero.`);
         return;
@@ -3259,10 +3280,10 @@
         toast.error(`Valor unitário não pode ser zero.`);
         return;
       }
-    
+
       try {
         const response = await api.post(
-          `/contratos/${route.params.id}/items`,
+          `/termo-aditivo/itens`,
           newItem.value
         );
         toast("Item criado com sucesso!", {
@@ -3279,27 +3300,27 @@
         console.error("Erro ao criar item:", error);
       }
     };
-    
+
     // Editar lancamento do contrato
     const editingLancamentoBackup = ref(null);
     const openEditLancamentoModal = (lancamento) => {
       // Crie um backup profundo (deep copy) do objeto original
       editingLancamentoBackup.value = JSON.parse(JSON.stringify(lancamento));
-    
+
       const dataMedicao = lancamento.dataMedicao || "";
       const dataFormatada = dataMedicao.split("T")[0];
-    
+
       // Faça uma cópia profunda também dos itens de lançamento
       editingLancamento.value = {
         ...lancamento,
         dataMedicao: dataFormatada,
         lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
       };
-    
+
       modalEditLancamento.value = true;
       fetchProjetos(route.params.id);
     };
-    
+
     const openViewLancamentoModal = (lancamento) => {
       isLancamentoViewModal.value = true;
       const itensComQuantidade = lancamento.lancamentoItens.filter(
@@ -3315,7 +3336,7 @@
       fetchProjetos(route.params.id);
       modalEditLancamento.value = true;
     };
-    
+
     const closeEditLancamentoModal = () => {
       // Verifica se existe um backup
       if (editingLancamentoBackup.value) {
@@ -3323,13 +3344,13 @@
         editingLancamento.value = JSON.parse(JSON.stringify(editingLancamentoBackup.value));
         editingLancamentoBackup.value = null; // Limpa o backup após restaurar
       }
-    
+
       // Fecha o modal
       editMedicaoCurrentTab.value = editMedicaoTabs[0]
       modalEditLancamento.value = false;
       isLancamentoViewModal.value = false;
     };
-    
+
     const saveEditedLancamento = async () => {
       if (
         !editingLancamento.value.projetos ||
@@ -3350,11 +3371,11 @@
           quantidade_itens: item.quantidadeItens.toString(),
           // data: item.data,
         }));
-    
+
       const todosQuantidadeZero = itensQuantidadePreenchida.every(
         (item) => item.quantidade_itens === "0"
       );
-    
+
       if (todosQuantidadeZero) {
         toast.error("Adicione pelo menos um item ao lancamento.", {
           theme: "colored",
@@ -3362,7 +3383,7 @@
         });
         return;
       }
-    
+
       if (itensQuantidadePreenchida.length === 0) {
         toast("Adicione pelo menos um item para editar o lancamento.", {
           theme: "colored",
@@ -3370,7 +3391,7 @@
         });
         return;
       }
-    
+
       const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
         let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
           (total, lancamento) => {
@@ -3389,17 +3410,17 @@
           },
           0
         );
-    
+
         const saldoQuantidadeContratada = parseFloat(
           item.saldo_quantidade_contratada
         );
         const quantidadeItens = parseFloat(item.quantidade_itens);
         const quantidadeDisponivel =
           saldoQuantidadeContratada - quantidadeTotalLançada;
-    
+
         return quantidadeItens > quantidadeDisponivel;
       });
-    
+
       if (quantidadeExcedida) {
         toast.error(
           "A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item.",
@@ -3410,7 +3431,7 @@
         );
         return;
       }
-    
+
       if (editingLancamento.value.status === "" || editingLancamento.value.status === null) {
         toast.error("Selecione um status para a medição.")
         return;
@@ -3419,7 +3440,7 @@
         toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
         return;
       }
-    
+
       let payload = {
         // data_medicao: formatDate(editingLancamento.value.dataMedicao),
         data_medicao: editingLancamento.value.dataMedicao,
@@ -3454,7 +3475,7 @@
         console.error(error);
       }
     };
-    
+
     const calcularPodeRenovar = () => {
       const totalUtilizado = calcularSaldoDisponivel(
         contrato.value.faturamentos
@@ -3462,48 +3483,48 @@
       const saldoContrato = contrato.value.saldoContrato;
       const dataFimContrato = formatDate(contrato.value.dataFim);
       const dataAtual = formatDate(new Date());
-    
+
       return totalUtilizado >= saldoContrato || dataFimContrato <= dataAtual;
     };
-    
+
     const redirectToRedmine = (tarefa) => {
       const url = `https://redmine.msbtec.com.br/issues/${tarefa}`;
       window.open(url, "_blank");
     };
-    
+
     const openWhatsApp = (telefone) => {
       const telefoneFormatado = `+55${telefone.replace(/\D/g, "")}`;
       const url = `https://wa.me/${telefoneFormatado}`;
       window.open(url, "_blank");
     };
-    
+
     const downloadZip = async (id) => {
       try {
         const response = await api.get(`/termo-aditivos/${id}/anexos/zip`, {
           responseType: 'blob',
         });
-    
+
         const contentDisposition = response.headers['content-disposition'];
         let fileName = 'download.zip';
-    
+
         if (contentDisposition && contentDisposition.includes('filename')) {
           const fileNameMatch = contentDisposition.match(/filename\*?=(?:UTF-8''|")?([^;\r\n"]+)/i);
           if (fileNameMatch && fileNameMatch.length > 1) {
             fileName = decodeURIComponent(fileNameMatch[1].replace(/"/g, ''));
           }
         }
-    
+
         const blob = new Blob([response.data], { type: 'application/zip' });
-    
+
         const url = window.URL.createObjectURL(blob);
         console.log('URL do blob:', url);
-    
+
         const a = document.createElement('a');
         a.href = url;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
-    
+
         a.remove();
         window.URL.revokeObjectURL(url);
       } catch (error) {
@@ -3511,8 +3532,8 @@
         alert('Ocorreu um erro ao baixar o arquivo.');
       }
     };
-    
-    
+
+
     watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
       if (newTipo === 'Estimada') {
         if (!['Autorizada', 'Não Autorizada', 'Cancelada'].includes(editingLancamento.value.status)) {
@@ -3525,18 +3546,18 @@
       }
     });
     </script>
-    
+
     <style>
     .custom-number-input::-webkit-inner-spin-button,
     .custom-number-input::-webkit-outer-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
-    
+
     .custom-number-input {
       -moz-appearance: textfield;
     }
-    
+
     .btn-lancamento,
     .btn-faturamento {
       background-color: var(--bluePrimary);
@@ -3546,22 +3567,22 @@
       width: 185px;
       height: 40px;
     }
-    
+
     .btn-lancamento:hover,
     .btn-faturamento:hover {
       background-color: #0ea5e9;
     }
-    
+
     .btn-save-lancamento,
     .btn-save-faturamento {
       background-color: var(--bluePrimary);
     }
-    
+
     .btn-save-lancamento:hover,
     .btn-save-faturamento:hover {
       background-color: #0ea5e9;
     }
-    
+
     .btn-item {
       background-color: var(--bluePrimary);
       border-radius: 9px;
@@ -3570,11 +3591,11 @@
       width: 160px;
       height: 40px;
     }
-    
+
     .btn-item:hover {
       background-color: #0ea5e9;
     }
-    
+
     .btn-unidade {
       border-radius: 9px;
       color: var(--whiteLight);
@@ -3582,47 +3603,46 @@
       width: 200px;
       height: 40px;
     }
-    
+
     .text-observacoes {
       resize: none;
     }
-    
+
     .pagination-container {
       display: flex;
       padding-top: 5px;
       column-gap: 10px;
     }
-    
+
     .paginate-buttons {
       height: 40px;
-    
+
       width: 40px;
-    
+
       border-radius: 20px;
-    
+
       cursor: pointer;
-    
+
       background-color: rgb(242, 242, 242);
-    
+
       border: 1px solid rgb(217, 217, 217);
-    
+
       color: black;
     }
-    
+
     .paginate-buttons:hover {
       background-color: #d8d8d8;
     }
-    
+
     .active-page {
       background-color: #3498db;
-    
+
       border: 1px solid #3498db;
-    
+
       color: white;
     }
-    
+
     .active-page:hover {
       background-color: #2988c8;
     }
     </style>
-    
