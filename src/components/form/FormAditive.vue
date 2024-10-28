@@ -938,7 +938,8 @@ const createTermoAditivo = async (contratoId) => {
     termoAditivoItens.value = termoAditivoItens.value.map((item)=> {
         return {
           ...item,
-          valor_unitario: parseFloat(item.valor_unitario)
+          valor_unitario: parseFloat(item.valor_unitario),
+          quantidade_contratada: parseFloat(item.quantidade_contratada)
         }
     })
 

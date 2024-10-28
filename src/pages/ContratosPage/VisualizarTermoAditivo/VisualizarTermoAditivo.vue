@@ -264,7 +264,7 @@
               </tr>
             </thead>
             <tbody>
-              <!-- {{contratoItemData}} -->
+              {{contratoItemData}}
               <tr
                 class="h-24 text-center"
                 v-for="(item) in contratoItemData"
@@ -1998,7 +1998,7 @@
     const fetchContratoItens = async (page) => {
       try {
         const response = await api.get(
-          `/contratos/${contrato.value.id}/items/?page=${page}`
+          `/termo-aditivo/${contrato.value.id}/itens/?page=${page}`
         );
         const itens = response.data.data;
         const meta = response.data.meta;
@@ -2008,17 +2008,20 @@
         });
     
         contratoItemData.value = itens;
+        console.log(contratoItemData.value, 'item  data')
         contratoItemMeta.value = meta;
         currentPage.value = contratoItemMeta.value.currentPage;
         totalItens.value = contratoItemMeta.value.total;
         resultsPerPageItens.value = contratoItemMeta.value.perPage;
+
+        console.log(contrato.value, 'value')
     
-        contrato.value.contratoItens.forEach(item => {
-          const itemContrato = contratoItemData.value.find(contratoItem => contratoItem.id === item.id);
-          if(itemContrato) {
-            item.contagem_dinamica = itemContrato.contagem_dinamica;
-          }
-        })
+        // contrato.value.contratoItens.forEach(item => {
+        //   const itemContrato = contratoItemData.value.find(contratoItem => contratoItem.id === item.id);
+        //   if(itemContrato) {
+        //     item.contagem_dinamica = itemContrato.contagem_dinamica;
+        //   }
+        // })
       } catch (error) {
         console.error(error);
         contratoItemData.value = [];
@@ -2689,7 +2692,7 @@
         // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
     
         contrato.value = contratoData;
-        // fetchContratoItens(currentPage.value);
+        fetchContratoItens(currentPage.value);
         // fetchContratoMedicoes(currentPageMedicao.value);
         // fetchContratoFaturamentos(currentPageFaturamento.value);
     
