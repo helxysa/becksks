@@ -367,7 +367,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- {{contratoItemData}} -->
+     
           <tr
             class="h-24 text-center"
             v-for="(item) in contratoItemData"
