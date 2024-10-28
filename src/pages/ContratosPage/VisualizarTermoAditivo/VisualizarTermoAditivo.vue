@@ -21,12 +21,12 @@
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
              v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
-             @click="openFormEditAditivo(contrato.id)"
+             @click="openFormEditAditivo(termoAditivo.id)"
           >
             Editar
           </button>
           <button
-            @click="deletarTermoAditivo(contrato.id)"
+            @click="deletarTermoAditivo(termoAditivo.id)"
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
 
           >
@@ -57,7 +57,7 @@
               <div>
                 <p class="text-lg text-gray-500">Termo  aditivo</p>
                 <p class="font-medium text-gray-700">
-                  {{ contrato.nomeTermo }}
+                  {{ termoAditivo.nomeTermo }}
                 </p>
               </div>
             </div>
@@ -74,7 +74,7 @@
               <div>
                 <p class="text-lg text-gray-500">Cliente</p>
                 <p class="font-medium text-gray-700">
-                  {{ contrato?.contrato?.nomeCliente }}
+                  {{ termoAditivo?.contrato?.nomeCliente }}
                 </p>
               </div>
             </div>
@@ -91,8 +91,8 @@
               <div>
                 <p class="text-lg text-gray-500">Vigência</p>
                 <p class="font-medium text-gray-700">
-                  {{ formatDate(contrato.dataInicio) }} até
-                  {{ formatDate(contrato.dataFim) }}
+                  {{ formatDate(termoAditivo.dataInicio) }} até
+                  {{ formatDate(termoAditivo.dataFim) }}
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@
               <div>
                 <p class="text-lg text-gray-500">Nome</p>
                 <p class="font-medium text-gray-700">
-                  {{ contrato?.contrato?.fiscal?.nome }}
+                  {{ termoAditivo?.contrato?.fiscal?.nome }}
                 </p>
               </div>
             </div>
@@ -130,9 +130,9 @@
                 <p class="text-lg text-gray-500">Contato</p>
                 <p
                   class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
-                  @click="openWhatsApp(contrato.contrato.fiscal.telefone)"
+                  @click="openWhatsApp(termoAditivo.contrato.fiscal.telefone)"
                 >
-                  {{ contrato?.contrato?.fiscal?.telefone }}
+                  {{ termoAditivo?.contrato?.fiscal?.telefone }}
                 </p>
               </div>
             </div>
@@ -148,7 +148,7 @@
               <div>
                 <p class="text-lg text-gray-500">E-mail</p>
                 <p class="font-medium text-gray-700">
-                  {{ contrato?.contrato?.fiscal?.email }}
+                  {{ termoAditivo?.contrato?.fiscal?.email }}
                 </p>
               </div>
             </div>
@@ -173,7 +173,7 @@
               </div>
               <div>
                 <p class="text-lg text-gray-500">Ponto Focal</p>
-                <p class="font-medium text-gray-700">{{ contrato?.contrato?.pontoFocal }}</p>
+                <p class="font-medium text-gray-700">{{ termoAditivo?.contrato?.pontoFocal }}</p>
               </div>
             </div>
             <div class="flex items-center">
@@ -188,7 +188,7 @@
               <div>
                 <p class="text-lg text-gray-500">Cidade</p>
                 <p class="font-medium text-gray-700">
-                  {{ contrato?.contrato?.cidade }} ({{ contrato?.contrato?.estado }})
+                  {{ termoAditivo?.contrato?.cidade }} ({{ termoAditivo?.contrato?.estado }})
                 </p>
               </div>
             </div>
@@ -204,7 +204,7 @@
               <div>
                 <p class="text-lg text-gray-500">Objeto do Contrato</p>
                 <p class="font-medium text-gray-700">
-                  {{ contrato.objetoContrato }}
+                  {{ termoAditivo.objetoContrato }}
                 </p>
               </div>
             </div>
@@ -278,7 +278,7 @@
             <tbody>
               <tr
                 class="h-24 text-center"
-                v-for="(item) in contratoItemData"
+                v-for="(item) in aditivoItemData"
                 :key="item.id"
               >
 
@@ -676,8 +676,8 @@
 
         <div v-if="currentTab === 'Anexos'">
           <!-- Anexos do contrato -->
-          <div v-if="contratoId">
-            <Anexos :resourceId="contratoId" :variant="'contrato'" />
+          <div v-if="termoAditivoId">
+            <Anexos :resourceId="termoAditivoId" :variant="'contrato'" />
           </div>
         </div>
     </section>
@@ -705,12 +705,12 @@
             <section class="flex flex-col gap-8">
               <div class="flex items-center justify-between">
                 <label class="font-bold text-3xl w-[180px]">Contrato:</label>
-                <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+                <span class="font-medium text-3xl">{{termoAditivo.nomeContrato}}</span>
               </div>
               <div class="flex gap-4 items-center justify-between text-center">
                 <label class="font-bold text-3xl">Valor total:</label>
                 <span class="font-medium text-3xl">{{
-                  formatCurrency(calcularTotalLancamento(contrato.lancamentos))
+                  formatCurrency(calcularTotalLancamento(termoAditivo.lancamentos))
                 }}</span>
               </div>
               <div class="flex gap-4 justify-between items-center">
@@ -789,7 +789,7 @@
                 <tr
                   class="h-24 text-center"
                   :key="item.id"
-                  v-for="(item, index) in contrato.lancamentos.filter(
+                  v-for="(item, index) in termoAditivo.lancamentos.filter(
                     (lancamento) => pedidosFaturamento.includes(lancamento.id)
                   )"
                 >
@@ -925,7 +925,7 @@
             <section class="flex flex-col gap-8">
               <div class="flex justify-between items-center gap-4">
                 <label class="font-bold text-3xl w-[180px]">Contrato:</label>
-                <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+                <span class="font-medium text-3xl">{{termoAditivo.nomeContrato}}</span>
               </div>
               <div class="flex justify-between items-center gap-4">
                 <label class="font-bold text-3xl w-[180px]">Valor total:</label>
@@ -1145,7 +1145,7 @@
             <section class="flex flex-col gap-8">
               <div class="flex items-center gap-12">
                 <label class="font-bold text-3xl w-[180px]">Contrato:</label>
-                <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+                <span class="font-medium text-3xl">{{termoAditivo.nomeContrato}}</span>
               </div>
               <div class="flex gap-4 items-center">
                 <label class="font-bold text-3xl w-[200px]">Projeto:</label>
@@ -1228,7 +1228,7 @@
                     Selecione o item da medição
                   </option>
                   <option
-                    v-for="item in contrato.contratoItens"
+                    v-for="item in termoAditivo.contratoItens"
                     :value="item"
                     :key="item.id"
                   >
@@ -1348,7 +1348,7 @@
             <section class="flex flex-col gap-8">
               <div class="flex items-center gap-12">
                 <label class="font-bold text-3xl w-[180px]">Contrato:</label>
-                <span class="font-medium text-3xl">{{contrato.nomeContrato}}</span>
+                <span class="font-medium text-3xl">{{termoAditivo.nomeContrato}}</span>
               </div>
               <div class="flex gap-4 items-center">
                 <label class="font-bold text-3xl w-[200px]">Projeto:</label>
@@ -1882,19 +1882,19 @@
     const criarFaturamentoCurrentTab = ref(criarFaturamentoTabs[0])
     const faturamentoLocalAnexos = ref([])
     const faturamentoId = ref(null)
-    let contratoId = null
+    let termoAditivoId = null
 
     const financialSummary = computed(() => [
       {
         title: "Valor Contratado",
-        value: formatCurrency(contrato.value.saldoContrato),
+        value: formatCurrency(termoAditivo.value.saldoContrato),
         icon: "fa6-solid:file-contract",
         bgColor: "from-blue-400 to-blue-600",
       },
       {
         title: "Aguardando faturamento",
         value: formatCurrency(
-          calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoFaturamento
+          calcularSaldoDisponivel(termoAditivo.value.faturamentos).aguardandoFaturamento
         ),
         icon: "ph:clock-fill",
         bgColor: "from-orange-400 to-orange-600",
@@ -1902,7 +1902,7 @@
       {
         title: "Aguardando pagamento",
         value: formatCurrency(
-          calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoPagamento
+          calcularSaldoDisponivel(termoAditivo.value.faturamentos).aguardandoPagamento
         ),
         icon: "fa-solid:hand-holding-usd",
         bgColor: "from-indigo-400 to-indigo-600",
@@ -1910,7 +1910,7 @@
       {
         title: "Pago",
         value: formatCurrency(
-          calcularSaldoDisponivel(contrato.value.faturamentos).valorPago
+          calcularSaldoDisponivel(termoAditivo.value.faturamentos).valorPago
         ),
         icon: "fa-check-circle",
         bgColor: "from-green-400 to-green-600",
@@ -1918,8 +1918,8 @@
       {
         title: "Saldo disponível",
         value: formatCurrency(
-          contrato.value.saldoContrato -
-            calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado
+          termoAditivo.value.saldoContrato -
+            calcularSaldoDisponivel(termoAditivo.value.faturamentos).totalUtilizado
         ),
         icon: "ph-wallet-fill",
         bgColor: "from-purple-400 to-purple-600",
@@ -1927,7 +1927,7 @@
     ]);
     const router = useRouter();
     const route = useRoute();
-    const contrato = ref({});
+    const termoAditivo = ref({});
     const lancamentos = ref([]);
     const modalLancamento = ref(false);
     const selectedItem = ref("");
@@ -1982,8 +1982,8 @@
 
     const totalItens = ref();
     const resultsPerPageItens = ref();
-    let contratoItemData = ref([]);
-    let contratoItemMeta = ref([]);
+    let aditivoItemData = ref([]);
+    let aditivoItemMeta = ref([]);
 
     const totalMedicoes = ref();
     const resultsPerPageMedicoes = ref();
@@ -2010,7 +2010,7 @@
         const response = await api
           .put(`/termo-aditivo/${termoAditivo.id}`, payload)
           .then((response) => {
-            fetchContrato(contratoId);
+            fetchTermoAditivo(termoAditivoId);
             toast("Termo aditivo editado com sucesso!", {
               theme: "colored",
               type: "success",
@@ -2042,8 +2042,6 @@
         console.error("Erro ao buscar unidades de medida:", error);
       }
     };
-
-
 
     const deletarTermoAditivo = (id) => {
       Swal.fire({
@@ -2095,10 +2093,10 @@
     const currentPageMedicao = ref(1);
     const currentPageFaturamento = ref(1);
 
-    const fetchContratoItens = async (page) => {
+    const fetchAditivoItens = async (page) => {
       try {
         const response = await api.get(
-          `/termo-aditivo/${contrato.value.id}/itens/?page=${page}`
+          `/termo-aditivo/${termoAditivo.value.id}/itens/?page=${page}`
         );
         const itens = response.data.data;
         const meta = response.data.meta;
@@ -2107,17 +2105,17 @@
           item.contagem_dinamica = (meta.currentPage - 1) * meta.perPage + index + 1;
         });
 
-        contratoItemData.value = itens;
-        contratoItemMeta.value = meta;
-        currentPage.value = contratoItemMeta.value.currentPage;
-        totalItens.value = contratoItemMeta.value.total;
-        resultsPerPageItens.value = contratoItemMeta.value.perPage;
+        aditivoItemData.value = itens;
+        aditivoItemMeta.value = meta;
+        currentPage.value = aditivoItemMeta.value.currentPage;
+        totalItens.value = aditivoItemMeta.value.total;
+        resultsPerPageItens.value = aditivoItemMeta.value.perPage;
 
 
       } catch (error) {
         console.error(error);
-        contratoItemData.value = [];
-        contratoItemMeta.value = [];
+        aditivoItemData.value = [];
+        aditivoItemMeta.value = [];
         currentPage.value = 1;
         totalItens.value = 0;
       }
@@ -2135,13 +2133,13 @@
       }
 
       if (type === "medicoes") {
-        fetchContratoMedicoes(currentPageMedicao.value);
+        fetchAditivoMedicoes(currentPageMedicao.value);
       } else if (type === "faturamentos") {
-        fetchContratoFaturamentos(currentPageFaturamento.value);
+        fetchAditivoFaturamentos(currentPageFaturamento.value);
       }
     };
 
-    const fetchContratoMedicoes = async (page) => {
+    const fetchAditivoMedicoes = async (page) => {
       try {
         const params = {
           page,
@@ -2154,7 +2152,7 @@
           params.sortOrder = sortOrder.value.medicoes;
         }
         const response = await api.get(
-          `/contratos/${contrato.value.id}/lancamentos`,
+          `/contratos/${termoAditivo.value.id}/lancamentos`,
           { params }
         );
         medicaoItemData.value = response.data.data;
@@ -2164,7 +2162,7 @@
         medicaoItemData.value.forEach((medicao) => {
           medicao.lancamentoItens.forEach((lancamentoItem) => {
             // Procura o item correspondente no contratoItemData pelo contratoItemId
-            const itemContrato = contratoItemData.value.find(
+            const itemContrato = aditivoItemData.value.find(
               (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
             );
             if (itemContrato) {
@@ -2174,8 +2172,8 @@
           });
         });
 
-        if (contrato.value.faturamentos) {
-          medicaoItemData.value = await verificaIsFaturado(medicaoItemData.value,contrato.value.faturamentos);
+        if (termoAditivo.value.faturamentos) {
+          medicaoItemData.value = await verificaIsFaturado(medicaoItemData.value,termoAditivo.value.faturamentos);
         }
         currentPageMedicao.value = medicaoItemMeta.value.currentPage;
         resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
@@ -2189,7 +2187,7 @@
       }
     };
 
-    const fetchContratoFaturamentos = async (page) => {
+    const fetchAditivoFaturamentos = async (page) => {
       try {
         const params = {
           limit: 8,
@@ -2200,7 +2198,7 @@
         if (sortOrder.value) {
           params.sortOrder = sortOrder.value.faturamentos;
         }
-        const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params });
+        const response = await api.get(`/contratos/${termoAditivo.value.id}/faturamentos?page=${page}`, { params });
         faturamentoItemData.value = response.data.data;
         faturamentoItemMeta.value = response.data.meta;
         currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2213,19 +2211,15 @@
         currentPageFaturamento.value = 1;
         totalFaturamentos.value = 0;
       }
-    };
-
-    // watch( ()=> modalTermosAditivos.value,
-    // () => fetchTermoAditivo(route.params.id)
-    //  )
+    };   
 
     watch(()=> alterouStatus.value, () =>{
-      fetchContratoMedicoes(currentPageMedicao.value )
+      fetchAditivoMedicoes(currentPageMedicao.value )
       alterouStatus.value = false;
     })
     watch(
       () => currentPage.value,
-      () => fetchContratoItens(currentPage.value)
+      () => fetchAditivoItens(currentPage.value)
     );
     // watch(
     //   () => currentPageMedicao.value,
@@ -2383,9 +2377,9 @@
       }
 
       try {
-        const contratoId = route.params.id;
+        const termoAditivoId = route.params.id;
         const response = await api
-          .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
+          .post(`/contratos/${termoAditivo.value.id}/faturamentos`, payload)
           .then((response) => {
             faturamentoId.value = response.data.id;
             toast("Faturamento criado com sucesso!", {
@@ -2394,7 +2388,7 @@
             });
           });
           closeModalPedidoFaturamento();
-          fetchContrato(contratoId);
+          fetchTermoAditivo(termoAditivoId);
       } catch (error) {
         toast("Não foi possível criar o  pedido  de faturamento!", {
           theme: "colored",
@@ -2404,7 +2398,7 @@
     };
 
     const deleteFaturamento = (faturamentoId) => {
-      const contratoId = route.params.id;
+      const termoAditivoId = route.params.id;
 
       Swal.fire({
         title: "Confirmar exclusão",
@@ -2424,7 +2418,7 @@
                 theme: "colored",
                 type: "success",
               });
-              fetchContrato(contratoId);
+              fetchTermoAditivo(termoAditivoId);
             })
             .catch((error) => {
               toast("Não foi possível deletar o faturamento!", {
@@ -2468,7 +2462,7 @@
       };
 
       try {
-        let contratoId = route.params.id;
+        let termoAditivoId = route.params.id;
         const response = await api
           .put(`/faturamentos/${editingFaturamento.value.id}`, payload)
           .then((response) => {
@@ -2483,7 +2477,7 @@
               }
             });
             closeEditFaturamentoModal();
-            fetchContrato(contratoId);
+            fetchTermoAditivo(termoAditivoId);
           });
       } catch (error) {
         console.error(error);
@@ -2557,46 +2551,15 @@
       prefix: "",
       masked: false,
     };
+  
 
-    const deleteContrato = (contratoAtual) => {
-      Swal.fire({
-        title: "Confirmar exclusão",
-        text: "Tem certeza que deseja excluir este contrato?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Excluir",
-        cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          api
-            .delete(`/contratos/${contratoAtual.id}`)
-            .then((response) => {
-              toast("Contrato deletado com sucesso!", {
-                theme: "colored",
-                type: "success",
-              });
-              voltarListagem();
-            })
-            .catch((error) => {
-              toast("Não foi possível deletar o contrato!", {
-                theme: "colored",
-                type: "error",
-              });
-              console.error("Erro ao deletar contrato:", error);
-            });
-        }
-      });
-    };
-
-    const closeModal = () => {
-      excluirModal.value = false;
-    };
+    // const closeModal = () => {
+    //   excluirModal.value = false;
+    // };
 
     const ExibirModalLancamento = () => {
       fetchProjetos(route.params.id);
-      if (contrato.value.contratoItens.length === 0) {
+      if (termoAditivo.value.contratoItens.length === 0) {
         toast(
           "Não é possível adicionar um novo lancamento. Não há itens no contrato.",
           {
@@ -2610,7 +2573,7 @@
     };
 
     const isSaldoNegativo = computed(() => {
-      return contrato.value.contratoItens.some(
+      return termoAditivo.value.contratoItens.some(
         (item) => calcularSaldoAtual(item) < 0
       );
     });
@@ -2629,28 +2592,28 @@
       };
       medicaoLocalAnexos.value = [];
       selectedItem.value = "";
-      contrato.value.contratoItens.forEach((item) => {
+      termoAditivo.value.contratoItens.forEach((item) => {
         // item.data = null;
         item.quantidadeItens = null;
       });
     };
 
-    const toggleTermosAditivosDropdown = () => {
-      showTermosAditivosDropdown.value = !showTermosAditivosDropdown.value;
-    };
+    // const toggleTermosAditivosDropdown = () => {
+    //   showTermosAditivosDropdown.value = !showTermosAditivosDropdown.value;
+    // };
 
-    const openTermosAditivosModal = () => {
-      modalTermosAditivos.value = true;
-      showTermosAditivosDropdown.value = false;
-    };
+    // const openTermosAditivosModal = () => {
+    //   modalTermosAditivos.value = true;
+    //   showTermosAditivosDropdown.value = false;
+    // };
 
-    const closeModalTermosAditivos = () => {
-      modalTermosAditivos.value = false;
-    };
+    // const closeModalTermosAditivos = () => {
+    //   modalTermosAditivos.value = false;
+    // };
 
     const resetForm = () => {
       selectNovoLancamento.value = "";
-      contrato.value.contratoItens.forEach((item) => {
+      termoAditivo.value.contratoItens.forEach((item) => {
         item.quantidadeItens = null;
       });
       medicaoId.value = null;
@@ -2674,7 +2637,7 @@
         return;
       }
 
-      let itensQuantidadePreenchida = contrato.value.contratoItens
+      let itensQuantidadePreenchida = termoAditivo.value.contratoItens
         .map((item) => ({
           id_item: item.id,
           quantidade_itens: item.quantidadeItens,
@@ -2694,7 +2657,7 @@
         return;
       }
 
-      const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
+      const quantidadeExcedida = termoAditivo.value.contratoItens.some((item) => {
         const quantidadeRestante = calcularItensRestante(
           item.id,
           item.saldoQuantidadeContratada
@@ -2710,7 +2673,7 @@
       }
 
       let novoSaldoContrato =
-        calcularSaldoAtualContrato() -
+        calcularSaldoAtualTermoAditivo() -
         calcularSaldoLancamentoItens(itensQuantidadePreenchida);
 
       if (novoSaldoContrato < 0) {
@@ -2742,9 +2705,9 @@
         tipo_medicao: medicaoData.value.tipo_medicao,
       };
       try {
-        const contratoId = route.params.id;
+        const termoAditivoId = route.params.id;
 
-        const response = await api.post(`/contratos/${contrato.value.id}/lancamentos`, payload)
+        const response = await api.post(`/contratos/${termoAditivo.value.id}/lancamentos`, payload)
           .then((response) => {
             medicaoId.value = response.data.id;
             toast("Medição criada com sucesso!", {
@@ -2753,7 +2716,7 @@
             });
           });
         resetForm();
-        fetchContrato(contratoId);
+        fetchTermoAditivo(termoAditivoId);
       } catch (error) {
         console.error("Erro ao criar medição:", error);
         toast.error("Não foi possível criar a medição", error);
@@ -2766,8 +2729,8 @@
     };
 
     onMounted(() => {
-      contratoId = route.params.id;
-      fetchContrato(contratoId);
+      termoAditivoId = route.params.id;
+      fetchTermoAditivo(termoAditivoId);
     //   fetchTermoAditivo(contratoId)
       window.scroll({
         top: 0,
@@ -2776,15 +2739,15 @@
       });
     });
 
-    const fetchContrato = async (id) => {
+    const fetchTermoAditivo = async (id) => {
       try {
         const response = await api.get(`/termo-aditivo/${id}`);
-        let contratoData = response.data;
+        let termoAditivoData = response.data;
 
         // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
-        contrato.value = contratoData;
-        fetchContratoItens(currentPage.value);
+        termoAditivo.value = termoAditivoData;
+        fetchAditivoItens(currentPage.value);
         // fetchContratoMedicoes(currentPageMedicao.value);
         // fetchContratoFaturamentos(currentPageFaturamento.value);
 
@@ -2866,7 +2829,7 @@
                 theme: "colored",
                 type: "success",
               });
-              fetchContrato(contratoId);
+              fetchTermoAditivo(contratoId);
             })
             .catch((error) => {
               toast("Não foi possível deletar medição", {
@@ -2897,9 +2860,9 @@
 
     // Cálculos de saldo
     const calcularSaldoAtual = () => {
-      let saldoTotal = calcularSaldoAtualContrato();
+      let saldoTotal = calcularSaldoAtualTermoAditivo();
 
-      contrato.value.contratoItens.forEach((item) => {
+      termoAditivo.value.contratoItens.forEach((item) => {
         const valorTotalItem = item.quantidadeItens
           ? item.quantidadeItens * item.valorUnitario
           : 0;
@@ -2911,7 +2874,7 @@
     };
 
     const calcularSaldoAtualEditLancamento = () => {
-      let saldoTotal = contrato.value.saldoContrato;
+      let saldoTotal = termoAditivo.value.saldoContrato;
 
       editingLancamento.value.lancamentoItens.forEach((item) => {
         const valorTotalItem = item.quantidadeItens
@@ -2924,10 +2887,10 @@
       return saldoTotal;
     };
 
-    const calcularSaldoAtualContrato = () => {
-      let saldoTotal = contrato.value.saldoContrato;
+    const calcularSaldoAtualTermoAditivo = () => {
+      let saldoTotal = termoAditivo.value.saldoContrato;
 
-      contrato.value.lancamentos.forEach((lancamento) => {
+      termoAditivo.value.lancamentos.forEach((lancamento) => {
         saldoTotal -= calcularSaldoLancamentoItens(lancamento.lancamentoItens);
       });
 
@@ -3065,8 +3028,7 @@
     // Editar Item do contrato
 
     const openItemEditModal = (item) => {
-      editingItem.value = { ...item };
-      console.log(editingItem.value, 'edit');
+      editingItem.value = { ...item };    
       modalEditItem.value = true;
       fetchUnidadesMedida();
     };
@@ -3117,18 +3079,17 @@
     const saveEditedItem = async () => {
       const contratoId = route.params.id;
 
-      const itemIndex = contrato.value.termoAditivoItem.findIndex(
+      const itemIndex = termoAditivo.value.termoAditivoItem.findIndex(
         (i) => i.id === editingItem.value.id
       );
-      let itemEditado = { ...editingItem.value };
-      console.log(itemEditado, 'item editado')
+      let itemEditado = { ...editingItem.value };   
 
 
       let valorTotalItens = 0;
-      let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
+      let valorContratado = parseFloat(termoAditivo.value.saldoContrato) || 0;
 
-      if (contrato.value.termoAditivoItem) {
-        contrato.value.termoAditivoItem.forEach((item) => {
+      if (termoAditivo.value.termoAditivoItem) {
+        termoAditivo.value.termoAditivoItem.forEach((item) => {
           if (item.id !== itemEditado.id) {
             valorTotalItens +=
               parseFloat(item.quantidadeContratada) *
@@ -3166,9 +3127,7 @@
         unidade_medida: itemEditado.unidadeMedida,
         valor_unitario: itemEditado.valorUnitario,
         quantidade_contratada: parseFloat(itemEditado.quantidadeContratada),
-      };
-
-      console.log(objEditado, 'objeto editado')
+      };   
 
       try {
         const response = await api.put(
@@ -3179,7 +3138,7 @@
           theme: "colored",
           type: "success",
         });
-        fetchContrato(contratoId);
+        fetchTermoAditivo(contratoId);
         closeModalEditItem();
       } catch (error) {
         toast(error.response.data.message, {
@@ -3206,7 +3165,7 @@
         if (result.isConfirmed) {
           try {
             const response = await api.delete(`/termo-aditivo/itens/${itemId}`);
-            fetchContrato(contratoId);
+            fetchTermoAditivo(contratoId);
             toast("Item deletado com sucesso!", {
               theme: "colored",
               type: "success",
@@ -3241,7 +3200,7 @@
     const createNewItem = async () => {
       const contratoId = route.params.id;
       let valorTotalItens = 0;
-      let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
+      let valorContratado = parseFloat(termoAditivo.value.saldoContrato) || 0;
 
       // if (contrato.value.contratoItens) {
       //   contrato.value.contratoItens.map((item) => {
@@ -3290,7 +3249,7 @@
           theme: "colored",
           type: "success",
         });
-        fetchContrato(contratoId);
+        fetchTermoAditivo(contratoId);
         closeModalCreateItem();
       } catch (error) {
         toast("Erro ao criar item!", {
@@ -3393,7 +3352,7 @@
       }
 
       const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
-        let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
+        let quantidadeTotalLançada = termoAditivo.value.lancamentos.reduce(
           (total, lancamento) => {
             return (
               total +
@@ -3469,7 +3428,7 @@
             });
             modalEditLancamento.value = false;
             editingLancamentoBackup.value = null;
-            fetchContrato(contratoId);
+            fetchTermoAditivo(contratoId);
           });
       } catch (error) {
         console.error(error);
@@ -3478,10 +3437,10 @@
 
     const calcularPodeRenovar = () => {
       const totalUtilizado = calcularSaldoDisponivel(
-        contrato.value.faturamentos
+        termoAditivo.value.faturamentos
       ).totalUtilizado;
-      const saldoContrato = contrato.value.saldoContrato;
-      const dataFimContrato = formatDate(contrato.value.dataFim);
+      const saldoContrato = termoAditivo.value.saldoContrato;
+      const dataFimContrato = formatDate(termoAditivo.value.dataFim);
       const dataAtual = formatDate(new Date());
 
       return totalUtilizado >= saldoContrato || dataFimContrato <= dataAtual;
