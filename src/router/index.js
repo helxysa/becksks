@@ -95,6 +95,18 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/contratos/termo-aditivo/:id/editar',
+    name: 'EditarTermoAditivo',
+    component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
+    props: true,
+    meta: {
+      requiresAuth: true
+    },
+    beforeEnter: async (to, from, next) => {   
+      next();
+    }
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: '{ name: "Dashboard" }',
   },

@@ -21,7 +21,7 @@
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
              v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
-             @click="openFormEditAditivo(termoAditivo.id)"
+             @click="navigateToEdit()"
           >
             Editar
           </button>
@@ -3504,6 +3504,32 @@
         }
       }
     });
+
+    const navigateToEdit = async () => {
+      if (!termoAditivo.value || !termoAditivo.value.id) {
+        toast.error('Erro: Dados do termo aditivo não encontrados');
+        return;
+      }
+
+      try {
+        // Primeiro, navegue para uma rota intermediária
+        await router.replace({
+          name: 'EditarTermoAditivo',
+          params: { id: termoAditivo.value.id.toString() }
+        });
+
+        // Force um reload da página
+        window.location.href = router.resolve({
+          name: 'EditarTermoAditivo',
+          params: { id: termoAditivo.value.id.toString() }
+        }).href;
+      } catch (error) {
+        console.error('Erro na navegação:', error);
+        toast.error('Erro ao navegar para edição');
+      }
+    };
+
+   
     </script>
 
     <style>
