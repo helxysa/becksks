@@ -926,14 +926,6 @@ const removeItem = (index) => {
 };
 
 const createTermoAditivo = async (contratoId) => {
-  if (contratoForm.value.fiscal.telefone.length < 15) {
-    toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
-      theme: "colored",
-      type: "error",
-    });
-    return;
-  }
-
   try {
     termoAditivoItens.value = termoAditivoItens.value.map((item)=> {
         return {
@@ -944,13 +936,15 @@ const createTermoAditivo = async (contratoId) => {
     })
 
     let payload = {
-      contrato_id: Number(contratoId),
-      nome_termo: contratoForm.value.nome_termo,
+      contrato_original_id: Number(contratoId),
+      nome_contrato: contratoForm.value.nome_termo,
       data_inicio: contratoForm.value.data_inicio,
       data_fim: contratoForm.value.data_fim,
+      saldo_contrato: contratoForm.value.saldo_contrato,
       objeto_contrato: contratoForm.value.objeto_contrato,
-      termo_aditivo_itens: termoAditivoItens.value,
-      saldo_contrato: contratoForm.value.saldo_contrato
+      ponto_focal: contratoForm.value.ponto_focal,
+      // observacoes: contratoForm.value.observacoes
+      // termo_aditivo_itens: termoAditivoItens.value,
     }
     const response = await api.post("/termo-aditivo", payload);
     termoAditivoId.value = response.data.id;

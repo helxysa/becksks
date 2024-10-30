@@ -288,7 +288,7 @@
           <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
-                {{ termo.nomeTermo }}
+                {{ termo.nomeContrato }}
                 <!-- <span>
                   <button
                   @click="deletarTermoAditivo(termo.id)"
@@ -367,7 +367,7 @@
           </tr>
         </thead>
         <tbody>
-     
+
           <tr
             class="h-24 text-center"
             v-for="(item) in contratoItemData"
@@ -2034,7 +2034,7 @@
           </thead>
           <tbody>
             <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">
-              <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
+              <td class="border p-2 text-2xl">{{ termo.nomeContrato }}</td>
               <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
               <td class="border p-2 ">
                <div class="flex justify-center items-center gap-2">
@@ -2053,7 +2053,7 @@
                     />
                   </span>
                   <span  @click="deletarTermoAditivo(termo.id)">
-                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />
                   </span>
                   <span @click="downloadZip(termo.id)">
                     <Icon
@@ -2261,9 +2261,8 @@ let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
 
 const handleEditAditivoSubmit = async (termoAditivo) => {
-
   let payload = {
-    nome_termo: termoAditivo.nomeTermo,
+    nome_contrato: termoAditivo.nomeContrato,
     data_inicio: termoAditivo.dataInicio,
     data_fim:termoAditivo.dataFim,
     saldo_contrato: termoAditivo.saldoContrato,
@@ -2272,9 +2271,8 @@ const handleEditAditivoSubmit = async (termoAditivo) => {
 
   try {
     const response = await api
-      .put(`/termo-aditivo/${termoAditivo.id}`, payload)
+      .put(`/contratos/${termoAditivo.id}`, payload)
       .then((response) => {
-        console.log(response, 'response')
         toast("Termo aditivo editado com sucesso!", {
           theme: "colored",
           type: "success",
@@ -2426,7 +2424,7 @@ const deletarTermoAditivo = (id) => {
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        await api.delete(`/termo-aditivo/${id}`);
+        await api.delete(`/contratos/${id}`);
         fetchTermoAditivo(contratoId)
 
         toast.success("Termo aditivo removido com sucesso!");
@@ -2466,7 +2464,7 @@ const currentPageFaturamento = ref(1);
 const fetchContratoItens = async (page) => {
   try {
     const response = await api.get(
-      `/contratos/${contrato.value.id}/items/?page=${page}`
+      `/contratos/${route.params.id}/items/?page=${page}`
     );
     const itens = response.data.data;
     const meta = response.data.meta;
@@ -2527,7 +2525,7 @@ const fetchContratoMedicoes = async (page) => {
       params.sortOrder = sortOrder.value.medicoes;
     }
     const response = await api.get(
-      `/contratos/${contrato.value.id}/lancamentos`,
+      `/contratos/${route.params.id}/lancamentos`,
       { params }
     );
     medicaoItemData.value = response.data.data;
@@ -2573,7 +2571,7 @@ const fetchContratoFaturamentos = async (page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
-    const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params });
+    const response = await api.get(`/contratos/${route.params.id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -3169,7 +3167,6 @@ const fetchContrato = async (id) => {
 const fetchTermoAditivo =  async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    console.log(response.data, 'termo aditivos')
     termosAditivos.value = response.data;
     // contratoForm.value = response.data;
 
@@ -3870,7 +3867,6 @@ const downloadZip = async (id) => {
     const blob = new Blob([response.data], { type: 'application/zip' });
 
     const url = window.URL.createObjectURL(blob);
-    console.log('URL do blob:', url);
 
     const a = document.createElement('a');
     a.href = url;

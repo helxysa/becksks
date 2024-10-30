@@ -119,7 +119,7 @@
               <div class="absolute top-0 right-0 bg-orange-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
             </div>
             <div class="p-6">
-              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeTermo">{{ contrato.nomeTermo }}</h2>
+              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
 
               <div class="mb-4">
                 <div class="flex justify-between text-xl mb-1">
@@ -293,7 +293,6 @@ const fetchContratos = async () => {
 
     const response = await api.get("/contratos-e-termos", { params });
     contratos.value = response.data.data;
-    console.log(contratos, 'contratos')
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }

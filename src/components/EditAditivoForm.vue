@@ -1,16 +1,16 @@
 <template>
   <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
-   
+
     <div class="flex flex-col items-start gap-3">
       <label class="font-semibold ">Nome do Termo</label>
       <input
-        v-model="formData.nomeTermo"
+        v-model="formData.nomeContrato"
         class="focus:border-blue-400 border-[1px] transition-colors ease-in-out duration-600 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md "
         required
       />
     </div>
-    <div class="flex flex-col items-start gap-3 ">      
-        <label class="font-semibold">Nome do cliente</label>        
+    <div class="flex flex-col items-start gap-3 ">
+        <label class="font-semibold">Nome do cliente</label>
         <input
           class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
           disabled
@@ -38,8 +38,8 @@
             placeholder="Digite o fim do  contrato"
             v-model="formData.dataFim"
           />
-        </div>    
-    </div>  
+        </div>
+    </div>
     <div class="flex flex-col items-start gap-3">
       <label class="font-semibold ">Valor Contratado</label>
       <money3
@@ -49,7 +49,7 @@
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
             v-model="formData.saldoContrato"
             v-bind="moneyConfig"
-          />  
+          />
     </div>
       <div class="flex flex-col items-start gap-3 ">
         <label class="font-semibold">Fiscal do contrato</label>
@@ -84,7 +84,7 @@
           v-model="formData.contrato.fiscal.email"
           maxlength="120"
         />
-      </div> 
+      </div>
       <div class="flex flex-col items-start gap-3 ">
         <label class="font-semibold">Ponto focal</label>
         <input
@@ -107,7 +107,7 @@
           maxlength="120"
         />
       </div>
- 
+
     <div class="flex justify-end gap-4 mt-6">
       <button
         type="button"

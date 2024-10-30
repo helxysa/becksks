@@ -57,7 +57,7 @@
               <div>
                 <p class="text-lg text-gray-500">Termo  aditivo</p>
                 <p class="font-medium text-gray-700">
-                  {{ termoAditivo.nomeTermo }}
+                  {{ termoAditivo.nomeContrato }}
                 </p>
               </div>
             </div>
@@ -2056,7 +2056,7 @@
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            await api.delete(`/termo-aditivo/${id}`);
+            await api.delete(`/contratos/${id}`);
             toast.success("Termo aditivo removido com sucesso!");
             voltarListagem()
 
@@ -2211,7 +2211,7 @@
         currentPageFaturamento.value = 1;
         totalFaturamentos.value = 0;
       }
-    };   
+    };
 
     watch(()=> alterouStatus.value, () =>{
       fetchAditivoMedicoes(currentPageMedicao.value )
@@ -2551,7 +2551,7 @@
       prefix: "",
       masked: false,
     };
-  
+
 
     // const closeModal = () => {
     //   excluirModal.value = false;
@@ -2741,7 +2741,7 @@
 
     const fetchTermoAditivo = async (id) => {
       try {
-        const response = await api.get(`/termo-aditivo/${id}`);
+        const response = await api.get(`/contratos/${id}`);
         let termoAditivoData = response.data;
 
         // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
@@ -3028,7 +3028,7 @@
     // Editar Item do contrato
 
     const openItemEditModal = (item) => {
-      editingItem.value = { ...item };    
+      editingItem.value = { ...item };
       modalEditItem.value = true;
       fetchUnidadesMedida();
     };
@@ -3052,9 +3052,9 @@
     };
 
     const openFormEditAditivo = async(id) => {
-        
+
      try {
-      const response = await api.get(`termo-aditivo/${id}`)    
+      const response = await api.get(`termo-aditivo/${id}`)
        selectedAditivo.value =  response.data;
        modalEditAditivo.value = true;
        modalTermosAditivos.value = false; // Fecha o modal de termos aditivos
@@ -3082,7 +3082,7 @@
       const itemIndex = termoAditivo.value.termoAditivoItem.findIndex(
         (i) => i.id === editingItem.value.id
       );
-      let itemEditado = { ...editingItem.value };   
+      let itemEditado = { ...editingItem.value };
 
 
       let valorTotalItens = 0;
@@ -3127,7 +3127,7 @@
         unidade_medida: itemEditado.unidadeMedida,
         valor_unitario: itemEditado.valorUnitario,
         quantidade_contratada: parseFloat(itemEditado.quantidadeContratada),
-      };   
+      };
 
       try {
         const response = await api.put(
@@ -3529,7 +3529,7 @@
       }
     };
 
-   
+
     </script>
 
     <style>
