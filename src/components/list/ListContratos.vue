@@ -49,7 +49,7 @@
         <section v-if="contrato.tag === 'Contrato'">
           <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
             <div class="relative">
-              <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
+              <img :src="contrato.foto ? `${baseURL}/${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
               <div class="absolute top-0 right-0 bg-blue-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
             </div>
             <div class="p-6">
@@ -115,7 +115,7 @@
         <section v-else>
           <router-link :to="{ name: 'visualizarTermoAditivo', params: { id: contrato.id } }">
             <div class="relative">
-              <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
+              <img :src="imagemPadrao" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
               <div class="absolute top-0 right-0 bg-orange-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
             </div>
             <div class="p-6">
@@ -189,7 +189,9 @@ import { useRouter, useRoute } from "vue-router";
 import { api } from "@/services/api";
 import { toast } from "vue3-toastify";
 import { Icon } from "@iconify/vue";
+import imagemPadrao from '../../assets/imagens/imageCard.png'
 
+const baseURL = import.meta.env.VITE_APP_API_URL;
 const route = useRoute();
 const router = useRouter();
 const contratos = ref([]);

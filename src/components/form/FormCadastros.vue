@@ -13,6 +13,15 @@
 
     <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Foto do Contrato</label>
+          <input
+            type="file"
+            accept="image/*"
+            @change="handleFileChange"
+            class="font-sans border-[1px] px-4 py-[9px] w-full border-gray-300 rounded-md"
+          />
+        </div>
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold">Nome do contrato</label>
           <input
@@ -792,6 +801,7 @@ let contratoForm = reactive({
   observacoes: "",
   nome_contrato: "",
   lembrete_vencimento: "",
+  foto: null,
 });
 let novoItem = ref({
   titulo: "",
@@ -812,6 +822,12 @@ onMounted(() => {
     fetchContrato(contratoId);
   }
 });
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  contratoForm.foto = file;
+  console.log('contraform', contratoForm)
+};
 
 const fetchContrato = async (id) => {
   try {
@@ -885,7 +901,38 @@ const createContrato = async () => {
   }
 
   try {
-    const response = await api.post("/contratos", contratoForm);
+    const formData = new FormData();
+    // Adicionando campos do contrato ao FormData
+    formData.append("nome_contrato", contratoForm.nome_contrato);
+    formData.append("nome_cliente", contratoForm.nome_cliente);
+    formData.append("data_inicio", contratoForm.data_inicio);
+    formData.append("data_fim", contratoForm.data_fim);
+    formData.append("saldo_contrato", contratoForm.saldo_contrato);
+    formData.append("ponto_focal", contratoForm.ponto_focal);
+    formData.append("cidade", contratoForm.cidade);
+    formData.append("estado", contratoForm.estado);
+    formData.append("objeto_contrato", contratoForm.objeto_contrato);
+    formData.append("observacoes", contratoForm.observacoes);
+    formData.append("lembrete_vencimento", contratoForm.lembrete_vencimento);
+
+    // Adicionando o campo de imagem (se houver)
+    if (contratoForm.foto) {
+      formData.append("foto", contratoForm.foto);
+    }
+
+    // Adicionando os dados do fiscal
+    formData.append("fiscal[nome]", contratoForm.fiscal.nome);
+    formData.append("fiscal[telefone]", contratoForm.fiscal.telefone);
+    formData.append("fiscal[email]", contratoForm.fiscal.email);
+
+    // Adicionando itens (se houver)
+    if (contratoForm.items.length) {
+      formData.append("items", JSON.stringify(contratoForm.items));
+    }
+
+    const response = await api.post("/contratos", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data.id;
   } catch (error) {
     toast("Não foi possível cadastrar o contrato!", {
