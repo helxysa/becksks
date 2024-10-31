@@ -13,6 +13,20 @@
 
     <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
+        <div class="flex flex-col items-center gap-3 my-8">
+          <div class="flex flex-col items-center justify-center w-[30rem] h-64 bg-gray-100 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 transition duration-300">
+            <label for="file-upload" class="flex flex-col items-center justify-center cursor-pointer">
+              <span v-if="!previewFoto" class="text-lg font-semibold text-gray-500">Clique para enviar uma imagem</span>
+              <span v-if="!previewFoto" class="text-sm text-gray-400">(JPG, PNG, JPEG)</span>
+              <img v-if="previewFoto" :src="previewFoto" alt="Preview da Foto" class="w-[20rem] rounded-md object-cover"/>
+            </label>
+            <input id="file-upload" type="file" accept="image/*" @change="handleFileChange" class="hidden"/>
+          </div>
+
+          <button v-if="previewFoto" @click="removeFoto" type="button" class="mt-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+            Remover Imagem
+          </button>
+        </div>
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold">Nome do contrato</label>
           <input
@@ -792,7 +806,9 @@ let contratoForm = reactive({
   observacoes: "",
   nome_contrato: "",
   lembrete_vencimento: "",
+  foto: null,
 });
+const previewFoto = ref(null);
 let novoItem = ref({
   titulo: "",
   unidade_medida: "",
@@ -812,6 +828,23 @@ onMounted(() => {
     fetchContrato(contratoId);
   }
 });
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    contratoForm.foto = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewFoto.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const removeFoto = () => {
+  previewFoto.value = null;
+};
 
 const fetchContrato = async (id) => {
   try {
@@ -885,7 +918,35 @@ const createContrato = async () => {
   }
 
   try {
-    const response = await api.post("/contratos", contratoForm);
+    const formData = new FormData();
+    formData.append("nome_contrato", contratoForm.nome_contrato);
+    formData.append("nome_cliente", contratoForm.nome_cliente);
+    formData.append("data_inicio", contratoForm.data_inicio);
+    formData.append("data_fim", contratoForm.data_fim);
+    formData.append("saldo_contrato", contratoForm.saldo_contrato);
+    formData.append("ponto_focal", contratoForm.ponto_focal);
+    formData.append("cidade", contratoForm.cidade);
+    formData.append("estado", contratoForm.estado);
+    formData.append("objeto_contrato", contratoForm.objeto_contrato);
+    formData.append("observacoes", contratoForm.observacoes);
+    formData.append("lembrete_vencimento", contratoForm.lembrete_vencimento);
+    formData.append("fiscal[nome]", contratoForm.fiscal.nome);
+    formData.append("fiscal[telefone]", contratoForm.fiscal.telefone);
+    formData.append("fiscal[email]", contratoForm.fiscal.email);
+
+    if (contratoForm.foto) {
+      formData.append("foto", contratoForm.foto);
+    } else {
+    formData.append("foto", null);
+  }
+
+    if (contratoForm.items.length) {
+      formData.append("items", JSON.stringify(contratoForm.items));
+    }
+
+    const response = await api.post("/contratos", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data.id;
   } catch (error) {
     toast("Não foi possível cadastrar o contrato!", {

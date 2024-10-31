@@ -16,12 +16,12 @@
           class="border rounded px-4 py-1"
           placeholder="Data de Fim"
         />
-        <label>Tipo</label>
+        <!-- <label>Tipo</label>
         <select v-model="filterType" class="border rounded px-4 py-2">
           <option value="Todos">Todos</option>
           <option value="Contratos">Contratos</option>
           <option value="Termos Aditivos">Termos Aditivos</option>
-        </select>
+        </select> -->
         <span @click="resetFilters" class="p-2 rounded-full cursor-pointer transition-transform duration-75 ease-in-out active:scale-125 active:-rotate-180">
           <Icon icon="system-uicons:reset" width="2rem" class="text-slate-800" />
         </span>
@@ -46,11 +46,11 @@
         :key="contrato.id"
         class="bg-white rounded-lg shadow-md overflow-hidden transition duration-300 transform hover:scale-105 hover:shadow-xl"
         >
-        <section v-if="contrato.tag === 'Contrato'">
+        <section>
           <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
             <div class="relative">
-              <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
-              <div class="absolute top-0 right-0 bg-blue-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
+              <img :src="contrato.foto ? `${baseURL}/${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full h-[20rem] rounded-md object-center">
+              <!-- <div class="absolute top-0 right-0 bg-blue-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div> -->
             </div>
             <div class="p-6">
               <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
@@ -112,10 +112,10 @@
             </div>
           </router-link>
         </section>
-        <section v-else>
+        <!-- <section v-else>
           <router-link :to="{ name: 'visualizarTermoAditivo', params: { id: contrato.id } }">
             <div class="relative">
-              <img src="../../assets/imagens/imageCard.png" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
+              <img :src="imagemPadrao" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
               <div class="absolute top-0 right-0 bg-orange-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
             </div>
             <div class="p-6">
@@ -177,7 +177,7 @@
               </div>
             </div>
           </router-link>
-        </section>
+        </section> -->
       </div>
     </div>
   </div>
@@ -189,7 +189,9 @@ import { useRouter, useRoute } from "vue-router";
 import { api } from "@/services/api";
 import { toast } from "vue3-toastify";
 import { Icon } from "@iconify/vue";
+import imagemPadrao from '../../assets/imagens/imageCard.png'
 
+const baseURL = import.meta.env.VITE_APP_API_URL;
 const route = useRoute();
 const router = useRouter();
 const contratos = ref([]);
@@ -282,7 +284,8 @@ const fetchContratos = async () => {
   try {
     const params = {
       search: filterName.value,
-      tipo: filterType.value,
+      // tipo: filterType.value,
+      tipo: 'Contratos',
       dataInicio: dataInicio.value,
       dataFim: dataFim.value,
       sortBy: 'createdAt',

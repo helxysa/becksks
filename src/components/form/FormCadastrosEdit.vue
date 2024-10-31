@@ -9,6 +9,20 @@
 
     <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
+        <div class="flex flex-col items-center gap-3 my-8">
+          <div class="flex flex-col items-center justify-center w-[30rem] h-64 bg-gray-100 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 transition duration-300">
+            <label for="file-upload" class="flex flex-col items-center justify-center cursor-pointer">
+              <span v-if="!previewFoto" class="text-lg font-semibold text-gray-500">Clique para enviar uma imagem</span>
+              <span v-if="!previewFoto" class="text-sm text-gray-400">(JPG, PNG, JPEG)</span>
+              <img v-if="previewFoto" :src="previewFoto" alt="Preview da Foto" class="w-[20rem] rounded-md object-cover"/>
+            </label>
+            <input id="file-upload" type="file" accept="image/*" @change="handleFileChange" class="hidden"/>
+          </div>
+
+          <button v-if="previewFoto" @click="removeFoto" type="button" class="mt-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+            Remover Imagem
+          </button>
+        </div>
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold">Nome do contrato</label>
           <input
@@ -321,7 +335,6 @@ import { ufs } from "../../services/ufs.js";
 import { useProfileStore } from '@/stores/ProfileStore';
 
  const store = useProfileStore()
- 
 
 const router = useRouter();
 const route = useRoute();
@@ -343,7 +356,9 @@ let contratoForm = ref({
   objetoContrato: "",
   observacoes: "",
   lembreteVencimento: "",
+  foto: null,
 });
+const previewFoto = ref(null);
 
 const moneyConfig = {
   precision: 2,
@@ -360,6 +375,23 @@ const modalTitleProjeto = computed(() =>
 );
 const idProjeto = ref("");
 const idContrato = ref("");
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    contratoForm.value.foto = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewFoto.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const removeFoto = () => {
+  previewFoto.value = null;
+};
 
 const openModalProjeto = () => {
   isModalProjetoOpen.value = true;
@@ -483,8 +515,10 @@ const fetchContrato = async (id) => {
         email: "",
       };
     }
-
     Object.assign(contratoForm.value, response.data);
+    if (contratoData.foto) {
+      previewFoto.value = `${import.meta.env.VITE_APP_API_URL}/${contratoData.foto}`;
+    }
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
@@ -499,33 +533,39 @@ async function saveContrato() {
     return;
   }
 
-  const payload = {
-    nome_cliente: contratoForm.value.nomeCliente,
-    data_inicio: contratoForm.value.dataInicio,
-    data_fim: contratoForm.value.dataFim,
-    saldo_contrato: contratoForm.value.saldoContrato,
-    fiscal: {
-      nome: contratoForm.value.fiscal.nome,
-      telefone: contratoForm.value.fiscal.telefone,
-      email: contratoForm.value.fiscal.email,
-    },
-    ponto_focal: contratoForm.value.pontoFocal,
-    cidade: contratoForm.value.cidade,
-    estado: contratoForm.value.estado,
-    objeto_contrato: contratoForm.value.objetoContrato,
-    observacoes: contratoForm.value.observacoes,
-    lembrete_vencimento: contratoForm.value.lembreteVencimento,
-    nome_contrato: contratoForm.value.nomeContrato,
-  };
+  const formData = new FormData();
+  formData.append("nome_contrato", contratoForm.value.nomeContrato);
+  formData.append("nome_cliente", contratoForm.value.nomeCliente);
+  formData.append("data_inicio", contratoForm.value.dataInicio);
+  formData.append("data_fim", contratoForm.value.dataFim);
+  formData.append("saldo_contrato", contratoForm.value.saldoContrato);
+  formData.append("ponto_focal", contratoForm.value.pontoFocal);
+  formData.append("cidade", contratoForm.value.cidade);
+  formData.append("estado", contratoForm.value.estado);
+  formData.append("objeto_contrato", contratoForm.value.objetoContrato);
+  formData.append("observacoes", contratoForm.value.observacoes);
+  formData.append("lembrete_vencimento", contratoForm.value.lembreteVencimento);
+  formData.append("fiscal[nome]", contratoForm.value.fiscal.nome || "");
+  formData.append("fiscal[telefone]", contratoForm.value.fiscal.telefone || "");
+  formData.append("fiscal[email]", contratoForm.value.fiscal.email || "");
+
+  if (contratoForm.value.foto) {
+    formData.append("foto", contratoForm.value.foto);
+  } else {
+    formData.append("foto", null);
+  }
+
   try {
     const response = await api
-      .put(`/contratos/${route.params.id}`, payload)
+      .put(`/contratos/${route.params.id}`, formData, {
+        headers: { "Content-type": "multipart/form-data"}
+      })
       .then((response) => {
         toast("Contrato editado com sucesso!", {
           theme: "colored",
           type: "success",
         });
-        voltarListagem();
+        // voltarListagem();
       });
   } catch (error) {
     toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
