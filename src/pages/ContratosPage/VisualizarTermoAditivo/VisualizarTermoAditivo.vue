@@ -1860,7 +1860,7 @@
     // Guias das tabelas
     let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
 
-    const tabs = ['Itens']
+    const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
     const currentTab = ref(tabs[0])
 
     const modalViewAditivo = ref(false);
@@ -2095,8 +2095,9 @@
 
     const fetchAditivoItens = async (page) => {
       try {
+        console.log(termoAditivo.value, 'termo')
         const response = await api.get(
-          `/termo-aditivo/${termoAditivo.value.id}/itens/?page=${page}`
+          `/contratos/${termoAditivo.value.termoAditivoId}/items/?page=${page}`
         );
         const itens = response.data.data;
         const meta = response.data.meta;

@@ -223,7 +223,7 @@
       </div>
     </section>
   </section>
-
+ 
   <!-- Resumo Financeiro -->
   <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
