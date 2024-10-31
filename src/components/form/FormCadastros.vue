@@ -13,14 +13,19 @@
 
     <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
-        <div class="flex flex-col items-start gap-3 mt-8">
-          <label class="font-semibold">Foto do Contrato</label>
-          <input
-            type="file"
-            accept="image/*"
-            @change="handleFileChange"
-            class="font-sans border-[1px] px-4 py-[9px] w-full border-gray-300 rounded-md"
-          />
+        <div class="flex flex-col items-center gap-3 my-8">
+          <div class="flex flex-col items-center justify-center w-[30rem] h-64 bg-gray-100 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 transition duration-300">
+            <label for="file-upload" class="flex flex-col items-center justify-center cursor-pointer">
+              <span v-if="!previewFoto" class="text-lg font-semibold text-gray-500">Clique para enviar uma imagem</span>
+              <span v-if="!previewFoto" class="text-sm text-gray-400">(JPG, PNG, JPEG)</span>
+              <img v-if="previewFoto" :src="previewFoto" alt="Preview da Foto" class="w-[20rem] rounded-md object-cover"/>
+            </label>
+            <input id="file-upload" type="file" accept="image/*" @change="handleFileChange" class="hidden"/>
+          </div>
+
+          <button v-if="previewFoto" @click="removeFoto" type="button" class="mt-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+            Remover Imagem
+          </button>
         </div>
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold">Nome do contrato</label>
@@ -803,6 +808,7 @@ let contratoForm = reactive({
   lembrete_vencimento: "",
   foto: null,
 });
+const previewFoto = ref(null);
 let novoItem = ref({
   titulo: "",
   unidade_medida: "",
@@ -825,8 +831,19 @@ onMounted(() => {
 
 const handleFileChange = (event) => {
   const file = event.target.files[0];
-  contratoForm.foto = file;
-  console.log('contraform', contratoForm)
+  if (file) {
+    contratoForm.foto = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewFoto.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const removeFoto = () => {
+  previewFoto.value = null;
 };
 
 const fetchContrato = async (id) => {
@@ -902,7 +919,6 @@ const createContrato = async () => {
 
   try {
     const formData = new FormData();
-    // Adicionando campos do contrato ao FormData
     formData.append("nome_contrato", contratoForm.nome_contrato);
     formData.append("nome_cliente", contratoForm.nome_cliente);
     formData.append("data_inicio", contratoForm.data_inicio);
@@ -914,18 +930,16 @@ const createContrato = async () => {
     formData.append("objeto_contrato", contratoForm.objeto_contrato);
     formData.append("observacoes", contratoForm.observacoes);
     formData.append("lembrete_vencimento", contratoForm.lembrete_vencimento);
-
-    // Adicionando o campo de imagem (se houver)
-    if (contratoForm.foto) {
-      formData.append("foto", contratoForm.foto);
-    }
-
-    // Adicionando os dados do fiscal
     formData.append("fiscal[nome]", contratoForm.fiscal.nome);
     formData.append("fiscal[telefone]", contratoForm.fiscal.telefone);
     formData.append("fiscal[email]", contratoForm.fiscal.email);
 
-    // Adicionando itens (se houver)
+    if (contratoForm.foto) {
+      formData.append("foto", contratoForm.foto);
+    } else {
+    formData.append("foto", null);
+  }
+
     if (contratoForm.items.length) {
       formData.append("items", JSON.stringify(contratoForm.items));
     }
