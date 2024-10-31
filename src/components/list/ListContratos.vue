@@ -49,7 +49,7 @@
         <section>
           <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
             <div class="relative">
-              <img :src="contrato.foto ? `${baseURL}/${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full rounded-md object-cover">
+              <img :src="contrato.foto ? `${baseURL}/${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full h-[25rem] rounded-md object-fill">
               <!-- <div class="absolute top-0 right-0 bg-blue-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div> -->
             </div>
             <div class="p-6">
