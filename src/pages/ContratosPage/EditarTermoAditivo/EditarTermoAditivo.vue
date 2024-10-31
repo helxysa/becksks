@@ -23,21 +23,21 @@
         <span @click="voltarListagem" class="cursor-pointer">
           <Icon icon="ic:round-arrow-back" height="30" />
         </span>
-       
+
         <h2 class="text-5xl font-bold">Editar Termo Aditivo</h2>
-      </div>   
-    
-      <form @submit.prevent="handleSubmit" class="mt-12 flex flex-col gap-6">       
+      </div>
+
+      <form @submit.prevent="handleSubmit" class="mt-12 flex flex-col gap-6">
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold ">Nome do Termo</label>
           <input
-            v-model="formData.nomeTermo"
+            v-model="formData.nomeContrato"
             class="focus:border-blue-400 border-[1px] transition-colors ease-in-out duration-600 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md "
             required
           />
         </div>
-        <div class="flex flex-col items-start gap-3 ">      
-            <label class="font-semibold">Nome do cliente</label>        
+        <div class="flex flex-col items-start gap-3 ">
+            <label class="font-semibold">Nome do cliente</label>
             <input
               disabled
               class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -65,8 +65,8 @@
                 placeholder="Digite o fim do  contrato"
                 v-model="formData.dataFim"
               />
-            </div>    
-        </div>  
+            </div>
+        </div>
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold ">Valor Contratado</label>
           <money3
@@ -76,12 +76,12 @@
                 class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
                 v-model="formData.saldoContrato"
                 v-bind="moneyConfig"
-              />  
+              />
         </div>
           <div class="flex flex-col items-start gap-3 ">
             <label class="font-semibold">Fiscal do contrato</label>
-            <input     
-              disabled        
+            <input
+              disabled
               type="text"
               placeholder="Informe o fiscal do contrato"
               class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -90,9 +90,9 @@
             />
           </div>
           <div class="flex flex-col items-start gap-3 ">
-            <label class="font-semibold">Telefone do fiscal</label>          
-            <input  
-              disabled           
+            <label class="font-semibold">Telefone do fiscal</label>
+            <input
+              disabled
               type="tel"
               placeholder="Informe o telefone do fiscal"
               class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -103,19 +103,19 @@
           </div>
           <div class="flex flex-col items-start gap-3 ">
             <label class="font-semibold">E-mail do fiscal</label>
-            <input   
-              disabled          
+            <input
+              disabled
               type="email"
               placeholder="Informe o email do fiscal"
               class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               v-model="formData.contrato.fiscal.email"
               maxlength="120"
             />
-          </div> 
+          </div>
           <div class="flex flex-col items-start gap-3 ">
             <label class="font-semibold">Ponto focal</label>
-            <input  
-              disabled           
+            <input
+              disabled
               type="text"
               placeholder="Informe o ponto focal"
               class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -133,7 +133,7 @@
               v-model="formData.objetoContrato"
               maxlength="120"
             />
-          </div>      
+          </div>
         <div class="flex justify-end gap-4 mt-6">
           <button
             type="button"
@@ -168,7 +168,7 @@ const error = ref(null);
 const mounted = ref(false);
 
 const formData = ref({
-  nomeTermo: '',
+  nomeContrato: '',
   dataInicio: '',
   dataFim: '',
   saldoContrato: '',
@@ -184,8 +184,8 @@ const loadTermoAditivo = async () => {
 
   try {
     console.log('Carregando dados do termo aditivo...');
-    const response = await api.get(`/termo-aditivo/${route.params.id}`);   
-    
+    const response = await api.get(`/contratos/${route.params.id}`);
+
     if (!response.data) {
       throw new Error('Dados não encontrados');
     }
@@ -214,7 +214,7 @@ const voltarListagem = () => {
 
 const handlePhone = (event) => {
   let input = event.target;
-  formData.value.contrato.fiscal.telefone = phoneMask(input.value);  
+  formData.value.contrato.fiscal.telefone = phoneMask(input.value);
 };
 
 const phoneMask = (value) => {
@@ -234,9 +234,9 @@ const moneyConfig = {
 };
 
 const handleSubmit = async () => {
-  try {  
+  try {
     let payload = {
-    nome_termo: formData.value.nomeTermo,
+    nome_contrato: formData.value.nomeContrato,
     data_inicio: formData.value.dataInicio,
     data_fim: formData.value.dataFim,
     saldo_contrato: formData.value.saldoContrato,
@@ -250,4 +250,4 @@ const handleSubmit = async () => {
     toast.error('Erro ao atualizar termo aditivo');
   }
 };
-</script> 
+</script>
