@@ -2053,7 +2053,7 @@
                     />
                   </span>
                   <span  @click="deletarTermoAditivo(termo.id)">
-                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />                 
+                    <Icon icon="ph:trash-fill" height="20" class="hover:text-red-500 hover:rounded-md cursor-pointer" />
                   </span>
                   <span @click="downloadZip(termo.id)">
                     <Icon
@@ -2736,10 +2736,10 @@ const createPedidoFaturamento = async () => {
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
 
-  if(pedidoFaturamentoData.value.observacoes && pedidoFaturamentoData.value.observacoes.length > 1500) {
-    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
-    return;
-  }
+  // if(pedidoFaturamentoData.value.observacoes && pedidoFaturamentoData.value.observacoes.length > 1500) {
+  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
+  //   return;
+  // }
 
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
@@ -2827,10 +2827,10 @@ const updateCompetencia = async (lancamentoId, novaCompetencia) => {
 
 
 const saveEditedFaturamento = async () => {
-  if(editingFaturamento.value.observacoes && editingFaturamento.value.observacoes.length > 1500) {
-    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingFaturamento.value.observacoes.length}`)
-    return;
-  }
+  // if(editingFaturamento.value.observacoes && editingFaturamento.value.observacoes.length > 1500) {
+  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingFaturamento.value.observacoes.length}`)
+  //   return;
+  // }
   let payload = {
     competencia: editingFaturamento.value.competencia,
     nota_fiscal: editingFaturamento.value.notaFiscal,
@@ -3094,10 +3094,10 @@ const createLancamento = async () => {
     return;
   }
 
-  if(medicaoData.value.descricao && medicaoData.value.descricao.length > 1500) {
-    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
-    return;
-  }
+  // if(medicaoData.value.descricao && medicaoData.value.descricao.length > 1500) {
+  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
+  //   return;
+  // }
   if (medicaoData.value.tipo_medicao === "Detalhada") {
     medicaoData.value.status = "Não Iniciada";
   }
@@ -3789,10 +3789,10 @@ const saveEditedLancamento = async () => {
     toast.error("Selecione um status para a medição.")
     return;
   }
-   if(editingLancamento.value.descricao && editingLancamento.value.descricao.length > 1500) {
-    toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
-    return;
-  }
+  //  if(editingLancamento.value.descricao && editingLancamento.value.descricao.length > 1500) {
+  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
+  //   return;
+  // }
 
   let payload = {
     // data_medicao: formatDate(editingLancamento.value.dataMedicao),
