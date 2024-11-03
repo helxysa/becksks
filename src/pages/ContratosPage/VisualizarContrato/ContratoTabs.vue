@@ -5,7 +5,7 @@
   </div> -->
   <div>
     <div class="tabs-scroll flex border-b overflow-x-auto whitespace-nowrap pb-4">
-      <button
+      <!-- <button
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectedTab = tab"
@@ -13,7 +13,7 @@
         class="focus:outline-none hover:bg-[#f1f8fe] hover:text-[#0091d4] rounded-t-md"
       >
         {{ tab }}
-      </button>
+      </button> -->
     </div>
 
     <div v-if="selectedTab === 'Contrato'">

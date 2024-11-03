@@ -1,4 +1,32 @@
 <template>
+    <!-- Adicione após a declaração do template -->
+    <div class="flex gap-4 mb-8">      
+      <button
+        @click="selecionarContrato(contrato)"
+        :class="[
+          'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+          contratoSelecionado?.id === contrato?.value?.id 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-200 hover:bg-gray-300'
+        ]"
+      >
+        Contrato Original
+      </button>
+      
+      <button
+        v-for="(termo, index) in termosAditivos"
+        :key="termo.id"
+        @click="selecionarContrato(termo)"
+        :class="[
+          'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+          contratoSelecionado?.id === termo.id 
+            ? 'bg-blue-500 text-white' 
+            : 'bg-gray-200 hover:bg-gray-300'
+        ]"
+      >
+        {{ index + 1 }}º Termo Aditivo
+      </button>
+    </div>
 <!-- Detalhes do contrato -->
 <section>
   <div
@@ -2102,6 +2130,7 @@
       />
     </template>
   </JetDialogModal>
+
 </template>
 
 <script setup>
@@ -3135,14 +3164,14 @@ const voltarListagem = () => {
  window.location.href = '/contratos'
 };
 
-onMounted(() => {
+onMounted(async () => {
   contratoId = route.params.id;
-  fetchContrato(contratoId);
-  fetchTermoAditivo(contratoId)
+  await fetchContrato(contratoId);
+  await fetchTermoAditivo(contratoId);
+  contratoSelecionado.value = contrato.value;
+  
   window.scroll({
     top: 0,
-    // left: 100,
-    // behavior: "smooth",
   });
 });
 
@@ -3150,6 +3179,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     let contratoData = response.data;
+    console.log(contratoData, 'contrato data')
 
     // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
@@ -3164,16 +3194,19 @@ const fetchContrato = async (id) => {
   }
 };
 
-const fetchTermoAditivo =  async (id) => {
+const fetchTermoAditivo = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    termosAditivos.value = response.data;
-    // contratoForm.value = response.data;
-
+    // Ordena os termos aditivos por data de criação
+    termosAditivos.value = response.data.sort((a, b) => 
+      new Date(a.createdAt) - new Date(b.createdAt)
+    );
   } catch (error) {
-    console.error("Erro ao buscar contrato:", error);
+    console.error("Erro ao buscar termos aditivos:", error);
+    termosAditivos.value = [];
   }
-}
+};
+
 const verificaIsFaturado = async (lancamentos, faturamentos) => {
   lancamentos.forEach((lancamento) => {
     lancamento.isFaturado = false;
@@ -3894,6 +3927,16 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
     }
   }
 });
+
+// Adicione às refs existentes
+const contratoSelecionado = ref(null);
+
+// Adicione aos métodos existentes
+const selecionarContrato = async (contratoData) => {
+  console.log(contratoData, 'data')
+  contratoSelecionado.value = contratoData;
+  await fetchContrato(contratoData.id);
+};
 </script>
 
 <style>
