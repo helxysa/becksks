@@ -57,6 +57,39 @@
         </div>
 
         <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Ajuste de valor</label>
+          <select
+            v-model="ajusteValor"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          >
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+          </select>
+        </div>
+
+        <div v-if="ajusteValor === 'sim'" class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Porcentagem de ajuste (%)</label>
+          <input
+            type="number"
+            v-model="porcentagemAjuste"
+            min="1"
+            max="25"
+            placeholder="Informe a porcentagem de ajuste"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div class="flex flex-col items-start gap-3 mt-8">
+          <label class="font-semibold">Valor contratado</label>
+          <money3
+            v-model="contratoForm.saldo_contrato"
+            :disabled="ajusteValor === 'sim'"
+            placeholder="Informe o valor contratado"
+            class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            v-bind="moneyConfig"
+          />
+        </div>
+        <!-- <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Valor contratado</label>
           <money3
             required
@@ -66,7 +99,7 @@
             v-model="contratoForm.saldo_contrato"
             v-bind="moneyConfig"
           />
-        </div>
+        </div> -->
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Fiscal do contrato</label>
           <input
@@ -813,7 +846,6 @@ const moneyConfig = {
   prefix: "R$ ",
   masked: false,
 };
-
 const decimalConfig = {
   precision: 2,
   decimal: ",",
@@ -821,10 +853,8 @@ const decimalConfig = {
   prefix: "",
   masked: false,
 };
-
 let editIndex = ref(-1);
 const termoAditivoItens = ref([])
-
 let contratoForm = ref({
   nomeCliente: "",
   data_inicio: "",
@@ -855,11 +885,34 @@ let editItem = ref({
   valor_unitario: "",
   quantidade_contratada: "",
 });
+const ajusteValor = ref("nao");
+const porcentagemAjuste = ref(1);
+const saldoContratoOriginal = ref();
+
+watch([ajusteValor, porcentagemAjuste], ([novoAjusteValor, novaPorcentagem]) => {
+  if (novaPorcentagem > 25) {
+    porcentagemAjuste.value = 25;
+  } else if (novaPorcentagem < 1 && novoAjusteValor === 'sim') {
+    porcentagemAjuste.value = 1;
+  }
+
+  if (novoAjusteValor === 'sim' && novaPorcentagem >= 1) {
+    contratoForm.value.saldo_contrato = (
+      parseFloat(saldoContratoOriginal.value) * (Math.min(novaPorcentagem, 25) / 100)
+    ).toFixed(2);
+  } else if (novoAjusteValor === 'sim' && novaPorcentagem === 0) {
+    contratoForm.value.saldo_contrato = 0;
+  } else if (novoAjusteValor === 'nao') {
+    contratoForm.value.saldo_contrato = saldoContratoOriginal.value;
+  }
+});
 
 onMounted(() => {
   const contratoId = route.params.id;
   if (contratoId) {
-    fetchContrato(contratoId);
+    fetchContrato(contratoId).then(() => {
+      saldoContratoOriginal.value = contratoForm.value.saldoContrato || 0;
+    });
   }
 });
 
@@ -867,7 +920,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     contratoForm.value = response.data;
-
   } catch (error) {
     console.error("Erro ao buscar contrato:", error);
   }
