@@ -4,8 +4,8 @@
     <h1 class="text-3xl font-medium">Voltar</h1>
   </div> -->
   <div>
-    <!-- <div class="tabs-scroll flex border-b overflow-x-auto whitespace-nowrap pb-4">
-      <button
+    <div class="tabs-scroll flex border-b overflow-x-auto whitespace-nowrap pb-4">
+      <!-- <button
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectedTab = tab"
@@ -13,8 +13,8 @@
         class="focus:outline-none hover:bg-[#f1f8fe] hover:text-[#0091d4] rounded-t-md"
       >
         {{ tab }}
-      </button>
-    </div> -->
+      </button> -->
+    </div>
 
     <div v-if="selectedTab === 'Contrato'">
        <VisualizarContrato @renovacaoCriada="handleRenovacaoCriada"/>
@@ -32,6 +32,7 @@ import { api } from '@/services/api';
 import { useRoute, useRouter,RouterLink } from 'vue-router';
 import { Icon } from "@iconify/vue";
 import VisualizarContrato from './VisualizarContrato.vue'
+import VisualizarTermoAditivo from '../VisualizarTermoAditivo/VisualizarTermoAditivo.vue';
 import Renovacao from './RenovacaoContrato.vue';
 import Swal from 'sweetalert2';
 
@@ -73,20 +74,20 @@ watch(selectedTab, (newTab) => {
   }
 });
 
-const handleRenovacaoCriada = async () => {
-  const contratoId = route.params.id;
-  await fetchContrato(contratoId);
-};
+// const handleRenovacaoCriada = async () => {
+//   const contratoId = route.params.id;
+//   await fetchContrato(contratoId);
+// };
 
-const handleRenovacaoEditada = async () => {
-  const contratoId = route.params.id;
-  await fetchContrato(contratoId);
+// const handleRenovacaoEditada = async () => {
+//   const contratoId = route.params.id;
+//   await fetchContrato(contratoId);
 
-  if (selectedTab.value.startsWith('Renovação')) {
-    const renovacaoIndex = parseInt(selectedTab.value.split(' ')[1], 10) - 1;
-    selectedRenovacao.value = contrato.value.renovacao[renovacaoIndex];
-  }
-};
+//   if (selectedTab.value.startsWith('Renovação')) {
+//     const renovacaoIndex = parseInt(selectedTab.value.split(' ')[1], 10) - 1;
+//     selectedRenovacao.value = contrato.value.renovacao[renovacaoIndex];
+//   }
+// };
 
 const handleRenovacaoDeletada = async (renovacaoId) => {
   const result = await Swal.fire({
