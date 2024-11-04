@@ -16,6 +16,7 @@ import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
 import ResetPassword from "@/pages/Login/ResetPassword.vue";
 import UsersPage from '@/pages/UsersPage/UsersPage.vue';
+import EditAditivoForm from "@/components/EditAditivoForm.vue";
 
 const routes = [
   {
@@ -57,9 +58,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/cadastro/contratos/:id",
+    path: "/editar/contratos/:id",
     name: "editarcontrato",
     component: FormContratosEdit,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/editar/termo/:id",
+    name: "editartermo",
+    component: EditAditivoForm,
     meta: { requiresAuth: true },
   },
   {
@@ -68,7 +75,7 @@ const routes = [
     component: FormAditive,
     meta: { requiresAuth: true },
   },
-  
+
   {
     path: "/visualizar/contratos/:id",
     name: "visualizarContrato",
@@ -102,7 +109,7 @@ const routes = [
     meta: {
       requiresAuth: true
     },
-    beforeEnter: async (to, from, next) => {   
+    beforeEnter: async (to, from, next) => {
       next();
     }
   },

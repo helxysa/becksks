@@ -42,13 +42,11 @@
     </span>
     <h1 class="text-4xl font-medium text-gray-800 mb-6 sm:mb-0">
       Detalhes do Contrato
-      
     </h1>
   </div>
     <div class="flex flex-wrap gap-3">
-      <button
+      <button v-if="contrato.termoAditivoId === null"
       class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-
     >
       <router-link
         :to="{ name: 'Formulário Aditivo', params: { id: contrato.id } }"
@@ -60,9 +58,7 @@
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
          v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
       >
-        <router-link
-          :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
-        >
+        <router-link :to="{name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}">
           Editar
         </router-link>
       </button>
@@ -116,7 +112,6 @@
             <p class="text-lg text-gray-500">Cliente</p>
             <p class="font-medium text-gray-700">
               {{contrato.nomeCliente}}
-              {{ contrato.nomeCliente }}
             </p>
           </div>
         </div>
@@ -294,7 +289,6 @@
     </div>
   </section> -->
   <section class="mt-8">
-    {{   contrato?.termoAditivoId !== null}}
     <div class="flex items-start justify-between gap-12">
       <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md "
       :class="[
@@ -313,15 +307,15 @@
 
         </div>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
-      </div>      
+      </div>
       <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null"
       :class="[
         contrato?.termoAditivoId === null
           ? 'w-1/4'
           : 'w-0'
       ]"
-      >        
-        <div class="relative w-full">          
+      >
+        <div class="relative w-full">
           <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
             Histórico - Aditivos
@@ -3190,8 +3184,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     let contratoData = response.data;
-    console.log(contratoData, 'contrato data')
-
     // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
     contrato.value = contratoData;
