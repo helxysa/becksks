@@ -31,14 +31,16 @@
  import { RouterLink } from 'vue-router';
  import { computed } from 'vue'
  import { useProfileStore } from '@/stores/ProfileStore';
+ import { useRouter } from 'vue-router';
 
+ const router = useRouter();
  const store = useProfileStore()
  const routes = [
   {
     path: '/',
     label: 'Dashboard',
     icon: 'mdi:graph-pie',
-    permission: null 
+    permission: null
   },
   {
     path: '/contratos',
@@ -74,6 +76,7 @@ function hasPermission(permission) {
 const accessibleRoutes = computed(() => routes.filter(route => hasPermission(route.permission)))
 
 function navigateTo(routePath) {
-  window.location.href = routePath
+  // window.location.href = routePath
+  router.push(routePath)
 }
 </script>

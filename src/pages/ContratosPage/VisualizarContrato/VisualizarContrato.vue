@@ -3935,6 +3935,7 @@ const selecionarContrato = async (contratoData) => {
     }
   }
 };
+
 </script>
 
 <style>

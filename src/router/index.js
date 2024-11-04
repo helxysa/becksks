@@ -101,21 +101,21 @@ const routes = [
     component: UsersPage,
     meta: { requiresAuth: true },
   },
-  {
-    path: '/contratos/termo-aditivo/:id/editar',
-    name: 'EditarTermoAditivo',
-    component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
-    props: true,
-    meta: {
-      requiresAuth: true
-    },
-    beforeEnter: async (to, from, next) => {
-      next();
-    }
-  },
+  // {
+  //   path: '/contratos/termo-aditivo/:id/editar',
+  //   name: 'EditarTermoAditivo',
+  //   component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
+  //   props: true,
+  //   meta: {
+  //     requiresAuth: true
+  //   },
+  //   beforeEnter: async (to, from, next) => {
+  //     next();
+  //   }
+  // },
   {
     path: "/:pathMatch(.*)*",
-    redirect: '{ name: "Dashboard" }',
+    redirect: { name: "Dashboard" },
   },
 ];
 
@@ -125,6 +125,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  // console.log('Navegando para:', to.fullPath)
   const token = localStorage.getItem("token");
   if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
     next("/login");

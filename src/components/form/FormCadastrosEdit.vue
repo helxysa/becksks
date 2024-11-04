@@ -499,7 +499,6 @@ const deletarProjeto = (id, projeto) => {
 
 onMounted(async () => {
   const contratoId = route.params.id;
-
   fetchContrato(contratoId);
 });
 
