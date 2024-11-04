@@ -1,31 +1,31 @@
 <template>
     <!-- Adicione após a declaração do template -->
-    <div class="flex gap-4 mb-8">      
+    <div class="flex gap-4 mb-8">
       <button
-        @click="selecionarContrato(contrato)"
-        :class="[
-          'px-6 py-2 rounded-md font-bold text-lg transition-colors',
-          contratoSelecionado?.id === contrato?.value?.id 
-            ? 'bg-blue-500 text-white' 
-            : 'bg-gray-200 hover:bg-gray-300'
-        ]"
-      >
-        Contrato Original
-      </button>
-      
-      <button
-        v-for="(termo, index) in termosAditivos"
-        :key="termo.id"
-        @click="selecionarContrato(termo)"
-        :class="[
-          'px-6 py-2 rounded-md font-bold text-lg transition-colors',
-          contratoSelecionado?.id === termo.id 
-            ? 'bg-blue-500 text-white' 
-            : 'bg-gray-200 hover:bg-gray-300'
-        ]"
-      >
-        {{ index + 1 }}º Termo Aditivo
-      </button>
+      @click="selecionarContrato(contratoOriginal)"
+      :class="[
+        'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+        contrato?.id === contratoOriginal?.id
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-200 hover:bg-gray-300'
+      ]"
+    >
+      Contrato Original
+    </button>
+
+    <button
+    v-for="(termo, index) in termosAditivos"
+    :key="termo.id"
+    @click="selecionarContrato(termo)"
+    :class="[
+      'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+      contrato?.id === termo.id
+        ? 'bg-blue-500 text-white'
+        : 'bg-gray-200 hover:bg-gray-300'
+    ]"
+  >
+    {{ index + 1 }}º Termo Aditivo
+  </button>
     </div>
 <!-- Detalhes do contrato -->
 <section>
@@ -114,6 +114,7 @@
           <div>
             <p class="text-lg text-gray-500">Cliente</p>
             <p class="font-medium text-gray-700">
+              {{contrato.nomeCliente}}
               {{ contrato.nomeCliente }}
             </p>
           </div>
@@ -251,7 +252,7 @@
       </div>
     </section>
   </section>
- 
+
   <!-- Resumo Financeiro -->
   <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
@@ -2221,6 +2222,7 @@ const financialSummary = computed(() => [
 ]);
 const router = useRouter();
 const route = useRoute();
+const contratoOriginal = ref(null);
 const contrato = ref({});
 const lancamentos = ref([]);
 const modalLancamento = ref(false);
@@ -2490,10 +2492,10 @@ const currentPage = ref(1);
 const currentPageMedicao = ref(1);
 const currentPageFaturamento = ref(1);
 
-const fetchContratoItens = async (page) => {
+const fetchContratoItens = async (id, page) => {
   try {
     const response = await api.get(
-      `/contratos/${route.params.id}/items/?page=${page}`
+      `/contratos/${id}/items/?page=${page}`
     );
     const itens = response.data.data;
     const meta = response.data.meta;
@@ -2535,13 +2537,13 @@ const changeSorting = (column, type) => {
   }
 
   if (type === "medicoes") {
-    fetchContratoMedicoes(currentPageMedicao.value);
+    fetchContratoMedicoes(contratoId, currentPageMedicao.value);
   } else if (type === "faturamentos") {
-    fetchContratoFaturamentos(currentPageFaturamento.value);
+    fetchContratoFaturamentos(contratoId, currentPageFaturamento.value);
   }
 };
 
-const fetchContratoMedicoes = async (page) => {
+const fetchContratoMedicoes = async (id, page) => {
   try {
     const params = {
       page,
@@ -2554,7 +2556,7 @@ const fetchContratoMedicoes = async (page) => {
       params.sortOrder = sortOrder.value.medicoes;
     }
     const response = await api.get(
-      `/contratos/${route.params.id}/lancamentos`,
+      `/contratos/${id}/lancamentos`,
       { params }
     );
     medicaoItemData.value = response.data.data;
@@ -2589,7 +2591,7 @@ const fetchContratoMedicoes = async (page) => {
   }
 };
 
-const fetchContratoFaturamentos = async (page) => {
+const fetchContratoFaturamentos = async (id, page) => {
   try {
     const params = {
       limit: 8,
@@ -2600,7 +2602,7 @@ const fetchContratoFaturamentos = async (page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
-    const response = await api.get(`/contratos/${route.params.id}/faturamentos?page=${page}`, { params });
+    const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
@@ -2620,21 +2622,23 @@ watch( ()=> modalTermosAditivos.value,
  )
 
 watch(()=> alterouStatus.value, () =>{
-  fetchContratoMedicoes(currentPageMedicao.value )
+  fetchContratoMedicoes(contratoId, currentPageMedicao.value )
   alterouStatus.value = false;
 })
 watch(
   () => currentPage.value,
-  () => fetchContratoItens(currentPage.value)
+  () => fetchContratoItens(contratoId, currentPage.value)
 );
 watch(
   () => currentPageMedicao.value,
-  () => fetchContratoMedicoes(currentPageMedicao.value)
+  () => fetchContratoMedicoes(contratoId, currentPageMedicao.value)
 );
 watch(
   () => currentPageFaturamento.value,
-  () => fetchContratoFaturamentos(currentPageFaturamento.value)
+  () => fetchContratoFaturamentos(contratoId, currentPageFaturamento.value)
 );
+
+watch(()=> contrato.value.id, () => contratoId = contrato.value.id)
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
@@ -2783,9 +2787,8 @@ const createPedidoFaturamento = async () => {
   }
 
   try {
-    const contratoId = route.params.id;
     const response = await api
-      .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
+      .post(`/contratos/${contratoId}/faturamentos`, payload)
       .then((response) => {
         faturamentoId.value = response.data.id;
         toast("Faturamento criado com sucesso!", {
@@ -2804,8 +2807,6 @@ const createPedidoFaturamento = async () => {
 };
 
 const deleteFaturamento = (faturamentoId) => {
-  const contratoId = route.params.id;
-
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este faturamento?",
@@ -2868,7 +2869,6 @@ const saveEditedFaturamento = async () => {
   };
 
   try {
-    let contratoId = route.params.id;
     const response = await api
       .put(`/faturamentos/${editingFaturamento.value.id}`, payload)
       .then((response) => {
@@ -2915,7 +2915,6 @@ const closeModalRenovacao = () => {
 };
 
 const createRenovacao = async () => {
-  const contratoId = route.params.id;
   let payload = {
     data_inicio: renovacaoData.value.data_inicio,
     data_fim: renovacaoData.value.data_fim,
@@ -3142,9 +3141,7 @@ const createLancamento = async () => {
     tipo_medicao: medicaoData.value.tipo_medicao,
   };
   try {
-    const contratoId = route.params.id;
-
-    const response = await api.post(`/contratos/${contrato.value.id}/lancamentos`, payload)
+    const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
       .then((response) => {
         medicaoId.value = response.data.id;
         toast("Medição criada com sucesso!", {
@@ -3168,8 +3165,8 @@ onMounted(async () => {
   contratoId = route.params.id;
   await fetchContrato(contratoId);
   await fetchTermoAditivo(contratoId);
-  contratoSelecionado.value = contrato.value;
-  
+  contratoOriginal.value = { ...contrato.value };
+
   window.scroll({
     top: 0,
   });
@@ -3184,9 +3181,9 @@ const fetchContrato = async (id) => {
     // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
     contrato.value = contratoData;
-    fetchContratoItens(currentPage.value);
-    fetchContratoMedicoes(currentPageMedicao.value);
-    fetchContratoFaturamentos(currentPageFaturamento.value);
+    fetchContratoItens(id, currentPage.value);
+    fetchContratoMedicoes(id, currentPageMedicao.value);
+    fetchContratoFaturamentos(id, currentPageFaturamento.value);
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -3198,7 +3195,7 @@ const fetchTermoAditivo = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
     // Ordena os termos aditivos por data de criação
-    termosAditivos.value = response.data.sort((a, b) => 
+    termosAditivos.value = response.data.sort((a, b) =>
       new Date(a.createdAt) - new Date(b.createdAt)
     );
   } catch (error) {
@@ -3249,7 +3246,6 @@ const alterarStatusMedicao = async (id, novoStatus) => {
 };
 
 const deleteLancamento = (lancamentoId) => {
-  const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir essa medição?",
@@ -3510,7 +3506,6 @@ const closeModalEditAditivo = () => {
 
 
 const saveEditedItem = async () => {
-  const contratoId = route.params.id;
   const itemIndex = contrato.value.contratoItens.findIndex(
     (i) => i.id === editingItem.value.id
   );
@@ -3582,7 +3577,6 @@ const saveEditedItem = async () => {
 
 // Deletar Item do contrato
 const deleteItem = async (itemId) => {
-  const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este item?",
@@ -3628,7 +3622,6 @@ const closeModalCreateItem = () => {
 };
 
 const createNewItem = async () => {
-  const contratoId = route.params.id;
   let valorTotalItens = 0;
   let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
 
@@ -3666,7 +3659,7 @@ const createNewItem = async () => {
 
   try {
     const response = await api.post(
-      `/contratos/${route.params.id}/items`,
+      `/contratos/${contratoId}/items`,
       newItem.value
     );
     toast("Item criado com sucesso!", {
@@ -3841,7 +3834,6 @@ const saveEditedLancamento = async () => {
     projetos: editingLancamento.value.projetos,
   };
   try {
-    const contratoId = route.params.id;
     const response = await api
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
       .then((response) => {
@@ -3928,14 +3920,14 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
   }
 });
 
-// Adicione às refs existentes
-const contratoSelecionado = ref(null);
-
-// Adicione aos métodos existentes
 const selecionarContrato = async (contratoData) => {
-  console.log(contratoData, 'data')
-  contratoSelecionado.value = contratoData;
-  await fetchContrato(contratoData.id);
+  if (contratoData && contratoData.id) {
+    await fetchContrato(contratoData.id);
+
+    if (!contratoData.idContratoOriginal) {
+      contratoOriginal.value = { ...contrato.value };
+    }
+  }
 };
 </script>
 
