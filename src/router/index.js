@@ -16,6 +16,7 @@ import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
 import ResetPassword from "@/pages/Login/ResetPassword.vue";
 import UsersPage from '@/pages/UsersPage/UsersPage.vue';
+import EditAditivoForm from "@/components/EditAditivoForm.vue";
 
 const routes = [
   {
@@ -57,9 +58,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/cadastro/contratos/:id",
+    path: "/editar/contratos/:id",
     name: "editarcontrato",
     component: FormContratosEdit,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/editar/termo/:id",
+    name: "editartermo",
+    component: EditAditivoForm,
     meta: { requiresAuth: true },
   },
   {
@@ -68,7 +75,7 @@ const routes = [
     component: FormAditive,
     meta: { requiresAuth: true },
   },
-  
+
   {
     path: "/visualizar/contratos/:id",
     name: "visualizarContrato",
@@ -94,21 +101,21 @@ const routes = [
     component: UsersPage,
     meta: { requiresAuth: true },
   },
-  {
-    path: '/contratos/termo-aditivo/:id/editar',
-    name: 'EditarTermoAditivo',
-    component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
-    props: true,
-    meta: {
-      requiresAuth: true
-    },
-    beforeEnter: async (to, from, next) => {   
-      next();
-    }
-  },
+  // {
+  //   path: '/contratos/termo-aditivo/:id/editar',
+  //   name: 'EditarTermoAditivo',
+  //   component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
+  //   props: true,
+  //   meta: {
+  //     requiresAuth: true
+  //   },
+  //   beforeEnter: async (to, from, next) => {
+  //     next();
+  //   }
+  // },
   {
     path: "/:pathMatch(.*)*",
-    redirect: '{ name: "Dashboard" }',
+    redirect: { name: "Dashboard" },
   },
 ];
 
@@ -118,6 +125,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  // console.log('Navegando para:', to.fullPath)
   const token = localStorage.getItem("token");
   if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
     next("/login");
