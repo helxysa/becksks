@@ -1,5 +1,11 @@
 <template>
-  <div class="flex gap-4 mb-8">
+  <div
+    v-if="isLoading"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
+  >
+    <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
+  </div>
+  <div class="flex gap-4 mb-8" v-if="!isLoading">
     <button
       v-for="(termo, index) in [...termosAditivos].reverse()"
       :key="termo.id"
@@ -27,7 +33,7 @@
     </button>
   </div>
 <!-- Detalhes do contrato -->
-<section>
+<section v-if="!isLoading">
   <div
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
   >
@@ -345,7 +351,8 @@
   </section>
 </section>
 
-<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
+<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]" v-if="!isLoading">
+  <!-- Abas de itens, medições, faturamentos e anexos -->
   <div class="flex border-b border-gray-200 mb-8 pt-4">
     <TabButton
       v-for="tab in tabs"
@@ -356,9 +363,8 @@
     />
   </div>
 
-
+  <!-- Tabela itens do contrato-->
   <div v-if="currentTab === 'Itens'">
-    <!-- Tabela itens do contrato-->
     <section class="mt-8">
       <div class="flex justify-between items-center">
         <h1 class="text-[1.8rem] font-medium text-gray-800">
@@ -474,8 +480,8 @@
     </section>
   </div>
 
-    <div v-if="currentTab === 'Medições'">
-    <!-- Tabela Medições-->
+  <!-- Tabela Medições-->
+  <div v-if="currentTab === 'Medições'">
     <section class="mt-8">
       <div class="flex justify-between items-center">
         <h1 class="text-[1.8rem] font-medium text-gray-800">
@@ -684,10 +690,10 @@
         />
       </div>
     </section>
-    </div>
+  </div>
 
-    <div v-if="currentTab === 'Faturamentos'">
-    <!-- Tabela Faturamentos-->
+  <!-- Tabela Faturamentos-->
+  <div v-if="currentTab === 'Faturamentos'">
     <section>
       <h1 class="text-[1.8rem] font-medium text-gray-800">
         Faturamentos
@@ -799,14 +805,14 @@
         />
       </div>
     </section>
-    </div>
+  </div>
 
-    <div v-if="currentTab === 'Anexos'">
-      <!-- Anexos do contrato -->
-      <div v-if="contratoId">
-        <Anexos :resourceId="contratoId" :variant="'contrato'" />
-      </div>
+  <!-- Anexos do contrato -->
+  <div v-if="currentTab === 'Anexos'">
+    <div v-if="contratoId">
+      <Anexos :resourceId="contratoId" :variant="'contrato'" />
     </div>
+  </div>
 </section>
   <!-- Modal novo pedido de faturamento-->
   <JetDialogModal
@@ -2050,8 +2056,9 @@
       </footer>
     </template>
   </JetDialogModal>
-    <!-- Modal Termos Aditivos -->
-    <JetDialogModal
+
+  <!-- Modal Termos Aditivos -->
+  <JetDialogModal
     :show="modalTermosAditivos"
     :withouHeader="false"
     @close="closeModalTermosAditivos"
@@ -2138,7 +2145,6 @@
       />
     </template>
   </JetDialogModal>
-
 </template>
 
 <script setup>
@@ -2157,15 +2163,16 @@ import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
+import { waveform } from "ldrs";
 
 const store = useProfileStore()
+waveform.register();
 const contratoSelecionadoId = ref(null);
+const isLoading = ref(true);
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
-
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
-
 const modalViewAditivo = ref(false);
 const modalEditAditivo = ref(false);
 const selectedAditivo = ref(null);
@@ -2677,10 +2684,6 @@ const closeModalPedidoFaturamento = () => {
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  // const dataFormatada = format(
-  //   new Date(faturamento.dataFaturamento),
-  //   "yyyy-MM-dd"
-  // );
   let dataFormatada = ''
   if (faturamento.dataFaturamento) {
     dataFormatada = faturamento.dataFaturamento.split('T')[0];
@@ -3175,13 +3178,21 @@ const voltarListagem = () => {
 
 onMounted(async () => {
   contratoId = route.params.id;
+
   await fetchContrato(contratoId);
   contratoOriginal.value = { ...contrato.value };
+
   await fetchTermoAditivo(contratoId);
-  if (!termosAditivos.value.length) {
+
+  if (termosAditivos.value.length > 0) {
+    const ultimoTermo = termosAditivos.value[termosAditivos.value.length - 1];
+    contratoSelecionadoId.value = ultimoTermo.id;
+    await selecionarContrato(ultimoTermo);
+  } else {
     contratoSelecionadoId.value = contratoOriginal.value.id;
   }
 
+  isLoading.value = false;
   window.scroll({
     top: 0,
   });
