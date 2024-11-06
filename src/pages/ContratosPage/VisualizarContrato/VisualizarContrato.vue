@@ -1,32 +1,31 @@
 <template>
-    <!-- Adicione após a declaração do template -->
-    <div class="flex gap-4 mb-8">
-      <button
+  <div class="flex gap-4 mb-8">
+    <button
+      v-for="(termo, index) in [...termosAditivos].reverse()"
+      :key="termo.id"
+      @click="selecionarContrato(termo)"
+      :class="[
+        'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+        contratoSelecionadoId === termo.id
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-200 hover:bg-gray-300'
+      ]"
+    >
+      {{ termosAditivos.length - index }}º Termo Aditivo
+    </button>
+
+    <button
       @click="selecionarContrato(contratoOriginal)"
       :class="[
         'px-6 py-2 rounded-md font-bold text-lg transition-colors',
-        contrato?.id === contratoOriginal?.id
+        contratoSelecionadoId === contratoOriginal?.id
           ? 'bg-blue-500 text-white'
           : 'bg-gray-200 hover:bg-gray-300'
       ]"
     >
       Contrato Original
     </button>
-
-    <button
-    v-for="(termo, index) in termosAditivos"
-    :key="termo.id"
-    @click="selecionarContrato(termo)"
-    :class="[
-      'px-6 py-2 rounded-md font-bold text-lg transition-colors',
-      contrato?.id === termo.id
-        ? 'bg-blue-500 text-white'
-        : 'bg-gray-200 hover:bg-gray-300'
-    ]"
-  >
-    {{ index + 1 }}º Termo Aditivo
-  </button>
-    </div>
+  </div>
 <!-- Detalhes do contrato -->
 <section>
   <div
@@ -2159,8 +2158,8 @@ import { useProfileStore } from '@/stores/ProfileStore';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
 
- const store = useProfileStore()
-
+const store = useProfileStore()
+const contratoSelecionadoId = ref(null);
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
 
@@ -2965,9 +2964,9 @@ const decimalConfig = {
   masked: false,
 };
 
-const deleteContrato = (contratoAtual) => {
+const deleteContrato = async (contratoAtual) => {
   Swal.fire({
-    title: "Confirmar exclusão",
+      title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este contrato?",
     icon: "warning",
     showCancelButton: true,
@@ -2984,7 +2983,12 @@ const deleteContrato = (contratoAtual) => {
             theme: "colored",
             type: "success",
           });
-          voltarListagem();
+          if(contratoAtual.id === contratoOriginal.value.id) {
+            router.push('/contratos')
+          } else {
+            fetchTermoAditivo(contratoOriginal.value.id)
+            selecionarContrato(contratoOriginal.value)
+          }
         })
         .catch((error) => {
           toast("Não foi possível deletar o contrato!", {
@@ -3172,8 +3176,11 @@ const voltarListagem = () => {
 onMounted(async () => {
   contratoId = route.params.id;
   await fetchContrato(contratoId);
-  await fetchTermoAditivo(contratoId);
   contratoOriginal.value = { ...contrato.value };
+  await fetchTermoAditivo(contratoId);
+  if (!termosAditivos.value.length) {
+    contratoSelecionadoId.value = contratoOriginal.value.id;
+  }
 
   window.scroll({
     top: 0,
@@ -3200,10 +3207,15 @@ const fetchContrato = async (id) => {
 const fetchTermoAditivo = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    // Ordena os termos aditivos por data de criação
     termosAditivos.value = response.data.sort((a, b) =>
       new Date(a.createdAt) - new Date(b.createdAt)
     );
+
+    if (termosAditivos.value.length > 0) {
+      const ultimoTermo = termosAditivos.value[termosAditivos.value.length - 1]
+      contratoSelecionadoId.value = ultimoTermo.id;
+      selecionarContrato(ultimoTermo);
+    }
   } catch (error) {
     console.error("Erro ao buscar termos aditivos:", error);
     termosAditivos.value = [];
@@ -3928,6 +3940,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
 
 const selecionarContrato = async (contratoData) => {
   if (contratoData && contratoData.id) {
+    contratoSelecionadoId.value = contratoData.id;
     await fetchContrato(contratoData.id);
 
     if (!contratoData.idContratoOriginal) {
