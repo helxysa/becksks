@@ -14,7 +14,7 @@
             <label for="file-upload" class="flex flex-col items-center justify-center cursor-pointer">
               <span v-if="!previewFoto" class="text-lg font-semibold text-gray-500">Clique para enviar uma imagem</span>
               <span v-if="!previewFoto" class="text-sm text-gray-400">(JPG, PNG, JPEG)</span>
-              <img v-if="previewFoto" :src="previewFoto" alt="Preview da Foto" class="w-[20rem] rounded-md object-cover"/>
+              <img v-if="previewFoto" :src="previewFoto" alt="Preview da Foto" class="w-[24rem] max-h-[14rem] rounded-md object-cover"/>
             </label>
             <input id="file-upload" type="file" accept="image/*" @change="handleFileChange" class="hidden"/>
           </div>
