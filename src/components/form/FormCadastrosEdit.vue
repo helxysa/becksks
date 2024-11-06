@@ -4,7 +4,7 @@
       <span @click="voltarListagem" class="cursor-pointer">
         <Icon icon="ic:round-arrow-back" height="30" />
       </span>
-      <h1 class="text-5xl font-bold">Formulário de Contrato</h1>
+      <h1 class="text-5xl font-bold">Editar Contrato</h1>
     </div>
 
     <section class="">
@@ -564,7 +564,7 @@ async function saveContrato() {
           theme: "colored",
           type: "success",
         });
-        // voltarListagem();
+        voltarListagem();
       });
   } catch (error) {
     toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {

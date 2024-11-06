@@ -707,7 +707,8 @@ const saveTermoAditive = async () => {
 };
 
 const voltarListagem = () => {
- window.location.href = '/contratos'
+  const contratoId = route.params.id;
+  router.push(`/visualizar/contratos/${contratoId}`);
 };
 
 const formatCurrency = (value) => {

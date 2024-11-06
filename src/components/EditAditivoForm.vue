@@ -8,7 +8,7 @@
           class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"
         />
       </span>
-      <h1 class="text-5xl font-bold">Cadastro  Termo Aditivo</h1>
+      <h1 class="text-5xl font-bold">Editar Termo Aditivo</h1>
     </div>
 
     <section class="">
@@ -177,7 +177,7 @@
           />
         </div>
         <section class="mt-8 flex gap-8 flex-wrap justify-end">
-          <button
+          <!-- <button
             class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="showExibirModalItems"
@@ -185,7 +185,7 @@
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
-          </button>
+          </button> -->
         </section>
         <div class="flex border-b border-gray-200 mb-8 pt-4">
           <TabButton
@@ -196,7 +196,7 @@
             @update:currentTab="currentTab = $event"
           />
         </div>
-        <div v-if="currentTab === 'Itens'">
+        <!-- <div v-if="currentTab === 'Itens'">
           <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
             <thead class="h-24 bg-slate-100 border-1">
               <tr>
@@ -242,7 +242,7 @@
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> -->
         <div v-if="currentTab === 'Anexos'">
             <AnexoUpload :resourceId="termoAditivoId" variant="aditivo" :localAnexos="localAnexos" />
         </div>
@@ -508,7 +508,7 @@ import TabButton from '../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
 const store = useProfileStore()
-const tabs = ['Itens', 'Anexos']
+const tabs = ['Anexos']
 const currentTab = ref(tabs[0])
 const contratoId = ref(null)
 const termoAditivoId = ref(null);
@@ -578,8 +578,6 @@ watch([ajusteValor, porcentagemAjuste], ([novoAjusteValor, novaPorcentagem]) => 
     contratoForm.value.saldo_contrato = (
       parseFloat(saldoContratoOriginal.value) * (Math.min(novaPorcentagem, 25) / 100)
     ).toFixed(2);
-    console.log('contratoForm.value.saldo_contrato', contratoForm.value.saldo_contrato)
-    console.log('saldoContratoOriginal.value', saldoContratoOriginal.value)
   } else if (novoAjusteValor === 'sim' && novaPorcentagem === 0) {
     contratoForm.value.saldo_contrato = 0;
   } else if (novoAjusteValor === 'nao') {
@@ -726,7 +724,7 @@ const saveTermoAditive = async () => {
 };
 
 const voltarListagem = () => {
- window.location.href = `/visualizar/contratos/${contratoOriginalId.value}`
+ router.push(`/visualizar/contratos/${contratoOriginalId.value}`)
 };
 
 const formatCurrency = (value) => {
