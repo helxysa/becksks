@@ -8,7 +8,7 @@
           class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"
         />
       </span>
-      <h1 class="text-5xl font-bold">Cadastro  Termo Aditivo</h1>
+      <h1 class="text-5xl font-bold">Cadastro Termo Aditivo</h1>
     </div>
 
     <section class="">
@@ -177,7 +177,7 @@
           />
         </div>
         <section class="mt-8 flex gap-8 flex-wrap justify-end">
-          <button
+          <!-- <button
             class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="showExibirModalItems"
@@ -185,7 +185,7 @@
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
-          </button>
+          </button> -->
         </section>
         <div class="flex border-b border-gray-200 mb-8 pt-4">
           <TabButton
@@ -508,7 +508,7 @@ import TabButton from '../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
 const store = useProfileStore()
-const tabs = ['Itens', 'Anexos']
+const tabs = ['Anexos']
 const currentTab = ref(tabs[0])
 const contratoId = ref(null)
 const termoAditivoId = ref(null);
@@ -692,7 +692,7 @@ const createTermoAditivo = async (contratoId) => {
       theme: "colored",
       type: "success",
     });
-    // voltarListagem()
+    voltarListagem()
   } catch (error) {
     toast("Não foi possível cadastrar o termo  aditivo!", {
       theme: "colored",
@@ -707,7 +707,8 @@ const saveTermoAditive = async () => {
 };
 
 const voltarListagem = () => {
- window.location.href = '/contratos'
+  const contratoId = route.params.id;
+  router.push(`/visualizar/contratos/${contratoId}`);
 };
 
 const formatCurrency = (value) => {

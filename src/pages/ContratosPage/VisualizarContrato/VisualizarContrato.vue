@@ -1,34 +1,39 @@
 <template>
-    <!-- Adicione após a declaração do template -->
-    <div class="flex gap-4 mb-8">
-      <button
+  <div
+    v-if="isLoading"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
+  >
+    <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
+  </div>
+  <div class="flex gap-4 mb-8" v-if="!isLoading">
+    <button
+      v-for="(termo, index) in [...termosAditivos].reverse()"
+      :key="termo.id"
+      @click="selecionarContrato(termo)"
+      :class="[
+        'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+        contratoSelecionadoId === termo.id
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-200 hover:bg-gray-300'
+      ]"
+    >
+      {{ termosAditivos.length - index }}º Termo Aditivo
+    </button>
+
+    <button
       @click="selecionarContrato(contratoOriginal)"
       :class="[
         'px-6 py-2 rounded-md font-bold text-lg transition-colors',
-        contrato?.id === contratoOriginal?.id
+        contratoSelecionadoId === contratoOriginal?.id
           ? 'bg-blue-500 text-white'
           : 'bg-gray-200 hover:bg-gray-300'
       ]"
     >
       Contrato Original
     </button>
-
-    <button
-    v-for="(termo, index) in termosAditivos"
-    :key="termo.id"
-    @click="selecionarContrato(termo)"
-    :class="[
-      'px-6 py-2 rounded-md font-bold text-lg transition-colors',
-      contrato?.id === termo.id
-        ? 'bg-blue-500 text-white'
-        : 'bg-gray-200 hover:bg-gray-300'
-    ]"
-  >
-    {{ index + 1 }}º Termo Aditivo
-  </button>
-    </div>
+  </div>
 <!-- Detalhes do contrato -->
-<section>
+<section v-if="!isLoading">
   <div
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
   >
@@ -290,13 +295,7 @@
   </section> -->
   <section class="mt-8">
     <div class="flex items-start justify-between gap-12">
-      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md "
-      :class="[
-        contrato?.termoAditivoId === null
-          ? 'w-3/4'
-          : 'w-full'
-      ]"
-      >
+      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
         <div class="flex">
          <span>
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
@@ -308,32 +307,17 @@
         </div>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
       </div>
-      <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null"
-      :class="[
-        contrato?.termoAditivoId === null
-          ? 'w-1/4'
-          : 'w-0'
-      ]"
-      >
+      <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
         <div class="relative w-full">
           <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
             Histórico - Aditivos
             <Icon icon="mdi:chevron-down" class="ml-2" />
           </button>
-          <!-- {{termosAditivos}} -->
           <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
                 {{ termo.nomeContrato }}
-                <!-- <span>
-                  <button
-                  @click="deletarTermoAditivo(termo.id)"
-                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                >
-                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
-                </button>
-                </span> -->
               </li>
               <li class="px-4 py-2 hover:bg-gray-100">
                 <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
@@ -341,12 +325,13 @@
             </ul>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </section>
 </section>
 
-<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
+<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]" v-if="!isLoading">
+  <!-- Abas de itens, medições, faturamentos e anexos -->
   <div class="flex border-b border-gray-200 mb-8 pt-4">
     <TabButton
       v-for="tab in tabs"
@@ -357,9 +342,8 @@
     />
   </div>
 
-
+  <!-- Tabela itens do contrato-->
   <div v-if="currentTab === 'Itens'">
-    <!-- Tabela itens do contrato-->
     <section class="mt-8">
       <div class="flex justify-between items-center">
         <h1 class="text-[1.8rem] font-medium text-gray-800">
@@ -475,8 +459,8 @@
     </section>
   </div>
 
-    <div v-if="currentTab === 'Medições'">
-    <!-- Tabela Medições-->
+  <!-- Tabela Medições-->
+  <div v-if="currentTab === 'Medições'">
     <section class="mt-8">
       <div class="flex justify-between items-center">
         <h1 class="text-[1.8rem] font-medium text-gray-800">
@@ -685,10 +669,10 @@
         />
       </div>
     </section>
-    </div>
+  </div>
 
-    <div v-if="currentTab === 'Faturamentos'">
-    <!-- Tabela Faturamentos-->
+  <!-- Tabela Faturamentos-->
+  <div v-if="currentTab === 'Faturamentos'">
     <section>
       <h1 class="text-[1.8rem] font-medium text-gray-800">
         Faturamentos
@@ -800,14 +784,14 @@
         />
       </div>
     </section>
-    </div>
+  </div>
 
-    <div v-if="currentTab === 'Anexos'">
-      <!-- Anexos do contrato -->
-      <div v-if="contratoId">
-        <Anexos :resourceId="contratoId" :variant="'contrato'" />
-      </div>
-    </div>
+  <!-- Anexos do contrato -->
+  <div v-if="currentTab === 'Anexos'">
+    <!-- <div v-if="contratoId"> -->
+    <Anexos :key="contratoId" :resourceId="contratoId" :variant="'contrato'" />
+    <!-- </div> -->
+  </div>
 </section>
   <!-- Modal novo pedido de faturamento-->
   <JetDialogModal
@@ -2051,8 +2035,9 @@
       </footer>
     </template>
   </JetDialogModal>
-    <!-- Modal Termos Aditivos -->
-    <JetDialogModal
+
+  <!-- Modal Termos Aditivos -->
+  <JetDialogModal
     :show="modalTermosAditivos"
     :withouHeader="false"
     @close="closeModalTermosAditivos"
@@ -2139,7 +2124,6 @@
       />
     </template>
   </JetDialogModal>
-
 </template>
 
 <script setup>
@@ -2158,15 +2142,16 @@ import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
+import { waveform } from "ldrs";
 
- const store = useProfileStore()
-
+const store = useProfileStore()
+waveform.register();
+const contratoSelecionadoId = ref(null);
+const isLoading = ref(true);
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
-
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
-
 const modalViewAditivo = ref(false);
 const modalEditAditivo = ref(false);
 const selectedAditivo = ref(null);
@@ -2525,7 +2510,6 @@ const fetchContratoItens = async (id, page) => {
       }
     })
   } catch (error) {
-    console.error(error);
     contratoItemData.value = [];
     contratoItemMeta.value = [];
     currentPage.value = 1;
@@ -2591,7 +2575,6 @@ const fetchContratoMedicoes = async (id, page) => {
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
-    console.error(error);
     medicaoItemData.value = [];
     medicaoItemMeta.value = [];
     currentPageMedicao.value = 1;
@@ -2617,7 +2600,6 @@ const fetchContratoFaturamentos = async (id, page) => {
     resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
     totalFaturamentos.value = faturamentoItemMeta.value.total;
   } catch (error) {
-    console.error(error.response.data.message);
     faturamentoItemData.value = [];
     faturamentoItemMeta.value = [];
     currentPageFaturamento.value = 1;
@@ -2678,10 +2660,6 @@ const closeModalPedidoFaturamento = () => {
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  // const dataFormatada = format(
-  //   new Date(faturamento.dataFaturamento),
-  //   "yyyy-MM-dd"
-  // );
   let dataFormatada = ''
   if (faturamento.dataFaturamento) {
     dataFormatada = faturamento.dataFaturamento.split('T')[0];
@@ -2965,9 +2943,9 @@ const decimalConfig = {
   masked: false,
 };
 
-const deleteContrato = (contratoAtual) => {
+const deleteContrato = async (contratoAtual) => {
   Swal.fire({
-    title: "Confirmar exclusão",
+      title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este contrato?",
     icon: "warning",
     showCancelButton: true,
@@ -2984,7 +2962,12 @@ const deleteContrato = (contratoAtual) => {
             theme: "colored",
             type: "success",
           });
-          voltarListagem();
+          if(contratoAtual.id === contratoOriginal.value.id) {
+            router.push('/contratos')
+          } else {
+            fetchTermoAditivo(contratoOriginal.value.id)
+            selecionarContrato(contratoOriginal.value)
+          }
         })
         .catch((error) => {
           toast("Não foi possível deletar o contrato!", {
@@ -3171,10 +3154,21 @@ const voltarListagem = () => {
 
 onMounted(async () => {
   contratoId = route.params.id;
+
   await fetchContrato(contratoId);
-  await fetchTermoAditivo(contratoId);
   contratoOriginal.value = { ...contrato.value };
 
+  await fetchTermoAditivo(contratoId);
+
+  if (termosAditivos.value.length > 0) {
+    const ultimoTermo = termosAditivos.value[termosAditivos.value.length - 1];
+    contratoSelecionadoId.value = ultimoTermo.id;
+    await selecionarContrato(ultimoTermo);
+  } else {
+    contratoSelecionadoId.value = contratoOriginal.value.id;
+  }
+
+  isLoading.value = false;
   window.scroll({
     top: 0,
   });
@@ -3200,10 +3194,15 @@ const fetchContrato = async (id) => {
 const fetchTermoAditivo = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    // Ordena os termos aditivos por data de criação
     termosAditivos.value = response.data.sort((a, b) =>
       new Date(a.createdAt) - new Date(b.createdAt)
     );
+
+    if (termosAditivos.value.length > 0) {
+      const ultimoTermo = termosAditivos.value[termosAditivos.value.length - 1]
+      contratoSelecionadoId.value = ultimoTermo.id;
+      selecionarContrato(ultimoTermo);
+    }
   } catch (error) {
     console.error("Erro ao buscar termos aditivos:", error);
     termosAditivos.value = [];
@@ -3928,6 +3927,10 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
 
 const selecionarContrato = async (contratoData) => {
   if (contratoData && contratoData.id) {
+    contratoSelecionadoId.value = contratoData.id;
+    currentPage.value = 1;
+    currentPageMedicao.value = 1;
+    currentPageFaturamento.value = 1;
     await fetchContrato(contratoData.id);
 
     if (!contratoData.idContratoOriginal) {
