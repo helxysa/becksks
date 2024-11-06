@@ -295,13 +295,7 @@
   </section> -->
   <section class="mt-8">
     <div class="flex items-start justify-between gap-12">
-      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md "
-      :class="[
-        contrato?.termoAditivoId === null
-          ? 'w-3/4'
-          : 'w-full'
-      ]"
-      >
+      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
         <div class="flex">
          <span>
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
@@ -313,32 +307,17 @@
         </div>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
       </div>
-      <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null"
-      :class="[
-        contrato?.termoAditivoId === null
-          ? 'w-1/4'
-          : 'w-0'
-      ]"
-      >
+      <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
         <div class="relative w-full">
           <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
             Histórico - Aditivos
             <Icon icon="mdi:chevron-down" class="ml-2" />
           </button>
-          <!-- {{termosAditivos}} -->
           <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
                 {{ termo.nomeContrato }}
-                <!-- <span>
-                  <button
-                  @click="deletarTermoAditivo(termo.id)"
-                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                >
-                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
-                </button>
-                </span> -->
               </li>
               <li class="px-4 py-2 hover:bg-gray-100">
                 <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
@@ -346,7 +325,7 @@
             </ul>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </section>
 </section>
@@ -809,9 +788,9 @@
 
   <!-- Anexos do contrato -->
   <div v-if="currentTab === 'Anexos'">
-    <div v-if="contratoId">
-      <Anexos :resourceId="contratoId" :variant="'contrato'" />
-    </div>
+    <!-- <div v-if="contratoId"> -->
+    <Anexos :key="contratoId" :resourceId="contratoId" :variant="'contrato'" />
+    <!-- </div> -->
   </div>
 </section>
   <!-- Modal novo pedido de faturamento-->
@@ -2531,7 +2510,6 @@ const fetchContratoItens = async (id, page) => {
       }
     })
   } catch (error) {
-    console.error(error);
     contratoItemData.value = [];
     contratoItemMeta.value = [];
     currentPage.value = 1;
@@ -2597,7 +2575,6 @@ const fetchContratoMedicoes = async (id, page) => {
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
-    console.error(error);
     medicaoItemData.value = [];
     medicaoItemMeta.value = [];
     currentPageMedicao.value = 1;
@@ -2623,7 +2600,6 @@ const fetchContratoFaturamentos = async (id, page) => {
     resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
     totalFaturamentos.value = faturamentoItemMeta.value.total;
   } catch (error) {
-    console.error(error.response.data.message);
     faturamentoItemData.value = [];
     faturamentoItemMeta.value = [];
     currentPageFaturamento.value = 1;
@@ -3952,6 +3928,9 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
 const selecionarContrato = async (contratoData) => {
   if (contratoData && contratoData.id) {
     contratoSelecionadoId.value = contratoData.id;
+    currentPage.value = 1;
+    currentPageMedicao.value = 1;
+    currentPageFaturamento.value = 1;
     await fetchContrato(contratoData.id);
 
     if (!contratoData.idContratoOriginal) {
