@@ -16,12 +16,6 @@
           class="border rounded px-4 py-1"
           placeholder="Data de Fim"
         />
-        <!-- <label>Tipo</label>
-        <select v-model="filterType" class="border rounded px-4 py-2">
-          <option value="Todos">Todos</option>
-          <option value="Contratos">Contratos</option>
-          <option value="Termos Aditivos">Termos Aditivos</option>
-        </select> -->
         <span @click="resetFilters" class="p-2 rounded-full cursor-pointer transition-transform duration-75 ease-in-out active:scale-125 active:-rotate-180">
           <Icon icon="system-uicons:reset" width="2rem" class="text-slate-800" />
         </span>
@@ -50,7 +44,6 @@
           <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
             <div class="relative">
               <img :src="contrato.foto ? `${baseURL}/${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full h-[20rem] rounded-md object-center">
-              <!-- <div class="absolute top-0 right-0 bg-blue-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div> -->
             </div>
             <div class="p-6">
               <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
@@ -112,72 +105,6 @@
             </div>
           </router-link>
         </section>
-        <!-- <section v-else>
-          <router-link :to="{ name: 'visualizarTermoAditivo', params: { id: contrato.id } }">
-            <div class="relative">
-              <img :src="imagemPadrao" alt="imagem representativa do contrato" class="w-full h-72 rounded-md object-cover">
-              <div class="absolute top-0 right-0 bg-orange-500 text-white text-base font-semibold px-2 py-1 rounded-bl-lg shadow-lg">{{contrato.tag}}</div>
-            </div>
-            <div class="p-6">
-              <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
-
-              <div class="mb-4">
-                <div class="flex justify-between text-xl mb-1">
-                  <span class="text-gray-600">Progresso:</span>
-                  <span class="font-semibold text-msb-blue">
-                    {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
-                  </span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    class="bg-[#0066cc] h-2.5 rounded-full"
-                    :style="{ width: `${(calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0)}%` }"
-                  >
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-2 text-xl">
-                <div class="mb-3">
-                  <p class="text-gray-600 font-semibold whitespace-nowrap">Nome cliente:</p>
-                  <p class="text-gray-800 break-words truncate" :title="contrato.contrato.nomeCliente">{{ contrato.contrato.nomeCliente }}</p>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Vigência:</span>
-                  <span class="text-gray-800">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Valor contratado:</span>
-                  <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Aguardando faturamento:</span>
-                  <span class="font-semibold text-yellow-600">
-                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
-                  </span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Aguardando pagamento:</span>
-                  <span class="font-semibold text-orange-600">
-                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
-                  </span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Valor pago:</span>
-                  <span class="font-semibold text-green-600">
-                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
-                  </span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Saldo disponível:</span>
-                  <span class="font-semibold text-msb-blue">
-                    {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </router-link>
-        </section> -->
       </div>
     </div>
   </div>
@@ -284,7 +211,6 @@ const fetchContratos = async () => {
   try {
     const params = {
       search: filterName.value,
-      // tipo: filterType.value,
       tipo: 'Contratos',
       dataInicio: dataInicio.value,
       dataFim: dataFim.value,
@@ -295,7 +221,20 @@ const fetchContratos = async () => {
     };
 
     const response = await api.get("/contratos-e-termos", { params });
-    contratos.value = response.data.data;
+    contratos.value = response.data.data.map((contrato) => {
+      const termoAditivoMaisRecente = contrato.termosAditivos && contrato.termosAditivos.length > 0
+        ? contrato.termosAditivos[0]
+        : null;
+
+      return {
+        ...contrato,
+        dataInicio: termoAditivoMaisRecente ? termoAditivoMaisRecente.dataInicio : contrato.dataInicio,
+        dataFim: termoAditivoMaisRecente ? termoAditivoMaisRecente.dataFim : contrato.dataFim,
+        saldoContrato: termoAditivoMaisRecente ? termoAditivoMaisRecente.saldoContrato : contrato.saldoContrato,
+        faturamentos: termoAditivoMaisRecente ? termoAditivoMaisRecente.faturamentos : contrato.faturamentos,
+        lancamentos: termoAditivoMaisRecente ? termoAditivoMaisRecente.lancamentos : contrato.lancamentos,
+      };
+    });
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
