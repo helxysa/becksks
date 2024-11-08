@@ -43,7 +43,7 @@
         <section>
           <router-link :to="{ name: 'visualizarContrato', params: { id: contrato.id } }">
             <div class="relative">
-              <img :src="contrato.foto ? `${baseURL}/${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full h-[20rem] rounded-md object-center">
+              <img :src="contrato.foto ? `${baseURL}${contrato.foto}` : imagemPadrao" alt="imagem representativa do contrato" class="w-full h-[20rem] rounded-md object-center">
             </div>
             <div class="p-6">
               <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center truncate" :title="contrato.nomeContrato">{{ contrato.nomeContrato }}</h2>
@@ -235,6 +235,8 @@ const fetchContratos = async () => {
         lancamentos: termoAditivoMaisRecente ? termoAditivoMaisRecente.lancamentos : contrato.lancamentos,
       };
     });
+    console.log(contratos.value)
+    console.log(baseURL)
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }
