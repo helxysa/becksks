@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-700">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl min-h-[400px]">
-        <img src="../../assets/imagens/logoMSBOSS.jpeg" alt="Logomarca" class="w-60 mx-auto mb-8">
+        <img src="../../assets/imagens/logoMSB.png" alt="Logomarca" class="w-72 mx-auto mb-8">
         <h1 class="text-3xl md:text-4xl lg:text-5xl text-blue-600 text-center font-medium tracking-wide">Redefinir Senha</h1>
         <span class="font-sans text-base md:text-lg lg:text-xl text-slate-600 flex justify-center text-center mt-4">
           Insira sua nova senha abaixo para concluir a redefinição.
