@@ -10,13 +10,13 @@
     <div class="bg-white p-8 h-auto rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4 animate-fadein">
         <transition name="fade" mode="out-in">
           <div v-if="!showResetPassword">
-            <img src="../../assets/imagens/logoMSBOSS.jpeg" alt="Logomarca" class="w-60 mx-auto mb-8">
+            <img src="../../assets/imagens/logoMSB.png" alt="Logomarca" class="w-72 mx-auto mb-8">
             <h1 key="title" class="text-3xl md:text-4xl lg:text-5xl text-blue-600 text-center font-medium tracking-wide">
               Login
             </h1>
           </div>
           <div v-else>
-            <img src="../../assets/imagens/logoMSBOSS.jpeg" alt="Logomarca" class="w-60 mx-auto mb-8">
+            <img src="../../assets/imagens/logoMSB.png" alt="Logomarca" class="w-72 mx-auto mb-8">
             <h1 key="title" class="text-3xl md:text-4xl lg:text-5xl text-blue-600 text-center font-medium tracking-wide">Recuperar Senha</h1>
           </div>
         </transition>
@@ -100,9 +100,9 @@ const handleLogin = async () => {
     });
     loading.value = false;
     isAuthenticated.value = true;
-    localStorage.setItem("token", response.data.token.token);   
+    localStorage.setItem("token", response.data.token.token);
     store.$patch(response.data.user)
-   
+
 
     if (!response.data.user.passwordChanged) {
       localStorage.setItem("userId", response.data.user.id);
