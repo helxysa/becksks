@@ -3069,20 +3069,20 @@ const createLancamento = async () => {
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
     }))
-    .filter(
-      (item) => item.quantidade_itens && parseFloat(item.quantidade_itens) > 0
-    );
+    // .filter(
+    //   (item) => item.quantidade_itens && parseFloat(item.quantidade_itens) > 0
+    // );
 
-  if (itensQuantidadePreenchida.length === 0) {
-    toast(
-      "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
-      {
-        theme: "colored",
-        type: "error",
-      }
-    );
-    return;
-  }
+  // if (itensQuantidadePreenchida.length === 0) {
+  //   toast(
+  //     "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
+  //     {
+  //       theme: "colored",
+  //       type: "error",
+  //     }
+  //   );
+  //   return;
+  // }
 
   const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
@@ -3704,18 +3704,16 @@ const openEditLancamentoModal = (lancamento) => {
 
 const openViewLancamentoModal = (lancamento) => {
   isLancamentoViewModal.value = true;
-  const itensComQuantidade = lancamento.lancamentoItens.filter(
-    (item) => item.quantidadeItens > 0
-  );
+  const itensComQuantidade = lancamento.lancamentoItens
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = {
     ...lancamento,
-    lancamentoItens: itensComQuantidade,
     dataMedicao: dataFormatada,
+    lancamentoItens: itensComQuantidade,
   };
-  fetchProjetos(route.params.id);
   modalEditLancamento.value = true;
+  fetchProjetos(route.params.id);
 };
 
 const closeEditLancamentoModal = () => {
