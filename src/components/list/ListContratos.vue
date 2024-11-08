@@ -118,7 +118,7 @@ import { toast } from "vue3-toastify";
 import { Icon } from "@iconify/vue";
 import imagemPadrao from '../../assets/imagens/imageCard.png'
 
-const baseURL = import.meta.env.VITE_APP_API_URL;
+const baseURL = import.meta.env.VITE_APP_API_URL.replace(/\/$/, "");
 const route = useRoute();
 const router = useRouter();
 const contratos = ref([]);
