@@ -11,8 +11,8 @@
       >
         <div class="text-[2.5rem] text-[#3498db] mb-3">📤</div>
         <span>Arraste ou clique para escolher um arquivo</span>
-        <div class="text-sm text-gray-600 mt-3 font-light">        
-          {{ selectedFile ? selectedFile.name : 'Nenhum arquivo selecionado' }}
+        <div class="text-sm text-gray-600 mt-3 font-light">
+          {{ selectedFiles ? selectedFiles.name : 'Nenhum arquivo selecionado' }}
         </div>
         <input
           type="file"
@@ -20,6 +20,7 @@
           class="hidden"
           @change="handleFileSelect"
           accept=".pdf,.doc,.docx,.xlsx,.csv,.jpg,.png,.zip,.rar"
+          multiple
         />
       </label>
     </div>
@@ -96,7 +97,7 @@
 import { ref, onMounted } from 'vue';
 import { api } from '@/services/api';
 
-const selectedFile = ref(null);
+const selectedFiles = ref(null);
 const anexos = ref([]);
 const successMessage = ref('');
 const errorMessage = ref('');
@@ -126,43 +127,60 @@ const  convertUrl = (fileUrl) => {
 }
 
 const handleFileSelect = (event) => {
-  selectedFile.value = event.target.files[0];
-  uploadFile();
+  selectedFiles.value = Array.from(event.target.files);
+  uploadFiles();
 };
 
 const handleDrop = (event) => {
-  selectedFile.value = event.dataTransfer.files[0];
-  uploadFile();
+  selectedFiles.value = Array.from(event.dataTransfer.files);
+  uploadFiles();
 };
 
-const uploadFile = async () => {
-  if (!selectedFile.value) {
-    errorMessage.value = 'Selecione um arquivo antes de enviar.';
+const uploadFiles = async () => {
+  if (selectedFiles.value.length === 0) {
+    errorMessage.value = 'Selecione um ou mais arquivos antes de enviar.';
     return;
   }
 
-  const formData = new FormData();
-  formData.append('file', selectedFile.value); 
+  let variantUrl = props.variant === 'contrato'
+    ? 'contratos'
+    : props.variant === 'medicao'
+    ? 'medicao'
+    : 'faturamento';
 
-  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+  for (const file of selectedFiles.value) {
+    const formData = new FormData();
+    formData.append('file', file);
 
-  try { 
-    await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    successMessage.value = 'Arquivo enviado com sucesso!';
-    errorMessage.value = '';
-    fetchAnexos();
-    selectedFile.value = null;
-    setTimeout(() => {
-      successMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    errorMessage.value = 'Erro ao enviar o arquivo. Tente novamente.';
-    successMessage.value = '';
+    try {
+      if (!props.resourceId) {
+        const novoAnexo = {
+          id: Date.now(),
+          file: file,
+          fileName: file.name,
+          file_url: URL.createObjectURL(file),
+          isEditing: false,
+          newFileName: '',
+        };
+        props.localAnexos.push(novoAnexo);
+      } else {
+        await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        successMessage.value = `Arquivo "${file.name}" enviado com sucesso!`;
+      }
+    } catch (error) {
+      errorMessage.value = `Erro ao enviar o arquivo "${file.name}". Tente novamente.`;
+    }
   }
+
+  selectedFiles.value = [];
+  fetchAnexos();
+  setTimeout(() => {
+    successMessage.value = '';
+  }, 3000);
 };
 
 const fetchAnexos = async () => {
@@ -170,13 +188,13 @@ const fetchAnexos = async () => {
     let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
     const response = await api.get(`/${variantUrl}/${props.resourceId}/anexos`);
-   
+
     anexos.value = response.data.anexos.map((anexo) => ({
       ...anexo,
       isEditing: false,
       newFileName: '',
     }));
- 
+
   } catch (error) {
     errorMessage.value = 'Erro ao carregar os anexos.';
   }
