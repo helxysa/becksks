@@ -288,7 +288,7 @@
           </table>
         </div>
         <div v-if="currentTab === 'Anexos'">
-            <AnexoUpload :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
+            <AnexoUpload ref="anexoUploadRef" :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
         </div>
 
         <div class="mt-8 flex gap-8 justify-end">
@@ -761,6 +761,7 @@ import AnexoUpload from './AnexoUpload.vue';
 import TabButton from '../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
+const anexoUploadRef = ref(null);
 const store = useProfileStore()
 const tabs = ['Itens', 'Anexos']
 const currentTab = ref(tabs[0])
@@ -1009,7 +1010,8 @@ const saveContrato = async () => {
     if (projetosCriados === "error") {
       await deleteContrato(contratoId.value);
     } else {
-      voltarListagem();
+      await anexoUploadRef.value.uploadAnexosPendentes();
+      // voltarListagem();
     }
   }
 };

@@ -244,7 +244,7 @@
           </table>
         </div>
         <div v-if="currentTab === 'Anexos'">
-            <AnexoUpload :resourceId="termoAditivoId" variant="aditivo" :localAnexos="localAnexos" />
+            <AnexoUpload ref="anexoUploadRef" :resourceId="termoAditivoId" variant="contrato" :localAnexos="localAnexos" />
         </div>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
@@ -507,6 +507,7 @@ import AnexoUpload from './AnexoUpload.vue';
 import TabButton from '../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
 
+const anexoUploadRef = ref(null);
 const store = useProfileStore()
 const tabs = ['Anexos']
 const currentTab = ref(tabs[0])
@@ -666,13 +667,13 @@ const removeItem = (index) => {
 
 const createTermoAditivo = async (contratoId) => {
   try {
-    termoAditivoItens.value = termoAditivoItens.value.map((item)=> {
-        return {
-          ...item,
-          valor_unitario: parseFloat(item.valor_unitario),
-          quantidade_contratada: parseFloat(item.quantidade_contratada)
-        }
-    })
+    // termoAditivoItens.value = termoAditivoItens.value.map((item)=> {
+    //     return {
+    //       ...item,
+    //       valor_unitario: parseFloat(item.valor_unitario),
+    //       quantidade_contratada: parseFloat(item.quantidade_contratada)
+    //     }
+    // })
 
     let payload = {
       contrato_original_id: Number(contratoId),
@@ -692,18 +693,21 @@ const createTermoAditivo = async (contratoId) => {
       theme: "colored",
       type: "success",
     });
-    voltarListagem()
+    return response.data.id;
   } catch (error) {
     toast("Não foi possível cadastrar o termo  aditivo!", {
       theme: "colored",
       type: "error",
     });
+    return null;
   }
 };
 
 const saveTermoAditive = async () => {
   contratoId.value =  route.params.id
-  createTermoAditivo(contratoId.value)
+  await createTermoAditivo(contratoId.value)
+  await anexoUploadRef.value.uploadAnexosPendentes();
+  voltarListagem()
 };
 
 const voltarListagem = () => {

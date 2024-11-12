@@ -12,7 +12,7 @@
         <div class="text-[2.5rem] text-[#3498db] mb-3">📤</div>
         <span>Arraste ou clique para escolher um arquivo</span>
         <div class="text-sm text-gray-600 mt-3 font-light">
-          {{ selectedFile ? selectedFile.name : 'Nenhum arquivo selecionado' }}
+          {{ selectedFiles ? selectedFiles.name : 'Nenhum arquivo selecionado' }}
         </div>
         <input
           type="file"
@@ -20,6 +20,7 @@
           class="hidden"
           @change="handleFileSelect"
           accept=".pdf,.doc,.docx,.xlsx,.csv,.jpg,.png,.zip,.rar"
+          multiple
         />
       </label>
     </div>
@@ -94,10 +95,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, defineExpose } from 'vue';
 import { api } from '@/services/api';
 
-const selectedFile = ref(null);
+const selectedFiles = ref(null);
 const anexos = ref([]);
 const successMessage = ref('');
 const errorMessage = ref('');
@@ -123,64 +124,69 @@ const props = defineProps({
 });
 
 const handleFileSelect = (event) => {
-  selectedFile.value = event.target.files[0];
-  uploadFile();
+  selectedFiles.value = Array.from(event.target.files);
+  uploadFiles();
 };
 
 const handleDrop = (event) => {
-  selectedFile.value = event.dataTransfer.files[0];
-  uploadFile();
+  selectedFiles.value = Array.from(event.dataTransfer.files);
+  uploadFiles();
 };
 
-const uploadFile = async () => {
-  if (!selectedFile.value) {
-    errorMessage.value = 'Selecione um arquivo antes de enviar.';
+const uploadFiles = async () => {
+  if (!selectedFiles.value.length) {
+    errorMessage.value = 'Selecione pelo menos um arquivo antes de enviar.';
     return;
   }
 
   if (!props.resourceId) {
     // Armazena localmente
-    const novoAnexo = {
-      id: Date.now(), // ID temporário
-      file: selectedFile.value,
-      fileName: selectedFile.value.name,
-      file_url: URL.createObjectURL(selectedFile.value),
-      isEditing: false,
-      newFileName: ''
-    };
-
-    props.localAnexos.push(novoAnexo);
-    selectedFile.value = null;
+    selectedFiles.value.forEach((file) => {
+      const novoAnexo = {
+        id: Date.now() + Math.random(), // ID temporário único
+        file: file,
+        fileName: file.name,
+        file_url: URL.createObjectURL(file),
+        isEditing: false,
+        newFileName: ''
+      };
+      props.localAnexos.push(novoAnexo);
+    });
+    selectedFiles.value = [];
   } else {
     // Faz o upload para o servidor
-    const formData = new FormData();
-    formData.append('file', selectedFile.value);
+    let variantUrl = getVariantUrl();
 
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
-    try {
-      await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      successMessage.value = 'Arquivo enviado com sucesso!';
-      errorMessage.value = '';
-      fetchAnexos();
-      selectedFile.value = null;
-      setTimeout(() => {
+    for (const file of selectedFiles.value) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        await api.post(`/${variantUrl}/${props.resourceId}/anexos`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        successMessage.value = 'Arquivos enviados com sucesso!';
+        errorMessage.value = '';
+      } catch (error) {
+        errorMessage.value = 'Erro ao enviar os arquivos. Tente novamente.';
         successMessage.value = '';
-      }, 3000);
-    } catch (error) {
-      errorMessage.value = 'Erro ao enviar o arquivo. Tente novamente.';
-      successMessage.value = '';
+        break; // Opcional: parar o loop se um upload falhar
+      }
     }
+    fetchAnexos();
+    selectedFiles.value = [];
+    setTimeout(() => {
+      successMessage.value = '';
+    }, 3000);
   }
 };
 
 const fetchAnexos = async () => {
   if (!props.resourceId) return;
   try {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
+    let variantUrl = getVariantUrl();
     const response = await api.get(`/${variantUrl}/${props.resourceId}/anexos`);
     anexos.value = response.data.anexos.map((anexo) => ({
       ...anexo,
@@ -200,8 +206,7 @@ const deleteFile = async (id) => {
   }
 
   try {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
-
+    let variantUrl = getVariantUrl();
     await api.delete(`/${variantUrl}/anexos/${id}`);
     successMessage.value = 'Arquivo excluído com sucesso!';
     fetchAnexos();
@@ -212,6 +217,7 @@ const deleteFile = async (id) => {
     errorMessage.value = 'Erro ao excluir o arquivo.';
   }
 };
+
 
 const startEditing = (anexo) => {
   anexo.isEditing = true;
@@ -236,7 +242,7 @@ const updateFileName = async (anexo) => {
     anexo.isEditing = false;
     anexo.newFileName = '';
   } else {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
+    let variantUrl = getVariantUrl();
 
     try {
       await api.put(`/${variantUrl}/${props.resourceId}/anexos/${anexo.id}`, {
@@ -257,24 +263,30 @@ const updateFileName = async (anexo) => {
   }
 };
 
+
 const anexosCombinados = computed(() => {
   return [...anexos.value, ...props.localAnexos];
 });
 
-watch(
-  () => props.resourceId,
-  (newVal) => {
-    if (newVal) {
-      uploadAnexosPendentes();
-      fetchAnexos();
-    }
-  }
-);
+// watch(
+//   () => props.resourceId,
+//   async (newVal) => {
+//     if (newVal) {
+//       await uploadAnexosPendentes();
+//       await fetchAnexos();
+//     }
+//   }
+// );
 
 const uploadAnexosPendentes = async () => {
   if (props.localAnexos.length === 0) return;
 
-  let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : props.variant === 'faturamento' ? 'faturamento' : props.variant === 'aditivo' ? 'aditivo' : '';
+  if (!props.resourceId) {
+    console.error('resourceId está indefinido ou nulo:', props.resourceId);
+    return;
+  }
+
+  let variantUrl = getVariantUrl();
 
   for (const anexo of props.localAnexos) {
     const formData = new FormData();
@@ -291,14 +303,31 @@ const uploadAnexosPendentes = async () => {
     }
   }
 
-  props.localAnexos = [];
+  props.localAnexos.splice(0, props.localAnexos.length);
   fetchAnexos();
+};
+
+const getVariantUrl = () => {
+  switch (props.variant) {
+    case 'contrato':
+      return 'contratos';
+    case 'medicao':
+      return 'medicao';
+    case 'faturamento':
+      return 'faturamento';
+    default:
+      return '';
+  }
 };
 
 onMounted(() => {
   if (props.resourceId) {
     fetchAnexos();
   }
+});
+
+defineExpose({
+  uploadAnexosPendentes,
 });
 </script>
 

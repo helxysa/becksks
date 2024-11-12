@@ -1299,7 +1299,7 @@
                 </tbody>
               </table>
               <div>
-                <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
+                <AnexoUpload ref="anexoUploadRef" :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
               </div>
             </div>
             </div>
@@ -1872,6 +1872,7 @@
     const editFaturamentoTabs = ['Formulário']
     const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
     // Guias dos modais de criação
+    const anexoUploadRef = ref(null);
     // Medicao
     const criarMedicaoTabs = ['Formulário']
     const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
@@ -2095,7 +2096,6 @@
 
     const fetchAditivoItens = async (page) => {
       try {
-        console.log(termoAditivo.value, 'termo')
         const response = await api.get(
           `/contratos/${termoAditivo.value.termoAditivoId}/items/?page=${page}`
         );
@@ -2617,7 +2617,7 @@
       termoAditivo.value.contratoItens.forEach((item) => {
         item.quantidadeItens = null;
       });
-      medicaoId.value = null;
+      // medicaoId.value = null;
       criarMedicaoCurrentTab.value = criarMedicaoTabs[0]
       projetos.value = "";
       closeModalLancamento();
@@ -3477,7 +3477,6 @@
         const blob = new Blob([response.data], { type: 'application/zip' });
 
         const url = window.URL.createObjectURL(blob);
-        console.log('URL do blob:', url);
 
         const a = document.createElement('a');
         a.href = url;

@@ -187,7 +187,7 @@
             Adicionar Item
           </button> -->
         </section>
-        <div class="flex border-b border-gray-200 mb-8 pt-4">
+        <!-- <div class="flex border-b border-gray-200 mb-8 pt-4">
           <TabButton
             v-for="tab in tabs"
             :key="tab"
@@ -195,7 +195,7 @@
             :tab="tab"
             @update:currentTab="currentTab = $event"
           />
-        </div>
+        </div> -->
         <!-- <div v-if="currentTab === 'Itens'">
           <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
             <thead class="h-24 bg-slate-100 border-1">
@@ -243,9 +243,9 @@
             </tbody>
           </table>
         </div> -->
-        <div v-if="currentTab === 'Anexos'">
+        <!-- <div v-if="currentTab === 'Anexos'">
             <AnexoUpload :resourceId="termoAditivoId" variant="aditivo" :localAnexos="localAnexos" />
-        </div>
+        </div> -->
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
             <button
