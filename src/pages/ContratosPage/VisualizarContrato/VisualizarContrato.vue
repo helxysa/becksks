@@ -1411,7 +1411,7 @@
             </tbody>
           </table>
           <div>
-            <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
+            <AnexoUpload ref="anexoUploadRef" :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos" />
           </div>
         </div>
         </div>
@@ -2127,7 +2127,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, defineEmits, watch } from "vue";
+import { ref, onMounted, computed, defineEmits, watch, nextTick } from "vue";
 import { useRoute, useRouter, RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { api } from "@/services/api";
@@ -2161,6 +2161,7 @@ const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
 const editFaturamentoTabs = ['Formulário']
 const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 // Guias dos modais de criação
+const anexoUploadRef = ref(null);
 // Medicao
 const criarMedicaoTabs = ['Formulário']
 const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
@@ -3043,7 +3044,7 @@ const resetForm = () => {
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
   });
-  medicaoId.value = null;
+  // medicaoId.value = null;
   criarMedicaoCurrentTab.value = criarMedicaoTabs[0]
   projetos.value = "";
   closeModalLancamento();
@@ -3133,13 +3134,21 @@ const createLancamento = async () => {
   };
   try {
     const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
-      .then((response) => {
-        medicaoId.value = response.data.id;
-        toast("Medição criada com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-      });
+
+    medicaoId.value = response.data.id;
+    toast("Medição criada com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+
+    await nextTick();
+
+    await anexoUploadRef.value.uploadAnexosPendentes();
+
+    medicaoLocalAnexos.value = [];
+
+    medicaoId.value = null;
+
     resetForm();
     fetchContrato(contratoId);
   } catch (error) {

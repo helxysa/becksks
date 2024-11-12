@@ -281,6 +281,11 @@ const anexosCombinados = computed(() => {
 const uploadAnexosPendentes = async () => {
   if (props.localAnexos.length === 0) return;
 
+  if (!props.resourceId) {
+    console.error('resourceId está indefinido ou nulo:', props.resourceId);
+    return;
+  }
+
   let variantUrl = getVariantUrl();
 
   for (const anexo of props.localAnexos) {
