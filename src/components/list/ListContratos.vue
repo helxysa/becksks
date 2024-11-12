@@ -235,8 +235,6 @@ const fetchContratos = async () => {
         lancamentos: termoAditivoMaisRecente ? termoAditivoMaisRecente.lancamentos : contrato.lancamentos,
       };
     });
-    console.log(contratos.value)
-    console.log(baseURL)
   } catch (error) {
     console.error("Erro ao buscar contratos:", error);
   }

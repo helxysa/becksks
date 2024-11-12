@@ -2096,7 +2096,6 @@
 
     const fetchAditivoItens = async (page) => {
       try {
-        console.log(termoAditivo.value, 'termo')
         const response = await api.get(
           `/contratos/${termoAditivo.value.termoAditivoId}/items/?page=${page}`
         );
@@ -3478,7 +3477,6 @@
         const blob = new Blob([response.data], { type: 'application/zip' });
 
         const url = window.URL.createObjectURL(blob);
-        console.log('URL do blob:', url);
 
         const a = document.createElement('a');
         a.href = url;

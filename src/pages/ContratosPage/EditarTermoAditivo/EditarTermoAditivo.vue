@@ -183,7 +183,6 @@ const loadTermoAditivo = async () => {
   }
 
   try {
-    console.log('Carregando dados do termo aditivo...');
     const response = await api.get(`/contratos/${route.params.id}`);
 
     if (!response.data) {
@@ -192,7 +191,6 @@ const loadTermoAditivo = async () => {
 
     formData.value = response.data
 
-    console.log('Dados carregados com sucesso');
   } catch (err) {
     console.error('Erro ao carregar:', err);
     error.value = 'Erro ao carregar dados do termo aditivo';

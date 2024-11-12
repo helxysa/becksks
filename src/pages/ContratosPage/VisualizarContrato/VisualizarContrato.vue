@@ -987,7 +987,7 @@
           </tbody>
         </table>
         <div>
-          <AnexoUpload :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
+          <AnexoUpload ref="anexoUploadRef" :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
         </div>
       </div>
         <footer class="mt-9 flex justify-end gap-4">
@@ -2654,8 +2654,8 @@ const closeModalPedidoFaturamento = () => {
     status: "",
   };
   criarFaturamentoCurrentTab.value = criarFaturamentoTabs[0]
-  faturamentoLocalAnexos.value = []
-  faturamentoId.value = null
+  // faturamentoLocalAnexos.value = []
+  // faturamentoId.value = null
   pedidosFaturamento.value = [];
 };
 
@@ -2774,17 +2774,20 @@ const createPedidoFaturamento = async () => {
   }
 
   try {
-    const response = await api
-      .post(`/contratos/${contratoId}/faturamentos`, payload)
-      .then((response) => {
-        faturamentoId.value = response.data.id;
-        toast("Faturamento criado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-      });
-      closeModalPedidoFaturamento();
-      fetchContrato(contratoId);
+    const response = await api.post(`/contratos/${contratoId}/faturamentos`, payload)
+
+    faturamentoId.value = response.data.id;
+    toast("Faturamento criado com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+    await nextTick();
+    await anexoUploadRef.value.uploadAnexosPendentes();
+    faturamentoLocalAnexos.value = [];
+    faturamentoId.value = null;
+
+    closeModalPedidoFaturamento();
+    fetchContrato(contratoId);
   } catch (error) {
     toast("Não foi possível criar o  pedido  de faturamento!", {
       theme: "colored",
