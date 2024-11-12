@@ -270,10 +270,10 @@ const anexosCombinados = computed(() => {
 
 // watch(
 //   () => props.resourceId,
-//   (newVal) => {
+//   async (newVal) => {
 //     if (newVal) {
-//       uploadAnexosPendentes();
-//       fetchAnexos();
+//       await uploadAnexosPendentes();
+//       await fetchAnexos();
 //     }
 //   }
 // );
@@ -310,8 +310,6 @@ const getVariantUrl = () => {
       return 'medicao';
     case 'faturamento':
       return 'faturamento';
-    case 'aditivo':
-      return 'aditivo';
     default:
       return '';
   }
