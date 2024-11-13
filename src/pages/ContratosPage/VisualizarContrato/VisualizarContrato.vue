@@ -503,37 +503,11 @@
             <th class="text-xl">Projeto</th>
             <th class="text-xl">Tarefa</th>
             <th class="text-xl">Tipo</th>
-            <th class="text-xl relative">
-              <div class="cursor-pointer flex items-center justify-center gap-2" @click="toggleStatusFilterMenu">
-                <span>Status</span>
-                <span>
-                  <Icon icon="mdi:filter" />
-                </span>
-              </div>
-              <div
-                v-if="showStatusFilterMenu"
-                class="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg z-10"
-              >
-                <div class="p-4">
-                  <div v-for="status in allStatuses" :key="status" class="flex items-start mb-2">
-                    <input
-                      type="checkbox"
-                      :value="status"
-                      v-model="selectedStatuses"
-                      class="form-checkbox h-4 w-4 text-blue-600"
-                    />
-                    <label class="ml-2 text-sm text-gray-700">{{ status }}</label>
-                  </div>
-                  <div class="flex justify-end mt-4">
-                    <button
-                      @click="applyStatusFilter"
-                      class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700"
-                    >
-                      Aplicar Filtro
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <th class="text-xl">
+              <StatusFilter
+                :allStatuses="allStatuses"
+                v-model="selectedStatuses"
+              />
             </th>
             <th class="text-xl">Resultado</th>
             <th class="text-xl">Unidade de medida</th>
@@ -2150,6 +2124,7 @@ import { useProfileStore } from '@/stores/ProfileStore';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
 import { waveform } from "ldrs";
+import StatusFilter from '@/components/StatusFilter.vue';
 
 const store = useProfileStore()
 waveform.register();
@@ -2181,7 +2156,6 @@ const allStatuses = ref([
   'Encaminhada para Faturamento',
   'Disponível para Faturamento',
 ])
-const showStatusFilterMenu=  ref(false)
 const criarMedicaoTabs = ['Formulário']
 const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
 const medicaoLocalAnexos = ref([])
@@ -2299,15 +2273,6 @@ const totalFaturamentos = ref(0);
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
-
-const toggleStatusFilterMenu = () => {
-  showStatusFilterMenu.value = !showStatusFilterMenu.value;
-}
-
-const applyStatusFilter = () => {
-  showStatusFilterMenu.value = false;
-  fetchContratoMedicoes(contratoId, 1);
-}
 
 const handleEditAditivoSubmit = async (termoAditivo) => {
   let payload = {
@@ -2573,7 +2538,7 @@ const fetchContratoMedicoes = async (id, page) => {
       params.sortOrder = sortOrder.value.medicoes;
     }
     if (selectedStatuses.value && selectedStatuses.value.length > 0) {
-      params.statuses = selectedStatuses.value.join(',');
+      params.statuses = selectedStatuses.value;
     }
     const response = await api.get(
       `/contratos/${id}/lancamentos`,
@@ -2644,10 +2609,19 @@ watch(
   () => currentPage.value,
   () => fetchContratoItens(contratoId, currentPage.value)
 );
-// watch(
-//   () => currentPageMedicao.value,
-//   () => fetchContratoMedicoes(contratoId, currentPageMedicao.value)
-// );
+watch(
+  () => currentPageMedicao.value,
+  () => fetchContratoMedicoes(contratoId, currentPageMedicao.value)
+);
+
+watch(
+  () => selectedStatuses.value,
+  () => {
+    fetchContratoMedicoes(contratoId, 1);
+  },
+  { deep: true }
+);
+
 watch(
   () => currentPageFaturamento.value,
   () => fetchContratoFaturamentos(contratoId, currentPageFaturamento.value)
@@ -4089,5 +4063,13 @@ const selecionarContrato = async (contratoData) => {
 
 .active-page:hover {
   background-color: #2988c8;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
