@@ -53,7 +53,7 @@
           <label class="font-semibold">Vigência</label>
           <div class="flex gap-4 items-center w-full">
             <input
-              class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               required
               type="date"
               placeholder="Digite o inicio do contrato"
@@ -61,7 +61,7 @@
             />
             <span class="font-sans"> até</span>
             <input
-              class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               required
               type="date"
               placeholder="Digite o fim do  contrato"
