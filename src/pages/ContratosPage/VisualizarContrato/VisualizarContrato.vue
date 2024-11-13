@@ -503,13 +503,40 @@
             <th class="text-xl">Projeto</th>
             <th class="text-xl">Tarefa</th>
             <th class="text-xl">Tipo</th>
-            <th class="text-xl">Status</th>
-            <!-- <th class="text-xl">Quantidade itens</th> -->
+            <th class="text-xl relative">
+              <div class="cursor-pointer flex items-center justify-center gap-2" @click="toggleStatusFilterMenu">
+                <span>Status</span>
+                <span>
+                  <Icon icon="mdi:filter" />
+                </span>
+              </div>
+              <div
+                v-if="showStatusFilterMenu"
+                class="absolute right-0 mt-2 bg-white border border-gray-200 rounded shadow-lg z-10"
+              >
+                <div class="p-4">
+                  <div v-for="status in allStatuses" :key="status" class="flex items-start mb-2">
+                    <input
+                      type="checkbox"
+                      :value="status"
+                      v-model="selectedStatuses"
+                      class="form-checkbox h-4 w-4 text-blue-600"
+                    />
+                    <label class="ml-2 text-sm text-gray-700">{{ status }}</label>
+                  </div>
+                  <div class="flex justify-end mt-4">
+                    <button
+                      @click="applyStatusFilter"
+                      class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700"
+                    >
+                      Aplicar Filtro
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </th>
             <th class="text-xl">Resultado</th>
             <th class="text-xl">Unidade de medida</th>
-            <!-- <th class="text-xl">Itens disponíveis</th> -->
-            <!-- <th class="text-xl">Situação</th> -->
-            <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
             <th class="text-xl">Ações</th>
           </tr>
         </thead>
@@ -567,13 +594,13 @@
                   v-if="lancamento.tipoMedicao !== 'Detalhada'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
-                    'bg-slate-200 border-slate-400 text-orange-400':
+                    'bg-slate-200 border-slate-400':
                       lancamento.status === 'Não Autorizada',
-                    'bg-green-200 border-green-400 text-green-400':
+                    'bg-green-200 border-green-400':
                       lancamento.status === 'Autorizada',
-                    'bg-red-200 border-red-400 text-red-400':
+                    'bg-red-200 border-red-400':
                       lancamento.status === 'Cancelada',
-                    'bg-slate-200 border-slate-400 text-slate-600':
+                    'bg-slate-200 border-slate-400':
                       lancamento.status === 'Finalizada',
                   }"
                 >
@@ -583,25 +610,23 @@
                   v-else
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
-                    'bg-red-200 border-red-400 text-red-400':
+                    'bg-red-200 border-red-400':
                       lancamento.status === 'Não Iniciada',
-                      'bg-orange-200 border-orange-400 text-orange-400':
+                    'bg-orange-200 border-orange-400':
                       lancamento.status === 'Em Andamento',
-                      'bg-green-200 border-green-400 text-green-400':
+                    'bg-yellow-200 border-yellow-400':
+                      lancamento.status === 'Encaminhada para Faturamento',
+                    'bg-green-200 border-green-400':
                       lancamento.status === 'Disponível para Faturamento',
-                      'bg-slate-200 border-slate-400 text-slate-600':
+                    'bg-slate-200 border-slate-400':
                       lancamento.status === 'Finalizada',
                   }"
-                >
+                  >
                   {{ lancamento.status }}
-                </span>
+                  </span>
               </div>
             </td>
-            <!-- <td class="text-2xl">
-              {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
-            </td> -->
             <td class="text-2xl">
-              <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
                 <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
                   {{ subitem.quantidadeItens }}
                 </span>
@@ -619,16 +644,6 @@
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-
-                <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-                <!-- <span>
-                  <Icon
-                    icon="bx:edit"
-                    height="20"
-                    class="text-gray-500 hover:rounded-md cursor-pointer"
-                  />
-                </span> -->
-                <!-- <span @click="openEditLancamentoModal(lancamento)" v-else> -->
                 <span @click="openEditLancamentoModal(lancamento)"
                 v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canEdit === true)">
                   <Icon
@@ -637,14 +652,6 @@
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-                <!-- <span>
-                  <Icon
-                    icon="ph:trash"
-                    height="20"
-                    class="text-gray-500 hover:rounded-md cursor-pointer"
-                  />
-                </span> -->
 
                 <span @click="deleteLancamento(lancamento.id)"
                  v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canDelete === true)">
@@ -2163,6 +2170,18 @@ const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 // Guias dos modais de criação
 const anexoUploadRef = ref(null);
 // Medicao
+const selectedStatuses= ref([])
+const allStatuses = ref([
+  'Não Autorizada',
+  'Autorizada',
+  'Cancelada',
+  'Finalizada',
+  'Não Iniciada',
+  'Em Andamento',
+  'Encaminhada para Faturamento',
+  'Disponível para Faturamento',
+])
+const showStatusFilterMenu=  ref(false)
 const criarMedicaoTabs = ['Formulário']
 const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
 const medicaoLocalAnexos = ref([])
@@ -2268,22 +2287,27 @@ const medicaoData = ref({
 const termosAditivos = ref([]);
 const showTermosAditivosDropdown = ref(false);
 const modalTermosAditivos = ref(false);
-
 const totalItens = ref();
 const resultsPerPageItens = ref();
 let contratoItemData = ref([]);
 let contratoItemMeta = ref([]);
-
 const totalMedicoes = ref();
 const resultsPerPageMedicoes = ref();
-
 let medicaoItemData = ref([]);
 let medicaoItemMeta = ref([]);
-
 const totalFaturamentos = ref(0);
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
+
+const toggleStatusFilterMenu = () => {
+  showStatusFilterMenu.value = !showStatusFilterMenu.value;
+}
+
+const applyStatusFilter = () => {
+  showStatusFilterMenu.value = false;
+  fetchContratoMedicoes(contratoId, 1);
+}
 
 const handleEditAditivoSubmit = async (termoAditivo) => {
   let payload = {
@@ -2548,6 +2572,9 @@ const fetchContratoMedicoes = async (id, page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.medicoes;
     }
+    if (selectedStatuses.value && selectedStatuses.value.length > 0) {
+      params.statuses = selectedStatuses.value.join(',');
+    }
     const response = await api.get(
       `/contratos/${id}/lancamentos`,
       { params }
@@ -2555,15 +2582,12 @@ const fetchContratoMedicoes = async (id, page) => {
     medicaoItemData.value = response.data.data;
     medicaoItemMeta.value = response.data.meta;
 
-    // Para cada medição, verifique os itens e adicione a contagem dinâmica correspondente
     medicaoItemData.value.forEach((medicao) => {
       medicao.lancamentoItens.forEach((lancamentoItem) => {
-        // Procura o item correspondente no contratoItemData pelo contratoItemId
         const itemContrato = contratoItemData.value.find(
           (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
         );
         if (itemContrato) {
-          // Adiciona o campo contagem_dinamica do item do contrato à medição
           lancamentoItem.contagem_dinamica = itemContrato.contagem_dinamica;
         }
       });
@@ -2620,10 +2644,10 @@ watch(
   () => currentPage.value,
   () => fetchContratoItens(contratoId, currentPage.value)
 );
-watch(
-  () => currentPageMedicao.value,
-  () => fetchContratoMedicoes(contratoId, currentPageMedicao.value)
-);
+// watch(
+//   () => currentPageMedicao.value,
+//   () => fetchContratoMedicoes(contratoId, currentPageMedicao.value)
+// );
 watch(
   () => currentPageFaturamento.value,
   () => fetchContratoFaturamentos(contratoId, currentPageFaturamento.value)
@@ -3190,7 +3214,6 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     let contratoData = response.data;
-    // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
 
     contrato.value = contratoData;
     fetchContratoItens(id, currentPage.value);
@@ -3227,23 +3250,41 @@ const verificaIsFaturado = async (lancamentos, faturamentos) => {
   });
 
   if (faturamentos && faturamentos.length > 0) {
-    faturamentos.forEach((faturamento) => {
-      faturamento.faturamentoItens.forEach((item) => {
+    for (const faturamento of faturamentos) {
+      for (const item of faturamento.faturamentoItens) {
         const lancamento = lancamentos.find(
           (lancamento) => lancamento.id === item.lancamentoId
         );
+
         if (lancamento) {
           lancamento.isFaturado = true;
+
+          switch (faturamento.status) {
+            case 'Pago':
+              if (lancamento.status !== 'Finalizada') {
+                await alterarStatusMedicao(lancamento.id, 'Finalizada');
+                alterouStatus.value = true;
+              }
+              break;
+
+            case 'Aguardando Pagamento':
+            case 'Aguardando Faturamento':
+              if (lancamento.status !== 'Encaminhada para Faturamento') {
+                await alterarStatusMedicao(lancamento.id, 'Encaminhada para Faturamento');
+                alterouStatus.value = true;
+              }
+              break;
+
+            default:
+              break;
+          }
         }
-      });
-    });
+      }
+    }
   }
 
   for (const lancamento of lancamentos) {
-    if (lancamento.isFaturado && lancamento.status !== 'Finalizada') {
-      await alterarStatusMedicao(lancamento.id, 'Finalizada');
-      alterouStatus.value = true;
-    } else if (lancamento.status === 'Finalizada' && !lancamento.isFaturado) {
+    if (!lancamento.isFaturado && lancamento.status !== 'Disponível para Faturamento') {
       await alterarStatusMedicao(lancamento.id, 'Disponível para Faturamento');
       alterouStatus.value = true;
     }
