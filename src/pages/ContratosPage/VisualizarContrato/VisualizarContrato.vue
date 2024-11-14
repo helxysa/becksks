@@ -3259,7 +3259,7 @@ const verificaIsFaturado = async (lancamentos, faturamentos) => {
   }
 
   for (const lancamento of lancamentos) {
-    if (!lancamento.isFaturado && lancamento.status !== 'Disponível p/ Faturamento') {
+    if (!lancamento.isFaturado && lancamento.status !== 'Disponível p/ Faturamento' && lancamento.tipoMedicao === 'Detalhada') {
       await alterarStatusMedicao(lancamento.id, 'Disponível p/ Faturamento');
       alterouStatus.value = true;
     }
