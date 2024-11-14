@@ -8,7 +8,10 @@ const route = useRoute();
 
 const isMainLayout = computed(() => {
   // console.log('Rota atual:', route.name);
-  return route.name !== 'Login';
+  const rotasExcluidas = ['Login', 'alterar-senha', 'esqueci-minha-senha'];
+  console.log('excluidas', !rotasExcluidas.includes(route.name))
+  return !rotasExcluidas.includes(route.name);
+  // return route.name !== 'Login';
 });
 </script>
 

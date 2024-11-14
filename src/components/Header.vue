@@ -95,16 +95,24 @@ const toggleDropdown = () => {
 };
 
 const logout = async () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem('profileUser');
+  // Reseta o estado da autenticação e limpa o localStorage
   isAuthenticated.value = false;
+  localStorage.removeItem("token");
+
+  // Utiliza a ação da store para resetar o perfil
+  store.resetProfile();
+
   try {
-    const response = await api.delete("/logout");
-    toast.sucess(response.message)
+    // Tenta fazer a requisição para a API de logout
+    await api.delete("/logout");
+    toast.success("Logout realizado com sucesso!");
   } catch (error) {
-    console.error(error.message);
+    console.error("Erro ao fazer logout:", error.message);
+    toast.error("Erro ao fazer logout. Por favor, tente novamente.");
   }
-  router.push("/login");
+
+  // Redireciona o usuário para a página de login
+  router.push({ name: "Login" });
 };
 
 const redirecionarParaContrato = (id, contratoId, tipo) => {
