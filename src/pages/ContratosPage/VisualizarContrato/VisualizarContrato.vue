@@ -1,11 +1,11 @@
 <template>
   <div
-    v-if="isLoading"
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
+  v-if="isLoading"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
   >
-    <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
-  </div>
-  <div class="flex gap-4 mb-8" v-if="!isLoading">
+  <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
+</div>
+<div class="flex gap-4 mb-8" v-if="!isLoading">
     <button
       v-for="(termo, index) in [...termosAditivos].reverse()"
       :key="termo.id"
@@ -2124,6 +2124,7 @@ import { useProfileStore } from '@/stores/ProfileStore';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
 import { waveform } from "ldrs";
+import socket from '../../../../websocket.js'
 import StatusFilter from '@/components/StatusFilter.vue';
 
 const store = useProfileStore()
@@ -3272,6 +3273,15 @@ const alterarStatusMedicao = async (id, novoStatus) => {
     const response = await api.patch(`/lancamentos/${id}/status`, {
       status: novoStatus,
     });
+
+    socket.emit('medicao:update', {
+      id,
+      status: novoStatus,
+      message: `O status da medição ${id} foi alterado para: ${novoStatus}`,
+    });
+
+    console.log(`Notificação enviada para o status da medição ${id}`);
+
   } catch (error) {
     console.error(`Erro ao alterar status da medição ${id}:`, error);
   }
