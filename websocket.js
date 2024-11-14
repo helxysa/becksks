@@ -1,10 +1,9 @@
 import { io } from 'socket.io-client';
 import { toast } from "vue3-toastify";
 
-
-
+const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:3333';
 // Configurações do socket.io-client
-const socket = io('http://localhost:3333', {
+const socket = io(API_URL, {
   transports: ['websocket'], // Usa somente WebSocket
   reconnectionAttempts: 3, // Tentativas de reconexão
   timeout: 10000, // Timeout de 10 segundos
