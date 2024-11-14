@@ -17,8 +17,6 @@ socket.on('connect', () => {
 });
 
 socket.on('medicao:update', (data) => {
-  // console.log('Notificação de medição recebida:', data);
-  toast.info(data.message, { timeout: 5000, closeOnClick: true });
   // Adicionar notificação na lista
   notificacoes.value.push({
     id: data.id,

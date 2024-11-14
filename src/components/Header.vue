@@ -81,7 +81,7 @@ const dropdownWrapper = ref(null);
 const mensagens = ref([]);
 const isAnimating = ref(false);
 const contratos = ref([]);
-
+const hasNotificationPermission = store.profile.permissions.some((item) => item.name === 'notificar');
 const hasMessages = computed(() => mensagens.value.length > 0);
 
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
@@ -211,29 +211,31 @@ const fetchContratos = async () => {
   }
 };
 
-onMounted(() => {
-  fetchContratos();
-  verificarVencimentoContratos();
-  document.addEventListener('click', handleClickOutside);
+  onMounted(() => {
+    fetchContratos();
+    verificarVencimentoContratos();
+    document.addEventListener('click', handleClickOutside);
 
-  // Atualizar mensagens com notificações recebidas via WebSocket
-  notificacoes.value.forEach((notificacao) => {
-    if (!mensagens.value.some((msg) => msg.id === notificacao.id)) {
-      mensagens.value.push(notificacao);
-    }
-  });
-
-  socket.on('medicao:update', (data) => {
-    if (!mensagens.value.some((msg) => msg.id === data.id)) {
-      mensagens.value.push({
-        id: data.id,
-        texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong> do contrato ${data.contratoId}.`,
-        tipo: 'medicao',
-        contratoId: data.contratoId
+    // Atualizar mensagens com notificações recebidas via WebSocket
+    if (!hasNotificationPermission) {
+      notificacoes.value.forEach((notificacao) => {
+        if (!mensagens.value.some((msg) => msg.id === notificacao.id)) {
+          mensagens.value.push(notificacao);
+        }
+      });
+      socket.on('medicao:update', (data) => {
+        if (!mensagens.value.some((msg) => msg.id === data.id)) {
+          mensagens.value.push({
+            id: data.id,
+            texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
+            tipo: 'medicao',
+            contratoId: data.contratoId
+          });
+          toast.info(data.message, { timeout: 5000, closeOnClick: true });
+        }
       });
     }
   });
-});
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
