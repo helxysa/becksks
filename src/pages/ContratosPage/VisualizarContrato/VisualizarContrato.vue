@@ -521,7 +521,7 @@
             :key="lancamento.id"
             :class="{
               'bg-indigo-100':
-                lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado,
+                lancamento.status !== 'Disponível p/ Faturamento' || lancamento.isFaturado,
             }"
           >
             <td>
@@ -532,7 +532,7 @@
                 :value="lancamento.id"
                 @change="changePedido"
                 :disabled="
-                  lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado
+                  lancamento.status !== 'Disponível p/ Faturamento' || lancamento.isFaturado
                 "
               />
             </td>
@@ -589,9 +589,9 @@
                     'bg-orange-200 border-orange-400':
                       lancamento.status === 'Em Andamento',
                     'bg-yellow-200 border-yellow-400':
-                      lancamento.status === 'Encaminhada para Faturamento',
+                      lancamento.status === 'Encaminhada p/ Faturamento',
                     'bg-green-200 border-green-400':
-                      lancamento.status === 'Disponível para Faturamento',
+                      lancamento.status === 'Disponível p/ Faturamento',
                     'bg-slate-200 border-slate-400':
                       lancamento.status === 'Finalizada',
                   }"
@@ -1506,7 +1506,7 @@
 
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível para Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada">Finalizada</option>
             </select>
           </div>
@@ -2154,8 +2154,8 @@ const allStatuses = ref([
   'Finalizada',
   'Não Iniciada',
   'Em Andamento',
-  'Encaminhada para Faturamento',
-  'Disponível para Faturamento',
+  'Encaminhada p/ Faturamento',
+  'Disponível p/ Faturamento',
 ])
 const criarMedicaoTabs = ['Formulário']
 const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
@@ -3244,8 +3244,8 @@ const verificaIsFaturado = async (lancamentos, faturamentos) => {
 
             case 'Aguardando Pagamento':
             case 'Aguardando Faturamento':
-              if (lancamento.status !== 'Encaminhada para Faturamento') {
-                await alterarStatusMedicao(lancamento.id, 'Encaminhada para Faturamento');
+              if (lancamento.status !== 'Encaminhada p/ Faturamento') {
+                await alterarStatusMedicao(lancamento.id, 'Encaminhada p/ Faturamento');
                 alterouStatus.value = true;
               }
               break;
@@ -3259,8 +3259,8 @@ const verificaIsFaturado = async (lancamentos, faturamentos) => {
   }
 
   for (const lancamento of lancamentos) {
-    if (!lancamento.isFaturado && lancamento.status !== 'Disponível para Faturamento') {
-      await alterarStatusMedicao(lancamento.id, 'Disponível para Faturamento');
+    if (!lancamento.isFaturado && lancamento.status !== 'Disponível p/ Faturamento') {
+      await alterarStatusMedicao(lancamento.id, 'Disponível p/ Faturamento');
       alterouStatus.value = true;
     }
   }
@@ -3277,10 +3277,11 @@ const alterarStatusMedicao = async (id, novoStatus) => {
     socket.emit('medicao:update', {
       id,
       status: novoStatus,
+      contratoId: contratoOriginal.value.id,
       message: `O status da medição ${id} foi alterado para: ${novoStatus}`,
     });
 
-    console.log(`Notificação enviada para o status da medição ${id}`);
+    // console.log(`Notificação enviada para o status da medição ${id}`);
 
   } catch (error) {
     console.error(`Erro ao alterar status da medição ${id}:`, error);
@@ -3954,7 +3955,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
       editingLancamento.value.status = '';
     }
   } else if (newTipo === 'Detalhada') {
-    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento', 'Finalizada'].includes(editingLancamento.value.status)) {
+    if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
   }

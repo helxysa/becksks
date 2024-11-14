@@ -29,7 +29,7 @@
 
               >
               <section class="flex items-center justify-between border-b border-gray-200 ml-4 mr-4">
-                <div @click="redirecionarParaContrato(mensagem.id)" class="p-6 first:mt-4 last:mb-4 hover:bg-blue-50 rounded-lg mb-2 mr-2">
+                <div @click="redirecionarParaContrato(mensagem.id, mensagem.contratoId, mensagem.tipo)" class="p-6 first:mt-4 last:mb-4 hover:bg-blue-50 rounded-lg mb-2 mr-2">
                   <span v-html="mensagem.texto" class="mr-2 cursor-pointer text-2xl hover:text-blue-500 break-words transition-all duration-300"></span>
                 </div>
                 <Icon
@@ -63,154 +63,179 @@
 </template>
 
 <script setup>
-  import { Icon } from "@iconify/vue";
-  import { ref, onMounted, onUnmounted, computed } from "vue";
-  import { useRouter } from "vue-router";
-  import { isAuthenticated } from "@/state/auth";
-  import { toast } from "vue3-toastify";
-  import { api } from "@/services/api";
-  import { useProfileStore } from '@/stores/ProfileStore';
+import { Icon } from "@iconify/vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { isAuthenticated } from "@/state/auth";
+import { toast } from "vue3-toastify";
+import { api } from "@/services/api";
+import { useProfileStore } from '@/stores/ProfileStore';
+import socket, { notificacoes } from '../../websocket.js';
 
-  const store = useProfileStore()
 
-  const router = useRouter();
-  const isDropdownOpen = ref(false);
-  const dropdownWrapper = ref(null);
-  const mensagens = ref([]);
-  const isAnimating = ref(false);
-  const contratos = ref([]);
+const store = useProfileStore()
 
-  const hasMessages = computed(() => mensagens.value.length > 0);
+const router = useRouter();
+const isDropdownOpen = ref(false);
+const dropdownWrapper = ref(null);
+const mensagens = ref([]);
+const isAnimating = ref(false);
+const contratos = ref([]);
 
-  const getCurrentDateString = () => new Date().toISOString().split('T')[0];
+const hasMessages = computed(() => mensagens.value.length > 0);
 
-  const toggleDropdown = () => {
-    isAnimating.value = true;
-    setTimeout(() => {
-      isAnimating.value = false;
-      isDropdownOpen.value = !isDropdownOpen.value;
-    }, 150);
-  };
+const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-  const logout = async () => {
-    localStorage.removeItem("token");   
-    localStorage.removeItem('profileUser');
-    isAuthenticated.value = false;
-    try {
-      const response = await api.delete("/logout");
-      toast.sucess(response.message)
-    } catch (error) {
-      console.error(error.message);
+const toggleDropdown = () => {
+  isAnimating.value = true;
+  setTimeout(() => {
+    isAnimating.value = false;
+    isDropdownOpen.value = !isDropdownOpen.value;
+  }, 150);
+};
+
+const logout = async () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem('profileUser');
+  isAuthenticated.value = false;
+  try {
+    const response = await api.delete("/logout");
+    toast.sucess(response.message)
+  } catch (error) {
+    console.error(error.message);
+  }
+  router.push("/login");
+};
+
+const redirecionarParaContrato = (id, contratoId, tipo) => {
+  if (tipo === 'medicao' && contratoId) {
+    window.location.href = `/visualizar/contratos/${contratoId}`;
+  } else {
+    window.location.href = `/visualizar/contratos/${id}`;
+  }
+};
+
+const marcarComoLida = (id) => {
+  const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
+  const hoje = getCurrentDateString();
+
+  notificacoesLidas[id] = hoje;
+  localStorage.setItem("notificacoesLidas", JSON.stringify(notificacoesLidas));
+
+  mensagens.value = mensagens.value.filter(mensagem => mensagem.id !== id);
+  notificacoes.value = notificacoes.value.filter((notificacao) => notificacao.id !== id);
+};
+
+const verificarVencimentoContratos = () => {
+  const hoje = getCurrentDateString();
+  const contratos = JSON.parse(localStorage.getItem("notifications")) || [];
+  const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
+
+  mensagens.value = [];
+
+  contratos.forEach((contrato) => {
+    if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) return;
+
+    const dataFim = new Date(contrato.dataFim);
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
+    const diasParaVencimento = Math.ceil((dataFim - new Date()) / (1000 * 60 * 60 * 24));
+
+    if (diasParaVencimento <= lembreteVencimento && diasParaVencimento <= 20) {
+      exibirToastNotificacao(contrato, diasParaVencimento, hoje);
+      adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
+    } else if (diasParaVencimento > 90) {
+      adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
     }
-    router.push("/login");
-  };
+  });
+};
 
-  const redirecionarParaContrato = (id) => {
-    window.location.href = `/visualizar/contratos/${id}`
-  };
+const exibirToastNotificacao = (contrato, diasParaVencimento, hoje) => {
+  let mensagem = '';
+  if (diasParaVencimento === 0 ) {
+    mensagem = `Lembrete: O contrato ${contrato.nomeContrato} vence hoje.`
+  } else if (diasParaVencimento < 0) {
+    mensagem = `Lembrete: O contrato ${contrato.nomeContrato} passou da data de vencimento.`;
+  } else if (diasParaVencimento <= 20) {
+    mensagem = `Lembrete: O contrato ${contrato.nomeContrato} tem ${diasParaVencimento} dia(s) até o vencimento.`;
+  }
 
-  const marcarComoLida = (id) => {
-    const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
-    const hoje = getCurrentDateString();
+  if (localStorage.getItem(`toast_${contrato.id}_${hoje}`) !== hoje) {
+    toast.info(mensagem, { html: true, autoClose: 5000 });
+    localStorage.setItem(`toast_${contrato.id}_${hoje}`, hoje);
+  }
+};
 
-    notificacoesLidas[id] = hoje;
-    localStorage.setItem("notificacoesLidas", JSON.stringify(notificacoesLidas));
+const adicionarNotificacaoSino = (contrato, diasParaVencimento, notificacoesLidas, hoje) => {
+  let mensagem = '';
 
-    mensagens.value = mensagens.value.filter(mensagem => mensagem.id !== id);
-  };
-
-  const verificarVencimentoContratos = () => {
-    const hoje = getCurrentDateString();
-    const contratos = JSON.parse(localStorage.getItem("notifications")) || [];
-    const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
-
-    mensagens.value = [];
-
-    contratos.forEach((contrato) => {
-      if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) return;
-
-      const dataFim = new Date(contrato.dataFim);
-      const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
-      const diasParaVencimento = Math.ceil((dataFim - new Date()) / (1000 * 60 * 60 * 24));
-
-      if (diasParaVencimento <= lembreteVencimento && diasParaVencimento <= 20) {
-        exibirToastNotificacao(contrato, diasParaVencimento, hoje);
-        adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
-      } else if (diasParaVencimento > 90) {
-        adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
-      }
+  if (diasParaVencimento === 0 ) {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> vence <strong>hoje.</strong>`
+  } else if (diasParaVencimento < 0) {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> passou da <strong>data de vencimento.</strong>`;
+  } else if (diasParaVencimento <= 20) {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem <strong>${diasParaVencimento} dia(s)</strong> até o vencimento.`;
+  } else {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dia(s)</strong>.`;
+  }
+  if (notificacoesLidas[contrato.id] !== hoje) {
+    mensagens.value.push({
+      id: contrato.id,
+      // texto: `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dias</strong>.`,
+      texto: mensagem,
+      tipo: 'sino'
     });
-  };
+  }
+};
 
-  const exibirToastNotificacao = (contrato, diasParaVencimento, hoje) => {
-    let mensagem = '';
-    if (diasParaVencimento === 0 ) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} vence hoje.`
-    } else if (diasParaVencimento < 0) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} passou da data de vencimento.`;
-    } else if (diasParaVencimento <= 20) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} tem ${diasParaVencimento} dia(s) até o vencimento.`;
+const handleClickOutside = (event) => {
+  if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
+    isDropdownOpen.value = false;
+  }
+};
+
+const fetchContratos = async () => {
+  try {
+    const response = await api.get("/contratos");
+    contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const notificationsContratosData = contratos.value.map(contrato => ({
+      id: contrato.id,
+      nomeContrato: contrato.nomeContrato,
+      dataFim: contrato.dataFim,
+      lembreteVencimento: contrato.lembreteVencimento,
+    }));
+
+    localStorage.setItem("notifications", JSON.stringify(notificationsContratosData));
+  } catch (error) {
+    console.error("Erro ao buscar contratos:", error);
+  }
+};
+
+onMounted(() => {
+  fetchContratos();
+  verificarVencimentoContratos();
+  document.addEventListener('click', handleClickOutside);
+
+  // Atualizar mensagens com notificações recebidas via WebSocket
+  notificacoes.value.forEach((notificacao) => {
+    if (!mensagens.value.some((msg) => msg.id === notificacao.id)) {
+      mensagens.value.push(notificacao);
     }
+  });
 
-    if (localStorage.getItem(`toast_${contrato.id}_${hoje}`) !== hoje) {
-      toast.info(mensagem, { html: true, autoClose: 5000 });
-      localStorage.setItem(`toast_${contrato.id}_${hoje}`, hoje);
-    }
-  };
-
-  const adicionarNotificacaoSino = (contrato, diasParaVencimento, notificacoesLidas, hoje) => {
-    let mensagem = '';
-
-    if (diasParaVencimento === 0 ) {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> vence <strong>hoje.</strong>`
-    } else if (diasParaVencimento < 0) {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> passou da <strong>data de vencimento.</strong>`;
-    } else if (diasParaVencimento <= 20) {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem <strong>${diasParaVencimento} dia(s)</strong> até o vencimento.`;
-    } else {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dia(s)</strong>.`;
-    }
-    if (notificacoesLidas[contrato.id] !== hoje) {
+  socket.on('medicao:update', (data) => {
+    if (!mensagens.value.some((msg) => msg.id === data.id)) {
       mensagens.value.push({
-        id: contrato.id,
-        // texto: `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dias</strong>.`,
-        texto: mensagem,
-        tipo: 'sino'
+        id: data.id,
+        texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong> do contrato ${data.contratoId}.`,
+        tipo: 'medicao',
+        contratoId: data.contratoId
       });
     }
-  };
-
-  const handleClickOutside = (event) => {
-    if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
-      isDropdownOpen.value = false;
-    }
-  };
-
-  const fetchContratos = async () => {
-    try {
-      const response = await api.get("/contratos");
-      contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      const notificationsContratosData = contratos.value.map(contrato => ({
-        id: contrato.id,
-        nomeContrato: contrato.nomeContrato,
-        dataFim: contrato.dataFim,
-        lembreteVencimento: contrato.lembreteVencimento,
-      }));
-
-      localStorage.setItem("notifications", JSON.stringify(notificationsContratosData));
-    } catch (error) {
-      console.error("Erro ao buscar contratos:", error);
-    }
-  };
-
-  onMounted(() => {
-    fetchContratos();
-    verificarVencimentoContratos();
-    document.addEventListener("click", handleClickOutside);
   });
+});
 
-  onUnmounted(() => {
-    document.removeEventListener("click", handleClickOutside);
-  });
-  </script>
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+</script>
