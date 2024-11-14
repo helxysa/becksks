@@ -568,7 +568,7 @@
                   v-if="lancamento.tipoMedicao !== 'Detalhada'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
-                    'bg-slate-200 border-slate-400':
+                    'bg-gray-200 border-gray-400':
                       lancamento.status === 'Não Autorizada',
                     'bg-green-200 border-green-400':
                       lancamento.status === 'Autorizada',
@@ -1507,6 +1507,7 @@
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada">Finalizada</option>
             </select>
           </div>
@@ -3955,7 +3956,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
       editingLancamento.value.status = '';
     }
   } else if (newTipo === 'Detalhada') {
-    if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada'].includes(editingLancamento.value.status)) {
+    if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada', 'Encaminhada p/ Faturamento'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
   }

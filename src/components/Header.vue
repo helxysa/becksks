@@ -225,7 +225,7 @@ const fetchContratos = async () => {
     document.addEventListener('click', handleClickOutside);
 
     // Atualizar mensagens com notificações recebidas via WebSocket
-    if (!hasNotificationPermission) {
+    // if (!hasNotificationPermission) {
       notificacoes.value.forEach((notificacao) => {
         if (!mensagens.value.some((msg) => msg.id === notificacao.id)) {
           mensagens.value.push(notificacao);
@@ -242,7 +242,7 @@ const fetchContratos = async () => {
           toast.info(data.message, { timeout: 5000, closeOnClick: true });
         }
       });
-    }
+    // }
   });
 
 onUnmounted(() => {
