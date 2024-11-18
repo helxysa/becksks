@@ -248,7 +248,7 @@ const fetchContratos = async () => {
           });
         }
         // Exibe o toast com a mensagem atualizada
-        toast.info(data.message, { timeout: 5000, closeOnClick: true });
+        toast.info(data.message, { timeout: 10000, closeOnClick: true });
 
         // if (!mensagens.value.some((msg) => msg.id === data.id)) {
         //   mensagens.value.push({
