@@ -48,7 +48,9 @@ import { api } from "@/services/api";
 import { isAuthenticated } from "@/state/auth";
 import { toast } from "vue3-toastify";
 import { useProfileStore } from "@/stores/ProfileStore";
+import { usePermissions } from '@/composables/usePermission';
 
+const { hasPermission } = usePermissions();
 const store = useProfileStore();
 const newPassword = ref('');
 const confirmPassword = ref('');
@@ -93,7 +95,11 @@ const handleChangePassword = async () => {
 
     isAuthenticated.value = true;
     localStorage.removeItem("userId");
-    router.push('/');
+      if(hasPermission('Dashboard', 'Visualizar')) {
+        router.push("/");
+      } else {
+        router.push('/contratos')
+      }
     // toast.success(response.data.message);
   } catch (error) {
     console.error('Erro ao alterar senha:', error);

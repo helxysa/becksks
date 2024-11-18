@@ -71,19 +71,17 @@ import { toast } from "vue3-toastify";
 import { api } from "@/services/api";
 import { useProfileStore } from '@/stores/ProfileStore';
 import socket, { notificacoes } from '../../websocket.js';
-
+import { usePermissions } from '@/composables/usePermission';
 
 const store = useProfileStore()
-
+const { hasPermission } = usePermissions();
 const router = useRouter();
 const isDropdownOpen = ref(false);
 const dropdownWrapper = ref(null);
 const mensagens = ref([]);
 const isAnimating = ref(false);
 const contratos = ref([]);
-const hasNotificationPermission = store.profile.permissions.some((item) => item.name === 'notificar');
 const hasMessages = computed(() => mensagens.value.length > 0);
-
 const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
 const toggleDropdown = () => {
@@ -225,42 +223,40 @@ const fetchContratos = async () => {
     document.addEventListener('click', handleClickOutside);
 
     // Atualizar mensagens com notificações recebidas via WebSocket
-    // if (!hasNotificationPermission) {
+    if (hasPermission('medicoes', 'Notificar')) {
       notificacoes.value.forEach((notificacao) => {
         if (!mensagens.value.some((msg) => msg.id === notificacao.id)) {
           mensagens.value.push(notificacao);
         }
       });
       socket.on('medicao:update', (data) => {
-        const existingMessage = mensagens.value.find((msg) => msg.id === data.id);
-        if (existingMessage) {
-          // Atualiza a mensagem existente com o novo status
-          existingMessage.texto = `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`;
-          existingMessage.tipo = 'medicao';
-          existingMessage.contratoId = data.contratoId;
-        } else {
-          // Adiciona uma nova mensagem se não existir
-          mensagens.value.push({
-            id: data.id,
-            texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
-            tipo: 'medicao',
-            contratoId: data.contratoId,
-          });
-        }
-        // Exibe o toast com a mensagem atualizada
-        toast.info(data.message, { timeout: 10000, closeOnClick: true });
+        const existingMessageIndex = mensagens.value.findIndex((msg) => msg.id === data.id);
 
-        // if (!mensagens.value.some((msg) => msg.id === data.id)) {
-        //   mensagens.value.push({
-        //     id: data.id,
-        //     texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
-        //     tipo: 'medicao',
-        //     contratoId: data.contratoId
-        //   });
-        //   toast.info(data.message, { timeout: 5000, closeOnClick: true });
-        // }
+        if (data.status === 'Disponível p/ Faturamento' || data.status === 'Finalizada') {
+          if (existingMessageIndex !== -1) {
+            // Atualiza a mensagem existente com o novo status
+            mensagens.value[existingMessageIndex].texto = `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`;
+            mensagens.value[existingMessageIndex].tipo = 'medicao';
+            mensagens.value[existingMessageIndex].contratoId = data.contratoId;
+          } else {
+            // Adiciona uma nova mensagem se não existir
+            mensagens.value.push({
+              id: data.id,
+              texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
+              tipo: 'medicao',
+              contratoId: data.contratoId,
+            });
+          }
+          // Exibe o toast com a mensagem atualizada
+          toast.info(data.message, { timeout: 10000, closeOnClick: true });
+        } else {
+          // Remove a mensagem se existir
+          if (existingMessageIndex !== -1) {
+            mensagens.value.splice(existingMessageIndex, 1);
+          }
+        }
       });
-    // }
+    }
   });
 
 onUnmounted(() => {

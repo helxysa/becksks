@@ -73,34 +73,36 @@
                   <span class="text-gray-600">Vigência:</span>
                   <span class="text-gray-800">{{ formatDate(contrato.dataInicio) }} até {{ formatDate(contrato.dataFim) }}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Valor contratado:</span>
-                  <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Aguardando faturamento:</span>
-                  <span class="font-semibold text-yellow-600">
-                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
-                  </span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Aguardando pagamento:</span>
-                  <span class="font-semibold text-orange-600">
-                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
-                  </span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Valor pago:</span>
-                  <span class="font-semibold text-green-600">
-                    {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
-                  </span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Saldo disponível:</span>
-                  <span class="font-semibold text-msb-blue">
-                    {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
-                  </span>
-                </div>
+                <section v-if="hasPermission('contratos', 'Visualizar Finanças')">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Valor contratado:</span>
+                    <span class="font-semibold text-msb-blue">{{ formatCurrency(contrato.saldoContrato) }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Aguardando faturamento:</span>
+                    <span class="font-semibold text-yellow-600">
+                      {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoFaturamento) }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Aguardando pagamento:</span>
+                    <span class="font-semibold text-orange-600">
+                      {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).aguardandoPagamento) }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Valor pago:</span>
+                    <span class="font-semibold text-green-600">
+                      {{ formatCurrency(calcularSaldoFaturamentoItens(contrato.faturamentos).valorPago) }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Saldo disponível:</span>
+                    <span class="font-semibold text-msb-blue">
+                      {{ formatCurrency(contrato.saldoContrato - calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado) }}
+                    </span>
+                  </div>
+                </section>
               </div>
             </div>
           </router-link>
@@ -117,6 +119,9 @@ import { api } from "@/services/api";
 import { toast } from "vue3-toastify";
 import { Icon } from "@iconify/vue";
 import imagemPadrao from '../../assets/imagens/imageCard.png'
+import { usePermissions } from '@/composables/usePermission';
+
+const { hasPermission } = usePermissions();
 
 const baseURL = import.meta.env.VITE_APP_API_URL.replace(/\/$/, "");
 const route = useRoute();

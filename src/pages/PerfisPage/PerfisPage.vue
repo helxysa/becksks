@@ -235,8 +235,10 @@
   import { toast } from "vue3-toastify";
   import { useProfileStore } from "@/stores/ProfileStore";
   import { waveform } from "ldrs";
+  import { usePermissions } from '@/composables/usePermission';
 
   waveform.register();
+  const { hasPermission } = usePermissions();
   const store = useProfileStore();
   const perfis = ref([]);
   const carregando = ref(true);
@@ -263,16 +265,6 @@
   const permissoesNomeMap = Object.fromEntries(
     permissoes.map((permissao) => [permissao.chave, permissao.nome])
   );
-
-  // Função hasPermission
-  const hasPermission = (permissionName, actionName) => {
-    return store.profile.permissions.some(
-      (item) =>
-        item.name === permissionName &&
-        item.actions &&
-        item.actions[actionName] === true
-    );
-  };
 
   // Mapeamento de ícones para as ações
   const actionIcons = {

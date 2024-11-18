@@ -81,9 +81,11 @@ import { toast } from 'vue3-toastify';
 import ResetPasswordForm from './ResetPasswordForm.vue';
 import { useProfileStore } from "@/stores/ProfileStore";
 import { waveform } from "ldrs";
+import { usePermissions } from '@/composables/usePermission';
 
 waveform.register();
 
+const { hasPermission } = usePermissions();
 const loading = ref(false);
 const email = ref("");
 const password = ref("");
@@ -111,7 +113,11 @@ const handleLogin = async () => {
     } else {
       localStorage.removeItem("userId");
       isAuthenticated.value = true;
-      router.push("/");
+      if(hasPermission('Dashboard', 'Visualizar')) {
+        router.push("/");
+      } else {
+        router.push('/contratos')
+      }
     }
   } catch (error) {
     toast("Email ou Senha incorretos!", {

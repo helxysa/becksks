@@ -61,7 +61,7 @@
     </button>
       <button
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-         v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
+        v-if="hasPermission('contratos', 'Editar')"
       >
         <router-link :to="{name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}">
           Editar
@@ -70,7 +70,7 @@
       <button
         @click="deleteContrato(contrato)"
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-         v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canDelete === true)"
+        v-if="hasPermission('contratos', 'Deletar')"
       >
         Excluir
       </button>
@@ -353,7 +353,7 @@
           <button
             @click="openCreateItemModal"
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-             v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
+            v-if="hasPermission('itens_contrato', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
@@ -417,8 +417,10 @@
             </td>
             <td>
               <div class="flex justify-center items-center gap-2">
-                <span @click="openItemViewModal(item)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canView === true)">
+                <span
+                  @click="openItemViewModal(item)"
+                  v-if="hasPermission('itens_contrato', 'Visualizar')"
+                >
                   <Icon
                     icon="ph:eye"
                     height="20"
@@ -426,7 +428,7 @@
                   />
                 </span>
                 <span @click="openItemEditModal(item)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)"
+                v-if="hasPermission('itens_contrato', 'Editar')"
                 >
                   <Icon
                     icon="bx:edit"
@@ -434,8 +436,10 @@
                     class="hover:text-red-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="deleteItem(item.id)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canDelete === true)">
+                <span
+                  @click="deleteItem(item.id)"
+                  v-if="hasPermission('itens_contrato', 'Deletar')"
+                >
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -470,7 +474,7 @@
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalLancamento"
-            v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canCreate === true)"
+            v-if="hasPermission('medicoes', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Nova Medição
@@ -478,7 +482,7 @@
           <button
             class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalPedidoFaturamento"
-            v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canCreate === true)"
+            v-if="hasPermission('faturamentos', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Novo faturamento
@@ -610,16 +614,20 @@
             </td>
             <td class="text-2xl">
               <div class="flex justify-center items-center gap-2">
-                <span @click="openViewLancamentoModal(lancamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canView === true)">
+                <span
+                  @click="openViewLancamentoModal(lancamento)"
+                  v-if="hasPermission('medicoes', 'Visualizar')"
+                >
                   <Icon
                     icon="ph:eye"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="openEditLancamentoModal(lancamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canEdit === true)">
+                <span
+                  @click="openEditLancamentoModal(lancamento)"
+                  v-if="hasPermission('medicoes', 'Editar')"
+                >
                   <Icon
                     icon="bx:edit"
                     height="20"
@@ -627,8 +635,10 @@
                   />
                 </span>
 
-                <span @click="deleteLancamento(lancamento.id)"
-                 v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canDelete === true)">
+                <span
+                  @click="deleteLancamento(lancamento.id)"
+                  v-if="hasPermission('medicoes', 'Deletar')"
+                 >
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -726,24 +736,30 @@
 
             <td class="text-2xl">
               <div class="flex justify-center items-center gap-2">
-                <span @click="openViewFaturamentoModal(faturamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canView === true)">
+                <span
+                  @click="openViewFaturamentoModal(faturamento)"
+                  v-if="hasPermission('faturamentos', 'Visualizar')"
+                >
                   <Icon
                     icon="ph:eye"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="openEditFaturamentoModal(faturamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canEdit === true)">
+                <span
+                  @click="openEditFaturamentoModal(faturamento)"
+                  v-if="hasPermission('faturamentos', 'Editar')"
+                >
                   <Icon
                     icon="bx:edit"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="deleteFaturamento(faturamento.id)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canDelete === true)">
+                <span
+                  @click="deleteFaturamento(faturamento.id)"
+                  v-if="hasPermission('faturamentos', 'Deletar')"
+                >
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -2122,12 +2138,14 @@ import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
+import { usePermissions } from '@/composables/usePermission';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
 import { waveform } from "ldrs";
 import socket from '../../../../websocket.js'
 import StatusFilter from '@/components/StatusFilter.vue';
 
+const { hasPermission } = usePermissions();
 const store = useProfileStore()
 waveform.register();
 const contratoSelecionadoId = ref(null);
