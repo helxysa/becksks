@@ -3285,7 +3285,6 @@ const alterarStatusMedicao = async (id, novoStatus) => {
       contratoId: contratoOriginal.value.id,
       message: `O status da medição ${id} foi alterado para: ${novoStatus}`,
     });
-
     // console.log(`Notificação enviada para o status da medição ${id}`);
 
   } catch (error) {

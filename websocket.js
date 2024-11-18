@@ -17,13 +17,15 @@ socket.on('connect', () => {
 });
 
 socket.on('medicao:update', (data) => {
-  // Adicionar notificação na lista
-  notificacoes.value.push({
-    id: data.id,
-    texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
-    tipo: 'medicao',
-    contratoId: data.contratoId,
-  });
+  if (data.status === 'Disponível p/ Faturamento' || data.status === 'Finalizada') {
+    // Adicionar notificação na lista
+    notificacoes.value.push({
+      id: data.id,
+      texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
+      tipo: 'medicao',
+      contratoId: data.contratoId,
+    });
+  }
 });
 
 socket.on('disconnect', () => {

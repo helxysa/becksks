@@ -560,10 +560,10 @@ async function saveContrato() {
         headers: { "Content-type": "multipart/form-data"}
       })
       .then((response) => {
-        toast("Contrato editado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
+        // toast("Contrato editado com sucesso!", {
+        //   theme: "colored",
+        //   type: "success",
+        // });
         voltarListagem();
       });
   } catch (error) {

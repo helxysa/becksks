@@ -64,7 +64,7 @@
 
 <script setup>
 import { Icon } from "@iconify/vue";
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { isAuthenticated } from "@/state/auth";
 import { toast } from "vue3-toastify";
@@ -232,15 +232,33 @@ const fetchContratos = async () => {
         }
       });
       socket.on('medicao:update', (data) => {
-        if (!mensagens.value.some((msg) => msg.id === data.id)) {
+        const existingMessage = mensagens.value.find((msg) => msg.id === data.id);
+        if (existingMessage) {
+          // Atualiza a mensagem existente com o novo status
+          existingMessage.texto = `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`;
+          existingMessage.tipo = 'medicao';
+          existingMessage.contratoId = data.contratoId;
+        } else {
+          // Adiciona uma nova mensagem se não existir
           mensagens.value.push({
             id: data.id,
             texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
             tipo: 'medicao',
-            contratoId: data.contratoId
+            contratoId: data.contratoId,
           });
-          toast.info(data.message, { timeout: 5000, closeOnClick: true });
         }
+        // Exibe o toast com a mensagem atualizada
+        toast.info(data.message, { timeout: 5000, closeOnClick: true });
+
+        // if (!mensagens.value.some((msg) => msg.id === data.id)) {
+        //   mensagens.value.push({
+        //     id: data.id,
+        //     texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
+        //     tipo: 'medicao',
+        //     contratoId: data.contratoId
+        //   });
+        //   toast.info(data.message, { timeout: 5000, closeOnClick: true });
+        // }
       });
     // }
   });
