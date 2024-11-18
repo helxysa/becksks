@@ -39,13 +39,13 @@ const routes = [
     path: "/",
     label: "Dashboard",
     icon: "mdi:graph-pie",
-    permission: null,
+    permission: { name: "dashboard", action: "Visualizar" },
   },
   {
     path: "/contratos",
     label: "Contratos",
     icon: "eos-icons:project",
-    permission: { name: "contratos", canView: true },
+    permission: { name: "contratos", action: "Visualizar" },
   },
   {
     path: "/perfis",
@@ -53,7 +53,7 @@ const routes = [
     icon: "eos-icons:admin-outlined",
     permission: {
       name: "perfil",
-      canAccess: ["canView", "canEdit", "canCreate", "canDelete"],
+      actions: ["Visualizar", "Editar", "Criar", "Deletar"],
     },
   },
   {
@@ -62,7 +62,7 @@ const routes = [
     icon: "mdi:account-group",
     permission: {
       name: "usuarios",
-      canAccess: ["canView", "canEdit", "canCreate", "canDelete"],
+      actions: ["Visualizar", "Editar", "Criar", "Deletar"],
     },
   },
 ];
@@ -72,9 +72,15 @@ function hasPermission(permission) {
 
   return store.profile.permissions.some((item) => {
     if (item.name !== permission.name) return false;
-    if (permission.canView) return item.canView === true;
-    if (permission.canAccess)
-      return permission.canAccess.some((perm) => item[perm] === true);
+
+    if (permission.action) {
+      return item.actions && item.actions[permission.action] === true;
+    }
+
+    if (permission.actions) {
+      return item.actions && permission.actions.some((action) => item.actions[action] === true);
+    }
+
     return false;
   });
 }
