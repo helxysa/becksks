@@ -1011,7 +1011,7 @@ const saveContrato = async () => {
       await deleteContrato(contratoId.value);
     } else {
       await anexoUploadRef.value.uploadAnexosPendentes();
-      // voltarListagem();
+      voltarListagem();
     }
   }
 };

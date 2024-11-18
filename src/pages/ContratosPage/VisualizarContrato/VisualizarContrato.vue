@@ -1508,7 +1508,7 @@
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada">Finalizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada" disabled hidden>Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -3260,7 +3260,11 @@ const verificaIsFaturado = async (lancamentos, faturamentos) => {
   }
 
   for (const lancamento of lancamentos) {
-    if (!lancamento.isFaturado && lancamento.status !== 'Disponível p/ Faturamento' && lancamento.tipoMedicao === 'Detalhada') {
+    if (
+      !lancamento.isFaturado &&
+      (lancamento.status === 'Encaminhada p/ Faturamento' || lancamento.status === 'Finalizada') &&
+      lancamento.tipoMedicao === 'Detalhada'
+    ) {
       await alterarStatusMedicao(lancamento.id, 'Disponível p/ Faturamento');
       alterouStatus.value = true;
     }
