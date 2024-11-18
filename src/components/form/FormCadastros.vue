@@ -1017,7 +1017,9 @@ const saveContrato = async () => {
     if (projetosCriados === "error") {
       await deleteContrato(contratoId.value);
     } else {
-      await anexoUploadRef.value.uploadAnexosPendentes();
+      if (anexoUploadRef.value && localAnexos.value.length > 0) {
+        await anexoUploadRef.value.uploadAnexosPendentes();
+      }
       voltarListagem();
     }
   }

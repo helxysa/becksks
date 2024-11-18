@@ -448,8 +448,9 @@ const salvarUsuario = async () => {
 };
 
 const fetchUsers = async () => {
+  const token = localStorage.getItem('token')
   try {
-    const response = await api.get('/users');
+    const response = await api.get('/users', {headers: { Authorization: `Bearer ${token}`}});
     users.value = response.data;
     loading.value = false;
 

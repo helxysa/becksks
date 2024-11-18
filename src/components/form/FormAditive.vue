@@ -706,7 +706,9 @@ const createTermoAditivo = async (contratoId) => {
 const saveTermoAditive = async () => {
   contratoId.value =  route.params.id
   await createTermoAditivo(contratoId.value)
-  await anexoUploadRef.value.uploadAnexosPendentes();
+  if (anexoUploadRef.value && localAnexos.value.length > 0) {
+    await anexoUploadRef.value.uploadAnexosPendentes();
+  }
   voltarListagem()
 };
 

@@ -2800,7 +2800,9 @@ const createPedidoFaturamento = async () => {
       type: "success",
     });
     await nextTick();
-    await anexoUploadRef.value.uploadAnexosPendentes();
+    if (anexoUploadRef.value && faturamentoLocalAnexos.value.length > 0) {
+      await anexoUploadRef.value.uploadAnexosPendentes();
+    }
     faturamentoLocalAnexos.value = [];
     faturamentoId.value = null;
 
@@ -3163,9 +3165,9 @@ const createLancamento = async () => {
     });
 
     await nextTick();
-
-    await anexoUploadRef.value.uploadAnexosPendentes();
-
+    if (medicaoLocalAnexos.value.length > 0 && anexoUploadRef.value) {
+      await anexoUploadRef.value.uploadAnexosPendentes();
+    }
     medicaoLocalAnexos.value = [];
 
     medicaoId.value = null;
