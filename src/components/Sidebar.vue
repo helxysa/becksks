@@ -65,6 +65,15 @@ const routes = [
       actions: ["Visualizar", "Editar", "Criar", "Deletar"],
     },
   },
+  {
+    path: "/logs",
+    label: "Registros",
+    icon: "mdi:account-group",
+    permission: {
+      name: "registros",
+      actions: ["Visualizar"],
+    },
+  },
 ];
 
 function hasPermission(permission) {

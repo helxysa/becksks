@@ -17,6 +17,7 @@ import ChangePassword from "@/pages/Login/ChangePassword.vue";
 import ResetPassword from "@/pages/Login/ResetPassword.vue";
 import UsersPage from '@/pages/UsersPage/UsersPage.vue';
 import EditAditivoForm from "@/components/EditAditivoForm.vue";
+import LogView from "@/pages/LogsPage/LogView.vue";
 
 const routes = [
   {
@@ -88,7 +89,6 @@ const routes = [
     component: ViewTermoAditivoPage,
     meta: { requiresAuth: true },
   },
-
   {
     path: "/perfis",
     name: "Perfis",
@@ -99,6 +99,12 @@ const routes = [
     path: "/usuarios",
     name: "Usuarios",
     component: UsersPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/logs",
+    name: "Log",
+    component: LogView,
     meta: { requiresAuth: true },
   },
   // {

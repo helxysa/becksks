@@ -259,6 +259,7 @@
     { nome: "Faturamentos", chave: "faturamentos", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
     { nome: "Projetos", chave: "projetos", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
     { nome: "Dashboard", chave: "dashboard", actions: ["Visualizar"] },
+    { nome: "Registros", chave: "registros", actions: ["Visualizar"] },
   ];
 
   // Mapeamento de chaves para nomes
