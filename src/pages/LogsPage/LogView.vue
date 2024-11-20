@@ -13,11 +13,12 @@
       <table class="table-auto border border-slate-200 rounded-2xl w-full">
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
-            <!--  -->
             <th class="text-xl px-2">ID Usuário</th>
             <th class="text-xl">Nome</th>
             <th class="text-xl">Ação</th>
             <th class="text-xl">Área</th>
+            <th class="text-xl">Data</th>
+            <th class="text-xl">Hora</th>
             <th class="text-xl">Descrição</th>
           </tr>
         </thead>
@@ -27,6 +28,8 @@
             <td class="text-2xl">{{ log.name }}</td>
             <td class="text-2xl">{{ log.action }}</td>
             <td class="text-2xl">{{ log.model }}</td>
+            <td class="text-2xl">{{ formatDate(log.createdAt).date }}</td>
+            <td class="text-2xl">{{ formatDate(log.createdAt).time }}</td>
             <td class="text-2xl">{{ log.description }}</td>
           </tr>
         </tbody>
@@ -45,6 +48,7 @@ import { waveform } from "ldrs";
 import Swal from "sweetalert2";
 
 waveform.register();
+
 const logs = ref([]);
 const loading = ref(true);
 
@@ -58,6 +62,20 @@ const getLogs = async () => {
     console.error('Erro ao buscar usuários:', error);
     loading.value = false;
   }
+};
+
+const formatDate = (dateTimeString) => {
+  const dateObj = new Date(dateTimeString);
+  const date = dateObj.toLocaleDateString('pt-BR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const time = dateObj.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return { date, time };
 };
 
 onMounted(() => {

@@ -192,7 +192,7 @@
           <button
             class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
-            @click="openModalProjeto"
+            @click="openModalProjeto()"
           >
             <span class="mr-2">
               <Icon
@@ -231,7 +231,6 @@
     >
       <template #content>
         <form
-          @submit.prevent="handleSubmitProjeto"
           class="flex gap-8 px-6 h-[4.40rem]"
         >
           <input
@@ -239,36 +238,19 @@
             id="nome"
             v-model="newProjeto"
             required
-            class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-            placeholder="Nome  do projeto"
+            class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md disabled:cursor-not-allowed"
+            placeholder="Criar novo projeto"
+            :disabled="isEditingProjeto"
           />
-
-          <button
-            type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            v-if="hasPermission('projetos', 'Criar') || hasPermission('projetos', 'Editar')"
-          >
-            {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
-          </button>
-          <!-- <div class="flex gap-4  items-center">
-          <label for="nome" class="font-bold text-3xl text-gray-700">Projeto</label>
-        </div> -->
-
-          <!-- <div class="flex justify-end space-x-2">
           <button
             type="button"
-            @click="closeModalProjeto"
-            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+            @click="criarProjeto()"
+            v-if="hasPermission('projetos', 'Criar') || hasPermission('projetos', 'Editar')"
+            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px] disabled:bg-gray-500 disabled:text-gray-200 disabled:cursor-not-allowed"
+            :disabled="isEditingProjeto"
           >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            {{ isEditingProjeto ? 'Atualizar' : 'Adicionar' }}
-          </button>
-        </div> -->
+          Adicionar
+        </button>
         </form>
         <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
           <div
@@ -277,9 +259,10 @@
             class="flex items-center gap-2 border-[1px] rounded-md"
           >
             <div
+              v-if="!item.isEditing"
               class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
             >
-              <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]">
+              <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.projeto">
                 {{ item.projeto }}
               </span>
               <div class="flex items-center mx-4">
@@ -303,8 +286,34 @@
                 </button>
               </div>
             </div>
+            <div
+            v-else
+            class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6"
+          >
+            <input
+              type="text"
+              v-model="item.projeto"
+              class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              placeholder="Digite o nome do projeto"
+            />
+            <div class="ml-auto text-nowrap flex gap-4">
+              <button
+                @click="salvarProjeto(item)"
+                class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+              >
+                Salvar
+              </button>
+              <button
+                @click="cancelEdit(item)"
+                class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
           </div>
         </div>
+
         <hr class="my-8" />
         <footer class="flex justify-end h-16 mb-2">
           <button
@@ -368,13 +377,13 @@ const moneyConfig = {
   masked: false,
 };
 
-const isModalProjetoOpen = ref(false);
-const isEditingProjeto = ref(false);
-const modalTitleProjeto = computed(() =>
-  isEditingProjeto.value ? "Editar Projeto" : "Adicionar Projeto"
-);
-const idProjeto = ref("");
-const idContrato = ref("");
+onMounted(async () => {
+  const contratoId = route.params.id;
+  if (contratoId) {
+    await fetchContrato(contratoId);
+    await fetchProjetos(contratoId);
+  }
+});
 
 const handleFileChange = (event) => {
   const file = event.target.files[0];
@@ -392,115 +401,6 @@ const handleFileChange = (event) => {
 const removeFoto = () => {
   previewFoto.value = null;
 };
-
-const openModalProjeto = () => {
-  isModalProjetoOpen.value = true;
-  fetchProjetos(route.params.id);
-};
-
-const closeModalProjeto = () => {
-  isModalProjetoOpen.value = false;
-  resetFormProjeto();
-};
-
-const resetFormProjeto = () => {
-  newProjeto.value = "";
-  isEditingProjeto.value = false;
-};
-
-const handleSubmitProjeto = () => {
-  if (isEditingProjeto.value) {
-    EditarProjeto();
-  } else {
-    CriarProjeto();
-  }
-};
-
-const editProjeto = (item) => {
-  newProjeto.value = item.projeto;
-  isEditingProjeto.value = true;
-  idProjeto.value = item.id;
-  idContrato.value = item.contratoId;
-};
-
-const projetos = ref([]);
-const newProjeto = ref("");
-
-const fetchProjetos = async (id) => {
-  try {
-    const response = await api.get(`/contratos/${id}/projetos`);
-    projetos.value = response.data.data;
-  } catch (error) {
-    console.error("Erro ao contratos:", error);
-  }
-};
-
-const CriarProjeto = async () => {
-  try {
-    const response = await api.post(`contratos/${route.params.id}/projetos`, {
-      projeto: newProjeto.value,
-    });
-    await fetchProjetos(route.params.id);
-    toast.success("Projeto criado com sucesso!");
-    newProjeto.value = "";
-  } catch (error) {
-    console.error("Erro ao criar novo projeto:", error.response.data.message);
-    if (error.response.data.message === "Já existe um projeto com esse nome para este contrato.") {
-      return toast.error(error.response.data.message);
-    } else {
-      toast.error("Não foi possível criar o  projeto.");
-    }
-  }
-};
-
-const EditarProjeto = async () => {
-  try {
-    const response = await api.put(`projetos/${idProjeto.value}`, {
-      projeto: newProjeto.value,
-      contrato_id: idContrato.value,
-    });
-    await fetchProjetos(route.params.id);
-    toast.success("Projeto editado com sucesso!");
-    newProjeto.value = "";
-  } catch (error) {
-    console.error("Erro ao editar projeto:", error.response.data.message);
-    if (error.response.data.message == "Já existe um projeto com esse nome.") {
-      return toast.error(error.response.data.message);
-    } else {
-      toast.error("Não foi possível editar o  projeto.");
-    }
-  }
-};
-
-const deletarProjeto = (id, projeto) => {
-  //Não implementado ainda
-  Swal.fire({
-    title: "Você tem certeza?",
-    text: `Deseja remover o projeto "${projeto.projeto}"?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Sim, remover!",
-    cancelButtonText: "Cancelar",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        await api.delete(`/projetos/${id}`);
-        await fetchProjetos(route.params.id);
-        toast.success("Projeto removido com sucesso!");
-      } catch (error) {
-        console.error("Erro ao remover projeto:", error);
-        toast.error("Erro ao remover projeto.");
-      }
-    }
-  });
-};
-
-onMounted(async () => {
-  const contratoId = route.params.id;
-  fetchContrato(contratoId);
-});
 
 const fetchContrato = async (id) => {
   try {
@@ -556,18 +456,18 @@ async function saveContrato() {
 
   try {
     const response = await api
-      .put(`/contratos/${route.params.id}`, formData, {
-        headers: { "Content-type": "multipart/form-data"}
-      })
-      .then((response) => {
-        // toast("Contrato editado com sucesso!", {
+    .put(`/contratos/${route.params.id}`, formData, {
+      headers: { "Content-type": "multipart/form-data"}
+    })
+    .then((response) => {
+      // toast("Contrato editado com sucesso!", {
         //   theme: "colored",
         //   type: "success",
         // });
         voltarListagem();
       });
-  } catch (error) {
-    toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
+    } catch (error) {
+      toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
       position: "top-right",
     });
   }
@@ -597,6 +497,124 @@ const phoneMask = (value) => {
   value = value.replace(/(\d{2})(\d)/, "($1) $2");
   value = value.replace(/(\d)(\d{4})$/, "$1-$2");
   return value;
+};
+
+// LÓGICA DE PROJETO
+const isModalProjetoOpen = ref(false);
+const isEditingProjeto = ref(false);
+const modalTitleProjeto = computed(() => isEditingProjeto.value ? "Editar Projeto" : "Adicionar Projeto");
+const projetos = ref([]);
+const newProjeto = ref("");
+
+const fetchProjetos = async (id) => {
+  try {
+    const response = await api.get(`/contratos/${id}/projetos`);
+    projetos.value = response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar projetos:", error);
+    toast.error("Erro ao carregar os projetos do contrato.");
+  }
+};
+
+const salvarProjeto = async (item) => {
+  if (!item.projeto.trim()) {
+    toast.error("O nome do projeto não pode estar vazio.");
+    return;
+  }
+
+  if (isDuplicateProjeto(item.projeto, item.id)) {
+    toast.error("Já existe um projeto com esse nome.");
+    return;
+  }
+
+  try {
+    await api.put(`/projetos/${item.id}`, {
+      projeto: item.projeto,
+      contrato_id: route.params.id,
+    });
+    await fetchProjetos(route.params.id);
+    toast.success("Projeto editado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao editar projeto:", error.response?.data?.message || error.message);
+    toast.error("Não foi possível editar o projeto.");
+  }
+};
+
+const criarProjeto = async () => {
+  if(!newProjeto.value) {
+    toast.error("Adicione um nome ao projeto antes de cria-lo.");
+     return
+  }
+  try {
+    const response = await api.post(`/contratos/${route.params.id}/projetos`, {
+      projeto: newProjeto.value,
+    });
+    await fetchProjetos(route.params.id);
+    toast.success("Projeto criado com sucesso!");
+    newProjeto.value = "";
+  } catch (error) {
+    console.error("Erro ao criar novo projeto:", error.response?.data?.message || error.message);
+    if (error.response?.data?.message === "Já existe um projeto com esse nome para este contrato.") {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Não foi possível criar o projeto.");
+    }
+  }
+};
+
+const deletarProjeto = (id, projeto) => {
+  Swal.fire({
+    title: "Você tem certeza?",
+    text: `Deseja remover o projeto "${projeto.projeto}"?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, remover!",
+    cancelButtonText: "Cancelar",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await api.delete(`/projetos/${id}`);
+        await fetchProjetos(route.params.id);
+        toast.success("Projeto removido com sucesso!");
+      } catch (error) {
+        console.error("Erro ao remover projeto:", error);
+        toast.error("Erro ao remover projeto.");
+      }
+    }
+  });
+};
+
+const openModalProjeto = () => {
+  isModalProjetoOpen.value = true;
+  fetchProjetos(route.params.id);
+};
+
+const closeModalProjeto = () => {
+  isModalProjetoOpen.value = false;
+  resetFormProjeto();
+};
+
+const resetFormProjeto = () => {
+  newProjeto.value = "";
+  isEditingProjeto.value = false;
+};
+
+const editProjeto = (item) => {
+  item.isEditing = true;
+  isEditingProjeto.value = true;
+};
+
+const cancelEdit = (item) => {
+  item.isEditing = false;
+  resetFormProjeto();
+};
+
+const isDuplicateProjeto = (nome, excludeId = null) => {
+  return projetos.value.some(
+    (p) => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId
+  );
 };
 </script>
 

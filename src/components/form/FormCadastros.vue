@@ -686,8 +686,7 @@
               <span
                 class="ml-6 font-sans text-nowrap truncate max-w-[500px]"
                 :title="item.projeto"
-                >{{ item.projeto }}</span
-              >
+                >{{ item.projeto }}</span>
               <div class="flex items-center mx-4">
                 <button
                   @click="editProjeto(item)"
