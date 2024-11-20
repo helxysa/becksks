@@ -36,10 +36,19 @@
       </table>
     </div>
   </div>
+  <div class="flex justify-center">
+    <vue-awesome-paginate
+      :total-items="totalItems"
+      :max-pages-shown="lastPage"
+      :items-per-page="resultsPerPages"
+      v-model="currentPage"
+      @click="changePage"
+    />
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { api } from '@/services/api';
 import { Icon } from "@iconify/vue";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
@@ -51,18 +60,39 @@ waveform.register();
 
 const logs = ref([]);
 const loading = ref(true);
+const totalItems = ref(0);
+const itemsPerPage = ref(5);
+const currentPage = ref(1);
+const lastPage = ref(1);
+const changePage = (page) => {
+  currentPage.value = page;
+};
 
-const getLogs = async () => {
+const getLogs = async (page = 1) => {
+  loading.value = true;
   try {
-    const response = await api.get('/logs');
-    logs.value = response.data;
-    loading.value = false;
+    const response = await api.get('/logs', {
+      params: {
+        page: page,
+        perPage: itemsPerPage.value,
+      },
+    });
 
+    logs.value = response.data.data;
+    totalItems.value = response.data.meta.total;
+    currentPage.value = response.data.meta.currentPage;
+    lastPage.value = response.data.meta.lastPage
+    loading.value = false;
   } catch (error) {
-    console.error('Erro ao buscar usuários:', error);
+    console.error('Erro ao buscar logs:', error);
+    toast.error("Erro ao carregar os logs.");
     loading.value = false;
   }
 };
+
+watch(currentPage, (newPage) => {
+  getLogs(newPage);
+});
 
 const formatDate = (dateTimeString) => {
   const dateObj = new Date(dateTimeString);
@@ -82,3 +112,44 @@ onMounted(() => {
   getLogs();
 });
 </script>
+
+<style>
+
+.pagination-container {
+  display: flex;
+  padding-top: 5px;
+  column-gap: 10px;
+}
+
+.paginate-buttons {
+  height: 40px;
+
+  width: 40px;
+
+  border-radius: 20px;
+
+  cursor: pointer;
+
+  background-color: rgb(242, 242, 242);
+
+  border: 1px solid rgb(217, 217, 217);
+
+  color: black;
+}
+
+.paginate-buttons:hover {
+  background-color: #d8d8d8;
+}
+
+.active-page {
+  background-color: #3498db;
+
+  border: 1px solid #3498db;
+
+  color: white;
+}
+
+.active-page:hover {
+  background-color: #2988c8;
+}
+</style>
