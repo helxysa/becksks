@@ -255,8 +255,8 @@
   </section>
 
   <!-- Resumo Financeiro -->
-  <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6" v-if="hasPermission('contratos', 'Visualizar Finanças')">Resumo Financeiro</h2>
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8" v-if="hasPermission('contratos', 'Visualizar Finanças')">
     <div
       v-for="(item, index) in financialSummary"
       :key="index"
@@ -274,25 +274,6 @@
 
 
   <!-- Observações -->
-  <!-- <section
-    class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-  >
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
-    <div class="flex items-center">
-      <div class="bg-gray-100 text-gray-500 rounded-md p-3 mr-3">
-        <Icon
-          icon="fa-solid:comment-alt"
-          width="1.5rem"
-          height="1.5rem"
-          class="text-gray-400"
-        />
-      </div>
-      <div>
-        <p class="text-lg text-gray-500">Detalhes adicionais</p>
-        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
-      </div>
-    </div>
-  </section> -->
   <section class="mt-8">
     <div class="flex items-start justify-between gap-12">
       <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
