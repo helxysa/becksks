@@ -1,11 +1,11 @@
 <template>
   <aside id="logo-sidebar" class="bg-white rounded-md">
     <section class="flex flex-col items-center justify-center bg-white">
-       <img
-         class="h-22 m-10"
-         src="../assets/imagens/logoMSB.png"
-         alt="MSB Logo"
-       />
+      <img
+        class="h-[73px] mx-10 mb-10"
+        src="../assets/imagens/logoMSB.png"
+        alt="MSB Logo"
+      />
        <div class="border-b w-[90%] border-blue-300"></div>
      </section>
 
