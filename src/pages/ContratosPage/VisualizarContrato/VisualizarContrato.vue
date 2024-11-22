@@ -1021,7 +1021,7 @@
           <div class="flex justify-between items-center gap-4">
             <label class="font-bold text-3xl w-[180px]">Valor total:</label>
             <span class="font-medium text-3xl">{{
-              formatCurrency(calcularTotalFaturamento(editingFaturamento))
+              formatCurrencySemArrendondar(calcularTotalFaturamento(editingFaturamento))
             }}</span>
           </div>
           <div class="flex gap-4 justify-between items-center">
