@@ -1091,102 +1091,104 @@
           </div>
         </section>
         <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
-        <table
-          class="table-auto border border-slate-200 rounded-2xl w-full mt-8"
-        >
-          <thead class="h-20 bg-slate-100 border-1">
-            <tr>
-              <th class="text-xl">#</th>
-              <th class="text-xl">Projeto</th>
-              <th class="text-xl">Competência</th>
-              <th class="text-xl">Unidade de medida</th>
-              <th class="text-xl">Quantidade</th>
-              <th class="text-xl">Valor do lançamento</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              class="h-24 text-center"
-              v-for="item in editingFaturamento.faturamentoItens.map(
-                (subItem) => subItem.lancamento
-              )"
-              :key="item.id"
-            >
-              <td class="px-4">{{ item.id }}</td>
-              <td>{{ item.projetos }}</td>
-              <td class="text-center">
-                <input
-                  v-model="item.competencia"
-                  type="text"
-                  :disabled="isFaturamentoViewModal"
-                  :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-                  placeholder="Informe a competência"
-                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
-                />
-              </td>
-              <td>
-                <span
-                  class="flex justify-center"
-                  v-for="unidade in [
-                    ...new Set(
-                      item.lancamentoItens.map(
-                        (subitem) => subitem.unidadeMedida
-                      )
-                    ),
-                  ]"
-                  :key="unidade"
-                >
-                  {{ unidade }}
-                </span>
-              </td>
-              <td>
-                <div
-                  v-for="unidade in [
-                    ...new Set(
-                      item.lancamentoItens.map(
-                        (subitem) => subitem.unidadeMedida
-                      )
-                    ),
-                  ]"
-                  :key="unidade"
-                >
-                  <template
-                    v-if="
-                      item.lancamentoItens
-                        .filter((subitem) => subitem.unidadeMedida === unidade)
-                        .reduce(
-                          (total, subitem) =>
-                            total + parseFloat(subitem.quantidadeItens),
-                          0
-                        ) > 0
-                    "
+        <div class="overflow-y-auto max-h-[42rem] border border-gray-300 rounded-lg mt-8">
+          <table
+            class="table-auto border border-slate-200 rounded-2xl w-full"
+          >
+            <thead class="h-20 bg-slate-100 border-1">
+              <tr>
+                <th class="text-xl">#</th>
+                <th class="text-xl">Projeto</th>
+                <th class="text-xl">Competência</th>
+                <th class="text-xl">Unidade de medida</th>
+                <th class="text-xl">Quantidade</th>
+                <th class="text-xl">Valor do lançamento</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="h-24 text-center"
+                v-for="item in editingFaturamento.faturamentoItens.map(
+                  (subItem) => subItem.lancamento
+                )"
+                :key="item.id"
+              >
+                <td class="px-4">{{ item.id }}</td>
+                <td>{{ item.projetos }}</td>
+                <td class="text-center">
+                  <input
+                    v-model="item.competencia"
+                    type="text"
+                    :disabled="isFaturamentoViewModal"
+                    :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+                    placeholder="Informe a competência"
+                    class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                  />
+                </td>
+                <td>
+                  <span
+                    class="flex justify-center"
+                    v-for="unidade in [
+                      ...new Set(
+                        item.lancamentoItens.map(
+                          (subitem) => subitem.unidadeMedida
+                        )
+                      ),
+                    ]"
+                    :key="unidade"
                   >
-                    <span class="flex justify-center">
-                      {{
+                    {{ unidade }}
+                  </span>
+                </td>
+                <td>
+                  <div
+                    v-for="unidade in [
+                      ...new Set(
+                        item.lancamentoItens.map(
+                          (subitem) => subitem.unidadeMedida
+                        )
+                      ),
+                    ]"
+                    :key="unidade"
+                  >
+                    <template
+                      v-if="
                         item.lancamentoItens
-                          .filter(
-                            (subitem) => subitem.unidadeMedida === unidade
-                          )
+                          .filter((subitem) => subitem.unidadeMedida === unidade)
                           .reduce(
                             (total, subitem) =>
                               total + parseFloat(subitem.quantidadeItens),
                             0
-                          )
-                      }}
-                    </span>
-                  </template>
-                </div>
-              </td>
-              <td>
-                {{
-                  formatCurrency(
-                    calcularSaldoLancamentoItens(item.lancamentoItens)
-                  )
-                }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                          ) > 0
+                      "
+                    >
+                      <span class="flex justify-center">
+                        {{
+                          item.lancamentoItens
+                            .filter(
+                              (subitem) => subitem.unidadeMedida === unidade
+                            )
+                            .reduce(
+                              (total, subitem) =>
+                                total + parseFloat(subitem.quantidadeItens),
+                              0
+                            )
+                        }}
+                      </span>
+                    </template>
+                  </div>
+                </td>
+                <td>
+                  {{
+                    formatCurrencySemArrendondar(
+                      calcularSaldoLancamentoItens(item.lancamentoItens)
+                    )
+                  }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div>
           <div v-if="editingFaturamento.id">
             <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
@@ -2274,7 +2276,6 @@ const handleEditAditivoSubmit = async (termoAditivo) => {
     const response = await api
       .put(`/termo-aditivo/${termoAditivo.id}`, payload)
       .then((response) => {
-        console.log(response, 'response')
         toast("Termo aditivo editado com sucesso!", {
           theme: "colored",
           type: "success",
@@ -3259,6 +3260,22 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
+const formatCurrencySemArrendondar = (value) => {
+  // Divide o valor em inteiros e decimais
+  const [parteInteira, parteDecimal] = value.toString().split('.');
+
+  // Formata a parte inteira com separador de milhar
+  const inteiroFormatado = parteInteira.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  // Trunca as casas decimais para 2 dígitos, sem arredondar
+  const decimalFormatado = (parteDecimal || '00').substring(0, 2).padEnd(2, '0');
+  // Garante duas casas decimais, preenchendo com zeros quando necessário
+  // const decimalFormatado = (parteDecimal || '00').padEnd(2, '0');
+
+  // Retorna no formato de moeda brasileiro
+  return `R$ ${inteiroFormatado},${decimalFormatado}`;
+};
+
 const formatDate = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -3334,8 +3351,14 @@ const calcularSaldoLancamentoItens = (lancamento) => {
   lancamento.forEach((item) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
+    // Multiplicação sem arredondamento
     const valorTotalItem = quantidadeItens * valorUnitario;
-    saldoTotal += valorTotalItem;
+    console.log('Quantidade:', quantidadeItens);
+    console.log('Valor Unitário:', valorUnitario);
+    console.log('Valor Total Item:', valorTotalItem);
+     // Soma sem arredondar
+     saldoTotal += valorTotalItem;
+    console.log('Saldo Total Atualizado:', saldoTotal);
   });
   return saldoTotal;
 };
