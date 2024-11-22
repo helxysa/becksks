@@ -520,8 +520,9 @@
             <td class="text-2xl">{{ lancamento.competencia }}</td>
             <td class="text-2xl">{{ lancamento.projetos }}</td>
             <td
-              class="text-2xl cursor-pointer underline hover:text-blue-500 transition-colors duration-300"
-              @click="redirectToRedmine(lancamento.tarefaMedicao)"
+              class="text-2xl underline hover:text-blue-500 transition-colors duration-300"
+              :class="{'cursor-pointer': lancamento.tarefaMedicao}"
+              @click="lancamento.tarefaMedicao && redirectToRedmine(lancamento.tarefaMedicao)"
             >
               {{ lancamento.tarefaMedicao }}
             </td>
@@ -699,7 +700,7 @@
 
             <td class="text-2xl">
               {{
-                formatCurrency(
+                formatCurrencySemArrendondar(
                   calcularSaldoFaturamentoItens(faturamento.faturamentoItens)
                 )
               }}
