@@ -271,7 +271,7 @@ const loading = ref(false);
 
 
 onMounted(() => {
-  fetchDashboardData();  
+  fetchDashboardData();
 });
 
 
@@ -287,7 +287,6 @@ const fetchDashboardData = async (status, page, vencimento) => {
   const statusFat = validStatuses.includes(status) ? status : "";
   const vencimentoFat = vencimento ? vencimento : 0;
   const pageAtual = page ? page : 1;
-  // console.log(typeof vencimentoFat, 'pageAtual')
   try {
     if (!vencimentoFat) {
       loading.value = true;
@@ -314,7 +313,6 @@ const fetchDashboardData = async (status, page, vencimento) => {
       resultsPerPageContratos.value = meta.perPage;
       contratoItemData.value = adicionarStatusVencimento(contratos);
     } else {
-      // console.log(vencimentoFat, 'vencimentoFat');
       loading.value = true;
       const response = await api.get("/dashboard", {
         params: {

@@ -44,7 +44,6 @@ export const useProfileStore = defineStore("profileUser", {
         // Atualiza manualmente o localStorage
         const updatedState = JSON.stringify(this.$state);
         localStorage.setItem("profileUser", updatedState);
-        console.log("Estado atualizado no localStorage:", updatedState);
       }
 
   },
