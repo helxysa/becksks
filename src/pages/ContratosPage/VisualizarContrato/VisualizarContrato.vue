@@ -3279,6 +3279,7 @@ const alterarStatusMedicao = async (id, novoStatus) => {
     const response = await api.patch(`/lancamentos/${id}/status`, {
       status: novoStatus,
     });
+    console.log('novoStatus', novoStatus)
 
     socket.emit('medicao:update', {
       id,
@@ -3888,6 +3889,15 @@ const saveEditedLancamento = async () => {
           theme: "colored",
           type: "success",
         });
+        console.log('rep', response.data.status)
+        if( response.data.status === 'Disponível p/ Faturamento' ) {
+          socket.emit('medicao:update', {
+            id: response.data.id,
+            status: response.data.status,
+            contratoId: contratoOriginal.value.id,
+            message: `O status da medição ${response.data.id} foi alterado para: ${response.data.status}`,
+          });
+        }
         modalEditLancamento.value = false;
         editingLancamentoBackup.value = null;
         fetchContrato(contratoId);
