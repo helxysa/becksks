@@ -129,7 +129,9 @@ const marcarComoLida = (id) => {
   localStorage.setItem("notificacoesLidas", JSON.stringify(notificacoesLidas));
 
   mensagens.value = mensagens.value.filter(mensagem => mensagem.id !== id);
-  notificacoes.value = notificacoes.value.filter((notificacao) => notificacao.id !== id);
+  // notificacoes.value = notificacoes.value.filter((notificacao) => notificacao.id !== id);
+  // Atualiza o localStorage após remover a notificação
+  saveMedicaoMensagensToLocalStorage();
 };
 
 const verificarVencimentoContratos = () => {
@@ -137,7 +139,7 @@ const verificarVencimentoContratos = () => {
   const contratos = JSON.parse(localStorage.getItem("notifications")) || [];
   const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
 
-  mensagens.value = [];
+  mensagens.value = mensagens.value.filter(msg => msg.tipo !== 'sino');
 
   contratos.forEach((contrato) => {
     if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) return;
@@ -193,6 +195,19 @@ const adicionarNotificacaoSino = (contrato, diasParaVencimento, notificacoesLida
   }
 };
 
+// Funções para salvar e carregar notificações de medições
+const saveMedicaoMensagensToLocalStorage = () => {
+  localStorage.setItem('medicaoMensagens', JSON.stringify(mensagens.value.filter(msg => msg.tipo === 'medicao')));
+};
+
+const loadMedicaoMensagensFromLocalStorage = () => {
+  const storedMensagens = localStorage.getItem('medicaoMensagens');
+  if (storedMensagens) {
+    const medicaoMensagens = JSON.parse(storedMensagens);
+    mensagens.value = [...mensagens.value, ...medicaoMensagens];
+  }
+};
+
 const handleClickOutside = (event) => {
   if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
     isDropdownOpen.value = false;
@@ -219,6 +234,7 @@ const fetchContratos = async () => {
 
   onMounted(() => {
     fetchContratos();
+    loadMedicaoMensagensFromLocalStorage();
     verificarVencimentoContratos();
     document.addEventListener('click', handleClickOutside);
 
@@ -229,6 +245,7 @@ const fetchContratos = async () => {
           mensagens.value.push(notificacao);
         }
       });
+
       socket.on('medicao:update', (data) => {
         const existingMessageIndex = mensagens.value.findIndex((msg) => msg.id === data.id);
 
@@ -255,6 +272,7 @@ const fetchContratos = async () => {
             mensagens.value.splice(existingMessageIndex, 1);
           }
         }
+        saveMedicaoMensagensToLocalStorage();
       });
     }
   });
