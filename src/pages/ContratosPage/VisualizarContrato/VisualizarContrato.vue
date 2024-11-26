@@ -435,8 +435,8 @@
       <div class="flex justify-center">
         <vue-awesome-paginate
           :total-items="totalItens"
+          :max-pages-shown="lastPageItens"
           :items-per-page="resultsPerPageItens"
-          :max-pages-shown="5"
           v-model="currentPage"
           @click="changePageItem"
         />
@@ -636,7 +636,7 @@
         <vue-awesome-paginate
           :total-items="totalMedicoes"
           :items-per-page="resultsPerPageMedicoes"
-          :max-pages-shown="5"
+          :max-pages-shown="lastPageMedicoes"
           v-model="currentPageMedicao"
           @click="changePageMedicao"
         />
@@ -756,7 +756,7 @@
       <div class="flex justify-center" v-if="faturamentoItemData">
         <vue-awesome-paginate
           :total-items="totalFaturamentos"
-          :max-pages-shown="5"
+          :max-pages-shown="lastPageFaturamentos"
           :items-per-page="resultsPerPageFaturamentos"
           v-model="currentPageFaturamento"
           @click="changePageFaturamento"
@@ -978,6 +978,7 @@
           </button>
           <button
             type="submit"
+            :disabled="isSubmitting"
             class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-faturamento w-40"
           >
             Salvar
@@ -2134,6 +2135,7 @@ const store = useProfileStore()
 waveform.register();
 const contratoSelecionadoId = ref(null);
 const isLoading = ref(true);
+const isSubmitting = ref(false)
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
@@ -2267,13 +2269,16 @@ const showTermosAditivosDropdown = ref(false);
 const modalTermosAditivos = ref(false);
 const totalItens = ref();
 const resultsPerPageItens = ref();
+const lastPageItens = ref(1)
 let contratoItemData = ref([]);
 let contratoItemMeta = ref([]);
 const totalMedicoes = ref();
 const resultsPerPageMedicoes = ref();
+const lastPageMedicoes = ref(1);
 let medicaoItemData = ref([]);
 let medicaoItemMeta = ref([]);
 const totalFaturamentos = ref(0);
+const lastPageFaturamentos = ref(1)
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
@@ -2298,7 +2303,6 @@ const handleEditAditivoSubmit = async (termoAditivo) => {
         closeModalEditAditivo();
       });
   } catch (error) {
-    console.log(error, 'erro')
     toast.error("Ocorreu um erro ao salvar o contrato. Tente novamente.", {
       position: "top-right",
     });
@@ -2493,6 +2497,7 @@ const fetchContratoItens = async (id, page) => {
 
     contratoItemData.value = itens;
     contratoItemMeta.value = meta;
+    lastPageItens.value = contratoItemMeta.value.lastPage;
     currentPage.value = contratoItemMeta.value.currentPage;
     totalItens.value = contratoItemMeta.value.total;
     resultsPerPageItens.value = contratoItemMeta.value.perPage;
@@ -2567,6 +2572,7 @@ const fetchContratoMedicoes = async (id, page) => {
     }
     currentPageMedicao.value = medicaoItemMeta.value.currentPage;
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
+    lastPageMedicoes.value = medicaoItemMeta.value.lastPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
     medicaoItemData.value = [];
@@ -2590,6 +2596,7 @@ const fetchContratoFaturamentos = async (id, page) => {
     const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
+    lastPageFaturamentos.value = response.data.meta.lastPage
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
     resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
     totalFaturamentos.value = faturamentoItemMeta.value.total;
@@ -2753,13 +2760,10 @@ const formatDatePTBR = (isoString) => {
 };
 
 const createPedidoFaturamento = async () => {
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
   // const dataFaturamento = startOfDay(new Date(pedidoFaturamentoData.value.data_faturamento));
   // const dataFaturamentoISO = formatISO(dataFaturamento, { representation: 'date' });
-
-  // if(pedidoFaturamentoData.value.observacoes && pedidoFaturamentoData.value.observacoes.length > 1500) {
-  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${pedidoFaturamentoData.value.observacoes.length}`)
-  //   return;
-  // }
 
   let payload = {
     nota_fiscal: pedidoFaturamentoData.value.nota_fiscal,
@@ -2772,6 +2776,7 @@ const createPedidoFaturamento = async () => {
 
   if (payload.descricao_nota.length <= 0) {
     toast.error("Selecione pelo menos um lançamento para gerar o faturamento.");
+    isSubmitting.value = false;
     return;
   }
 
@@ -2797,6 +2802,8 @@ const createPedidoFaturamento = async () => {
       theme: "colored",
       type: "error",
     });
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
@@ -3276,15 +3283,14 @@ const alterarStatusMedicao = async (id, novoStatus) => {
     const response = await api.patch(`/lancamentos/${id}/status`, {
       status: novoStatus,
     });
-    console.log('novoStatus', novoStatus)
-
-    socket.emit('medicao:update', {
-      id,
-      status: novoStatus,
-      contratoId: contratoOriginal.value.id,
-      message: `O status da medição ${id} foi alterado para: ${novoStatus}`,
-    });
-    // console.log(`Notificação enviada para o status da medição ${id}`);
+    if (response.data.status === 'Disponível p/ Faturamento' || response.data.status === 'Finalizada'){
+        socket.emit('medicao:update', {
+          id,
+          status: novoStatus,
+          contratoId: contratoOriginal.value.id,
+          message: `O status da medição ${id} foi alterado para: ${novoStatus}`,
+        });
+      }
 
   } catch (error) {
     console.error(`Erro ao alterar status da medição ${id}:`, error);
@@ -3908,7 +3914,6 @@ const saveEditedLancamento = async () => {
           theme: "colored",
           type: "success",
         });
-        console.log('rep', response.data.status)
         if( response.data.status === 'Disponível p/ Faturamento' ) {
           socket.emit('medicao:update', {
             id: response.data.id,

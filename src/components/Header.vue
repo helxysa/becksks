@@ -22,28 +22,29 @@
             v-if="isDropdownOpen"
             class="z-50 absolute right-0 mt-2 w-full min-w-[40rem] bg-white border border-gray-300 rounded-md shadow-lg"
           >
-            <ul>
-              <li
-                v-for="(mensagem, index) in mensagens"
-                :key="index"
-
-              >
-              <section class="flex items-center justify-between border-b border-gray-200 ml-4 mr-4">
-                <div @click="redirecionarParaContrato(mensagem.id, mensagem.contratoId, mensagem.tipo)" class="p-6 first:mt-4 last:mb-4 hover:bg-blue-50 rounded-lg mb-2 mr-2">
-                  <span v-html="mensagem.texto" class="mr-2 cursor-pointer text-2xl hover:text-blue-500 break-words transition-all duration-300"></span>
-                </div>
-                <Icon
-                  @click.stop="marcarComoLida(mensagem.id)"
-                  icon="carbon:close"
-                  width="3rem"
-                  class="text-blue-400 hover:bg-blue-50 rounded-lg hover:text-blue-500 transition-all duration-300"
-                />
-              </section>
-              </li>
-              <li v-if="mensagens.length === 0" class="p-2 text-gray-500">
-                Sem notificações
-              </li>
-            </ul>
+          <div class="max-h-[42rem] overflow-x-auto">
+              <ul>
+                <li
+                  v-for="(mensagem, index) in mensagens"
+                  :key="index"
+                >
+                <section class="flex items-center justify-between border-b border-gray-200 ml-4 mr-4">
+                  <div @click="redirecionarParaContrato(mensagem.id, mensagem.contratoId, mensagem.tipo)" class="p-6 first:mt-4 last:mb-4 hover:bg-blue-50 rounded-lg mb-2 mr-2">
+                    <span v-html="mensagem.texto" class="mr-2 cursor-pointer text-2xl hover:text-blue-500 break-words transition-all duration-300"></span>
+                  </div>
+                  <Icon
+                    @click.stop="marcarComoLida(mensagem.id)"
+                    icon="carbon:close"
+                    width="3rem"
+                    class="text-blue-400 hover:bg-blue-50 rounded-lg hover:text-blue-500 transition-all duration-300"
+                  />
+                </section>
+                </li>
+                <li v-if="mensagens.length === 0" class="p-2 text-gray-500">
+                  Sem notificações
+                </li>
+              </ul>
+          </div>
           </div>
         </div>
       </section>
