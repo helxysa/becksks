@@ -39,12 +39,12 @@
             <td class="text-2xl">{{ user.email }}</td>
             <td class="text-2xl">{{ user?.profile?.name }}</td>
             <td>
-              <div class="flex justify-center items-center gap-2">
+              <div class="flex justify-center items-center">
                 <span v-if="hasPermission('usuarios', 'Visualizar')">
                   <Icon
                     icon="ph:eye"
                     height="20"
-                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
                     @click="viewUser(user)"
                   />
                 </span>
@@ -52,15 +52,15 @@
                   <Icon
                     icon="bx:edit"
                     height="20"
-                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
                     @click="editUser(user)"
                   />
                 </span>
-                <span v-if="hasPermission('usuarios', 'Visualizar')">
+                <span v-if="hasPermission('usuarios', 'Visualizar') && user?.profile?.name !== 'Administrador'">
                   <Icon
                     icon="ph:trash"
                     height="20"
-                    class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
                     @click="deleteUser(user.id)"
                   />
                 </span>
