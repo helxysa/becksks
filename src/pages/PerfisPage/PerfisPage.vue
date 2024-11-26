@@ -74,7 +74,7 @@
                 class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
               />
             </span>
-            <span v-if="hasPermission('perfil', 'Deletar')" @click="deletePerfil(perfil.id)">
+            <span v-if="hasPermission('perfil', 'Deletar') && perfil.name !== 'Administrador'" @click="deletePerfil(perfil.id)">
               <Icon
                 icon="ph:trash"
                 height="20"
