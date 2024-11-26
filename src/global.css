@@ -8,6 +8,24 @@
   --grayLight :#EAEAEA;
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4BC7F4;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:  #60a5fa;
+}
+
 * {
     margin: 0;
     padding: 0;
