@@ -3072,14 +3072,12 @@ const createLancamento = async () => {
     return;
   }
 
-  let itensQuantidadePreenchida = contrato.value.contratoItens
-    .map((item) => ({
-      id_item: item.id,
-      quantidade_itens: item.quantidadeItens,
-    }))
-    // .filter(
-    //   (item) => item.quantidade_itens && parseFloat(item.quantidade_itens) > 0
-    // );
+let itensQuantidadePreenchida = contrato.value.contratoItens
+  .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
+  .map((item) => ({
+    id_item: item.id,
+    quantidade_itens: item.quantidadeItens,
+  }));
 
   // if (itensQuantidadePreenchida.length === 0) {
   //   toast(
@@ -3119,10 +3117,6 @@ const createLancamento = async () => {
     return;
   }
 
-  // if(medicaoData.value.descricao && medicaoData.value.descricao.length > 1500) {
-  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${medicaoData.value.descricao.length}`)
-  //   return;
-  // }
   if (medicaoData.value.tipo_medicao === "Detalhada") {
     medicaoData.value.status = "Não Iniciada";
   }
