@@ -1,6 +1,39 @@
 <template>
+  <div
+  v-if="isLoading"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50 backdrop-blur-sm"
+  >
+  <l-waveform size="40" stroke="3.5" speed="1" color="white"></l-waveform>
+</div>
+<div class="flex gap-4 mb-8" v-if="!isLoading">
+    <button
+      v-for="(termo, index) in [...termosAditivos].reverse()"
+      :key="termo.id"
+      @click="selecionarContrato(termo)"
+      :class="[
+        'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+        contratoSelecionadoId === termo.id
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-200 hover:bg-gray-300'
+      ]"
+    >
+      {{ termosAditivos.length - index }}º Termo Aditivo
+    </button>
+
+    <button
+      @click="selecionarContrato(contratoOriginal)"
+      :class="[
+        'px-6 py-2 rounded-md font-bold text-lg transition-colors',
+        contratoSelecionadoId === contratoOriginal?.id
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-200 hover:bg-gray-300'
+      ]"
+    >
+      Contrato Original
+    </button>
+  </div>
 <!-- Detalhes do contrato -->
-<section>
+<section v-if="!isLoading">
   <div
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
   >
@@ -17,9 +50,8 @@
     </h1>
   </div>
     <div class="flex flex-wrap gap-3">
-      <button
+      <button v-if="contrato.termoAditivoId === null"
       class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-green-500 hover:bg-green-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-
     >
       <router-link
         :to="{ name: 'Formulário Aditivo', params: { id: contrato.id } }"
@@ -29,18 +61,16 @@
     </button>
       <button
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-         v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canEdit === true)"
+        v-if="hasPermission('contratos', 'Editar')"
       >
-        <router-link
-          :to="{ name: 'editarcontrato', params: { id: contrato.id } }"
-        >
+        <router-link :to="{name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}">
           Editar
         </router-link>
       </button>
       <button
         @click="deleteContrato(contrato)"
         class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-         v-if="store.profile.permissions.some((item)=> item.name === 'contratos' && item.canDelete === true)"
+        v-if="hasPermission('contratos', 'Deletar')"
       >
         Excluir
       </button>
@@ -86,7 +116,7 @@
           <div>
             <p class="text-lg text-gray-500">Cliente</p>
             <p class="font-medium text-gray-700">
-              {{ contrato.nomeCliente }}
+              {{contrato.nomeCliente}}
             </p>
           </div>
         </div>
@@ -225,8 +255,8 @@
   </section>
 
   <!-- Resumo Financeiro -->
-  <h2 class="text-2xl font-bold text-gray-800 mb-6">Resumo Financeiro</h2>
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6" v-if="hasPermission('contratos', 'Visualizar Finanças')">Resumo Financeiro</h2>
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8" v-if="hasPermission('contratos', 'Visualizar Finanças')">
     <div
       v-for="(item, index) in financialSummary"
       :key="index"
@@ -244,28 +274,9 @@
 
 
   <!-- Observações -->
-  <!-- <section
-    class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-  >
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">Descrição</h3>
-    <div class="flex items-center">
-      <div class="bg-gray-100 text-gray-500 rounded-md p-3 mr-3">
-        <Icon
-          icon="fa-solid:comment-alt"
-          width="1.5rem"
-          height="1.5rem"
-          class="text-gray-400"
-        />
-      </div>
-      <div>
-        <p class="text-lg text-gray-500">Detalhes adicionais</p>
-        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
-      </div>
-    </div>
-  </section> -->
   <section class="mt-8">
     <div class="flex items-start justify-between gap-12">
-      <div class="w-3/4 border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md">
+      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
         <div class="flex">
          <span>
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
@@ -277,26 +288,17 @@
         </div>
         <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
       </div>
-      <div class="w-1/4 flex justify-end border rounded-xl shadow-sm ">
+      <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
         <div class="relative w-full">
           <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
             <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
             Histórico - Aditivos
             <Icon icon="mdi:chevron-down" class="ml-2" />
           </button>
-          <!-- {{termosAditivos}} -->
           <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
             <ul class="py-2">
               <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
-                {{ termo.nomeTermo }}
-                <!-- <span>
-                  <button
-                  @click="deletarTermoAditivo(termo.id)"
-                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                >
-                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
-                </button>
-                </span> -->
+                {{ termo.nomeContrato }}
               </li>
               <li class="px-4 py-2 hover:bg-gray-100">
                 <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
@@ -304,12 +306,13 @@
             </ul>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </section>
 </section>
 
-<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]">
+<section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]" v-if="!isLoading">
+  <!-- Abas de itens, medições, faturamentos e anexos -->
   <div class="flex border-b border-gray-200 mb-8 pt-4">
     <TabButton
       v-for="tab in tabs"
@@ -320,9 +323,8 @@
     />
   </div>
 
-
+  <!-- Tabela itens do contrato-->
   <div v-if="currentTab === 'Itens'">
-    <!-- Tabela itens do contrato-->
     <section class="mt-8">
       <div class="flex justify-between items-center">
         <h1 class="text-[1.8rem] font-medium text-gray-800">
@@ -332,7 +334,7 @@
           <button
             @click="openCreateItemModal"
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-             v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
+            v-if="hasPermission('itens_contrato', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
@@ -367,7 +369,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- {{contratoItemData}} -->
+
           <tr
             class="h-24 text-center"
             v-for="(item) in contratoItemData"
@@ -396,8 +398,10 @@
             </td>
             <td>
               <div class="flex justify-center items-center gap-2">
-                <span @click="openItemViewModal(item)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canView === true)">
+                <span
+                  @click="openItemViewModal(item)"
+                  v-if="hasPermission('itens_contrato', 'Visualizar')"
+                >
                   <Icon
                     icon="ph:eye"
                     height="20"
@@ -405,7 +409,7 @@
                   />
                 </span>
                 <span @click="openItemEditModal(item)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)"
+                v-if="hasPermission('itens_contrato', 'Editar')"
                 >
                   <Icon
                     icon="bx:edit"
@@ -413,8 +417,10 @@
                     class="hover:text-red-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="deleteItem(item.id)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canDelete === true)">
+                <span
+                  @click="deleteItem(item.id)"
+                  v-if="hasPermission('itens_contrato', 'Deletar')"
+                >
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -438,8 +444,8 @@
     </section>
   </div>
 
-    <div v-if="currentTab === 'Medições'">
-    <!-- Tabela Medições-->
+  <!-- Tabela Medições-->
+  <div v-if="currentTab === 'Medições'">
     <section class="mt-8">
       <div class="flex justify-between items-center">
         <h1 class="text-[1.8rem] font-medium text-gray-800">
@@ -449,7 +455,7 @@
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalLancamento"
-            v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canCreate === true)"
+            v-if="hasPermission('medicoes', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Nova Medição
@@ -457,7 +463,7 @@
           <button
             class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-orange-500 hover:bg-orange-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalPedidoFaturamento"
-            v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canCreate === true)"
+            v-if="hasPermission('faturamentos', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Novo faturamento
@@ -482,13 +488,14 @@
             <th class="text-xl">Projeto</th>
             <th class="text-xl">Tarefa</th>
             <th class="text-xl">Tipo</th>
-            <th class="text-xl">Status</th>
-            <!-- <th class="text-xl">Quantidade itens</th> -->
+            <th class="text-xl">
+              <StatusFilter
+                :allStatuses="allStatuses"
+                v-model="selectedStatuses"
+              />
+            </th>
             <th class="text-xl">Resultado</th>
             <th class="text-xl">Unidade de medida</th>
-            <!-- <th class="text-xl">Itens disponíveis</th> -->
-            <!-- <th class="text-xl">Situação</th> -->
-            <!-- <th class="text-xl">Saldo Atual do Contrato</th> -->
             <th class="text-xl">Ações</th>
           </tr>
         </thead>
@@ -499,7 +506,7 @@
             :key="lancamento.id"
             :class="{
               'bg-indigo-100':
-                lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado,
+                lancamento.status !== 'Disponível p/ Faturamento' || lancamento.isFaturado,
             }"
           >
             <td>
@@ -510,7 +517,7 @@
                 :value="lancamento.id"
                 @change="changePedido"
                 :disabled="
-                  lancamento.status !== 'Disponível para Faturamento' || lancamento.isFaturado
+                  lancamento.status !== 'Disponível p/ Faturamento' || lancamento.isFaturado
                 "
               />
             </td>
@@ -547,13 +554,13 @@
                   v-if="lancamento.tipoMedicao !== 'Detalhada'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
-                    'bg-slate-200 border-slate-400 text-orange-400':
+                    'bg-gray-200 border-gray-400':
                       lancamento.status === 'Não Autorizada',
-                    'bg-green-200 border-green-400 text-green-400':
+                    'bg-green-200 border-green-400':
                       lancamento.status === 'Autorizada',
-                    'bg-red-200 border-red-400 text-red-400':
+                    'bg-red-200 border-red-400':
                       lancamento.status === 'Cancelada',
-                    'bg-slate-200 border-slate-400 text-slate-600':
+                    'bg-slate-200 border-slate-400':
                       lancamento.status === 'Finalizada',
                   }"
                 >
@@ -563,25 +570,23 @@
                   v-else
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
-                    'bg-red-200 border-red-400 text-red-400':
+                    'bg-red-200 border-red-400':
                       lancamento.status === 'Não Iniciada',
-                      'bg-orange-200 border-orange-400 text-orange-400':
+                    'bg-orange-200 border-orange-400':
                       lancamento.status === 'Em Andamento',
-                      'bg-green-200 border-green-400 text-green-400':
-                      lancamento.status === 'Disponível para Faturamento',
-                      'bg-slate-200 border-slate-400 text-slate-600':
+                    'bg-yellow-200 border-yellow-400':
+                      lancamento.status === 'Encaminhada p/ Faturamento',
+                    'bg-green-200 border-green-400':
+                      lancamento.status === 'Disponível p/ Faturamento',
+                    'bg-slate-200 border-slate-400':
                       lancamento.status === 'Finalizada',
                   }"
-                >
+                  >
                   {{ lancamento.status }}
-                </span>
+                  </span>
               </div>
             </td>
-            <!-- <td class="text-2xl">
-              {{ calcularQuantidadeItens(lancamento.lancamentoItens) }}
-            </td> -->
             <td class="text-2xl">
-              <!-- {{ calcularQuantidadeItens(lancamento.lancamentoItens) }} -->
                 <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
                   {{ subitem.quantidadeItens }}
                 </span>
@@ -591,43 +596,31 @@
             </td>
             <td class="text-2xl">
               <div class="flex justify-center items-center gap-2">
-                <span @click="openViewLancamentoModal(lancamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canView === true)">
+                <span
+                  @click="openViewLancamentoModal(lancamento)"
+                  v-if="hasPermission('medicoes', 'Visualizar')"
+                >
                   <Icon
                     icon="ph:eye"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-
-                <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-                <!-- <span>
-                  <Icon
-                    icon="bx:edit"
-                    height="20"
-                    class="text-gray-500 hover:rounded-md cursor-pointer"
-                  />
-                </span> -->
-                <!-- <span @click="openEditLancamentoModal(lancamento)" v-else> -->
-                <span @click="openEditLancamentoModal(lancamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canEdit === true)">
+                <span
+                  @click="openEditLancamentoModal(lancamento)"
+                  v-if="hasPermission('medicoes', 'Editar')"
+                >
                   <Icon
                     icon="bx:edit"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <!-- <span  v-if=" lancamento.tipoMedicao === 'Estimada' || lancamento.isFaturado "> -->
-                <!-- <span>
-                  <Icon
-                    icon="ph:trash"
-                    height="20"
-                    class="text-gray-500 hover:rounded-md cursor-pointer"
-                  />
-                </span> -->
 
-                <span @click="deleteLancamento(lancamento.id)"
-                 v-if="store.profile.permissions.some((item)=> item.name === 'medicoes' && item.canDelete === true)">
+                <span
+                  @click="deleteLancamento(lancamento.id)"
+                  v-if="hasPermission('medicoes', 'Deletar')"
+                 >
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -649,10 +642,10 @@
         />
       </div>
     </section>
-    </div>
+  </div>
 
-    <div v-if="currentTab === 'Faturamentos'">
-    <!-- Tabela Faturamentos-->
+  <!-- Tabela Faturamentos-->
+  <div v-if="currentTab === 'Faturamentos'">
     <section>
       <h1 class="text-[1.8rem] font-medium text-gray-800">
         Faturamentos
@@ -725,24 +718,30 @@
 
             <td class="text-2xl">
               <div class="flex justify-center items-center gap-2">
-                <span @click="openViewFaturamentoModal(faturamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canView === true)">
+                <span
+                  @click="openViewFaturamentoModal(faturamento)"
+                  v-if="hasPermission('faturamentos', 'Visualizar')"
+                >
                   <Icon
                     icon="ph:eye"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="openEditFaturamentoModal(faturamento)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canEdit === true)">
+                <span
+                  @click="openEditFaturamentoModal(faturamento)"
+                  v-if="hasPermission('faturamentos', 'Editar')"
+                >
                   <Icon
                     icon="bx:edit"
                     height="20"
                     class="hover:text-blue-500 hover:rounded-md cursor-pointer"
                   />
                 </span>
-                <span @click="deleteFaturamento(faturamento.id)"
-                v-if="store.profile.permissions.some((item)=> item.name === 'faturamentos' && item.canDelete === true)">
+                <span
+                  @click="deleteFaturamento(faturamento.id)"
+                  v-if="hasPermission('faturamentos', 'Deletar')"
+                >
                   <Icon
                     icon="ph:trash"
                     height="20"
@@ -764,14 +763,14 @@
         />
       </div>
     </section>
-    </div>
+  </div>
 
-    <div v-if="currentTab === 'Anexos'">
-      <!-- Anexos do contrato -->
-      <div v-if="contratoId">
-        <Anexos :resourceId="contratoId" :variant="'contrato'" />
-      </div>
-    </div>
+  <!-- Anexos do contrato -->
+  <div v-if="currentTab === 'Anexos'">
+    <!-- <div v-if="contratoId"> -->
+    <Anexos :key="contratoId" :resourceId="contratoId" :variant="'contrato'" />
+    <!-- </div> -->
+  </div>
 </section>
   <!-- Modal novo pedido de faturamento-->
   <JetDialogModal
@@ -967,7 +966,7 @@
           </tbody>
         </table>
         <div>
-          <AnexoUpload :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
+          <AnexoUpload ref="anexoUploadRef" :resourceId="faturamentoId" variant="faturamento" :localAnexos="faturamentoLocalAnexos"/>
         </div>
       </div>
         <footer class="mt-9 flex justify-end gap-4">
@@ -1393,7 +1392,7 @@
             </tbody>
           </table>
           <div>
-            <AnexoUpload :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos"/>
+            <AnexoUpload ref="anexoUploadRef" :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos" />
           </div>
         </div>
         </div>
@@ -1507,8 +1506,9 @@
 
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível para Faturamento">Disponível para Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada">Finalizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada" disabled hidden>Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -2017,8 +2017,9 @@
       </footer>
     </template>
   </JetDialogModal>
-    <!-- Modal Termos Aditivos -->
-    <JetDialogModal
+
+  <!-- Modal Termos Aditivos -->
+  <JetDialogModal
     :show="modalTermosAditivos"
     :withouHeader="false"
     @close="closeModalTermosAditivos"
@@ -2037,7 +2038,7 @@
           </thead>
           <tbody>
             <tr v-for="termo in termosAditivos" :key="termo.id" class="h-24 text-center">
-              <td class="border p-2 text-2xl">{{ termo.nomeTermo }}</td>
+              <td class="border p-2 text-2xl">{{ termo.nomeContrato }}</td>
               <td class="border p-2 text-2xl">{{ formatDate(termo.dataInicio) }} - {{formatDate(termo.dataFim)}}</td>
               <td class="border p-2 ">
                <div class="flex justify-center items-center gap-2">
@@ -2108,7 +2109,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, defineEmits, watch } from "vue";
+import { ref, onMounted, computed, defineEmits, watch, nextTick } from "vue";
 import { useRoute, useRouter, RouterLink } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { api } from "@/services/api";
@@ -2121,17 +2122,22 @@ import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
+import { usePermissions } from '@/composables/usePermission';
 import ViewAditivoForm from '@/components/ViewAditivoForm.vue';
 import EditAditivoForm from '@/components/EditAditivoForm.vue';
+import { waveform } from "ldrs";
+import socket from '../../../../websocket.js'
+import StatusFilter from '@/components/StatusFilter.vue';
 
- const store = useProfileStore()
-
+const { hasPermission } = usePermissions();
+const store = useProfileStore()
+waveform.register();
+const contratoSelecionadoId = ref(null);
+const isLoading = ref(true);
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
-
 const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
-
 const modalViewAditivo = ref(false);
 const modalEditAditivo = ref(false);
 const selectedAditivo = ref(null);
@@ -2141,7 +2147,19 @@ const editMedicaoCurrentTab = ref(editMedicaoTabs[0])
 const editFaturamentoTabs = ['Formulário']
 const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 // Guias dos modais de criação
+const anexoUploadRef = ref(null);
 // Medicao
+const selectedStatuses= ref([])
+const allStatuses = ref([
+  'Não Autorizada',
+  'Autorizada',
+  'Cancelada',
+  'Finalizada',
+  'Não Iniciada',
+  'Em Andamento',
+  'Encaminhada p/ Faturamento',
+  'Disponível p/ Faturamento',
+])
 const criarMedicaoTabs = ['Formulário']
 const criarMedicaoCurrentTab = ref(criarMedicaoTabs[0])
 const medicaoLocalAnexos = ref([])
@@ -2195,6 +2213,7 @@ const financialSummary = computed(() => [
 ]);
 const router = useRouter();
 const route = useRoute();
+const contratoOriginal = ref(null);
 const contrato = ref({});
 const lancamentos = ref([]);
 const modalLancamento = ref(false);
@@ -2246,27 +2265,22 @@ const medicaoData = ref({
 const termosAditivos = ref([]);
 const showTermosAditivosDropdown = ref(false);
 const modalTermosAditivos = ref(false);
-
 const totalItens = ref();
 const resultsPerPageItens = ref();
 let contratoItemData = ref([]);
 let contratoItemMeta = ref([]);
-
 const totalMedicoes = ref();
 const resultsPerPageMedicoes = ref();
-
 let medicaoItemData = ref([]);
 let medicaoItemMeta = ref([]);
-
 const totalFaturamentos = ref(0);
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
 
 const handleEditAditivoSubmit = async (termoAditivo) => {
-
   let payload = {
-    nome_termo: termoAditivo.nomeTermo,
+    nome_contrato: termoAditivo.nomeContrato,
     data_inicio: termoAditivo.dataInicio,
     data_fim:termoAditivo.dataFim,
     saldo_contrato: termoAditivo.saldoContrato,
@@ -2275,7 +2289,7 @@ const handleEditAditivoSubmit = async (termoAditivo) => {
 
   try {
     const response = await api
-      .put(`/termo-aditivo/${termoAditivo.id}`, payload)
+      .put(`/contratos/${termoAditivo.id}`, payload)
       .then((response) => {
         toast("Termo aditivo editado com sucesso!", {
           theme: "colored",
@@ -2428,7 +2442,7 @@ const deletarTermoAditivo = (id) => {
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        await api.delete(`/termo-aditivo/${id}`);
+        await api.delete(`/contratos/${id}`);
         fetchTermoAditivo(contratoId)
 
         toast.success("Termo aditivo removido com sucesso!");
@@ -2465,10 +2479,10 @@ const currentPage = ref(1);
 const currentPageMedicao = ref(1);
 const currentPageFaturamento = ref(1);
 
-const fetchContratoItens = async (page) => {
+const fetchContratoItens = async (id, page) => {
   try {
     const response = await api.get(
-      `/contratos/${contrato.value.id}/items/?page=${page}`
+      `/contratos/${id}/items/?page=${page}`
     );
     const itens = response.data.data;
     const meta = response.data.meta;
@@ -2490,7 +2504,6 @@ const fetchContratoItens = async (page) => {
       }
     })
   } catch (error) {
-    console.error(error);
     contratoItemData.value = [];
     contratoItemMeta.value = [];
     currentPage.value = 1;
@@ -2510,13 +2523,13 @@ const changeSorting = (column, type) => {
   }
 
   if (type === "medicoes") {
-    fetchContratoMedicoes(currentPageMedicao.value);
+    fetchContratoMedicoes(contratoId, currentPageMedicao.value);
   } else if (type === "faturamentos") {
-    fetchContratoFaturamentos(currentPageFaturamento.value);
+    fetchContratoFaturamentos(contratoId, currentPageFaturamento.value);
   }
 };
 
-const fetchContratoMedicoes = async (page) => {
+const fetchContratoMedicoes = async (id, page) => {
   try {
     const params = {
       page,
@@ -2528,22 +2541,22 @@ const fetchContratoMedicoes = async (page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.medicoes;
     }
+    if (selectedStatuses.value && selectedStatuses.value.length > 0) {
+      params.statuses = selectedStatuses.value;
+    }
     const response = await api.get(
-      `/contratos/${contrato.value.id}/lancamentos`,
+      `/contratos/${id}/lancamentos`,
       { params }
     );
     medicaoItemData.value = response.data.data;
     medicaoItemMeta.value = response.data.meta;
 
-    // Para cada medição, verifique os itens e adicione a contagem dinâmica correspondente
     medicaoItemData.value.forEach((medicao) => {
       medicao.lancamentoItens.forEach((lancamentoItem) => {
-        // Procura o item correspondente no contratoItemData pelo contratoItemId
         const itemContrato = contratoItemData.value.find(
           (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
         );
         if (itemContrato) {
-          // Adiciona o campo contagem_dinamica do item do contrato à medição
           lancamentoItem.contagem_dinamica = itemContrato.contagem_dinamica;
         }
       });
@@ -2556,7 +2569,6 @@ const fetchContratoMedicoes = async (page) => {
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
-    console.error(error);
     medicaoItemData.value = [];
     medicaoItemMeta.value = [];
     currentPageMedicao.value = 1;
@@ -2564,7 +2576,7 @@ const fetchContratoMedicoes = async (page) => {
   }
 };
 
-const fetchContratoFaturamentos = async (page) => {
+const fetchContratoFaturamentos = async (id, page) => {
   try {
     const params = {
       limit: 8,
@@ -2575,14 +2587,13 @@ const fetchContratoFaturamentos = async (page) => {
     if (sortOrder.value) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
-    const response = await api.get(`/contratos/${contrato.value.id}/faturamentos?page=${page}`, { params });
+    const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
     resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
     totalFaturamentos.value = faturamentoItemMeta.value.total;
   } catch (error) {
-    console.error(error.response.data.message);
     faturamentoItemData.value = [];
     faturamentoItemMeta.value = [];
     currentPageFaturamento.value = 1;
@@ -2595,21 +2606,32 @@ watch( ()=> modalTermosAditivos.value,
  )
 
 watch(()=> alterouStatus.value, () =>{
-  fetchContratoMedicoes(currentPageMedicao.value )
+  fetchContratoMedicoes(contratoId, currentPageMedicao.value )
   alterouStatus.value = false;
 })
 watch(
   () => currentPage.value,
-  () => fetchContratoItens(currentPage.value)
+  () => fetchContratoItens(contratoId, currentPage.value)
 );
 watch(
   () => currentPageMedicao.value,
-  () => fetchContratoMedicoes(currentPageMedicao.value)
+  () => fetchContratoMedicoes(contratoId, currentPageMedicao.value)
 );
+
+watch(
+  () => selectedStatuses.value,
+  () => {
+    fetchContratoMedicoes(contratoId, 1);
+  },
+  { deep: true }
+);
+
 watch(
   () => currentPageFaturamento.value,
-  () => fetchContratoFaturamentos(currentPageFaturamento.value)
+  () => fetchContratoFaturamentos(contratoId, currentPageFaturamento.value)
 );
+
+watch(()=> contrato.value.id, () => contratoId = contrato.value.id)
 
 const changePedido = (e) => {
   pedidoFaturamentoData.value.descricao_nota = pedidosFaturamento.value;
@@ -2634,17 +2656,13 @@ const closeModalPedidoFaturamento = () => {
     status: "",
   };
   criarFaturamentoCurrentTab.value = criarFaturamentoTabs[0]
-  faturamentoLocalAnexos.value = []
-  faturamentoId.value = null
+  // faturamentoLocalAnexos.value = []
+  // faturamentoId.value = null
   pedidosFaturamento.value = [];
 };
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  // const dataFormatada = format(
-  //   new Date(faturamento.dataFaturamento),
-  //   "yyyy-MM-dd"
-  // );
   let dataFormatada = ''
   if (faturamento.dataFaturamento) {
     dataFormatada = faturamento.dataFaturamento.split('T')[0];
@@ -2758,18 +2776,22 @@ const createPedidoFaturamento = async () => {
   }
 
   try {
-    const contratoId = route.params.id;
-    const response = await api
-      .post(`/contratos/${contrato.value.id}/faturamentos`, payload)
-      .then((response) => {
-        faturamentoId.value = response.data.id;
-        toast("Faturamento criado com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-      });
-      closeModalPedidoFaturamento();
-      fetchContrato(contratoId);
+    const response = await api.post(`/contratos/${contratoId}/faturamentos`, payload)
+
+    faturamentoId.value = response.data.id;
+    toast("Faturamento criado com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+    await nextTick();
+    if (anexoUploadRef.value && faturamentoLocalAnexos.value.length > 0) {
+      await anexoUploadRef.value.uploadAnexosPendentes();
+    }
+    faturamentoLocalAnexos.value = [];
+    faturamentoId.value = null;
+
+    closeModalPedidoFaturamento();
+    fetchContrato(contratoId);
   } catch (error) {
     toast("Não foi possível criar o  pedido  de faturamento!", {
       theme: "colored",
@@ -2779,8 +2801,6 @@ const createPedidoFaturamento = async () => {
 };
 
 const deleteFaturamento = (faturamentoId) => {
-  const contratoId = route.params.id;
-
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este faturamento?",
@@ -2843,7 +2863,6 @@ const saveEditedFaturamento = async () => {
   };
 
   try {
-    let contratoId = route.params.id;
     const response = await api
       .put(`/faturamentos/${editingFaturamento.value.id}`, payload)
       .then((response) => {
@@ -2890,7 +2909,6 @@ const closeModalRenovacao = () => {
 };
 
 const createRenovacao = async () => {
-  const contratoId = route.params.id;
   let payload = {
     data_inicio: renovacaoData.value.data_inicio,
     data_fim: renovacaoData.value.data_fim,
@@ -2933,9 +2951,9 @@ const decimalConfig = {
   masked: false,
 };
 
-const deleteContrato = (contratoAtual) => {
+const deleteContrato = async (contratoAtual) => {
   Swal.fire({
-    title: "Confirmar exclusão",
+      title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este contrato?",
     icon: "warning",
     showCancelButton: true,
@@ -2952,7 +2970,12 @@ const deleteContrato = (contratoAtual) => {
             theme: "colored",
             type: "success",
           });
-          voltarListagem();
+          if(contratoAtual.id === contratoOriginal.value.id) {
+            router.push('/contratos')
+          } else {
+            fetchTermoAditivo(contratoOriginal.value.id)
+            selecionarContrato(contratoOriginal.value)
+          }
         })
         .catch((error) => {
           toast("Não foi possível deletar o contrato!", {
@@ -3028,7 +3051,7 @@ const resetForm = () => {
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
   });
-  medicaoId.value = null;
+  // medicaoId.value = null;
   criarMedicaoCurrentTab.value = criarMedicaoTabs[0]
   projetos.value = "";
   closeModalLancamento();
@@ -3054,20 +3077,20 @@ const createLancamento = async () => {
       id_item: item.id,
       quantidade_itens: item.quantidadeItens,
     }))
-    .filter(
-      (item) => item.quantidade_itens && parseFloat(item.quantidade_itens) > 0
-    );
+    // .filter(
+    //   (item) => item.quantidade_itens && parseFloat(item.quantidade_itens) > 0
+    // );
 
-  if (itensQuantidadePreenchida.length === 0) {
-    toast(
-      "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
-      {
-        theme: "colored",
-        type: "error",
-      }
-    );
-    return;
-  }
+  // if (itensQuantidadePreenchida.length === 0) {
+  //   toast(
+  //     "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
+  //     {
+  //       theme: "colored",
+  //       type: "error",
+  //     }
+  //   );
+  //   return;
+  // }
 
   const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
@@ -3117,16 +3140,22 @@ const createLancamento = async () => {
     tipo_medicao: medicaoData.value.tipo_medicao,
   };
   try {
-    const contratoId = route.params.id;
+    const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
 
-    const response = await api.post(`/contratos/${contrato.value.id}/lancamentos`, payload)
-      .then((response) => {
-        medicaoId.value = response.data.id;
-        toast("Medição criada com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-      });
+    medicaoId.value = response.data.id;
+    toast("Medição criada com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+
+    await nextTick();
+    if (medicaoLocalAnexos.value.length > 0 && anexoUploadRef.value) {
+      await anexoUploadRef.value.uploadAnexosPendentes();
+    }
+    medicaoLocalAnexos.value = [];
+
+    medicaoId.value = null;
+
     resetForm();
     fetchContrato(contratoId);
   } catch (error) {
@@ -3136,17 +3165,28 @@ const createLancamento = async () => {
 };
 
 const voltarListagem = () => {
-  router.push({ name: "Contratos" });
+ window.location.href = '/contratos'
 };
 
-onMounted(() => {
+onMounted(async () => {
   contratoId = route.params.id;
-  fetchContrato(contratoId);
-  fetchTermoAditivo(contratoId)
+
+  await fetchContrato(contratoId);
+  contratoOriginal.value = { ...contrato.value };
+
+  await fetchTermoAditivo(contratoId);
+
+  if (termosAditivos.value.length > 0) {
+    const ultimoTermo = termosAditivos.value[termosAditivos.value.length - 1];
+    contratoSelecionadoId.value = ultimoTermo.id;
+    await selecionarContrato(ultimoTermo);
+  } else {
+    contratoSelecionadoId.value = contratoOriginal.value.id;
+  }
+
+  isLoading.value = false;
   window.scroll({
     top: 0,
-    // left: 100,
-    // behavior: "smooth",
   });
 });
 
@@ -3155,12 +3195,10 @@ const fetchContrato = async (id) => {
     const response = await api.get(`/contratos/${id}`);
     let contratoData = response.data;
 
-    // contratoData.lancamentos = verificaIsFaturado(contratoData.lancamentos, contratoData.faturamentos);
-
     contrato.value = contratoData;
-    fetchContratoItens(currentPage.value);
-    fetchContratoMedicoes(currentPageMedicao.value);
-    fetchContratoFaturamentos(currentPageFaturamento.value);
+    fetchContratoItens(id, currentPage.value);
+    fetchContratoMedicoes(id, currentPageMedicao.value);
+    fetchContratoFaturamentos(id, currentPageFaturamento.value);
 
     podeRenovar.value = calcularPodeRenovar();
   } catch (error) {
@@ -3168,41 +3206,70 @@ const fetchContrato = async (id) => {
   }
 };
 
-const fetchTermoAditivo =  async (id) => {
+const fetchTermoAditivo = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    console.log(response.data, 'termo aditivos')
-    termosAditivos.value = response.data;
-    // contratoForm.value = response.data;
+    termosAditivos.value = response.data.sort((a, b) =>
+      new Date(a.createdAt) - new Date(b.createdAt)
+    );
 
+    if (termosAditivos.value.length > 0) {
+      const ultimoTermo = termosAditivos.value[termosAditivos.value.length - 1]
+      contratoSelecionadoId.value = ultimoTermo.id;
+      selecionarContrato(ultimoTermo);
+    }
   } catch (error) {
-    console.error("Erro ao buscar contrato:", error);
+    console.error("Erro ao buscar termos aditivos:", error);
+    termosAditivos.value = [];
   }
-}
+};
+
 const verificaIsFaturado = async (lancamentos, faturamentos) => {
   lancamentos.forEach((lancamento) => {
     lancamento.isFaturado = false;
   });
 
   if (faturamentos && faturamentos.length > 0) {
-    faturamentos.forEach((faturamento) => {
-      faturamento.faturamentoItens.forEach((item) => {
+    for (const faturamento of faturamentos) {
+      for (const item of faturamento.faturamentoItens) {
         const lancamento = lancamentos.find(
           (lancamento) => lancamento.id === item.lancamentoId
         );
+
         if (lancamento) {
           lancamento.isFaturado = true;
+
+          switch (faturamento.status) {
+            case 'Pago':
+              if (lancamento.status !== 'Finalizada') {
+                await alterarStatusMedicao(lancamento.id, 'Finalizada');
+                alterouStatus.value = true;
+              }
+              break;
+
+            case 'Aguardando Pagamento':
+            case 'Aguardando Faturamento':
+              if (lancamento.status !== 'Encaminhada p/ Faturamento') {
+                await alterarStatusMedicao(lancamento.id, 'Encaminhada p/ Faturamento');
+                alterouStatus.value = true;
+              }
+              break;
+
+            default:
+              break;
+          }
         }
-      });
-    });
+      }
+    }
   }
 
   for (const lancamento of lancamentos) {
-    if (lancamento.isFaturado && lancamento.status !== 'Finalizada') {
-      await alterarStatusMedicao(lancamento.id, 'Finalizada');
-      alterouStatus.value = true;
-    } else if (lancamento.status === 'Finalizada' && !lancamento.isFaturado) {
-      await alterarStatusMedicao(lancamento.id, 'Disponível para Faturamento');
+    if (
+      !lancamento.isFaturado &&
+      (lancamento.status === 'Encaminhada p/ Faturamento' || lancamento.status === 'Finalizada') &&
+      lancamento.tipoMedicao === 'Detalhada'
+    ) {
+      await alterarStatusMedicao(lancamento.id, 'Disponível p/ Faturamento');
       alterouStatus.value = true;
     }
   }
@@ -3215,13 +3282,22 @@ const alterarStatusMedicao = async (id, novoStatus) => {
     const response = await api.patch(`/lancamentos/${id}/status`, {
       status: novoStatus,
     });
+    console.log('novoStatus', novoStatus)
+
+    socket.emit('medicao:update', {
+      id,
+      status: novoStatus,
+      contratoId: contratoOriginal.value.id,
+      message: `O status da medição ${id} foi alterado para: ${novoStatus}`,
+    });
+    // console.log(`Notificação enviada para o status da medição ${id}`);
+
   } catch (error) {
     console.error(`Erro ao alterar status da medição ${id}:`, error);
   }
 };
 
 const deleteLancamento = (lancamentoId) => {
-  const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir essa medição?",
@@ -3504,7 +3580,6 @@ const closeModalEditAditivo = () => {
 
 
 const saveEditedItem = async () => {
-  const contratoId = route.params.id;
   const itemIndex = contrato.value.contratoItens.findIndex(
     (i) => i.id === editingItem.value.id
   );
@@ -3576,7 +3651,6 @@ const saveEditedItem = async () => {
 
 // Deletar Item do contrato
 const deleteItem = async (itemId) => {
-  const contratoId = route.params.id;
   Swal.fire({
     title: "Confirmar exclusão",
     text: "Tem certeza que deseja excluir este item?",
@@ -3622,7 +3696,6 @@ const closeModalCreateItem = () => {
 };
 
 const createNewItem = async () => {
-  const contratoId = route.params.id;
   let valorTotalItens = 0;
   let valorContratado = parseFloat(contrato.value.saldoContrato) || 0;
 
@@ -3660,7 +3733,7 @@ const createNewItem = async () => {
 
   try {
     const response = await api.post(
-      `/contratos/${route.params.id}/items`,
+      `/contratos/${contratoId}/items`,
       newItem.value
     );
     toast("Item criado com sucesso!", {
@@ -3700,18 +3773,16 @@ const openEditLancamentoModal = (lancamento) => {
 
 const openViewLancamentoModal = (lancamento) => {
   isLancamentoViewModal.value = true;
-  const itensComQuantidade = lancamento.lancamentoItens.filter(
-    (item) => item.quantidadeItens > 0
-  );
+  const itensComQuantidade = lancamento.lancamentoItens
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
   editingLancamento.value = {
     ...lancamento,
-    lancamentoItens: itensComQuantidade,
     dataMedicao: dataFormatada,
+    lancamentoItens: itensComQuantidade,
   };
-  fetchProjetos(route.params.id);
   modalEditLancamento.value = true;
+  fetchProjetos(route.params.id);
 };
 
 const closeEditLancamentoModal = () => {
@@ -3835,7 +3906,6 @@ const saveEditedLancamento = async () => {
     projetos: editingLancamento.value.projetos,
   };
   try {
-    const contratoId = route.params.id;
     const response = await api
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
       .then((response) => {
@@ -3844,6 +3914,15 @@ const saveEditedLancamento = async () => {
           theme: "colored",
           type: "success",
         });
+        console.log('rep', response.data.status)
+        if( response.data.status === 'Disponível p/ Faturamento' ) {
+          socket.emit('medicao:update', {
+            id: response.data.id,
+            status: response.data.status,
+            contratoId: contratoOriginal.value.id,
+            message: `O status da medição ${response.data.id} foi alterado para: ${response.data.status}`,
+          });
+        }
         modalEditLancamento.value = false;
         editingLancamentoBackup.value = null;
         fetchContrato(contratoId);
@@ -3894,7 +3973,6 @@ const downloadZip = async (id) => {
     const blob = new Blob([response.data], { type: 'application/zip' });
 
     const url = window.URL.createObjectURL(blob);
-    console.log('URL do blob:', url);
 
     const a = document.createElement('a');
     a.href = url;
@@ -3917,11 +3995,26 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
       editingLancamento.value.status = '';
     }
   } else if (newTipo === 'Detalhada') {
-    if (!['Não Iniciada', 'Em Andamento', 'Disponível para Faturamento', 'Finalizada'].includes(editingLancamento.value.status)) {
+    if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada', 'Encaminhada p/ Faturamento'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
   }
 });
+
+const selecionarContrato = async (contratoData) => {
+  if (contratoData && contratoData.id) {
+    contratoSelecionadoId.value = contratoData.id;
+    currentPage.value = 1;
+    currentPageMedicao.value = 1;
+    currentPageFaturamento.value = 1;
+    await fetchContrato(contratoData.id);
+
+    if (!contratoData.idContratoOriginal) {
+      contratoOriginal.value = { ...contrato.value };
+    }
+  }
+};
+
 </script>
 
 <style>
@@ -4021,5 +4114,13 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
 
 .active-page:hover {
   background-color: #2988c8;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease-in-out;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

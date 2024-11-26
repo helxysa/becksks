@@ -5,7 +5,7 @@
       <button
         class="flex items-center justify-center gap-2 px-9 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
         @click="openModal"
-        v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canCreate === true)"
+        v-if="hasPermission('perfil', 'Criar')"
       >
         <Icon icon="la:file-contract" class="text-zinc-50" height="25" />
         <span>Novo Perfil</span>
@@ -37,69 +37,55 @@
           <td class="p-4">{{ perfil.name }}</td>
           <td class="p-4">
             <span
-              v-for="permissao in perfil.permissions.filter((p) => p.canCreate || p.canEdit || p.canView || p.canDelete)"
-              :key="permissao.id"
+              v-for="permissao in perfil.permissions.filter((p) => p.actions && Object.values(p.actions).some((v) => v === true))"
+              :key="permissao.name"
               class="inline-flex items-center mb-2"
             >
-            <span class="font-medium">{{ permissoesNomeMap[permissao.name] || permissao.name }}</span>:
-            <span class="flex items-center mx-2">
-            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Criar">
-              <Icon
-              v-if="permissao.canCreate"
-              icon="octicon:feed-plus-16"
-              class="text-blue-500"
-              height="16"
-            />
+              <span class="font-medium">{{ permissoesNomeMap[permissao.name] || permissao.name }}</span>:
+              <span class="flex items-center mx-2">
+                <span
+                  v-for="(isActive, actionName) in permissao.actions"
+                  :key="actionName"
+                  :title="actionIcons[actionName].title"
+                  >
+                  <Icon
+                  class="transition-transform ease-in-out transform hover:-translate-y-[2px] cursor-pointer"
+                    v-if="isActive && actionIcons[actionName]"
+                    :icon="actionIcons[actionName].icon"
+                    :class="actionIcons[actionName].class"
+                    :height="actionIcons[actionName].height"
+                  />
+                </span>
+              </span>
             </span>
-            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Editar">
-              <Icon
-              v-if="permissao.canEdit"
-              icon="bx:edit"
-              class="text-green-500"
-              height="18"
-            />
-            </span>
-            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Visualizar">
-            <Icon
-              v-if="permissao.canView"
-              icon="ph:eye"
-              class="text-blue-500"
-              height="20"
-            />
-            </span>
-            <span class="transition-transform ease-in-out transform hover:-translate-y-[2px]" title="Deletar">
-              <Icon
-              v-if="permissao.canDelete"
-              icon="ph:trash"
-              class="text-red-500"
-              height="20"
-            />
-            </span>
-          </span>
-        </span>
           </td>
           <td class="p-4 flex justify-center items-center h-full">
-            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canView === true)" @click="viewPerfil(perfil)">
-            <Icon
-              icon="ph:eye"
-              height="20"
-              class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
-            />
+            <span v-if="hasPermission('perfil', 'Visualizar')" @click="viewPerfil(perfil)">
+              <Icon
+                icon="ph:eye"
+                height="20"
+                class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
+              />
             </span>
-            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canEdit === true)" @click="editPerfil(perfil)">
-            <Icon
-              icon="bx:edit"
-              height="18"
-              class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
-            />
+            <span v-if="hasPermission('perfil', 'Editar')" @click="editPerfil(perfil)">
+              <Icon
+                icon="bx:edit"
+                height="18"
+                class="text-black cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
+              />
             </span>
-            <span v-if="store.profile.permissions.some((item)=> item.name === 'perfil' && item.canDelete === true)" @click="deletePerfil(perfil.id)">
-              <Icon icon="ph:trash" height="20" class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]" />
+            <span v-if="hasPermission('perfil', 'Deletar')" @click="deletePerfil(perfil.id)">
+              <Icon
+                icon="ph:trash"
+                height="20"
+                class="cursor-pointer transition-transform ease-in-out transform hover:-translate-y-[2px]"
+              />
             </span>
           </td>
         </tr>
       </tbody>
     </table>
+
 
     <!-- Modal de criação/edição -->
     <JetDialogModal
@@ -158,7 +144,7 @@
                 class="mt-2 ml-4"
               >
                 <label
-                  v-for="action in actions"
+                  v-for="action in permissao.actions"
                   :key="action"
                   class="flex items-center"
                 >
@@ -240,7 +226,6 @@
   </div>
 </template>
 
-
 <script setup>
   import { ref, onMounted } from "vue";
   import { Icon } from "@iconify/vue";
@@ -250,9 +235,11 @@
   import { toast } from "vue3-toastify";
   import { useProfileStore } from "@/stores/ProfileStore";
   import { waveform } from "ldrs";
+  import { usePermissions } from '@/composables/usePermission';
 
   waveform.register();
-  const store = useProfileStore()
+  const { hasPermission } = usePermissions();
+  const store = useProfileStore();
   const perfis = ref([]);
   const carregando = ref(true);
   const showModal = ref(false);
@@ -264,25 +251,67 @@
   const permissoesAtivas = ref([]);
 
   const permissoes = [
-    { nome: "Usuários", chave: "usuarios" },
-    { nome: "Perfil", chave: "perfil" },
-    { nome: "Contratos", chave: "contratos" },
-    { nome: "Itens de contrato", chave: "itens_contrato" },
-    { nome: "Medições", chave: "medicoes" },
-    { nome: "Faturamentos", chave: "faturamentos" },
-    { nome: "Projetos", chave: "projetos" },
+    { nome: "Usuários", chave: "usuarios", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
+    { nome: "Perfil", chave: "perfil", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
+    { nome: "Contratos", chave: "contratos", actions: ["Criar", "Visualizar", "Editar", "Deletar", "Visualizar Finanças"] },
+    { nome: "Itens de contrato", chave: "itens_contrato", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
+    { nome: "Medições", chave: "medicoes", actions: ["Criar", "Visualizar", "Editar", "Deletar", "Notificar"] },
+    { nome: "Faturamentos", chave: "faturamentos", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
+    { nome: "Projetos", chave: "projetos", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
+    { nome: "Dashboard", chave: "dashboard", actions: ["Visualizar"] },
+    { nome: "Registros", chave: "registros", actions: ["Visualizar"] },
   ];
 
-  // Criar o mapeamento de chaves para nomes
+  // Mapeamento de chaves para nomes
   const permissoesNomeMap = Object.fromEntries(
     permissoes.map((permissao) => [permissao.chave, permissao.nome])
   );
+
+  // Mapeamento de ícones para as ações
+  const actionIcons = {
+    Criar: {
+      icon: 'octicon:feed-plus-16',
+      class: 'text-blue-500',
+      height: 16,
+      title: 'Criar',
+    },
+    Editar: {
+      icon: 'bx:edit',
+      class: 'text-green-500',
+      height: 18,
+      title: 'Editar',
+    },
+    Visualizar: {
+      icon: 'ph:eye',
+      class: 'text-blue-500',
+      height: 20,
+      title: 'Visualizar',
+    },
+    Deletar: {
+      icon: 'ph:trash',
+      class: 'text-red-500',
+      height: 20,
+      title: 'Deletar',
+    },
+    'Visualizar Finanças': {
+      icon: 'mdi:currency-usd',
+      class: 'text-green-600',
+      height: 20,
+      title: 'Visualizar Finanças',
+    },
+    Notificar: {
+      icon: 'carbon:notification',
+      class: 'text-yellow-500',
+      height: 20,
+      title: 'Notificar',
+    },
+  };
 
   const buscarPerfis = async () => {
     try {
       const resposta = await api.get("/perfil");
       perfis.value = resposta.data;
-      atualizarUsuarioLogado()
+      atualizarUsuarioLogado();
       carregando.value = false;
     } catch (erro) {
       carregando.value = false;
@@ -291,26 +320,25 @@
   };
 
   const atualizarUsuarioLogado = async () => {
-  try {
-    const profileUser = localStorage.getItem("profileUser");
-    const userId = JSON.parse(profileUser).id
+    try {
+      const profileUser = localStorage.getItem("profileUser");
+      const userId = JSON.parse(profileUser).id;
 
-    if (!userId) {
-      throw new Error("ID do usuário não encontrado.");
+      if (!userId) {
+        throw new Error("ID do usuário não encontrado.");
+      }
+      const response = await api.get(`/users/${userId}`);
+      const perfilAtualizado = response.data;
+      const perfilAtual = store.profile;
+      if (JSON.stringify(perfilAtual) !== JSON.stringify(perfilAtualizado)) {
+        store.$patch({
+          ...perfilAtualizado,
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao buscar perfil atualizado:", error);
     }
-    const response = await api.get(`/users/${userId}`);
-    const perfilAtualizado = response.data;
-    const store = useProfileStore();
-    const perfilAtual = store.profile;
-    if (JSON.stringify(perfilAtual) !== JSON.stringify(perfilAtualizado)) {
-      store.$patch({
-        ...perfilAtualizado,
-      });
-    }
-  } catch (error) {
-    console.error("Erro ao buscar perfil atualizado:", error);
-  }
-};
+  };
 
   const openModal = () => {
     isEditing.value = false;
@@ -324,11 +352,10 @@
     permissoes.forEach((permissao) => {
       novoPerfil.value.permissions[permissao.chave] = {
         active: false,
-        Criar: false,
-        Visualizar: false,
-        Editar: false,
-        Deletar: false,
       };
+      permissao.actions.forEach((action) => {
+        novoPerfil.value.permissions[permissao.chave][action] = false;
+      });
     });
   };
 
@@ -342,30 +369,22 @@
     permissions: {},
   });
 
-  const actions = ["Criar", "Visualizar", "Editar", "Deletar"];
-
-  // Inicializa as permissões para um novo perfil
-  permissoes.forEach((permissao) => {
-    novoPerfil.value.permissions[permissao.chave] = {
-      active: false,
-      Criar: false,
-      Visualizar: false,
-      Editar: false,
-      Deletar: false,
-    };
-  });
-
   const salvarPerfil = async () => {
     const perfilData = {
       name: novoPerfil.value.name,
       permissions: Object.entries(novoPerfil.value.permissions).map(
-        ([key, value]) => ({
-          name: key,
-          can_create: value.Criar,
-          can_edit: value.Editar,
-          can_view: value.Visualizar,
-          can_delete: value.Deletar,
-        })
+        ([key, value]) => {
+          const actions = {};
+          for (const [actionKey, actionValue] of Object.entries(value)) {
+            if (actionKey !== 'active') {
+              actions[actionKey] = actionValue;
+            }
+          }
+          return {
+            name: key,
+            actions,
+          };
+        }
       ),
     };
 
@@ -393,12 +412,13 @@
 
     permissoes.forEach((permissao) => {
       const permData = perfil.permissions.find((p) => p.name === permissao.chave);
-      if (permData) {
+      if (permData && permData.actions) {
         const acoesAtivas = [];
-        if (permData.canCreate) acoesAtivas.push("Criar");
-        if (permData.canView) acoesAtivas.push("Visualizar");
-        if (permData.canEdit) acoesAtivas.push("Editar");
-        if (permData.canDelete) acoesAtivas.push("Deletar");
+        for (const [actionKey, actionValue] of Object.entries(permData.actions)) {
+          if (actionValue) {
+            acoesAtivas.push(actionKey);
+          }
+        }
 
         if (acoesAtivas.length > 0) {
           permissoesAtivas.value.push({
@@ -430,26 +450,20 @@
 
     permissoes.forEach((permissao) => {
       const permData = perfil.permissions.find((p) => p.name === permissao.chave);
-      if (permData) {
+      if (permData && permData.actions) {
         novoPerfil.value.permissions[permissao.chave] = {
-          active:
-            permData.canCreate ||
-            permData.canEdit ||
-            permData.canView ||
-            permData.canDelete,
-          Criar: permData.canCreate,
-          Visualizar: permData.canView,
-          Editar: permData.canEdit,
-          Deletar: permData.canDelete,
+          active: Object.values(permData.actions).some((v) => v === true),
         };
+        permissao.actions.forEach((action) => {
+          novoPerfil.value.permissions[permissao.chave][action] = permData.actions[action] || false;
+        });
       } else {
         novoPerfil.value.permissions[permissao.chave] = {
           active: false,
-          Criar: false,
-          Visualizar: false,
-          Editar: false,
-          Deletar: false,
         };
+        permissao.actions.forEach((action) => {
+          novoPerfil.value.permissions[permissao.chave][action] = false;
+        });
       }
     });
   };
@@ -468,7 +482,7 @@
       if (result.isConfirmed) {
         api
           .delete(`/perfil/${id}`)
-          .then((response) => {
+          .then(() => {
             buscarPerfis();
             toast.success("Perfil deletado com sucesso!", { theme: "colored" });
           })

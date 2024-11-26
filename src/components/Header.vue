@@ -29,7 +29,7 @@
 
               >
               <section class="flex items-center justify-between border-b border-gray-200 ml-4 mr-4">
-                <div @click="redirecionarParaContrato(mensagem.id)" class="p-6 first:mt-4 last:mb-4 hover:bg-blue-50 rounded-lg mb-2 mr-2">
+                <div @click="redirecionarParaContrato(mensagem.id, mensagem.contratoId, mensagem.tipo)" class="p-6 first:mt-4 last:mb-4 hover:bg-blue-50 rounded-lg mb-2 mr-2">
                   <span v-html="mensagem.texto" class="mr-2 cursor-pointer text-2xl hover:text-blue-500 break-words transition-all duration-300"></span>
                 </div>
                 <Icon
@@ -63,154 +63,221 @@
 </template>
 
 <script setup>
-  import { Icon } from "@iconify/vue";
-  import { ref, onMounted, onUnmounted, computed } from "vue";
-  import { useRouter } from "vue-router";
-  import { isAuthenticated } from "@/state/auth";
-  import { toast } from "vue3-toastify";
-  import { api } from "@/services/api";
-  import { useProfileStore } from '@/stores/ProfileStore';
+import { Icon } from "@iconify/vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { useRouter } from "vue-router";
+import { isAuthenticated } from "@/state/auth";
+import { toast } from "vue3-toastify";
+import { api } from "@/services/api";
+import { useProfileStore } from '@/stores/ProfileStore';
+import socket, { notificacoes } from '../../websocket.js';
+import { usePermissions } from '@/composables/usePermission';
 
-  const store = useProfileStore()
+const store = useProfileStore()
+const { hasPermission } = usePermissions();
+const router = useRouter();
+const isDropdownOpen = ref(false);
+const dropdownWrapper = ref(null);
+const mensagens = ref([]);
+const isAnimating = ref(false);
+const contratos = ref([]);
+const hasMessages = computed(() => mensagens.value.length > 0);
+const getCurrentDateString = () => new Date().toISOString().split('T')[0];
 
-  const router = useRouter();
-  const isDropdownOpen = ref(false);
-  const dropdownWrapper = ref(null);
-  const mensagens = ref([]);
-  const isAnimating = ref(false);
-  const contratos = ref([]);
+const toggleDropdown = () => {
+  isAnimating.value = true;
+  setTimeout(() => {
+    isAnimating.value = false;
+    isDropdownOpen.value = !isDropdownOpen.value;
+  }, 150);
+};
 
-  const hasMessages = computed(() => mensagens.value.length > 0);
+const logout = async () => {
+  // Reseta o estado da autenticação e limpa o localStorage
+  isAuthenticated.value = false;
+  localStorage.removeItem("token");
 
-  const getCurrentDateString = () => new Date().toISOString().split('T')[0];
+  // Utiliza a ação da store para resetar o perfil
+  store.resetProfile();
 
-  const toggleDropdown = () => {
-    isAnimating.value = true;
-    setTimeout(() => {
-      isAnimating.value = false;
-      isDropdownOpen.value = !isDropdownOpen.value;
-    }, 150);
-  };
+  try {
+    // Tenta fazer a requisição para a API de logout
+    await api.delete("/logout");
+    toast.success("Logout realizado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao fazer logout:", error.message);
+    toast.error("Erro ao fazer logout. Por favor, tente novamente.");
+  }
 
-  const logout = async () => {
-    localStorage.removeItem("token");   
-    localStorage.removeItem('profileUser');
-    isAuthenticated.value = false;
-    try {
-      const response = await api.delete("/logout");
-      toast.sucess(response.message)
-    } catch (error) {
-      console.error(error.message);
+  // Redireciona o usuário para a página de login
+  router.push({ name: "Login" });
+};
+
+const redirecionarParaContrato = (id, contratoId, tipo) => {
+  if (tipo === 'medicao' && contratoId) {
+    window.location.href = `/visualizar/contratos/${contratoId}`;
+  } else {
+    window.location.href = `/visualizar/contratos/${id}`;
+  }
+};
+
+const marcarComoLida = (id) => {
+  const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
+  const hoje = getCurrentDateString();
+
+  notificacoesLidas[id] = hoje;
+  localStorage.setItem("notificacoesLidas", JSON.stringify(notificacoesLidas));
+
+  mensagens.value = mensagens.value.filter(mensagem => mensagem.id !== id);
+  // notificacoes.value = notificacoes.value.filter((notificacao) => notificacao.id !== id);
+  // Atualiza o localStorage após remover a notificação
+  saveMedicaoMensagensToLocalStorage();
+};
+
+const verificarVencimentoContratos = () => {
+  const hoje = getCurrentDateString();
+  const contratos = JSON.parse(localStorage.getItem("notifications")) || [];
+  const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
+
+  mensagens.value = mensagens.value.filter(msg => msg.tipo !== 'sino');
+
+  contratos.forEach((contrato) => {
+    if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) return;
+
+    const dataFim = new Date(contrato.dataFim);
+    const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
+    const diasParaVencimento = Math.ceil((dataFim - new Date()) / (1000 * 60 * 60 * 24));
+
+    if (diasParaVencimento <= lembreteVencimento && diasParaVencimento <= 20) {
+      exibirToastNotificacao(contrato, diasParaVencimento, hoje);
+      adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
+    } else if (diasParaVencimento > 90) {
+      adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
     }
-    router.push("/login");
-  };
+  });
+};
 
-  const redirecionarParaContrato = (id) => {
-    window.location.href = `/visualizar/contratos/${id}`
-  };
+const exibirToastNotificacao = (contrato, diasParaVencimento, hoje) => {
+  let mensagem = '';
+  if (diasParaVencimento === 0 ) {
+    mensagem = `Lembrete: O contrato ${contrato.nomeContrato} vence hoje.`
+  } else if (diasParaVencimento < 0) {
+    mensagem = `Lembrete: O contrato ${contrato.nomeContrato} passou da data de vencimento.`;
+  } else if (diasParaVencimento <= 20) {
+    mensagem = `Lembrete: O contrato ${contrato.nomeContrato} tem ${diasParaVencimento} dia(s) até o vencimento.`;
+  }
 
-  const marcarComoLida = (id) => {
-    const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
-    const hoje = getCurrentDateString();
+  if (localStorage.getItem(`toast_${contrato.id}_${hoje}`) !== hoje) {
+    toast.info(mensagem, { html: true, autoClose: 5000 });
+    localStorage.setItem(`toast_${contrato.id}_${hoje}`, hoje);
+  }
+};
 
-    notificacoesLidas[id] = hoje;
-    localStorage.setItem("notificacoesLidas", JSON.stringify(notificacoesLidas));
+const adicionarNotificacaoSino = (contrato, diasParaVencimento, notificacoesLidas, hoje) => {
+  let mensagem = '';
 
-    mensagens.value = mensagens.value.filter(mensagem => mensagem.id !== id);
-  };
-
-  const verificarVencimentoContratos = () => {
-    const hoje = getCurrentDateString();
-    const contratos = JSON.parse(localStorage.getItem("notifications")) || [];
-    const notificacoesLidas = JSON.parse(localStorage.getItem("notificacoesLidas")) || {};
-
-    mensagens.value = [];
-
-    contratos.forEach((contrato) => {
-      if (!contrato.dataFim || !contrato.nomeContrato || !contrato.lembreteVencimento) return;
-
-      const dataFim = new Date(contrato.dataFim);
-      const lembreteVencimento = parseInt(contrato.lembreteVencimento, 10);
-      const diasParaVencimento = Math.ceil((dataFim - new Date()) / (1000 * 60 * 60 * 24));
-
-      if (diasParaVencimento <= lembreteVencimento && diasParaVencimento <= 20) {
-        exibirToastNotificacao(contrato, diasParaVencimento, hoje);
-        adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
-      } else if (diasParaVencimento > 90) {
-        adicionarNotificacaoSino(contrato, diasParaVencimento, notificacoesLidas, hoje);
-      }
+  if (diasParaVencimento === 0 ) {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> vence <strong>hoje.</strong>`
+  } else if (diasParaVencimento < 0) {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> passou da <strong>data de vencimento.</strong>`;
+  } else if (diasParaVencimento <= 20) {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem <strong>${diasParaVencimento} dia(s)</strong> até o vencimento.`;
+  } else {
+    mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dia(s)</strong>.`;
+  }
+  if (notificacoesLidas[contrato.id] !== hoje) {
+    mensagens.value.push({
+      id: contrato.id,
+      // texto: `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dias</strong>.`,
+      texto: mensagem,
+      tipo: 'sino'
     });
-  };
+  }
+};
 
-  const exibirToastNotificacao = (contrato, diasParaVencimento, hoje) => {
-    let mensagem = '';
-    if (diasParaVencimento === 0 ) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} vence hoje.`
-    } else if (diasParaVencimento < 0) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} passou da data de vencimento.`;
-    } else if (diasParaVencimento <= 20) {
-      mensagem = `Lembrete: O contrato ${contrato.nomeContrato} tem ${diasParaVencimento} dia(s) até o vencimento.`;
-    }
+// Funções para salvar e carregar notificações de medições
+const saveMedicaoMensagensToLocalStorage = () => {
+  localStorage.setItem('medicaoMensagens', JSON.stringify(mensagens.value.filter(msg => msg.tipo === 'medicao')));
+};
 
-    if (localStorage.getItem(`toast_${contrato.id}_${hoje}`) !== hoje) {
-      toast.info(mensagem, { html: true, autoClose: 5000 });
-      localStorage.setItem(`toast_${contrato.id}_${hoje}`, hoje);
-    }
-  };
+const loadMedicaoMensagensFromLocalStorage = () => {
+  const storedMensagens = localStorage.getItem('medicaoMensagens');
+  if (storedMensagens) {
+    const medicaoMensagens = JSON.parse(storedMensagens);
+    mensagens.value = [...mensagens.value, ...medicaoMensagens];
+  }
+};
 
-  const adicionarNotificacaoSino = (contrato, diasParaVencimento, notificacoesLidas, hoje) => {
-    let mensagem = '';
+const handleClickOutside = (event) => {
+  if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
+    isDropdownOpen.value = false;
+  }
+};
 
-    if (diasParaVencimento === 0 ) {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> vence <strong>hoje.</strong>`
-    } else if (diasParaVencimento < 0) {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> passou da <strong>data de vencimento.</strong>`;
-    } else if (diasParaVencimento <= 20) {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem <strong>${diasParaVencimento} dia(s)</strong> até o vencimento.`;
-    } else {
-      mensagem = `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dia(s)</strong>.`;
-    }
-    if (notificacoesLidas[contrato.id] !== hoje) {
-      mensagens.value.push({
-        id: contrato.id,
-        // texto: `O contrato <strong>${contrato.nomeContrato}</strong> tem vencimento em <strong>${diasParaVencimento} dias</strong>.`,
-        texto: mensagem,
-        tipo: 'sino'
-      });
-    }
-  };
+const fetchContratos = async () => {
+  try {
+    const response = await api.get("/contratos");
+    contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const handleClickOutside = (event) => {
-    if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
-      isDropdownOpen.value = false;
-    }
-  };
+    const notificationsContratosData = contratos.value.map(contrato => ({
+      id: contrato.id,
+      nomeContrato: contrato.nomeContrato,
+      dataFim: contrato.dataFim,
+      lembreteVencimento: contrato.lembreteVencimento,
+    }));
 
-  const fetchContratos = async () => {
-    try {
-      const response = await api.get("/contratos");
-      contratos.value = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      const notificationsContratosData = contratos.value.map(contrato => ({
-        id: contrato.id,
-        nomeContrato: contrato.nomeContrato,
-        dataFim: contrato.dataFim,
-        lembreteVencimento: contrato.lembreteVencimento,
-      }));
-
-      localStorage.setItem("notifications", JSON.stringify(notificationsContratosData));
-    } catch (error) {
-      console.error("Erro ao buscar contratos:", error);
-    }
-  };
+    localStorage.setItem("notifications", JSON.stringify(notificationsContratosData));
+  } catch (error) {
+    console.error("Erro ao buscar contratos:", error);
+  }
+};
 
   onMounted(() => {
     fetchContratos();
+    loadMedicaoMensagensFromLocalStorage();
     verificarVencimentoContratos();
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
+
+    // Atualizar mensagens com notificações recebidas via WebSocket
+    if (hasPermission('medicoes', 'Notificar')) {
+      notificacoes.value.forEach((notificacao) => {
+        if (!mensagens.value.some((msg) => msg.id === notificacao.id)) {
+          mensagens.value.push(notificacao);
+        }
+      });
+
+      socket.on('medicao:update', (data) => {
+        const existingMessageIndex = mensagens.value.findIndex((msg) => msg.id === data.id);
+
+        if (data.status === 'Disponível p/ Faturamento' || data.status === 'Finalizada') {
+          if (existingMessageIndex !== -1) {
+            // Atualiza a mensagem existente com o novo status
+            mensagens.value[existingMessageIndex].texto = `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`;
+            mensagens.value[existingMessageIndex].tipo = 'medicao';
+            mensagens.value[existingMessageIndex].contratoId = data.contratoId;
+          } else {
+            // Adiciona uma nova mensagem se não existir
+            mensagens.value.push({
+              id: data.id,
+              texto: `O status da medição ${data.id} foi alterado para: <strong>${data.status}</strong>.`,
+              tipo: 'medicao',
+              contratoId: data.contratoId,
+            });
+          }
+          // Exibe o toast com a mensagem atualizada
+          toast.info(data.message, { timeout: 10000, closeOnClick: true });
+        } else {
+          // Remove a mensagem se existir
+          if (existingMessageIndex !== -1) {
+            mensagens.value.splice(existingMessageIndex, 1);
+          }
+        }
+        saveMedicaoMensagensToLocalStorage();
+      });
+    }
   });
 
-  onUnmounted(() => {
-    document.removeEventListener("click", handleClickOutside);
-  });
-  </script>
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+</script>

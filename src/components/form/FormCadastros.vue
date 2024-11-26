@@ -13,6 +13,20 @@
 
     <section class="">
       <form class="mt-12" @submit.prevent="saveContrato">
+        <div class="flex flex-col items-center gap-3 my-8">
+          <div class="flex flex-col items-center justify-center w-[30rem] h-64 bg-gray-100 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-200 transition duration-300">
+            <label for="file-upload" class="flex flex-col items-center justify-center cursor-pointer">
+              <span v-if="!previewFoto" class="text-lg font-semibold text-gray-500">Clique para enviar uma imagem</span>
+              <span v-if="!previewFoto" class="text-sm text-gray-400">(JPG, PNG, JPEG)</span>
+              <img v-if="previewFoto" :src="previewFoto" alt="Preview da Foto" class="w-[20rem] rounded-md object-cover"/>
+            </label>
+            <input id="file-upload" type="file" accept="image/*" @change="handleFileChange" class="hidden"/>
+          </div>
+
+          <button v-if="previewFoto" @click="removeFoto" type="button" class="mt-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+            Remover Imagem
+          </button>
+        </div>
         <div class="flex flex-col items-start gap-3">
           <label class="font-semibold">Nome do contrato</label>
           <input
@@ -39,7 +53,7 @@
           <label class="font-semibold">Vigência</label>
           <div class="flex gap-4 items-center w-full">
             <input
-              class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               required
               type="date"
               placeholder="Digite o inicio do contrato"
@@ -47,7 +61,7 @@
             />
             <span class="font-sans"> até</span>
             <input
-              class="font-sans focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
               required
               type="date"
               placeholder="Digite o fim do  contrato"
@@ -183,7 +197,7 @@
             class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="showExibirModalItems"
-            v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canCreate === true)"
+            v-if="hasPermission('itens_contrato', 'Criar')"
           >
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
@@ -252,16 +266,22 @@
                   {{ item.saldo_quantidade_contratada }}
                 </td>
                 <td>
-                  <button type="button" @click="openEditModal(index)"
-                  v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canEdit === true)">
+                  <button
+                    type="button"
+                    @click="openEditModal(index)"
+                    v-if="hasPermission('itens_contrato', 'Editar')"
+                  >
                     <Icon
                       icon="ph:pencil"
                       height="20"
                       class="hover:text-red-500 hover:rounded-md cursor-pointer"
                     />
                   </button>
-                  <button type="button" @click="removeItem(index)"
-                    v-if="store.profile.permissions.some((item)=> item.name === 'itens_contrato' && item.canDelete === true)">
+                  <button
+                    type="button"
+                    @click="removeItem(index)"
+                    v-if="hasPermission('itens_contrato', 'Deletar')"
+                  >
                     <Icon
                       icon="ph:trash"
                       height="20"
@@ -274,7 +294,7 @@
           </table>
         </div>
         <div v-if="currentTab === 'Anexos'">
-            <AnexoUpload :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
+            <AnexoUpload ref="anexoUploadRef" :resourceId="contratoId" variant="contrato" :localAnexos="localAnexos" />
         </div>
 
         <div class="mt-8 flex gap-8 justify-end">
@@ -647,8 +667,7 @@
           <button
             type="button"
             @click="handleSubmitProjeto"
-             v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canCreate === true
-            || item.name === 'projetos' && item.canEdit === true )"
+            v-if="hasPermission('projetos', 'Criar') || hasPermission('projetos', 'Editar')"
             class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
           >
             {{ isEditingProjeto ? "Atualizar" : "Adicionar" }}
@@ -667,13 +686,12 @@
               <span
                 class="ml-6 font-sans text-nowrap truncate max-w-[500px]"
                 :title="item.projeto"
-                >{{ item.projeto }}</span
-              >
+                >{{ item.projeto }}</span>
               <div class="flex items-center mx-4">
                 <button
                   @click="editProjeto(item)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                  v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canEdit === true)"
+                  v-if="hasPermission('projetos', 'Editar')"
                 >
                   <Icon
                     icon="heroicons-solid:pencil"
@@ -684,7 +702,7 @@
                 <button
                   @click="deletarProjeto(item.id)"
                   class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                  v-if="store.profile.permissions.some((item)=> item.name === 'projetos' && item.canDelete === true)"
+                  v-if="hasPermission('projetos', 'Deletar')"
                 >
                   <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
                 </button>
@@ -746,7 +764,10 @@ import { ufs } from "../../services/ufs.js";
 import AnexoUpload from './AnexoUpload.vue';
 import TabButton from '../../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
+import { usePermissions } from '@/composables/usePermission';
 
+const { hasPermission } = usePermissions();
+const anexoUploadRef = ref(null);
 const store = useProfileStore()
 const tabs = ['Itens', 'Anexos']
 const currentTab = ref(tabs[0])
@@ -792,7 +813,9 @@ let contratoForm = reactive({
   observacoes: "",
   nome_contrato: "",
   lembrete_vencimento: "",
+  foto: null,
 });
+const previewFoto = ref(null);
 let novoItem = ref({
   titulo: "",
   unidade_medida: "",
@@ -812,6 +835,23 @@ onMounted(() => {
     fetchContrato(contratoId);
   }
 });
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    contratoForm.foto = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewFoto.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const removeFoto = () => {
+  previewFoto.value = null;
+};
 
 const fetchContrato = async (id) => {
   try {
@@ -885,7 +925,35 @@ const createContrato = async () => {
   }
 
   try {
-    const response = await api.post("/contratos", contratoForm);
+    const formData = new FormData();
+    formData.append("nome_contrato", contratoForm.nome_contrato);
+    formData.append("nome_cliente", contratoForm.nome_cliente);
+    formData.append("data_inicio", contratoForm.data_inicio);
+    formData.append("data_fim", contratoForm.data_fim);
+    formData.append("saldo_contrato", contratoForm.saldo_contrato);
+    formData.append("ponto_focal", contratoForm.ponto_focal);
+    formData.append("cidade", contratoForm.cidade);
+    formData.append("estado", contratoForm.estado);
+    formData.append("objeto_contrato", contratoForm.objeto_contrato);
+    formData.append("observacoes", contratoForm.observacoes);
+    formData.append("lembrete_vencimento", contratoForm.lembrete_vencimento);
+    formData.append("fiscal[nome]", contratoForm.fiscal.nome);
+    formData.append("fiscal[telefone]", contratoForm.fiscal.telefone);
+    formData.append("fiscal[email]", contratoForm.fiscal.email);
+
+    if (contratoForm.foto) {
+      formData.append("foto", contratoForm.foto);
+    } else {
+    formData.append("foto", null);
+  }
+
+    if (contratoForm.items.length) {
+      formData.append("items", JSON.stringify(contratoForm.items));
+    }
+
+    const response = await api.post("/contratos", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data.id;
   } catch (error) {
     toast("Não foi possível cadastrar o contrato!", {
@@ -948,13 +1016,16 @@ const saveContrato = async () => {
     if (projetosCriados === "error") {
       await deleteContrato(contratoId.value);
     } else {
+      if (anexoUploadRef.value && localAnexos.value.length > 0) {
+        await anexoUploadRef.value.uploadAnexosPendentes();
+      }
       voltarListagem();
     }
   }
 };
 
 const voltarListagem = () => {
-  router.push({ name: "Contratos" });
+ window.location.href = '/contratos'
 };
 
 const formatCurrency = (value) => {

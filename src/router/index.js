@@ -7,6 +7,7 @@ const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
 const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue");
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
+const ViewTermoAditivoPage = () => import("../pages/ContratosPage/VisualizarTermoAditivo/VisualizarTermoAditivo.vue")
 const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
 
@@ -15,6 +16,8 @@ import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
 import ResetPassword from "@/pages/Login/ResetPassword.vue";
 import UsersPage from '@/pages/UsersPage/UsersPage.vue';
+import EditAditivoForm from "@/components/EditAditivoForm.vue";
+import LogView from "@/pages/LogsPage/LogView.vue";
 
 const routes = [
   {
@@ -56,9 +59,15 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/cadastro/contratos/:id",
+    path: "/editar/contratos/:id",
     name: "editarcontrato",
     component: FormContratosEdit,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/editar/termo/:id",
+    name: "editartermo",
+    component: EditAditivoForm,
     meta: { requiresAuth: true },
   },
   {
@@ -67,11 +76,17 @@ const routes = [
     component: FormAditive,
     meta: { requiresAuth: true },
   },
-  
+
   {
     path: "/visualizar/contratos/:id",
     name: "visualizarContrato",
     component: ViewContratoTabs,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/visualizar/termoAditivo/:id",
+    name: "visualizarTermoAditivo",
+    component: ViewTermoAditivoPage,
     meta: { requiresAuth: true },
   },
   {
@@ -87,8 +102,26 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: "/logs",
+    name: "Log",
+    component: LogView,
+    meta: { requiresAuth: true },
+  },
+  // {
+  //   path: '/contratos/termo-aditivo/:id/editar',
+  //   name: 'EditarTermoAditivo',
+  //   component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
+  //   props: true,
+  //   meta: {
+  //     requiresAuth: true
+  //   },
+  //   beforeEnter: async (to, from, next) => {
+  //     next();
+  //   }
+  // },
+  {
     path: "/:pathMatch(.*)*",
-    redirect: '{ name: "Dashboard" }',
+    redirect: { name: "Dashboard" },
   },
 ];
 
@@ -98,6 +131,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  // console.log('Navegando para:', to.fullPath)
   const token = localStorage.getItem("token");
   if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
     next("/login");

@@ -7,7 +7,9 @@ import { computed } from 'vue';
 const route = useRoute();
 
 const isMainLayout = computed(() => {
-  return route.name !== 'Login';
+  const rotasExcluidas = ['Login', 'alterar-senha', 'esqueci-minha-senha'];
+  return !rotasExcluidas.includes(route.name);
+  // return route.name !== 'Login';
 });
 </script>
 
@@ -16,20 +18,20 @@ const isMainLayout = computed(() => {
     <div id="nav" class="overflow-hidden">
       <MainLayout v-if="isMainLayout">
         <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
+          <!-- <transition name="fade" mode="out-in"> -->
             <component :is="Component" />
-          </transition>
+          <!-- </transition> -->
         </router-view>
       </MainLayout>
       <template v-else>
         <router-view v-slot="{ Component }">
-          <transition name="fade" mode="out-in">
+          <!-- <transition name="fade" mode="out-in"> -->
             <component :is="Component" />
-          </transition>
+          <!-- </transition> -->
         </router-view>
       </template>
     </div>
-  </div> 
+  </div>
 </template>
 
 <style>

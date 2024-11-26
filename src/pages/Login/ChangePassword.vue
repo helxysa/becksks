@@ -47,7 +47,11 @@ import { useRouter } from 'vue-router';
 import { api } from "@/services/api";
 import { isAuthenticated } from "@/state/auth";
 import { toast } from "vue3-toastify";
+import { useProfileStore } from "@/stores/ProfileStore";
+import { usePermissions } from '@/composables/usePermission';
 
+const { hasPermission } = usePermissions();
+const store = useProfileStore();
 const newPassword = ref('');
 const confirmPassword = ref('');
 const errors = ref({});
@@ -84,10 +88,19 @@ const handleChangePassword = async () => {
     const response = await api.put(`/users/alterar-senha/${userId}`, {
       newPassword: newPassword.value,
     });
+
+    // Atualizar o estado na store e no localStorage
+    store.setPasswordChanged(true);
+    localStorage.setItem("profileUser", JSON.stringify(store.$state));
+
     isAuthenticated.value = true;
     localStorage.removeItem("userId");
-    router.push('/');
-    toast.success(response.data.message)
+      if(hasPermission('Dashboard', 'Visualizar')) {
+        router.push("/");
+      } else {
+        router.push('/contratos')
+      }
+    // toast.success(response.data.message);
   } catch (error) {
     console.error('Erro ao alterar senha:', error);
   }
