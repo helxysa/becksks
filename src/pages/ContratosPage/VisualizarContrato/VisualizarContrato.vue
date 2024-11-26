@@ -435,8 +435,8 @@
       <div class="flex justify-center">
         <vue-awesome-paginate
           :total-items="totalItens"
+          :max-pages-shown="lastPageItens"
           :items-per-page="resultsPerPageItens"
-          :max-pages-shown="5"
           v-model="currentPage"
           @click="changePageItem"
         />
@@ -635,7 +635,7 @@
         <vue-awesome-paginate
           :total-items="totalMedicoes"
           :items-per-page="resultsPerPageMedicoes"
-          :max-pages-shown="5"
+          :max-pages-shown="lastPageMedicoes"
           v-model="currentPageMedicao"
           @click="changePageMedicao"
         />
@@ -755,7 +755,7 @@
       <div class="flex justify-center" v-if="faturamentoItemData">
         <vue-awesome-paginate
           :total-items="totalFaturamentos"
-          :max-pages-shown="5"
+          :max-pages-shown="lastPageFaturamentos"
           :items-per-page="resultsPerPageFaturamentos"
           v-model="currentPageFaturamento"
           @click="changePageFaturamento"
@@ -2266,13 +2266,16 @@ const showTermosAditivosDropdown = ref(false);
 const modalTermosAditivos = ref(false);
 const totalItens = ref();
 const resultsPerPageItens = ref();
+const lastPageItens = ref(1)
 let contratoItemData = ref([]);
 let contratoItemMeta = ref([]);
 const totalMedicoes = ref();
 const resultsPerPageMedicoes = ref();
+const lastPageMedicoes = ref(1);
 let medicaoItemData = ref([]);
 let medicaoItemMeta = ref([]);
 const totalFaturamentos = ref(0);
+const lastPageFaturamentos = ref(1)
 const resultsPerPageFaturamentos = ref();
 let faturamentoItemData = ref([]);
 let faturamentoItemMeta = ref([]);
@@ -2491,6 +2494,7 @@ const fetchContratoItens = async (id, page) => {
 
     contratoItemData.value = itens;
     contratoItemMeta.value = meta;
+    lastPageItens.value = contratoItemMeta.value.lastPage;
     currentPage.value = contratoItemMeta.value.currentPage;
     totalItens.value = contratoItemMeta.value.total;
     resultsPerPageItens.value = contratoItemMeta.value.perPage;
@@ -2565,6 +2569,7 @@ const fetchContratoMedicoes = async (id, page) => {
     }
     currentPageMedicao.value = medicaoItemMeta.value.currentPage;
     resultsPerPageMedicoes.value = medicaoItemMeta.value.perPage;
+    lastPageMedicoes.value = medicaoItemMeta.value.lastPage;
     totalMedicoes.value = medicaoItemMeta.value.total;
   } catch (error) {
     medicaoItemData.value = [];
@@ -2588,6 +2593,7 @@ const fetchContratoFaturamentos = async (id, page) => {
     const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
+    lastPageFaturamentos.value = response.data.meta.lastPage
     currentPageFaturamento.value = faturamentoItemMeta.value.currentPage;
     resultsPerPageFaturamentos.value = faturamentoItemMeta.value.perPage;
     totalFaturamentos.value = faturamentoItemMeta.value.total;
