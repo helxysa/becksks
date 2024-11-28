@@ -537,10 +537,9 @@
                 <span
                   class="border-2 py-2 px-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-full"
                   :class="{
-                    'bg-purple-200 border-purple-400 text-purple-400':
-                      lancamento.tipoMedicao === 'Estimada',
-                    'bg-blue-200 border-blue-400 text-blue-400':
-                      lancamento.tipoMedicao === 'Detalhada',
+                    'bg-purple-200 border-purple-400': lancamento.tipoMedicao === 'Estimada',
+                    'bg-blue-200 border-blue-400': lancamento.tipoMedicao === 'Detalhada',
+                    'bg-indigo-200 border-indigo-400': lancamento.tipoMedicao === 'Relatório Mensal',
                   }"
                 >
                   {{ lancamento.tipoMedicao }}
@@ -550,7 +549,7 @@
             <td class="text-2xl">
               <div class="flex justify-center">
                 <span
-                  v-if="lancamento.tipoMedicao !== 'Detalhada'"
+                  v-if="lancamento.tipoMedicao === 'Estimada'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-gray-200 border-gray-400':
@@ -566,7 +565,7 @@
                   {{ lancamento.status }}
                 </span>
                 <span
-                  v-else
+                  v-else-if="lancamento.tipoMedicao === 'Detalhada' || lancamento.tipoMedicao === 'Relatório Mensal'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-red-200 border-red-400':
@@ -766,9 +765,7 @@
 
   <!-- Anexos do contrato -->
   <div v-if="currentTab === 'Anexos'">
-    <!-- <div v-if="contratoId"> -->
     <Anexos :key="contratoId" :resourceId="contratoId" :variant="'contrato'" />
-    <!-- </div> -->
   </div>
 </section>
   <!-- Modal novo pedido de faturamento-->
@@ -799,9 +796,7 @@
           </div>
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
-            <span class="font-medium text-3xl">{{
-              formatCurrency(calcularTotalLancamento(contrato.lancamentos))
-            }}</span>
+            <span class="font-medium text-3xl">{{ formatCurrency(calcularTotalLancamento(contrato.lancamentos))}}</span>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
@@ -957,7 +952,7 @@
               <td>
                 {{
                   formatCurrency(
-                    calcularSaldoLancamentoItens(item.lancamentoItens)
+                    calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
                   )
                 }}
               </td>
@@ -987,7 +982,7 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal editar  pedido de  faturamento -->
+  <!-- Modal editar faturamento -->
   <JetDialogModal
     :show="modalEditFaturamento"
     :withouHeader="false"
@@ -1005,11 +1000,6 @@
           @update:currentTab="editFaturamentoCurrentTab = $event"
         />
       </div>
-      <!-- <div v-if="editFaturamentoCurrentTab === 'Anexos'">
-        <div v-if="editingFaturamento.id">
-          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
-        </div>
-      </div> -->
       <form @submit.prevent="saveEditedFaturamento">
       <section v-if="editFaturamentoCurrentTab === 'Formulário'">
 
@@ -1091,9 +1081,7 @@
           </div>
         </section>
         <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
-        <table
-          class="table-auto border border-slate-200 rounded-2xl w-full mt-8"
-        >
+        <table class="table-auto border border-slate-200 rounded-2xl w-full mt-8">
           <thead class="h-20 bg-slate-100 border-1">
             <tr>
               <th class="text-xl">#</th>
@@ -1232,7 +1220,6 @@
     </div>
       <form @submit.prevent="createLancamento">
         <div v-if="criarMedicaoCurrentTab === 'Formulário'">
-
         <section class="flex flex-col gap-8">
           <div class="flex items-center gap-12">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1278,6 +1265,7 @@
               </option>
               <option>Estimada</option>
               <option>Detalhada</option>
+              <option>Relatório Mensal</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -1337,11 +1325,10 @@
                 <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
-                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
                 <th class="text-xl">Resultado da medição</th>
-                <!-- <th class="text-xl">Total</th> -->
+                <th v-if="medicaoData.tipo_medicao === 'Relatório Mensal'" class="text-xl">Dias</th>
               </tr>
             </thead>
             <tbody v-if="medicaoData.itens">
@@ -1353,9 +1340,6 @@
                 <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
-                <!-- <td class="text-2xl">
-                  {{ formatCurrency(item.valorUnitario) }}
-                </td> -->
                 <td>
                   <span>
                     {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
@@ -1378,14 +1362,16 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <!-- <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
-                  <span
-                    class="max-w-60"
-                    :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
-                  >
-                    {{ formatCurrency(calcularSaldoItem(item) || 0) }}
-                  </span>
-                </td> -->
+                <td v-if="medicaoData.tipo_medicao === 'Relatório Mensal'">
+                  <input
+                    v-model="medicaoData.dias"
+                    type="number"
+                    min="1"
+                    max="31"
+                    class="border-2 text-center max-w-72"
+                    placeholder="Dias"
+                  />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -1484,6 +1470,7 @@
               </option>
               <option>Estimada</option>
               <option>Detalhada</option>
+              <option>Relatório Mensal</option>
             </select>
           </div>
           <div
@@ -1502,11 +1489,11 @@
               <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Não Autorizada">Não Autorizada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Cancelada">Cancelada</option>
 
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada" disabled hidden>Finalizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Não Iniciada">Não Iniciada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Em Andamento">Em Andamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Finalizada" disabled hidden>Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -1550,11 +1537,10 @@
                 <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
-                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
                 <th class="text-xl">Resultado da medição</th>
-                <!-- <th class="text-xl">Total</th> -->
+                <th v-if="editingLancamento.tipoMedicao === 'Relatório Mensal'" class="text-xl">Dias</th>
               </tr>
             </thead>
             <tbody>
@@ -1588,6 +1574,17 @@
                     class="border-2 text-center max-w-60"
                     min="0"
                     v-bind="decimalConfig"
+                  />
+                </td>
+                <td v-if="editingLancamento.tipoMedicao === 'Relatório Mensal'">
+                  <input
+                    v-model="editingLancamento.dias"
+                    type="number"
+                    min="0"
+                    max="31"
+                    :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
+                    class="border-2 text-center max-w-72"
+                    placeholder="Dias"
                   />
                 </td>
               </tr>
@@ -2713,9 +2710,11 @@ const calcularTotalLancamento = (lancamentos) => {
 
   lancamentosFiltrados.forEach((lancamento) => {
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
-      total +=
-        parseFloat(lancamentoItem.valorUnitario) *
-        parseFloat(lancamentoItem.quantidadeItens);
+      if(lancamento.dias){
+        total += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamento.dias);
+      } else {
+        total += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens);
+      }
     });
   });
 
@@ -3076,23 +3075,12 @@ const createLancamento = async () => {
     return;
   }
 
-let itensQuantidadePreenchida = contrato.value.contratoItens
-  .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
-  .map((item) => ({
-    id_item: item.id,
-    quantidade_itens: item.quantidadeItens,
-  }));
-
-  // if (itensQuantidadePreenchida.length === 0) {
-  //   toast(
-  //     "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
-  //     {
-  //       theme: "colored",
-  //       type: "error",
-  //     }
-  //   );
-  //   return;
-  // }
+  let itensQuantidadePreenchida = contrato.value.contratoItens
+    .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
+    .map((item) => ({
+      id_item: item.id,
+      quantidade_itens: item.quantidadeItens,
+    }));
 
   const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
@@ -3103,15 +3091,11 @@ let itensQuantidadePreenchida = contrato.value.contratoItens
   });
 
   if (quantidadeExcedida) {
-    toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
-    );
+    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
   }
 
-  let novoSaldoContrato =
-    calcularSaldoAtualContrato() -
-    calcularSaldoLancamentoItens(itensQuantidadePreenchida);
+  let novoSaldoContrato = calcularSaldoAtualContrato() - calcularSaldoLancamentoItens(itensQuantidadePreenchida);
 
   if (novoSaldoContrato < 0) {
     toast("O saldo contratado não pode ser excedido.", {
@@ -3121,6 +3105,9 @@ let itensQuantidadePreenchida = contrato.value.contratoItens
     return;
   }
 
+  if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
+    medicaoData.value.status = "Não Iniciada";
+  }
   if (medicaoData.value.tipo_medicao === "Detalhada") {
     medicaoData.value.status = "Não Iniciada";
   }
@@ -3137,6 +3124,11 @@ let itensQuantidadePreenchida = contrato.value.contratoItens
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
   };
+
+  if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
+    payload.dias = medicaoData.value.dias || null;
+  }
+
   try {
     const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
 
@@ -3404,12 +3396,20 @@ const calcularSaldoItem = (item) => {
   return valor;
 };
 
-const calcularSaldoLancamentoItens = (lancamento) => {
+const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
+  console.log('lancamento', lancamento)
+  console.log('dias', dias)
   let saldoTotal = 0;
   lancamento.forEach((item) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
-    const valorTotalItem = quantidadeItens * valorUnitario;
+    let valorTotalItem = 0;
+    if (dias !== null) {
+      valorTotalItem += (valorUnitario / 30) * dias
+      console.log('valorTotalItem', valorTotalItem)
+    } else {
+      valorTotalItem = quantidadeItens * valorUnitario;
+    }
     saldoTotal += valorTotalItem;
   });
   return saldoTotal;
@@ -3735,12 +3735,16 @@ const openEditLancamentoModal = (lancamento) => {
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
 
+  console.log(lancamento)
+
   // Faça uma cópia profunda também dos itens de lançamento
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
     lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
   };
+
+  console.log('editingLancamento.value', editingLancamento.value)
 
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
@@ -3775,25 +3779,24 @@ const closeEditLancamentoModal = () => {
 };
 
 const saveEditedLancamento = async () => {
-  if (
-    !editingLancamento.value.projetos ||
-    editingLancamento.value.projetos === null
-  ) {
+  if (!editingLancamento.value.projetos || editingLancamento.value.projetos === null)
+  {
     toast.error("Adicione o nome do projeto.", {
       theme: "colored",
       type: "error",
     });
     return;
   }
+
   let itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
-    // .filter((item) => item.quantidadeItens)
+    .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id: item.id,
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
-      // data: item.data,
     }));
+
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
     (item) => item.quantidade_itens === "0"
@@ -3833,25 +3836,17 @@ const saveEditedLancamento = async () => {
       },
       0
     );
-
-    const saldoQuantidadeContratada = parseFloat(
-      item.saldo_quantidade_contratada
-    );
+    const saldoQuantidadeContratada = parseFloat(item.saldo_quantidade_contratada);
     const quantidadeItens = parseFloat(item.quantidade_itens);
-    const quantidadeDisponivel =
-      saldoQuantidadeContratada - quantidadeTotalLançada;
+    const quantidadeDisponivel = saldoQuantidadeContratada - quantidadeTotalLançada;
 
     return quantidadeItens > quantidadeDisponivel;
   });
 
+  console.log('quantidadeExcedida', quantidadeExcedida)
+
   if (quantidadeExcedida) {
-    toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item.",
-      {
-        theme: "colored",
-        type: "error",
-      }
-    );
+    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
   }
 
@@ -3859,15 +3854,9 @@ const saveEditedLancamento = async () => {
     toast.error("Selecione um status para a medição.")
     return;
   }
-  //  if(editingLancamento.value.descricao && editingLancamento.value.descricao.length > 1500) {
-  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
-  //   return;
-  // }
 
   let payload = {
-    // data_medicao: formatDate(editingLancamento.value.dataMedicao),
     data_medicao: editingLancamento.value.dataMedicao,
-    // data_medicao: "2024-08-22",
     competencia: editingLancamento.value.competencia,
     descricao: editingLancamento.value.descricao,
     tarefa_medicao: editingLancamento.value.tarefaMedicao,
@@ -3876,10 +3865,14 @@ const saveEditedLancamento = async () => {
     itens: itensQuantidadePreenchida.map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidade_itens,
-      // data: item.data,
     })),
     projetos: editingLancamento.value.projetos,
   };
+
+  if (editingLancamento.value.tipoMedicao === "Relatório Mensal") {
+    payload.dias = editingLancamento.value.dias || null;
+  }
+
   try {
     const response = await api
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
@@ -3968,7 +3961,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
     if (!['Autorizada', 'Não Autorizada', 'Cancelada'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
-  } else if (newTipo === 'Detalhada') {
+  } else if (newTipo === 'Detalhada' || newTipo === 'Relatório Mensal') {
     if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada', 'Encaminhada p/ Faturamento'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
