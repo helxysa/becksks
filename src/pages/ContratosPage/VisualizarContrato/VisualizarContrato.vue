@@ -797,7 +797,7 @@
           </div>
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
-            <span class="font-medium text-3xl">{{ formatCurrency(calcularTotalLancamento(contrato.lancamentos))}}</span>
+            <span class="font-medium text-3xl">{{ formatCurrencySemArrendondar(calcularTotalLancamento(contrato.lancamentos))}}</span>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
@@ -952,7 +952,7 @@
               </td>
               <td>
                 {{
-                  formatCurrency(
+                  formatCurrencySemArrendondar(
                     calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
                   )
                 }}
