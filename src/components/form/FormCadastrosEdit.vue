@@ -534,6 +534,7 @@ const salvarProjeto = async (item) => {
     });
     await fetchProjetos(route.params.id);
     toast.success("Projeto editado com sucesso!");
+    isEditingProjeto.value = false;
   } catch (error) {
     console.error("Erro ao editar projeto:", error.response?.data?.message || error.message);
     toast.error("Não foi possível editar o projeto.");
