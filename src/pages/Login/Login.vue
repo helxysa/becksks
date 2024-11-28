@@ -101,11 +101,10 @@ const handleLogin = async () => {
       password: password.value,
     });
     loading.value = false;
+    isAuthenticated.value = true;
     localStorage.setItem("token", response.data.token.token);
+    store.$patch(response.data.user)
 
-    // Atualiza a store com os dados do usuário
-    store.updateProfile(response.data.user);
-    store.setPasswordChanged(response.data.user.passwordChanged);
 
     if (!response.data.user.passwordChanged) {
       localStorage.setItem("userId", response.data.user.id);
