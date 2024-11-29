@@ -1172,7 +1172,7 @@
                 <td>
                   {{
                     formatCurrencySemArrendondar(
-                      calcularSaldoLancamentoItens(item.lancamentoItens)
+                      calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
                     )
                   }}
                 </td>
@@ -2731,9 +2731,11 @@ const calcularTotalFaturamento = (faturamento) => {
 
   faturamento.faturamentoItens.forEach((faturamentoItem) => {
     faturamentoItem.lancamento.lancamentoItens.forEach((lancamentoItem) => {
-      total +=
-        parseFloat(lancamentoItem.valorUnitario) *
-        parseFloat(lancamentoItem.quantidadeItens);
+      if(faturamentoItem.lancamento.dias){
+        total += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(faturamentoItem.lancamento.dias);
+      } else {
+        total += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens);
+      }
     });
   });
   return total;
@@ -2741,14 +2743,17 @@ const calcularTotalFaturamento = (faturamento) => {
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
-  faturamento.forEach((item) => {
-    item.lancamento.lancamentoItens.forEach((subItem) => {
-      const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-      const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-      const valorTotalItem = quantidadeItens * valorUnitario;
-      saldoTotal += valorTotalItem;
-    });
-  });
+
+  faturamento.forEach((faturamentoObjeto) => {
+    let lancamentoTemDias = faturamentoObjeto.lancamento.dias
+    faturamentoObjeto.lancamento.lancamentoItens.forEach(lancamentoItem => {
+      if(lancamentoTemDias) {
+        saldoTotal += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamentoTemDias);
+      } else {
+        saldoTotal += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens)
+      }
+    })
+  })
   return saldoTotal;
 };
 
@@ -3418,8 +3423,6 @@ const calcularSaldoItem = (item) => {
 };
 
 const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
-  console.log('lancamento', lancamento)
-  console.log('dias', dias)
   let saldoTotal = 0;
   lancamento.forEach((item) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
@@ -3427,7 +3430,6 @@ const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
     let valorTotalItem = 0;
     if (dias !== null) {
       valorTotalItem += (valorUnitario / 30) * dias
-      console.log('valorTotalItem', valorTotalItem)
     } else {
       valorTotalItem = quantidadeItens * valorUnitario;
     }
@@ -3756,16 +3758,12 @@ const openEditLancamentoModal = (lancamento) => {
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
 
-  console.log(lancamento)
-
   // Faça uma cópia profunda também dos itens de lançamento
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
     lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
   };
-
-  console.log('editingLancamento.value', editingLancamento.value)
 
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
@@ -3863,8 +3861,6 @@ const saveEditedLancamento = async () => {
 
     return quantidadeItens > quantidadeDisponivel;
   });
-
-  console.log('quantidadeExcedida', quantidadeExcedida)
 
   if (quantidadeExcedida) {
     toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
