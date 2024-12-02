@@ -1,10 +1,19 @@
 <template>
   <div>
-    <div class="flex items-center mt-12 gap-4">
-      <span @click="voltarListagem" class="cursor-pointer">
-        <Icon icon="ic:round-arrow-back" height="30" />
-      </span>
-      <h1 class="text-5xl font-bold">Editar Contrato</h1>
+    <div class="flex justify-between items-center mt-12">
+      <div class="flex items-center gap-4">
+        <span @click="voltarListagem" class="cursor-pointer">
+          <Icon icon="ic:round-arrow-back" height="30" class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"/>
+        </span>
+        <h1 class="text-5xl font-bold">Editar Contrato</h1>
+      </div>
+      <button
+        @click="deleteContrato(route.params.id)"
+        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        v-if="hasPermission('contratos', 'Deletar')"
+      >
+        Excluir
+      </button>
     </div>
 
     <section class="">
@@ -617,6 +626,39 @@ const isDuplicateProjeto = (nome, excludeId = null) => {
     (p) => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId
   );
 };
+
+
+const deleteContrato = async (id) => {
+  Swal.fire({
+      title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir este contrato?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      api.delete(`/contratos/${id}`)
+        .then((response) => {
+          toast("Contrato deletado com sucesso!", {
+            theme: "colored",
+            type: "success",
+          });
+          router.push('/contratos')
+        })
+        .catch((error) => {
+          toast("Não foi possível deletar o contrato!", {
+            theme: "colored",
+            type: "error",
+          });
+          console.error("Erro ao deletar contrato:", error);
+        });
+    }
+  });
+};
+
 </script>
 
 <style scoped>

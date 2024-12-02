@@ -38,7 +38,7 @@
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
   >
   <div class="flex items-center gap-2">
-    <span @click="voltarListagem" class="cursor-pointer">
+    <span @click="voltarListagem" class="cursor-pointer" title="Voltar">
       <Icon
       icon="ic:round-arrow-back"
       height="28"
@@ -46,7 +46,7 @@
       />
     </span>
     <h1 class="text-4xl font-medium text-gray-800 mb-6 sm:mb-0">
-      Detalhes do Contrato
+      {{ contrato.nomeContrato }}
     </h1>
   </div>
     <div class="flex flex-wrap gap-3">
@@ -59,256 +59,250 @@
         Adicionar aditivo
       </router-link>
     </button>
-      <button
-        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        v-if="hasPermission('contratos', 'Editar')"
-      >
-        <router-link :to="{name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}">
-          Editar
-        </router-link>
-      </button>
-      <button
-        @click="deleteContrato(contrato)"
-        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        v-if="hasPermission('contratos', 'Deletar')"
-      >
-        Excluir
-      </button>
+    <router-link
+      :to="{ name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}"
+      class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+      v-if="hasPermission('contratos', 'Editar')"
+    >
+      Editar
+    </router-link>
+
     </div>
   </div>
 
-  <!-- Detalhes do contrato -->
-  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-    <div
-      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-    >
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4">
-        Informações do Contrato
-      </h3>
-      <div class="space-y-4">
-        <div class="flex items-center">
-          <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
-            <i class="fas fa-file-contract"></i>
-            <Icon
-              icon="fa6-solid:file-contract"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-blue-400"
-            />
+    <!-- Detalhes do contrato -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div
+        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Informações do Contrato
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
+              <i class="fas fa-file-contract"></i>
+              <Icon
+                icon="fa6-solid:file-contract"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-blue-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.nomeContrato }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-lg text-gray-500">Contrato</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato.nomeContrato }}
-            </p>
+          <div class="flex items-center">
+            <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
+              <i class="fas fa-user"></i>
+              <Icon
+                icon="fa-solid:user"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-green-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cliente</p>
+              <p class="font-medium text-gray-700">
+                {{contrato.nomeCliente}}
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
-            <i class="fas fa-user"></i>
-            <Icon
-              icon="fa-solid:user"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-green-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Cliente</p>
-            <p class="font-medium text-gray-700">
-              {{contrato.nomeCliente}}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
-            <i class="fas fa-calendar-alt"></i>
-            <Icon
-              icon="fa-solid:calendar-alt"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-purple-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Vigência</p>
-            <p class="font-medium text-gray-700">
-              {{ formatDate(contrato.dataInicio) }} até
-              {{ formatDate(contrato.dataFim) }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <section
-      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-    >
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
-      <div class="space-y-4">
-        <div class="flex items-center">
-          <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
-            <i class="fas fa-user-tie"></i>
-            <Icon
-              icon="fa-solid:user-tie"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-indigo-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Nome</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato?.fiscal?.nome }}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
-            <i class="fas fa-phone"></i>
-            <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Contato</p>
-            <p
-              class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
-              @click="openWhatsApp(contrato.fiscal.telefone)"
-            >
-              {{ contrato?.fiscal?.telefone }}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa:envelope"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-red-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">E-mail</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato?.fiscal?.email }}
-            </p>
+          <div class="flex items-center">
+            <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
+              <i class="fas fa-calendar-alt"></i>
+              <Icon
+                icon="fa-solid:calendar-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-purple-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Vigência</p>
+              <p class="font-medium text-gray-700">
+                {{ formatDate(contrato.dataInicio) }} até
+                {{ formatDate(contrato.dataFim) }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <section
-      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-    >
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4">
-        Detalhes Adicionais
-      </h3>
-      <div class="space-y-4">
-        <div class="flex items-center">
-          <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa-solid:bullseye"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-teal-400"
-            />
+      <section
+        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
+              <i class="fas fa-user-tie"></i>
+              <Icon
+                icon="fa-solid:user-tie"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-indigo-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Nome</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.nome }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-lg text-gray-500">Ponto Focal</p>
-            <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+          <div class="flex items-center">
+            <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
+              <i class="fas fa-phone"></i>
+              <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contato</p>
+              <p
+                class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
+                @click="openWhatsApp(contrato.fiscal.telefone)"
+              >
+                {{ contrato?.fiscal?.telefone }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa:envelope"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-red-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">E-mail</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.email }}
+              </p>
+            </div>
           </div>
         </div>
-        <div class="flex items-center">
-          <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa6-solid:city"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-pink-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Cidade</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato.cidade }} ({{ contrato.estado }})
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa-solid:file-alt"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-orange-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Objeto do Contrato</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato.objetoContrato }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <!-- Resumo Financeiro -->
-  <h2 class="text-2xl font-bold text-gray-800 mb-6" v-if="hasPermission('contratos', 'Visualizar Finanças')">Resumo Financeiro</h2>
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8" v-if="hasPermission('contratos', 'Visualizar Finanças')">
-    <div
-      v-for="(item, index) in financialSummary"
-      :key="index"
-      :class="`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`"
-    >
-      <section class="flex flex-col h-full justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold">{{ item.title }}</h3>
-          <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
-        </div>
-        <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
       </section>
-    </div>
-  </section>
 
-
-  <!-- Observações -->
-  <section class="mt-8">
-    <div class="flex items-start justify-between gap-12">
-      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
-        <div class="flex">
-         <span>
-            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
-          </span>
-          <h2 class="text-3xl font-bold mb-4 text-blue-800 ">
-            Descrição:
-          </h2>
-
-        </div>
-        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
-      </div>
-      <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
-        <div class="relative w-full">
-          <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
-            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
-            Histórico - Aditivos
-            <Icon icon="mdi:chevron-down" class="ml-2" />
-          </button>
-          <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
-            <ul class="py-2">
-              <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
-                {{ termo.nomeContrato }}
-              </li>
-              <li class="px-4 py-2 hover:bg-gray-100">
-                <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
-              </li>
-            </ul>
+      <section
+        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Detalhes Adicionais
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:bullseye"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-teal-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Ponto Focal</p>
+              <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa6-solid:city"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-pink-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cidade</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.cidade }} ({{ contrato.estado }})
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:file-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-orange-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Objeto do Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.objetoContrato }}
+              </p>
+            </div>
           </div>
         </div>
-      </div> -->
-    </div>
-  </section>
+      </section>
+    </section>
+
+    <!-- Resumo Financeiro -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6" v-if="hasPermission('contratos', 'Visualizar Finanças')">Resumo Financeiro</h2>
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8" v-if="hasPermission('contratos', 'Visualizar Finanças')">
+      <div
+        v-for="(item, index) in financialSummary"
+        :key="index"
+        :class="`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`"
+      >
+        <section class="flex flex-col h-full justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+            <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+          </div>
+          <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
+        </section>
+      </div>
+    </section>
+
+
+    <!-- Observações -->
+    <section class="mt-8">
+      <div class="flex items-start justify-between gap-12">
+        <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
+          <div class="flex">
+          <span>
+              <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+            </span>
+            <h2 class="text-3xl font-bold mb-4 text-blue-800 ">
+              Descrição:
+            </h2>
+
+          </div>
+          <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+        </div>
+        <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
+          <div class="relative w-full">
+            <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
+              <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+              Histórico - Aditivos
+              <Icon icon="mdi:chevron-down" class="ml-2" />
+            </button>
+            <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
+              <ul class="py-2">
+                <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
+                  {{ termo.nomeContrato }}
+                </li>
+                <li class="px-4 py-2 hover:bg-gray-100">
+                  <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </section>
+
 </section>
 
 <section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]" v-if="!isLoading">
@@ -2969,42 +2963,42 @@ const decimalConfig = {
   masked: false,
 };
 
-const deleteContrato = async (contratoAtual) => {
-  Swal.fire({
-      title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este contrato?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Excluir",
-    cancelButtonText: "Cancelar",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      api
-        .delete(`/contratos/${contratoAtual.id}`)
-        .then((response) => {
-          toast("Contrato deletado com sucesso!", {
-            theme: "colored",
-            type: "success",
-          });
-          if(contratoAtual.id === contratoOriginal.value.id) {
-            router.push('/contratos')
-          } else {
-            fetchTermoAditivo(contratoOriginal.value.id)
-            selecionarContrato(contratoOriginal.value)
-          }
-        })
-        .catch((error) => {
-          toast("Não foi possível deletar o contrato!", {
-            theme: "colored",
-            type: "error",
-          });
-          console.error("Erro ao deletar contrato:", error);
-        });
-    }
-  });
-};
+// const deleteContrato = async (contratoAtual) => {
+//   Swal.fire({
+//       title: "Confirmar exclusão",
+//     text: "Tem certeza que deseja excluir este contrato?",
+//     icon: "warning",
+//     showCancelButton: true,
+//     confirmButtonColor: "#3085d6",
+//     cancelButtonColor: "#d33",
+//     confirmButtonText: "Excluir",
+//     cancelButtonText: "Cancelar",
+//   }).then((result) => {
+//     if (result.isConfirmed) {
+//       api
+//         .delete(`/contratos/${contratoAtual.id}`)
+//         .then((response) => {
+//           toast("Contrato deletado com sucesso!", {
+//             theme: "colored",
+//             type: "success",
+//           });
+//           if(contratoAtual.id === contratoOriginal.value.id) {
+//             router.push('/contratos')
+//           } else {
+//             fetchTermoAditivo(contratoOriginal.value.id)
+//             selecionarContrato(contratoOriginal.value)
+//           }
+//         })
+//         .catch((error) => {
+//           toast("Não foi possível deletar o contrato!", {
+//             theme: "colored",
+//             type: "error",
+//           });
+//           console.error("Erro ao deletar contrato:", error);
+//         });
+//     }
+//   });
+// };
 
 const closeModal = () => {
   excluirModal.value = false;
