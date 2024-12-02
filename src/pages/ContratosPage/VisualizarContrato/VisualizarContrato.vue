@@ -680,7 +680,7 @@
               {{ formatDatePTBR(faturamento.dataFaturamento) }}
             </td>
             <td class="text-2xl">
-              {{ faturamento.competencia }}
+              {{ formataMesAno(faturamento.competencia) }}
             </td>
             <td
               class="text-2xl"
@@ -841,7 +841,7 @@
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               v-model="pedidoFaturamentoData.competencia"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -1062,7 +1062,7 @@
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               :disabled="isFaturamentoViewModal"
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
               v-model="editingFaturamento.competencia"
@@ -2674,9 +2674,13 @@ const openEditFaturamentoModal = (faturamento) => {
   if (faturamento.dataFaturamento) {
     dataFormatada = faturamento.dataFaturamento.split('T')[0];
   }
+  const competencia = faturamento.competencia || "";
+  const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
+    competencia: competenciaFormatada,
     faturamentoItens: faturamento.faturamentoItens.map(item => ({
       ...item,
       lancamento: {
