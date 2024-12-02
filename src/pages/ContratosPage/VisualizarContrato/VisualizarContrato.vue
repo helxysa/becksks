@@ -524,7 +524,7 @@
 
             <td class="text-2xl">{{ lancamento.id }}</td>
             <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
-            <td class="text-2xl">{{ lancamento.competencia }}</td>
+            <td class="text-2xl">{{ formataMesAno(lancamento.competencia) }}</td>
             <td class="text-2xl">{{ lancamento.projetos }}</td>
             <td
               class="text-2xl underline hover:text-blue-500 transition-colors duration-300"
@@ -1276,7 +1276,7 @@
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.competencia"
@@ -1504,7 +1504,7 @@
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               :disabled="isLancamentoViewModal"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -2118,6 +2118,7 @@ import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
+import { ptBR } from 'date-fns/locale';
 import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
@@ -3758,10 +3759,14 @@ const openEditLancamentoModal = (lancamento) => {
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
 
+  const competencia = lancamento.competencia || "";
+  const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
   // Faça uma cópia profunda também dos itens de lançamento
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
+    competencia: competenciaFormatada,
     lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
   };
 
@@ -3998,6 +4003,17 @@ const selecionarContrato = async (contratoData) => {
     }
   }
 };
+
+const formataMesAno = (competencia) => {
+if (!competencia) return '';
+  try {
+    const date = parseISO(competencia);
+    return format(date, "MMMM yyyy", { locale: ptBR });
+  } catch (error) {
+    console.error('Erro ao formatar competência:', error);
+    return competencia;
+  }
+}
 
 </script>
 
