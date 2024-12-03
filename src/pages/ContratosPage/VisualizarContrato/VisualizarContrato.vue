@@ -469,16 +469,18 @@
           <tr>
             <th></th>
             <th class="text-xl">#</th>
-            <th
-              class="text-xl cursor-pointer"
-              @click="changeSorting('data_medicao', 'medicoes')"
-            >
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('data_medicao', 'medicoes')">
               Data
               <span>
-                {{ sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
+                {{ sortBy["medicoes"] === "data_medicao" && sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
               </span>
             </th>
-            <th class="text-xl">Competência</th>
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('competencia', 'medicoes')">
+              Competência
+              <span>
+                {{ sortBy["medicoes"] === "competencia" && sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
             <th class="text-xl">Projeto</th>
             <th class="text-xl">Tarefa</th>
             <th class="text-xl">Tipo</th>
@@ -647,16 +649,15 @@
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
             <th class="text-xl">#</th>
-            <th
-              class="text-xl cursor-pointer"
-              @click="changeSorting('data_faturamento', 'faturamentos')"
-            >
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('data_faturamento', 'faturamentos')">
               Data
               <span>
-                {{ sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
+                {{ sortBy["faturamentos"] === "data_faturamento" && sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
               </span>
             </th>
-            <th class="text-xl">Competência</th>
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('competencia', 'faturamentos')">Competência
+                <span>{{ sortBy["faturamentos"] === "competencia" && sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}</span>
+            </th>
             <th class="text-xl">Nota Fiscal</th>
             <th class="text-xl">Total</th>
             <th class="text-xl">Situação</th>
@@ -2534,10 +2535,10 @@ const fetchContratoMedicoes = async (id, page) => {
       page,
       limit: 8,
     };
-    if (sortBy.value) {
+    if (sortBy.value.medicoes) {
       params.sortBy = sortBy.value.medicoes;
     }
-    if (sortOrder.value) {
+    if (sortOrder.value.medicoes) {
       params.sortOrder = sortOrder.value.medicoes;
     }
     if (selectedStatuses.value && selectedStatuses.value.length > 0) {
@@ -2581,10 +2582,10 @@ const fetchContratoFaturamentos = async (id, page) => {
     const params = {
       limit: 8,
     };
-    if (sortBy.value) {
+    if (sortBy.value.faturamentos) {
       params.sortBy = sortBy.value.faturamentos;
     }
-    if (sortOrder.value) {
+    if (sortOrder.value.faturamentos) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
     const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
@@ -4006,7 +4007,7 @@ const formataMesAno = (competencia) => {
 if (!competencia) return '';
   try {
     const date = parseISO(competencia);
-    return format(date, "MMMM yyyy", { locale: ptBR });
+    return format(date, "MMMM yyyy", { locale: ptBR }).toUpperCase();
   } catch (error) {
     console.error('Erro ao formatar competência:', error);
     return competencia;
