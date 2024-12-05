@@ -537,6 +537,7 @@
                     'bg-purple-200 border-purple-400': lancamento.tipoMedicao === 'Estimada',
                     'bg-blue-200 border-blue-400': lancamento.tipoMedicao === 'Detalhada',
                     'bg-indigo-200 border-indigo-400': lancamento.tipoMedicao === 'Relatório Mensal',
+                    'bg-neutral-200 border-slate-400': lancamento.tipoMedicao === 'Não se aplica',
                   }"
                 >
                   {{ lancamento.tipoMedicao }}
@@ -562,7 +563,7 @@
                   {{ lancamento.status }}
                 </span>
                 <span
-                  v-else-if="lancamento.tipoMedicao === 'Detalhada' || lancamento.tipoMedicao === 'Relatório Mensal'"
+                  v-else-if="lancamento.tipoMedicao === 'Detalhada' || lancamento.tipoMedicao === 'Relatório Mensal' || lancamento.tipoMedicao === 'Não se aplica'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-red-200 border-red-400':
@@ -1266,6 +1267,7 @@
               <option>Estimada</option>
               <option>Detalhada</option>
               <option>Relatório Mensal</option>
+              <option>Não se aplica</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -1471,6 +1473,7 @@
               <option>Estimada</option>
               <option>Detalhada</option>
               <option>Relatório Mensal</option>
+              <option>Não se aplica</option>
             </select>
           </div>
           <div
@@ -1489,11 +1492,11 @@
               <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Não Autorizada">Não Autorizada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Cancelada">Cancelada</option>
 
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Não Iniciada">Não Iniciada</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Em Andamento">Em Andamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal'" value="Finalizada" disabled hidden>Finalizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Não Iniciada">Não Iniciada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Em Andamento">Em Andamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Finalizada" disabled hidden>Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
@@ -3069,13 +3072,18 @@ const resetForm = () => {
   projetos.value = "";
   closeModalLancamento();
 };
+
 const addItemToTable = (selectedItem) => {
-  if (selectedItem) {
-    medicaoData.value.itens = [selectedItem];
-  } else {
-    console.log("Nenhum item selecionado");
-  }
+if (!selectedItem) return;
+
+medicaoData.value.itens = [selectedItem];
+// if (selectedItem) {
+//   medicaoData.value.itens = [selectedItem];
+// } else {
+//   console.log("Nenhum item selecionado");
+// }
 };
+
 const createLancamento = async () => {
   if (!projetos.value || projetos.value == null) {
     toast("Insira o nome do projeto", {
@@ -3085,12 +3093,17 @@ const createLancamento = async () => {
     return;
   }
 
-  let itensQuantidadePreenchida = contrato.value.contratoItens
-    .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
-    .map((item) => ({
-      id_item: item.id,
-      quantidade_itens: item.quantidadeItens,
-    }));
+  // let itensQuantidadePreenchida = contrato.value.contratoItens
+  //   .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
+  //   .map((item) => ({
+  //     id_item: item.id,
+  //     quantidade_itens: item.quantidadeItens,
+  //   }));
+
+  let itensQuantidadePreenchida = medicaoData.value.itens.map((item) => ({
+    id_item: item.id,
+    quantidade_itens: item.quantidadeItens || "0.000",
+  }));
 
   const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
@@ -3115,6 +3128,9 @@ const createLancamento = async () => {
     return;
   }
 
+  if (medicaoData.value.tipo_medicao === "Não se aplica") {
+    medicaoData.value.status = "Não Iniciada";
+  }
   if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
     medicaoData.value.status = "Não Iniciada";
   }
@@ -3982,7 +3998,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
     if (!['Autorizada', 'Não Autorizada', 'Cancelada'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
-  } else if (newTipo === 'Detalhada' || newTipo === 'Relatório Mensal') {
+  } else if (newTipo === 'Detalhada' || newTipo === 'Relatório Mensal' || newTipo === 'Não se aplica') {
     if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada', 'Encaminhada p/ Faturamento'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
