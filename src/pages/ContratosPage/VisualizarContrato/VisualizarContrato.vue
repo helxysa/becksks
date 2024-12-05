@@ -3835,7 +3835,7 @@ const saveEditedLancamento = async () => {
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
     }));
-
+  console.log('itensQuantidadePreenchida')
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
     (item) => item.quantidade_itens === "0"
