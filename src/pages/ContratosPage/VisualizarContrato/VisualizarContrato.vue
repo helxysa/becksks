@@ -3839,7 +3839,7 @@ const saveEditedLancamento = async () => {
     });
     return;
   }
-console.log('f')
+
   const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
     let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
       (total, lancamento) => {
