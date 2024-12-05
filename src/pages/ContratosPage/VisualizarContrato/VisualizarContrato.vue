@@ -3430,12 +3430,8 @@ const calcularSaldoLancamentoItens = (lancamento) => {
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
     // Multiplicação sem arredondamento
     const valorTotalItem = quantidadeItens * valorUnitario;
-    console.log('Quantidade:', quantidadeItens);
-    console.log('Valor Unitário:', valorUnitario);
-    console.log('Valor Total Item:', valorTotalItem);
      // Soma sem arredondar
      saldoTotal += valorTotalItem;
-    console.log('Saldo Total Atualizado:', saldoTotal);
   });
   return saldoTotal;
 };
