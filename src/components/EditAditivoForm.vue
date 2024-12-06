@@ -1,14 +1,23 @@
 <template>
   <div>
-    <div class="flex items-center mt-12 gap-4">
-      <span @click="voltarListagem" class="cursor-pointer">
-        <Icon
+    <div class="flex justify-between items-center mt-12">
+      <div class="flex items-center gap-4">
+        <span @click="voltarListagem" class="cursor-pointer" title="Voltar">
+          <Icon
           icon="ic:round-arrow-back"
           height="30"
           class="duration-600 transition-all ease-in-out transform hover:-translate-y-[2px]"
-        />
-      </span>
-      <h1 class="text-5xl font-bold">Editar Termo Aditivo</h1>
+          />
+        </span>
+        <h1 class="text-5xl font-bold">Editar Termo Aditivo</h1>
+      </div>
+      <button
+        @click="deleteContrato(route.params.id)"
+        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        v-if="hasPermission('contratos', 'Deletar')"
+      >
+        Excluir
+      </button>
     </div>
 
     <section class="">
@@ -506,7 +515,9 @@ import { ufs } from "../services/ufs.js";
 import AnexoUpload from '../components/form/AnexoUpload.vue';
 import TabButton from '../components/TabButton.vue';
 import { useProfileStore } from '@/stores/ProfileStore';
+import { usePermissions } from '@/composables/usePermission';
 
+const { hasPermission } = usePermissions();
 const store = useProfileStore()
 const tabs = ['Anexos']
 const currentTab = ref(tabs[0])
@@ -747,6 +758,39 @@ const phoneMask = (value) => {
   value = value.replace(/(\d)(\d{4})$/, "$1-$2");
   return value;
 };
+
+
+const deleteContrato = async (id) => {
+  Swal.fire({
+      title: "Confirmar exclusão",
+    text: "Tem certeza que deseja excluir este contrato?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Excluir",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      api.delete(`/contratos/${id}`)
+      .then((response) => {
+        toast("Contrato deletado com sucesso!", {
+          theme: "colored",
+          type: "success",
+        });
+        voltarListagem()
+        })
+        .catch((error) => {
+          toast("Não foi possível deletar o contrato!", {
+            theme: "colored",
+            type: "error",
+          });
+          console.error("Erro ao deletar contrato:", error);
+        });
+    }
+  });
+};
+
 
 // UNIDADE DE MEDIDA
 const unidadesMedida = ref([]);

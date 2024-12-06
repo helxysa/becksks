@@ -38,7 +38,7 @@
     class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
   >
   <div class="flex items-center gap-2">
-    <span @click="voltarListagem" class="cursor-pointer">
+    <span @click="voltarListagem" class="cursor-pointer" title="Voltar">
       <Icon
       icon="ic:round-arrow-back"
       height="28"
@@ -46,7 +46,7 @@
       />
     </span>
     <h1 class="text-4xl font-medium text-gray-800 mb-6 sm:mb-0">
-      Detalhes do Contrato
+      {{ contrato.nomeContrato }}
     </h1>
   </div>
     <div class="flex flex-wrap gap-3">
@@ -59,256 +59,250 @@
         Adicionar aditivo
       </router-link>
     </button>
-      <button
-        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        v-if="hasPermission('contratos', 'Editar')"
-      >
-        <router-link :to="{name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}">
-          Editar
-        </router-link>
-      </button>
-      <button
-        @click="deleteContrato(contrato)"
-        class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-red-500 hover:bg-red-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-        v-if="hasPermission('contratos', 'Deletar')"
-      >
-        Excluir
-      </button>
+    <router-link
+      :to="{ name: contrato.termoAditivoId ? 'editartermo' : 'editarcontrato', params: { id: contrato.id }}"
+      class="flex items-center justify-center px-7 py-3 rounded-md text-2xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+      v-if="hasPermission('contratos', 'Editar')"
+    >
+      Editar
+    </router-link>
+
     </div>
   </div>
 
-  <!-- Detalhes do contrato -->
-  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-    <div
-      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-    >
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4">
-        Informações do Contrato
-      </h3>
-      <div class="space-y-4">
-        <div class="flex items-center">
-          <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
-            <i class="fas fa-file-contract"></i>
-            <Icon
-              icon="fa6-solid:file-contract"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-blue-400"
-            />
+    <!-- Detalhes do contrato -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div
+        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Informações do Contrato
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-blue-100 text-blue-500 rounded-full p-2 mr-3">
+              <i class="fas fa-file-contract"></i>
+              <Icon
+                icon="fa6-solid:file-contract"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-blue-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.nomeContrato }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-lg text-gray-500">Contrato</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato.nomeContrato }}
-            </p>
+          <div class="flex items-center">
+            <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
+              <i class="fas fa-user"></i>
+              <Icon
+                icon="fa-solid:user"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-green-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cliente</p>
+              <p class="font-medium text-gray-700">
+                {{contrato.nomeCliente}}
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-green-100 text-green-500 rounded-full p-2 mr-3">
-            <i class="fas fa-user"></i>
-            <Icon
-              icon="fa-solid:user"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-green-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Cliente</p>
-            <p class="font-medium text-gray-700">
-              {{contrato.nomeCliente}}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
-            <i class="fas fa-calendar-alt"></i>
-            <Icon
-              icon="fa-solid:calendar-alt"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-purple-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Vigência</p>
-            <p class="font-medium text-gray-700">
-              {{ formatDate(contrato.dataInicio) }} até
-              {{ formatDate(contrato.dataFim) }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <section
-      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-    >
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
-      <div class="space-y-4">
-        <div class="flex items-center">
-          <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
-            <i class="fas fa-user-tie"></i>
-            <Icon
-              icon="fa-solid:user-tie"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-indigo-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Nome</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato?.fiscal?.nome }}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
-            <i class="fas fa-phone"></i>
-            <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Contato</p>
-            <p
-              class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
-              @click="openWhatsApp(contrato.fiscal.telefone)"
-            >
-              {{ contrato?.fiscal?.telefone }}
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa:envelope"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-red-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">E-mail</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato?.fiscal?.email }}
-            </p>
+          <div class="flex items-center">
+            <div class="bg-purple-100 text-purple-500 rounded-full p-2 mr-3">
+              <i class="fas fa-calendar-alt"></i>
+              <Icon
+                icon="fa-solid:calendar-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-purple-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Vigência</p>
+              <p class="font-medium text-gray-700">
+                {{ formatDate(contrato.dataInicio) }} até
+                {{ formatDate(contrato.dataFim) }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <section
-      class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-    >
-      <h3 class="text-2xl font-semibold text-gray-800 mb-4">
-        Detalhes Adicionais
-      </h3>
-      <div class="space-y-4">
-        <div class="flex items-center">
-          <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa-solid:bullseye"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-teal-400"
-            />
+      <section
+        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Fiscal</h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-indigo-100 text-indigo-500 rounded-full p-3 mr-3">
+              <i class="fas fa-user-tie"></i>
+              <Icon
+                icon="fa-solid:user-tie"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-indigo-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Nome</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.nome }}
+              </p>
+            </div>
           </div>
-          <div>
-            <p class="text-lg text-gray-500">Ponto Focal</p>
-            <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+          <div class="flex items-center">
+            <div class="bg-yellow-100 text-yellow-500 rounded-full p-3 mr-3">
+              <i class="fas fa-phone"></i>
+              <Icon icon="fa:phone" width="1.5rem" class="text-yellow-400" />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Contato</p>
+              <p
+                class="font-medium text-gray-700 underline hover:text-blue-500 transition-colors duration-300 cursor-pointer"
+                @click="openWhatsApp(contrato.fiscal.telefone)"
+              >
+                {{ contrato?.fiscal?.telefone }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-red-100 text-red-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa:envelope"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-red-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">E-mail</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato?.fiscal?.email }}
+              </p>
+            </div>
           </div>
         </div>
-        <div class="flex items-center">
-          <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa6-solid:city"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-pink-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Cidade</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato.cidade }} ({{ contrato.estado }})
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center">
-          <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
-            <Icon
-              icon="fa-solid:file-alt"
-              width="1.5rem"
-              height="1.5rem"
-              class="text-orange-400"
-            />
-          </div>
-          <div>
-            <p class="text-lg text-gray-500">Objeto do Contrato</p>
-            <p class="font-medium text-gray-700">
-              {{ contrato.objetoContrato }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </section>
-
-  <!-- Resumo Financeiro -->
-  <h2 class="text-2xl font-bold text-gray-800 mb-6" v-if="hasPermission('contratos', 'Visualizar Finanças')">Resumo Financeiro</h2>
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8" v-if="hasPermission('contratos', 'Visualizar Finanças')">
-    <div
-      v-for="(item, index) in financialSummary"
-      :key="index"
-      :class="`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`"
-    >
-      <section class="flex flex-col h-full justify-between">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold">{{ item.title }}</h3>
-          <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
-        </div>
-        <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
       </section>
-    </div>
-  </section>
 
-
-  <!-- Observações -->
-  <section class="mt-8">
-    <div class="flex items-start justify-between gap-12">
-      <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
-        <div class="flex">
-         <span>
-            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
-          </span>
-          <h2 class="text-3xl font-bold mb-4 text-blue-800 ">
-            Descrição:
-          </h2>
-
-        </div>
-        <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
-      </div>
-      <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
-        <div class="relative w-full">
-          <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
-            <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
-            Histórico - Aditivos
-            <Icon icon="mdi:chevron-down" class="ml-2" />
-          </button>
-          <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
-            <ul class="py-2">
-              <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
-                {{ termo.nomeContrato }}
-              </li>
-              <li class="px-4 py-2 hover:bg-gray-100">
-                <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
-              </li>
-            </ul>
+      <section
+        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
+      >
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">
+          Detalhes Adicionais
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <div class="bg-teal-100 text-teal-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:bullseye"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-teal-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Ponto Focal</p>
+              <p class="font-medium text-gray-700">{{ contrato.pontoFocal }}</p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-pink-100 text-pink-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa6-solid:city"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-pink-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Cidade</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.cidade }} ({{ contrato.estado }})
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <div class="bg-orange-100 text-orange-500 rounded-full p-3 mr-3">
+              <Icon
+                icon="fa-solid:file-alt"
+                width="1.5rem"
+                height="1.5rem"
+                class="text-orange-400"
+              />
+            </div>
+            <div>
+              <p class="text-lg text-gray-500">Objeto do Contrato</p>
+              <p class="font-medium text-gray-700">
+                {{ contrato.objetoContrato }}
+              </p>
+            </div>
           </div>
         </div>
-      </div> -->
-    </div>
-  </section>
+      </section>
+    </section>
+
+    <!-- Resumo Financeiro -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6" v-if="hasPermission('contratos', 'Visualizar Finanças')">Resumo Financeiro</h2>
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-8" v-if="hasPermission('contratos', 'Visualizar Finanças')">
+      <div
+        v-for="(item, index) in financialSummary"
+        :key="index"
+        :class="`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`"
+      >
+        <section class="flex flex-col h-full justify-between">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+            <Icon :icon="`${item.icon}`" :height="24" class="opacity-80" />
+          </div>
+          <p class="text-3xl font-bold mt-2">{{ item.value }}</p>
+        </section>
+      </div>
+    </section>
+
+
+    <!-- Observações -->
+    <section class="mt-8">
+      <div class="flex items-start justify-between gap-12">
+        <div class=" border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md w-full">
+          <div class="flex">
+          <span>
+              <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+            </span>
+            <h2 class="text-3xl font-bold mb-4 text-blue-800 ">
+              Descrição:
+            </h2>
+
+          </div>
+          <p class="font-medium text-gray-700">{{ contrato.observacoes }}</p>
+        </div>
+        <!-- <div class=" flex justify-end border rounded-xl shadow-sm " v-if="contrato.termoAditivoId === null" :class="[contrato?.termoAditivoId === null? 'w-1/4': 'w-0']">
+          <div class="relative w-full">
+            <button @click="toggleTermosAditivosDropdown" class="bg-white text-blue-800 px-4 py-2 rounded-md flex items-center justify-center w-full">
+              <Icon icon="material-symbols-light:date-range-outline" class="text-blue-800 mr-2" height="20"/>
+              Histórico - Aditivos
+              <Icon icon="mdi:chevron-down" class="ml-2" />
+            </button>
+            <div v-if="showTermosAditivosDropdown" class="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg z-10">
+              <ul class="py-2">
+                <li v-for="termo in termosAditivos" :key="termo.id" class="px-4 py-2 hover:bg-gray-100">
+                  {{ termo.nomeContrato }}
+                </li>
+                <li class="px-4 py-2 hover:bg-gray-100">
+                  <button @click="openTermosAditivosModal" class="text-blue-500">Mais informações</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </section>
+
 </section>
 
 <section class="bg-white rounded-xl border shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-4 min-h-[400px]" v-if="!isLoading">
@@ -475,16 +469,18 @@
           <tr>
             <th></th>
             <th class="text-xl">#</th>
-            <th
-              class="text-xl cursor-pointer"
-              @click="changeSorting('data_medicao', 'medicoes')"
-            >
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('data_medicao', 'medicoes')">
               Data
               <span>
-                {{ sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
+                {{ sortBy["medicoes"] === "data_medicao" && sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
               </span>
             </th>
-            <th class="text-xl">Competência</th>
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('competencia', 'medicoes')">
+              Competência
+              <span>
+                {{ sortBy["medicoes"] === "competencia" && sortOrder["medicoes"] === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
             <th class="text-xl">Projeto</th>
             <th class="text-xl">Tarefa</th>
             <th class="text-xl">Tipo</th>
@@ -524,7 +520,7 @@
 
             <td class="text-2xl">{{ lancamento.id }}</td>
             <td class="text-2xl">{{ formatDate(lancamento.dataMedicao) }}</td>
-            <td class="text-2xl">{{ lancamento.competencia }}</td>
+            <td class="text-2xl">{{ formataMesAno(lancamento.competencia) }}</td>
             <td class="text-2xl">{{ lancamento.projetos }}</td>
             <td
               class="text-2xl underline hover:text-blue-500 transition-colors duration-300"
@@ -538,10 +534,10 @@
                 <span
                   class="border-2 py-2 px-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-full"
                   :class="{
-                    'bg-purple-200 border-purple-400 text-purple-400':
-                      lancamento.tipoMedicao === 'Estimada',
-                    'bg-blue-200 border-blue-400 text-blue-400':
-                      lancamento.tipoMedicao === 'Detalhada',
+                    'bg-purple-200 border-purple-400': lancamento.tipoMedicao === 'Estimada',
+                    'bg-blue-200 border-blue-400': lancamento.tipoMedicao === 'Detalhada',
+                    'bg-indigo-200 border-indigo-400': lancamento.tipoMedicao === 'Relatório Mensal',
+                    'bg-neutral-200 border-slate-400': lancamento.tipoMedicao === 'Não se aplica',
                   }"
                 >
                   {{ lancamento.tipoMedicao }}
@@ -551,7 +547,7 @@
             <td class="text-2xl">
               <div class="flex justify-center">
                 <span
-                  v-if="lancamento.tipoMedicao !== 'Detalhada'"
+                  v-if="lancamento.tipoMedicao === 'Estimada'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-gray-200 border-gray-400':
@@ -567,7 +563,7 @@
                   {{ lancamento.status }}
                 </span>
                 <span
-                  v-else
+                  v-else-if="lancamento.tipoMedicao === 'Detalhada' || lancamento.tipoMedicao === 'Relatório Mensal' || lancamento.tipoMedicao === 'Não se aplica'"
                   class="border-2 py-2 px-4 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
                   :class="{
                     'bg-red-200 border-red-400':
@@ -654,16 +650,15 @@
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
             <th class="text-xl">#</th>
-            <th
-              class="text-xl cursor-pointer"
-              @click="changeSorting('data_faturamento', 'faturamentos')"
-            >
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('data_faturamento', 'faturamentos')">
               Data
               <span>
-                {{ sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
+                {{ sortBy["faturamentos"] === "data_faturamento" && sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
               </span>
             </th>
-            <th class="text-xl">Competência</th>
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('competencia', 'faturamentos')">Competência
+                <span>{{ sortBy["faturamentos"] === "competencia" && sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}</span>
+            </th>
             <th class="text-xl">Nota Fiscal</th>
             <th class="text-xl">Total</th>
             <th class="text-xl">Situação</th>
@@ -681,7 +676,7 @@
               {{ formatDatePTBR(faturamento.dataFaturamento) }}
             </td>
             <td class="text-2xl">
-              {{ faturamento.competencia }}
+              {{ formataMesAno(faturamento.competencia) }}
             </td>
             <td
               class="text-2xl"
@@ -767,9 +762,7 @@
 
   <!-- Anexos do contrato -->
   <div v-if="currentTab === 'Anexos'">
-    <!-- <div v-if="contratoId"> -->
     <Anexos :key="contratoId" :resourceId="contratoId" :variant="'contrato'" />
-    <!-- </div> -->
   </div>
 </section>
   <!-- Modal novo pedido de faturamento-->
@@ -800,9 +793,7 @@
           </div>
           <div class="flex gap-4 items-center justify-between text-center">
             <label class="font-bold text-3xl">Valor total:</label>
-            <span class="font-medium text-3xl">{{
-              formatCurrency(calcularTotalLancamento(contrato.lancamentos))
-            }}</span>
+            <span class="font-medium text-3xl">{{ formatCurrencySemArrendondar(calcularTotalLancamento(contrato.lancamentos))}}</span>
           </div>
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Situação:</label>
@@ -846,7 +837,7 @@
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               v-model="pedidoFaturamentoData.competencia"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -957,8 +948,8 @@
               </td>
               <td>
                 {{
-                  formatCurrency(
-                    calcularSaldoLancamentoItens(item.lancamentoItens)
+                  formatCurrencySemArrendondar(
+                    calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
                   )
                 }}
               </td>
@@ -988,7 +979,7 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal editar  pedido de  faturamento -->
+  <!-- Modal editar faturamento -->
   <JetDialogModal
     :show="modalEditFaturamento"
     :withouHeader="false"
@@ -1006,11 +997,6 @@
           @update:currentTab="editFaturamentoCurrentTab = $event"
         />
       </div>
-      <!-- <div v-if="editFaturamentoCurrentTab === 'Anexos'">
-        <div v-if="editingFaturamento.id">
-          <Anexos :resourceId="editingFaturamento.id" :variant="'faturamento'" :isViewOnly="isFaturamentoViewModal"/>
-        </div>
-      </div> -->
       <form @submit.prevent="saveEditedFaturamento">
       <section v-if="editFaturamentoCurrentTab === 'Formulário'">
 
@@ -1072,7 +1058,7 @@
           <div class="flex gap-4 items-center justify-between">
             <label class="font-bold text-3xl w-[180px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               :disabled="isFaturamentoViewModal"
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
               v-model="editingFaturamento.competencia"
@@ -1182,7 +1168,7 @@
                 <td>
                   {{
                     formatCurrencySemArrendondar(
-                      calcularSaldoLancamentoItens(item.lancamentoItens)
+                      calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
                     )
                   }}
                 </td>
@@ -1235,7 +1221,6 @@
     </div>
       <form @submit.prevent="createLancamento">
         <div v-if="criarMedicaoCurrentTab === 'Formulário'">
-
         <section class="flex flex-col gap-8">
           <div class="flex items-center gap-12">
             <label class="font-bold text-3xl w-[180px]">Contrato:</label>
@@ -1281,12 +1266,14 @@
               </option>
               <option>Estimada</option>
               <option>Detalhada</option>
+              <option>Relatório Mensal</option>
+              <option>Não se aplica</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               v-model="medicaoData.competencia"
@@ -1340,11 +1327,10 @@
                 <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
-                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
                 <th class="text-xl">Resultado da medição</th>
-                <!-- <th class="text-xl">Total</th> -->
+                <th v-if="medicaoData.tipo_medicao === 'Relatório Mensal'" class="text-xl">Dias</th>
               </tr>
             </thead>
             <tbody v-if="medicaoData.itens">
@@ -1356,9 +1342,6 @@
                 <td class="text-2xl">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
-                <!-- <td class="text-2xl">
-                  {{ formatCurrency(item.valorUnitario) }}
-                </td> -->
                 <td>
                   <span>
                     {{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
@@ -1381,14 +1364,16 @@
                     v-bind="decimalConfig"
                   />
                 </td>
-                <!-- <td class="text-2xl flex justify-center mt-4 gap-3 w-full">
-                  <span
-                    class="max-w-60"
-                    :class="{ 'text-red-500': saldoMaiorQueContrato(item) }"
-                  >
-                    {{ formatCurrency(calcularSaldoItem(item) || 0) }}
-                  </span>
-                </td> -->
+                <td v-if="medicaoData.tipo_medicao === 'Relatório Mensal'">
+                  <input
+                    v-model="medicaoData.dias"
+                    type="number"
+                    min="1"
+                    max="31"
+                    class="border-2 text-center max-w-72"
+                    placeholder="Dias"
+                  />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -1487,6 +1472,8 @@
               </option>
               <option>Estimada</option>
               <option>Detalhada</option>
+              <option>Relatório Mensal</option>
+              <option>Não se aplica</option>
             </select>
           </div>
           <div
@@ -1505,17 +1492,17 @@
               <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Não Autorizada">Não Autorizada</option>
               <option v-if="editingLancamento.tipoMedicao === 'Estimada'" value="Cancelada">Cancelada</option>
 
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Não Iniciada">Não Iniciada</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Em Andamento">Em Andamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
-              <option v-if="editingLancamento.tipoMedicao === 'Detalhada'" value="Finalizada" disabled hidden>Finalizada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Não Iniciada">Não Iniciada</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Em Andamento">Em Andamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Disponível p/ Faturamento">Disponível para Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Encaminhada p/ Faturamento" disabled hidden>Encaminhada p/ Faturamento</option>
+              <option v-if="editingLancamento.tipoMedicao === 'Detalhada' || editingLancamento.tipoMedicao === 'Relatório Mensal' || editingLancamento.tipoMedicao === 'Não se aplica'" value="Finalizada" disabled hidden>Finalizada</option>
             </select>
           </div>
           <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
-              type="text"
+              type="month"
               :disabled="isLancamentoViewModal"
               placeholder="Informe a competência"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -1553,11 +1540,10 @@
                 <th class="text-xl">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
-                <!-- <th class="text-xl">Valor unitário</th> -->
                 <th class="text-xl">Quantidade contratada</th>
                 <th class="text-xl">Disponível</th>
                 <th class="text-xl">Resultado da medição</th>
-                <!-- <th class="text-xl">Total</th> -->
+                <th v-if="editingLancamento.tipoMedicao === 'Relatório Mensal'" class="text-xl">Dias</th>
               </tr>
             </thead>
             <tbody>
@@ -1591,6 +1577,17 @@
                     class="border-2 text-center max-w-60"
                     min="0"
                     v-bind="decimalConfig"
+                  />
+                </td>
+                <td v-if="editingLancamento.tipoMedicao === 'Relatório Mensal'">
+                  <input
+                    v-model="editingLancamento.dias"
+                    type="number"
+                    min="0"
+                    max="31"
+                    :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
+                    class="border-2 text-center max-w-72"
+                    placeholder="Dias"
                   />
                 </td>
               </tr>
@@ -2119,6 +2116,7 @@ import { toast } from "vue3-toastify";
 import Swal from "sweetalert2";
 import { Money3Component } from "v-money3";
 import { format, formatISO, startOfDay, parseISO } from "date-fns";
+import { ptBR } from 'date-fns/locale';
 import Anexos from '../../../components/form/Anexos.vue';
 import AnexoUpload from '../../../components/form/AnexoUpload.vue';
 import TabButton from '../../../components/TabButton.vue';
@@ -2540,10 +2538,10 @@ const fetchContratoMedicoes = async (id, page) => {
       page,
       limit: 8,
     };
-    if (sortBy.value) {
+    if (sortBy.value.medicoes) {
       params.sortBy = sortBy.value.medicoes;
     }
-    if (sortOrder.value) {
+    if (sortOrder.value.medicoes) {
       params.sortOrder = sortOrder.value.medicoes;
     }
     if (selectedStatuses.value && selectedStatuses.value.length > 0) {
@@ -2587,10 +2585,10 @@ const fetchContratoFaturamentos = async (id, page) => {
     const params = {
       limit: 8,
     };
-    if (sortBy.value) {
+    if (sortBy.value.faturamentos) {
       params.sortBy = sortBy.value.faturamentos;
     }
-    if (sortOrder.value) {
+    if (sortOrder.value.faturamentos) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
     const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
@@ -2674,9 +2672,13 @@ const openEditFaturamentoModal = (faturamento) => {
   if (faturamento.dataFaturamento) {
     dataFormatada = faturamento.dataFaturamento.split('T')[0];
   }
+  const competencia = faturamento.competencia || "";
+  const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
+    competencia: competenciaFormatada,
     faturamentoItens: faturamento.faturamentoItens.map(item => ({
       ...item,
       lancamento: {
@@ -2716,9 +2718,11 @@ const calcularTotalLancamento = (lancamentos) => {
 
   lancamentosFiltrados.forEach((lancamento) => {
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
-      total +=
-        parseFloat(lancamentoItem.valorUnitario) *
-        parseFloat(lancamentoItem.quantidadeItens);
+      if(lancamento.dias){
+        total += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamento.dias);
+      } else {
+        total += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens);
+      }
     });
   });
 
@@ -2730,9 +2734,11 @@ const calcularTotalFaturamento = (faturamento) => {
 
   faturamento.faturamentoItens.forEach((faturamentoItem) => {
     faturamentoItem.lancamento.lancamentoItens.forEach((lancamentoItem) => {
-      total +=
-        parseFloat(lancamentoItem.valorUnitario) *
-        parseFloat(lancamentoItem.quantidadeItens);
+      if(faturamentoItem.lancamento.dias){
+        total += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(faturamentoItem.lancamento.dias);
+      } else {
+        total += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens);
+      }
     });
   });
   return total;
@@ -2740,14 +2746,17 @@ const calcularTotalFaturamento = (faturamento) => {
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
-  faturamento.forEach((item) => {
-    item.lancamento.lancamentoItens.forEach((subItem) => {
-      const quantidadeItens = parseFloat(subItem.quantidadeItens) || 0;
-      const valorUnitario = parseFloat(subItem.valorUnitario) || 0;
-      const valorTotalItem = quantidadeItens * valorUnitario;
-      saldoTotal += valorTotalItem;
-    });
-  });
+
+  faturamento.forEach((faturamentoObjeto) => {
+    let lancamentoTemDias = faturamentoObjeto.lancamento.dias
+    faturamentoObjeto.lancamento.lancamentoItens.forEach(lancamentoItem => {
+      if(lancamentoTemDias) {
+        saldoTotal += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamentoTemDias);
+      } else {
+        saldoTotal += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens)
+      }
+    })
+  })
   return saldoTotal;
 };
 
@@ -2958,42 +2967,42 @@ const decimalConfig = {
   masked: false,
 };
 
-const deleteContrato = async (contratoAtual) => {
-  Swal.fire({
-      title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este contrato?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Excluir",
-    cancelButtonText: "Cancelar",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      api
-        .delete(`/contratos/${contratoAtual.id}`)
-        .then((response) => {
-          toast("Contrato deletado com sucesso!", {
-            theme: "colored",
-            type: "success",
-          });
-          if(contratoAtual.id === contratoOriginal.value.id) {
-            router.push('/contratos')
-          } else {
-            fetchTermoAditivo(contratoOriginal.value.id)
-            selecionarContrato(contratoOriginal.value)
-          }
-        })
-        .catch((error) => {
-          toast("Não foi possível deletar o contrato!", {
-            theme: "colored",
-            type: "error",
-          });
-          console.error("Erro ao deletar contrato:", error);
-        });
-    }
-  });
-};
+// const deleteContrato = async (contratoAtual) => {
+//   Swal.fire({
+//       title: "Confirmar exclusão",
+//     text: "Tem certeza que deseja excluir este contrato?",
+//     icon: "warning",
+//     showCancelButton: true,
+//     confirmButtonColor: "#3085d6",
+//     cancelButtonColor: "#d33",
+//     confirmButtonText: "Excluir",
+//     cancelButtonText: "Cancelar",
+//   }).then((result) => {
+//     if (result.isConfirmed) {
+//       api
+//         .delete(`/contratos/${contratoAtual.id}`)
+//         .then((response) => {
+//           toast("Contrato deletado com sucesso!", {
+//             theme: "colored",
+//             type: "success",
+//           });
+//           if(contratoAtual.id === contratoOriginal.value.id) {
+//             router.push('/contratos')
+//           } else {
+//             fetchTermoAditivo(contratoOriginal.value.id)
+//             selecionarContrato(contratoOriginal.value)
+//           }
+//         })
+//         .catch((error) => {
+//           toast("Não foi possível deletar o contrato!", {
+//             theme: "colored",
+//             type: "error",
+//           });
+//           console.error("Erro ao deletar contrato:", error);
+//         });
+//     }
+//   });
+// };
 
 const closeModal = () => {
   excluirModal.value = false;
@@ -3063,13 +3072,18 @@ const resetForm = () => {
   projetos.value = "";
   closeModalLancamento();
 };
+
 const addItemToTable = (selectedItem) => {
-  if (selectedItem) {
-    medicaoData.value.itens = [selectedItem];
-  } else {
-    console.log("Nenhum item selecionado");
-  }
+if (!selectedItem) return;
+
+medicaoData.value.itens = [selectedItem];
+// if (selectedItem) {
+//   medicaoData.value.itens = [selectedItem];
+// } else {
+//   console.log("Nenhum item selecionado");
+// }
 };
+
 const createLancamento = async () => {
   if (!projetos.value || projetos.value == null) {
     toast("Insira o nome do projeto", {
@@ -3079,23 +3093,17 @@ const createLancamento = async () => {
     return;
   }
 
-let itensQuantidadePreenchida = contrato.value.contratoItens
-  .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
-  .map((item) => ({
-    id_item: item.id,
-    quantidade_itens: item.quantidadeItens,
-  }));
+  // let itensQuantidadePreenchida = contrato.value.contratoItens
+  //   .filter(item => item.quantidadeItens !== undefined && item.quantidadeItens !== null)
+  //   .map((item) => ({
+  //     id_item: item.id,
+  //     quantidade_itens: item.quantidadeItens,
+  //   }));
 
-  // if (itensQuantidadePreenchida.length === 0) {
-  //   toast(
-  //     "Adicione pelo menos um item com data e resultado da  medição para criar o lançamento.",
-  //     {
-  //       theme: "colored",
-  //       type: "error",
-  //     }
-  //   );
-  //   return;
-  // }
+  let itensQuantidadePreenchida = medicaoData.value.itens.map((item) => ({
+    id_item: item.id,
+    quantidade_itens: item.quantidadeItens || "0.000",
+  }));
 
   const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
@@ -3106,15 +3114,11 @@ let itensQuantidadePreenchida = contrato.value.contratoItens
   });
 
   if (quantidadeExcedida) {
-    toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível."
-    );
+    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
   }
 
-  let novoSaldoContrato =
-    calcularSaldoAtualContrato() -
-    calcularSaldoLancamentoItens(itensQuantidadePreenchida);
+  let novoSaldoContrato = calcularSaldoAtualContrato() - calcularSaldoLancamentoItens(itensQuantidadePreenchida);
 
   if (novoSaldoContrato < 0) {
     toast("O saldo contratado não pode ser excedido.", {
@@ -3124,6 +3128,12 @@ let itensQuantidadePreenchida = contrato.value.contratoItens
     return;
   }
 
+  if (medicaoData.value.tipo_medicao === "Não se aplica") {
+    medicaoData.value.status = "Não Iniciada";
+  }
+  if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
+    medicaoData.value.status = "Não Iniciada";
+  }
   if (medicaoData.value.tipo_medicao === "Detalhada") {
     medicaoData.value.status = "Não Iniciada";
   }
@@ -3140,6 +3150,11 @@ let itensQuantidadePreenchida = contrato.value.contratoItens
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
   };
+
+  if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
+    payload.dias = medicaoData.value.dias || null;
+  }
+
   try {
     const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
 
@@ -3423,16 +3438,18 @@ const calcularSaldoItem = (item) => {
   return valor;
 };
 
-const calcularSaldoLancamentoItens = (lancamento) => {
+const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
   let saldoTotal = 0;
   lancamento.forEach((item) => {
     const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
     const valorUnitario = parseFloat(item.valorUnitario) || 0;
-    // Multiplicação sem arredondamento
-    console.log('f')
-    const valorTotalItem = quantidadeItens * valorUnitario;
-     // Soma sem arredondar
-     saldoTotal += valorTotalItem;
+    let valorTotalItem = 0;
+    if (dias !== null) {
+      valorTotalItem += (valorUnitario / 30) * dias
+    } else {
+      valorTotalItem = quantidadeItens * valorUnitario;
+    }
+    saldoTotal += valorTotalItem;
   });
   return saldoTotal;
 };
@@ -3757,10 +3774,14 @@ const openEditLancamentoModal = (lancamento) => {
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
 
+  const competencia = lancamento.competencia || "";
+  const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
   // Faça uma cópia profunda também dos itens de lançamento
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
+    competencia: competenciaFormatada,
     lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
   };
 
@@ -3797,25 +3818,24 @@ const closeEditLancamentoModal = () => {
 };
 
 const saveEditedLancamento = async () => {
-  if (
-    !editingLancamento.value.projetos ||
-    editingLancamento.value.projetos === null
-  ) {
+  if (!editingLancamento.value.projetos || editingLancamento.value.projetos === null)
+  {
     toast.error("Adicione o nome do projeto.", {
       theme: "colored",
       type: "error",
     });
     return;
   }
+
   let itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
-    // .filter((item) => item.quantidadeItens)
+    .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id: item.id,
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
-      // data: item.data,
     }));
+  console.log('itensQuantidadePreenchida')
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
     (item) => item.quantidade_itens === "0"
@@ -3855,25 +3875,15 @@ const saveEditedLancamento = async () => {
       },
       0
     );
-
-    const saldoQuantidadeContratada = parseFloat(
-      item.saldo_quantidade_contratada
-    );
+    const saldoQuantidadeContratada = parseFloat(item.saldo_quantidade_contratada);
     const quantidadeItens = parseFloat(item.quantidade_itens);
-    const quantidadeDisponivel =
-      saldoQuantidadeContratada - quantidadeTotalLançada;
+    const quantidadeDisponivel = saldoQuantidadeContratada - quantidadeTotalLançada;
 
     return quantidadeItens > quantidadeDisponivel;
   });
 
   if (quantidadeExcedida) {
-    toast.error(
-      "A quantidade a ser lançada não pode ultrapassar a quantidade disponível do item.",
-      {
-        theme: "colored",
-        type: "error",
-      }
-    );
+    toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
   }
 
@@ -3881,15 +3891,9 @@ const saveEditedLancamento = async () => {
     toast.error("Selecione um status para a medição.")
     return;
   }
-  //  if(editingLancamento.value.descricao && editingLancamento.value.descricao.length > 1500) {
-  //   toast.error(`Descrição não pode ter mais que 1500 caracteres! Caracteres: ${editingLancamento.value.descricao.length}`)
-  //   return;
-  // }
 
   let payload = {
-    // data_medicao: formatDate(editingLancamento.value.dataMedicao),
     data_medicao: editingLancamento.value.dataMedicao,
-    // data_medicao: "2024-08-22",
     competencia: editingLancamento.value.competencia,
     descricao: editingLancamento.value.descricao,
     tarefa_medicao: editingLancamento.value.tarefaMedicao,
@@ -3898,10 +3902,14 @@ const saveEditedLancamento = async () => {
     itens: itensQuantidadePreenchida.map((item) => ({
       id_item: item.id,
       quantidade_itens: item.quantidade_itens,
-      // data: item.data,
     })),
     projetos: editingLancamento.value.projetos,
   };
+
+  if (editingLancamento.value.tipoMedicao === "Relatório Mensal") {
+    payload.dias = editingLancamento.value.dias || null;
+  }
+
   try {
     const response = await api
       .put(`/lancamentos/${editingLancamento.value.id}`, payload)
@@ -3990,7 +3998,7 @@ watch(() => editingLancamento.value.tipoMedicao, (newTipo) => {
     if (!['Autorizada', 'Não Autorizada', 'Cancelada'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
-  } else if (newTipo === 'Detalhada') {
+  } else if (newTipo === 'Detalhada' || newTipo === 'Relatório Mensal' || newTipo === 'Não se aplica') {
     if (!['Não Iniciada', 'Em Andamento', 'Disponível p/ Faturamento', 'Finalizada', 'Encaminhada p/ Faturamento'].includes(editingLancamento.value.status)) {
       editingLancamento.value.status = '';
     }
@@ -4010,6 +4018,17 @@ const selecionarContrato = async (contratoData) => {
     }
   }
 };
+
+const formataMesAno = (competencia) => {
+if (!competencia) return '';
+  try {
+    const date = parseISO(competencia);
+    return format(date, "MMMM yyyy", { locale: ptBR }).toUpperCase();
+  } catch (error) {
+    console.error('Erro ao formatar competência:', error);
+    return competencia;
+  }
+}
 
 </script>
 
