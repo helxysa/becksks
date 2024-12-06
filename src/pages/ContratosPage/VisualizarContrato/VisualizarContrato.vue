@@ -2696,7 +2696,10 @@ const openViewFaturamentoModal = (faturamento) => {
     new Date(faturamento.dataFaturamento),
     "yyyy-MM-dd"
   );
-  editingFaturamento.value = { ...faturamento, dataFaturamento: dataFormatada };
+  const competencia = faturamento.competencia || "";
+  const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
+  editingFaturamento.value = { ...faturamento, competencia: competenciaFormatada, dataFaturamento: dataFormatada };
   modalEditFaturamento.value = true;
 };
 
@@ -3794,9 +3797,12 @@ const openViewLancamentoModal = (lancamento) => {
   const itensComQuantidade = lancamento.lancamentoItens
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
+  const competencia = lancamento.competencia || "";
+  const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
+    competencia: competenciaFormatada,
     lancamentoItens: itensComQuantidade,
   };
   modalEditLancamento.value = true;
