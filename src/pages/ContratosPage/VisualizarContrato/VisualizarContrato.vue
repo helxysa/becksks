@@ -3876,26 +3876,16 @@ const saveEditedLancamento = async () => {
   const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
     let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
       (total, lancamento) => {
-        return (
-          total +
-          lancamento.lancamentoItens.reduce((subTotal, lancamentoItem) => {
-            if (
-              lancamentoItem.contratoItemId === item.contrato_item_id &&
-              lancamentoItem.id !== item.id
-            ) {
+        return ( total + lancamento.lancamentoItens.reduce((subTotal, lancamentoItem) => {
+            if ( lancamentoItem.contratoItemId === item.contrato_item_id &&  lancamentoItem.id !== item.id) {
               return subTotal + parseFloat(lancamentoItem.quantidadeItens);
-            }
-            return subTotal;
-          }, 0)
-        );
-      },
-      0
-    );
+            } return subTotal }, 0));
+      }, 0);
     const saldoQuantidadeContratada = parseFloat(item.saldo_quantidade_contratada);
     const quantidadeItens = parseFloat(item.quantidade_itens);
     const quantidadeDisponivel = saldoQuantidadeContratada - quantidadeTotalLançada;
 
-    return quantidadeItens > quantidadeDisponivel;
+    return quantidadeItens > parseFloat((saldoQuantidadeContratada - quantidadeTotalLançada).toFixed(3))
   });
 
   if (quantidadeExcedida) {
