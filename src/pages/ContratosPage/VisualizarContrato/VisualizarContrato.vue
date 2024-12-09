@@ -3128,7 +3128,6 @@ const createLancamento = async () => {
     );
     return item.quantidadeItens > quantidadeRestante;
   });
-
   if (quantidadeExcedida) {
     toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
@@ -3166,7 +3165,6 @@ const createLancamento = async () => {
     tarefa_medicao: medicaoData.value.tarefa_medicao,
     tipo_medicao: medicaoData.value.tipo_medicao,
   };
-
   if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
     payload.dias = medicaoData.value.dias || null;
   }
@@ -3541,7 +3539,7 @@ const calcularItensRestante = (idItem, quantidadeContratada) => {
       }
     });
   });
-  quantidadeRestante = parseFloat(quantidadeContratada) - quantidadeUtilizada;
+  quantidadeRestante = parseFloat((quantidadeContratada - quantidadeUtilizada).toFixed(3));
   return quantidadeRestante;
 };
 
@@ -3854,7 +3852,6 @@ const saveEditedLancamento = async () => {
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
       quantidade_itens: item.quantidadeItens.toString(),
     }));
-  console.log('itensQuantidadePreenchida')
 
   const todosQuantidadeZero = itensQuantidadePreenchida.every(
     (item) => item.quantidade_itens === "0"
