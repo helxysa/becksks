@@ -1105,7 +1105,7 @@
                 <td class="text-center">
                   <input
                     v-model="item.competencia"
-                    type="text"
+                    type="month"
                     :disabled="isFaturamentoViewModal"
                     :class="{ 'bg-white border-none': isFaturamentoViewModal }"
                     placeholder="Informe a competência"
@@ -2683,6 +2683,7 @@ const openEditFaturamentoModal = (faturamento) => {
       ...item,
       lancamento: {
         ...item.lancamento,
+        competencia: item.lancamento.competencia.split("-").slice(0,2).join("-"),
         originalCompetencia: item.lancamento.competencia
       }
     }))
@@ -2699,7 +2700,19 @@ const openViewFaturamentoModal = (faturamento) => {
   const competencia = faturamento.competencia || "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
 
-  editingFaturamento.value = { ...faturamento, competencia: competenciaFormatada, dataFaturamento: dataFormatada };
+  editingFaturamento.value = {
+    ...faturamento,
+    dataFaturamento: dataFormatada,
+    competencia: competenciaFormatada,
+    faturamentoItens: faturamento.faturamentoItens.map(item => ({
+      ...item,
+      lancamento: {
+        ...item.lancamento,
+        competencia: item.lancamento.competencia.split("-").slice(0,2).join("-"),
+        originalCompetencia: item.lancamento.competencia
+      }
+    }))
+  };
   modalEditFaturamento.value = true;
 };
 
