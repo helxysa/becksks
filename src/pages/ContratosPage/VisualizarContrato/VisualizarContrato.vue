@@ -373,15 +373,8 @@
             <td class="text-2xl">{{ item.titulo }}</td>
             <td class="text-2xl">{{ item.unidadeMedida }}</td>
             <td class="text-2xl">{{ parseFloat(item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
-            <td class="text-2xl">{{ formatCurrency(item.valorUnitario) }}</td>
-            <td class="text-2xl">
-              {{
-                formatCurrency(
-                  item.valorUnitario * item.saldoQuantidadeContratada
-                )
-              }}
-            </td>
-            <!-- {{ (contrato?.lancamentos?.lancamentoItens) }} -->
+            <td class="text-2xl">{{ formatCurrencySemArrendondar(item.valorUnitario) }}</td>
+            <td class="text-2xl">{{ formatCurrencySemArrendondar(item.valorUnitario * item.saldoQuantidadeContratada)}}</td>
             <td class="text-2xl">
               {{
                 calcularItensRestante(
@@ -1745,16 +1738,7 @@
             />
           </div>
           <div class="flex gap-4 justify-between items-center">
-            <label class="font-bold text-3xl"
-              >Unidade de Medida:
-              <!-- <button
-              type="button"
-              @click="openNewUnitInput"
-              class="ml-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-blue-600 bg-blue-100 hover:bg-blue-200"
-            >
-              {{ showNewUnitInput ? "Voltar" : "Adicionar" }}
-            </button> -->
-            </label>
+            <label class="font-bold text-3xl">Unidade de Medida:</label>
             <select
               v-if="!showNewUnitInput"
               :disabled="isItemViewModal"
@@ -2180,7 +2164,7 @@ const financialSummary = computed(() => [
   {
     title: "Aguardando faturamento",
     value: formatCurrency(
-      calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoFaturamento
+      calcularSaldoDisponivel(faturamentoItemData.value).aguardandoFaturamento
     ),
     icon: "ph:clock-fill",
     bgColor: "from-orange-400 to-orange-600",
@@ -2188,7 +2172,7 @@ const financialSummary = computed(() => [
   {
     title: "Aguardando pagamento",
     value: formatCurrency(
-      calcularSaldoDisponivel(contrato.value.faturamentos).aguardandoPagamento
+      calcularSaldoDisponivel(faturamentoItemData.value).aguardandoPagamento
     ),
     icon: "fa-solid:hand-holding-usd",
     bgColor: "from-indigo-400 to-indigo-600",
@@ -2196,7 +2180,7 @@ const financialSummary = computed(() => [
   {
     title: "Pago",
     value: formatCurrency(
-      calcularSaldoDisponivel(contrato.value.faturamentos).valorPago
+      calcularSaldoDisponivel(faturamentoItemData.value).valorPago
     ),
     icon: "fa-check-circle",
     bgColor: "from-green-400 to-green-600",
@@ -2205,7 +2189,7 @@ const financialSummary = computed(() => [
     title: "Saldo disponível",
     value: formatCurrency(
       contrato.value.saldoContrato -
-        calcularSaldoDisponivel(contrato.value.faturamentos).totalUtilizado
+        calcularSaldoDisponivel(faturamentoItemData.value).totalUtilizado
     ),
     icon: "ph-wallet-fill",
     bgColor: "from-purple-400 to-purple-600",
@@ -3475,40 +3459,32 @@ const calcularSaldoDisponivel = (faturamento) => {
   let valorPago = 0;
 
   faturamento?.forEach((item) => {
-    if (item.status === "Aguardando Faturamento") {
-      item.faturamentoItens.forEach((subItem) => {
-        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-          const quantidadeItens =
-            parseFloat(itemLancamento.quantidadeItens) || 0;
-          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-          const valorTotalItem = quantidadeItens * valorUnitario;
-          valorAguardandoFaturamento += valorTotalItem;
-          saldoTotal += valorTotalItem;
-        });
+    item.faturamentoItens.forEach((subItem) => {
+      const lancamento = subItem.lancamento;
+
+      lancamento.lancamentoItens.forEach((itemLancamento) => {
+        const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
+        const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+
+        let valorTotalItem;
+        if (lancamento.dias) {
+          valorTotalItem = parseFloat(((valorUnitario / 30) * lancamento.dias).toFixed(2));
+        } else {
+          valorTotalItem = parseFloat((quantidadeItens * valorUnitario).toFixed(2));
+        }
+
+        if (item.status === "Aguardando Faturamento") {
+          valorAguardandoFaturamento = parseFloat((valorAguardandoFaturamento + valorTotalItem).toFixed(2));
+          saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(2));
+        } else if (item.status === "Aguardando Pagamento") {
+          valorAguardandoPagamento = parseFloat((valorAguardandoPagamento + valorTotalItem).toFixed(2));
+          saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(2));
+        } else if (item.status === "Pago") {
+          valorPago = parseFloat((valorPago + valorTotalItem).toFixed(2));
+          saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(2));
+        }
       });
-    } else if (item.status === "Aguardando Pagamento") {
-      item.faturamentoItens.forEach((subItem) => {
-        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-          const quantidadeItens =
-            parseFloat(itemLancamento.quantidadeItens) || 0;
-          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-          const valorTotalItem = quantidadeItens * valorUnitario;
-          valorAguardandoPagamento += valorTotalItem;
-          saldoTotal += valorTotalItem;
-        });
-      });
-    } else if (item.status === "Pago") {
-      item.faturamentoItens.forEach((subItem) => {
-        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-          const quantidadeItens =
-            parseFloat(itemLancamento.quantidadeItens) || 0;
-          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-          const valorTotalItem = quantidadeItens * valorUnitario;
-          valorPago += valorTotalItem;
-          saldoTotal += valorTotalItem;
-        });
-      });
-    }
+    });
   });
 
   return {
@@ -3608,9 +3584,6 @@ const closeModalEditAditivo = () => {
 
 
 const saveEditedItem = async () => {
-  const itemIndex = contrato.value.contratoItens.findIndex(
-    (i) => i.id === editingItem.value.id
-  );
   let itemEditado = { ...editingItem.value };
 
   let valorTotalItens = 0;
@@ -3634,19 +3607,7 @@ const saveEditedItem = async () => {
   valorTotalItens += itemEditadoQuantidade * itemEditadoValorUnitario;
 
   if (valorTotalItens > valorContratado) {
-    toast.error(
-      `Valor total do item excedendo o valor contratado em R$ ${
-        valorTotalItens - valorContratado
-      }`
-    );
-    return;
-  }
-
-  if (itemEditado.saldoQuantidadeContratada == 0) {
-    toast.error(`quantidade contratada não pode ser zero.`);
-    return;
-  } else if (itemEditado.valorUnitario == 0) {
-    toast.error(`Valor unitário não pode ser zero.`);
+    toast.error( `Valor total dos itens excede o valor contratado por R$ ${(valorTotalItens - valorContratado).toFixed(3)}`);
     return;
   }
 
@@ -3662,18 +3623,18 @@ const saveEditedItem = async () => {
       `/contratos/items/${itemEditado.id}`,
       objEditado
     );
-    toast("Item alterado com sucesso!", {
+
+    toast.success("Item alterado com sucesso!", {
       theme: "colored",
-      type: "success",
     });
+
     fetchContrato(contratoId);
     closeModalEditItem();
   } catch (error) {
-    toast(error.response.data.message, {
+    console.error("Erro ao alterar item:", error.response?.data?.message || error.message);
+    toast.error(error.response?.data?.message || "Erro ao alterar o item.", {
       theme: "colored",
-      type: "error",
     });
-    console.error("Erro ao alterar item", error.response.data.message);
   }
 };
 
