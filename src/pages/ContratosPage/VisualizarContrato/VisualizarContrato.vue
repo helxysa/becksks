@@ -319,7 +319,7 @@
         <h1 class="text-[1.8rem] font-medium text-gray-800">
           Itens do Contrato
         </h1>
-        <div class="flex gap-8">
+        <section class="flex justify-end w-3/4 gap-8">
           <button
             @click="openCreateItemModal"
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
@@ -342,7 +342,18 @@
             </span>
             Adicionar Unidade
           </button>
-        </div>
+          <div class="relative w-full max-w-[20%] items-center">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <Icon icon="mdi:magnify" width="2rem" class="text-gray-400" />
+            </span>
+            <input
+              v-model="filterItens"
+              type="text"
+              placeholder="Pesquisar..."
+              class="border rounded px-4 p-2 pl-16 mr-4 w-full"
+            />
+          </div>
+        </section>
       </div>
       <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12" >
         <thead class="h-20 bg-slate-100 border-1">
@@ -433,7 +444,7 @@
         <h1 class="text-[1.8rem] font-medium text-gray-800">
           Medição
         </h1>
-        <div class="flex gap-8">
+        <div class="flex justify-end w-3/4 gap-8">
           <button
             class="flex items-center justify-center px-7 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             @click="ExibirModalLancamento"
@@ -450,6 +461,17 @@
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Novo faturamento
           </button>
+          <div class="relative w-full max-w-[20%] items-center">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+              <Icon icon="mdi:magnify" width="2rem" class="text-gray-400" />
+            </span>
+            <input
+              v-model="filterMedicoes"
+              type="text"
+              placeholder="Pesquisar..."
+              class="border rounded px-4 p-2 pl-16 mr-4 w-full"
+            />
+          </div>
         </div>
       </div>
       <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
@@ -631,9 +653,24 @@
   <!-- Tabela Faturamentos-->
   <div v-if="currentTab === 'Faturamentos'">
     <section>
-      <h1 class="text-[1.8rem] font-medium text-gray-800">
-        Faturamentos
-      </h1>
+      <div class="flex justify-between">
+        <h1 class="text-[1.8rem] font-medium text-gray-800">
+          Faturamentos
+        </h1>
+        <div class="flex justify-end w-3/4 gap-8">
+          <div class="relative w-full max-w-[20%] items-center">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+            <Icon icon="mdi:magnify" width="2rem" class="text-gray-400" />
+          </span>
+          <input
+            v-model="filterFaturamentos"
+            type="text"
+            placeholder="Pesquisar..."
+            class="border rounded px-4 p-2 pl-16 mr-4 w-full"
+          />
+        </div>
+      </div>
+    </div>
       <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
         <thead class="h-20 bg-slate-100 border-1">
           <tr>
@@ -2412,11 +2449,9 @@ const currentPage = ref(1);
 const currentPageMedicao = ref(1);
 const currentPageFaturamento = ref(1);
 
-const fetchContratoItens = async (id, page) => {
+const fetchContratoItens = async (id, page, search = '') => {
   try {
-    const response = await api.get(
-      `/contratos/${id}/items/?page=${page}`
-    );
+    const response = await api.get(`/contratos/${id}/items/`, { params: { page, search}});
     const itens = response.data.data;
     const meta = response.data.meta;
 
@@ -2463,11 +2498,12 @@ const changeSorting = (column, type) => {
   }
 };
 
-const fetchContratoMedicoes = async (id, page) => {
+const fetchContratoMedicoes = async (id, page, search = '') => {
   try {
     const params = {
       page,
       limit: 8,
+      search
     };
     if (sortBy.value.medicoes) {
       params.sortBy = sortBy.value.medicoes;
@@ -2511,10 +2547,12 @@ const fetchContratoMedicoes = async (id, page) => {
   }
 };
 
-const fetchContratoFaturamentos = async (id, page) => {
+const fetchContratoFaturamentos = async (id, page, search = '') => {
   try {
     const params = {
+      page,
       limit: 8,
+      search
     };
     if (sortBy.value.faturamentos) {
       params.sortBy = sortBy.value.faturamentos;
@@ -2522,7 +2560,7 @@ const fetchContratoFaturamentos = async (id, page) => {
     if (sortOrder.value.faturamentos) {
       params.sortOrder = sortOrder.value.faturamentos;
     }
-    const response = await api.get(`/contratos/${id}/faturamentos?page=${page}`, { params });
+    const response = await api.get(`/contratos/${id}/faturamentos`, { params });
     faturamentoItemData.value = response.data.data;
     faturamentoItemMeta.value = response.data.meta;
     lastPageFaturamentos.value = response.data.meta.lastPage
@@ -3928,6 +3966,17 @@ const closeFinancialCardsModal = () => {
   financialCardsData.value = []
   selectedCardTitle.value = ''
 }
+
+// Filtro de itens, medições e faturamentos
+const filterItens = ref('')
+const filterMedicoes = ref('')
+const filterFaturamentos = ref('')
+
+watch([filterItens, filterMedicoes, filterFaturamentos], () => {
+  fetchContratoItens(contratoId, currentPage.value, filterItens.value);
+  fetchContratoMedicoes(contratoId, currentPageMedicao.value, filterMedicoes.value )
+  fetchContratoFaturamentos(contratoId, currentPageFaturamento.value, filterFaturamentos.value)
+});
 </script>
 
 <style>
