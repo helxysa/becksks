@@ -253,7 +253,8 @@
     <div
       v-for="(item, index) in financialSummary"
       :key="index"
-      :class="`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`"
+      :class="[`bg-gradient-to-br ${item.bgColor} rounded-md shadow-md p-6 text-white transform transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 hover:scale-100`, (['Aguardando Faturamento','Aguardando Pagamento','Pago'].includes(item.title) ? 'cursor-pointer' : '')]"
+      @click="['Aguardando Faturamento','Aguardando Pagamento','Pago'].includes(item.title) && openFinancialCardsModal(item.title)"
     >
       <section class="flex flex-col h-full justify-between">
         <div class="flex items-center justify-between mb-4">
@@ -1994,7 +1995,6 @@
     </template>
   </JetDialogModal>
 
-
   <!-- Modal para visualizar aditivo -->
   <JetDialogModal
     :show="modalViewAditivo"
@@ -2008,6 +2008,93 @@
     </template>
   </JetDialogModal>
 
+  <!-- Modal para visualizar os cards do resumo financeiro -->
+   <JetDialogModal
+   :show="modalFinancialCards"
+   :withouHeader="false"
+   @close="closeFinancialCardsModal"
+   maxWidth="8xl"
+   :modalTitle="`${selectedCardTitle}`"
+   >
+    <template #content>
+      <div class="max-h-[70vh] overflow-y-auto">
+      <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
+        <thead class="h-20 bg-slate-100 border-1">
+          <tr>
+            <th class="text-xl">#</th>
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('data_faturamento', 'faturamentos')">
+              Data
+              <span>
+                {{ sortBy["faturamentos"] === "data_faturamento" && sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}
+              </span>
+            </th>
+            <th class="text-xl cursor-pointer hover:text-blue-600" @click="changeSorting('competencia', 'faturamentos')">Competência
+                <span>{{ sortBy["faturamentos"] === "competencia" && sortOrder["faturamentos"] === "asc" ? "▲" : "▼" }}</span>
+            </th>
+            <th class="text-xl">Nota Fiscal</th>
+            <th class="text-xl">Total</th>
+            <th class="text-xl">Situação</th>
+          </tr>
+        </thead>
+        <tbody v-if="financialCardsData">
+          <tr
+            class="h-28 text-center"
+            v-for="(faturamento) in financialCardsData"
+            :key="faturamento.id"
+          >
+            <td class="text-2xl">{{ faturamento.id }}</td>
+            <td class="text-2xl">
+              {{ formatDatePTBR(faturamento.dataFaturamento) }}
+            </td>
+            <td class="text-2xl">
+              {{ formataMesAno(faturamento.competencia) }}
+            </td>
+            <td
+              class="text-2xl"
+              v-if="faturamento.status !== 'Aguardando Faturamento'"
+            >
+              {{ faturamento.notaFiscal }}
+            </td>
+            <td v-else>-</td>
+
+            <td class="text-2xl">
+              {{
+                formatCurrencySemArrendondar(
+                  calcularSaldoFaturamentoItens(faturamento.faturamentoItens)
+                )
+              }}
+            </td>
+            <td class="text-2xl text-center">
+              <div class="flex justify-center">
+                <span
+                  class="border-2 py-2 rounded-2xl font-bold sm:text-base md:text-xl text-slate-600 flex items-center justify-center w-[80%]"
+                  :class="{
+                    'bg-green-200 border-green-400':
+                      faturamento.status === 'Pago',
+                    'bg-yellow-200 border-yellow-400':
+                      faturamento.status === 'Aguardando Pagamento',
+                    'bg-blue-200 border-blue-400':
+                      faturamento.status === 'Aguardando Faturamento',
+                  }"
+                >
+                  {{ faturamento.status }}
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <footer class="flex justify-end mt-12">
+          <button
+          @click="closeFinancialCardsModal"
+          class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+          Fechar
+        </button>
+      </footer>
+      </div>
+    </template>
+  </JetDialogModal>
 </template>
 
 <script setup>
@@ -2079,7 +2166,7 @@ const financialSummary = computed(() => [
     bgColor: "from-blue-400 to-blue-600",
   },
   {
-    title: "Aguardando faturamento",
+    title: "Aguardando Faturamento",
     value: formatCurrencySemArrendondar(
       calcularSaldoDisponivel(faturamentoItemData.value).aguardandoFaturamento
     ),
@@ -2087,7 +2174,7 @@ const financialSummary = computed(() => [
     bgColor: "from-orange-400 to-orange-600",
   },
   {
-    title: "Aguardando pagamento",
+    title: "Aguardando Pagamento",
     value: formatCurrencySemArrendondar(
       calcularSaldoDisponivel(faturamentoItemData.value).aguardandoPagamento
     ),
@@ -2103,7 +2190,7 @@ const financialSummary = computed(() => [
     bgColor: "from-green-400 to-green-600",
   },
   {
-    title: "Saldo disponível",
+    title: "Saldo Disponível",
     value: formatCurrencySemArrendondar(contrato.value.saldoContrato - calcularSaldoDisponivel(faturamentoItemData.value).totalUtilizado),
     icon: "ph-wallet-fill",
     bgColor: "from-purple-400 to-purple-600",
@@ -3825,7 +3912,22 @@ if (!competencia) return '';
     return competencia;
   }
 }
+// Modal dos cards
+const modalFinancialCards = ref(false)
+const financialCardsData = ref([])
+const selectedCardTitle = ref('')
 
+const openFinancialCardsModal = (title) => {
+  financialCardsData.value = faturamentoItemData.value.filter(fat => fat.status === title)
+  selectedCardTitle.value = title
+  modalFinancialCards.value = true
+}
+
+const closeFinancialCardsModal = () => {
+  modalFinancialCards.value = false
+  financialCardsData.value = []
+  selectedCardTitle.value = ''
+}
 </script>
 
 <style>
