@@ -1344,6 +1344,12 @@
           </div>
         </section>
         <div class="mt-8">
+          <span
+            @click="openConverterItemModal"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-green-500 text-white rounded-md font-bold text-xl hover:bg-green-600 transition h-14 w-40"
+          >
+            + Converter item
+          </span>
           <table
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
@@ -1432,9 +1438,7 @@
     :withouHeader="false"
     @close="closeEditLancamentoModal"
     maxWidth="8xl"
-    :modalTitle="
-      isLancamentoViewModal ? 'Visualizar Medição' : 'Editar Medição'
-    "
+    :modalTitle="isLancamentoViewModal ? 'Visualizar Medição' : 'Editar Medição'"
   >
     <template #content>
     <div class="flex border-b border-gray-200 mb-8 pt-4">
@@ -1501,12 +1505,8 @@
               <option>Não se aplica</option>
             </select>
           </div>
-          <div
-            class="flex gap-4 items-center"
-          >
-            <label class="font-bold text-3xl w-[200px]"
-              >Status da medição:</label
-            >
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Status da medição:</label>
             <select
               v-model="editingLancamento.status"
               :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
@@ -1557,9 +1557,7 @@
           </div>
         </section>
         <section class="mt-8">
-          <table
-            class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
-          >
+          <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">#</th>
@@ -1644,6 +1642,102 @@
     </template>
   </JetDialogModal>
 
+ <!-- Modal de conversão -->
+ <JetDialogModal
+ :show="modalConverterItem"
+ @close="closeConverterItemModal"
+ maxWidth="8xl"
+ modalTitle="Converter Item"
+>
+ <template #content>
+   <div class="p-4">
+     <h3 class="text-2xl font-bold mb-4">Informe os itens que você gostaria de fazer a conversão:</h3>
+   </div>
+   <form @submit.prevent="confirmarConversao">
+     <div>
+       <div class="flex gap-4 items-center">
+         <label class="font-bold text-3xl w-[200px]">Item atual:</label>
+         <select
+           v-model="itemAtual"
+           disabled
+           class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+         >
+           <option v-if="itemAtual" :value="itemAtual">
+             {{ itemAtual?.titulo }}
+           </option>
+         </select>
+         <div>
+           <label>Quantidade</label>
+           <span>
+             <money3
+               v-model="itemAtual.quantidadeItens"
+               type="number"
+               disabled
+               class="border-2 text-center max-w-60"
+               min="0"
+               v-bind="decimalConfig"
+             />
+           </span>
+         </div>
+       </div>
+
+       <div class="flex gap-4 items-center mt-4">
+         <label class="font-bold text-3xl w-[200px]">Item Novo:</label>
+         <select
+           v-model="itemNovo"
+           @change="() => {
+            if(itemNovo && typeof itemNovo === 'object') {
+              if(!itemNovo.quantidadeItens) {
+                itemNovo.quantidadeItens = '0.000'
+              }
+            }
+            calcular()
+          }"
+           class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+         >
+          <option disabled hidden value="">Selecione o item para converter</option>
+          <option
+            v-for="item in itensParaConverter"
+            :value="item"
+            :key="item.id"
+          >
+            {{ item.titulo }}
+          </option>
+        </select>
+         <div>
+           <label>Quantidade</label>
+           <span>
+            <!-- {{itemNovo}} -->
+             <money3
+               v-model="itemNovo.quantidadeItens"
+               type="number"
+               class="border-2 text-center max-w-60"
+               min="0"
+               v-bind="decimalConfig"
+               @change="calcular"
+             />
+           </span>
+         </div>
+       </div>
+     </div>
+   </form>
+ </template>
+
+ <template #footer>
+   <button
+     @click="closeConverterItemModal"
+     class="mr-4 px-4 py-2 bg-gray-300 rounded-md font-bold text-xl hover:bg-gray-400"
+   >
+     Cancelar
+   </button>
+   <button
+     @click="confirmarConversao"
+     class="px-4 py-2 bg-green-500 text-white rounded-md font-bold text-xl hover:bg-green-600"
+   >
+     Confirmar
+   </button>
+ </template>
+</JetDialogModal>
   <!-- Modal criar item -->
   <JetDialogModal
     :show="modalCreateItem"
@@ -2255,6 +2349,7 @@ const modalEditItem = ref(false);
 const editingItem = ref({});
 const editingAditivo =  ref({});
 const modalEditLancamento = ref(false);
+const modalConverterItem = ref(false);
 const modalEditFaturamento = ref(false);
 const editingLancamento = ref({});
 const isLancamentoViewModal = ref(false);
@@ -3694,7 +3789,86 @@ const createNewItem = async () => {
   }
 };
 
-// Editar lancamento do contrato
+// Converter itens de medição
+const itemAtual = ref(null)
+const itemNovo = ref(null)
+
+function calcular() {
+  if (!itemAtual.value || !itemNovo.value) return;
+
+  // const itemNovoQtdDisponivel = calcularItensRestante(itemNovo.value.id, itemNovo.value.saldoQuantidadeContratada)
+  const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
+  const quantidadeEmExcesso = selectedItem.value.quantidadeItens - quantidadeDisponivel
+  // console.log('item novo quantidade disponivel', itemNovoQtdDisponivel)
+
+  // const novoValor = (itemNovo.value.valorUnitario * itemNovoQtdDisponivel) / itemAtual.value.valorUnitario
+
+  const novoValor = itemAtual.value.valorUnitario * quantidadeEmExcesso / itemNovo.value.valorUnitario
+
+  console.log('itemNovo', itemNovo.value)
+  console.log('itemAtual.valorUnitario', itemAtual.value.valorUnitario)
+  console.log('novoValor', novoValor)
+
+  const qtdAtualNum = parseFloat(itemAtual.value.quantidadeItens) || 0
+  const qtdNovoNum = parseFloat(itemNovo.value.quantidadeItens) || 0
+
+  // const resultado = (qtdAtualNum + qtdNovoNum).toFixed(3)
+  const resultado = novoValor
+
+  itemNovo.value.quantidadeItens = resultado
+}
+
+// Filtra o select de itens novos ao remover o item atual
+const itensParaConverter = computed(() => {
+  return contrato.value.contratoItens.filter(i => i.id !== itemAtual.value?.id)
+})
+
+function openConverterItemModal() {
+  if (!selectedItem.value) {
+    toast.error('Selecione um item antes de converter');
+    return;
+  }
+  itemNovo.value = { ...itemNovo.value, quantidadeItens: "0.000" }
+  const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
+  const quantidadeEmExcesso = selectedItem.value.quantidadeItens - quantidadeDisponivel
+
+  if (quantidadeEmExcesso <= 0) {
+    toast.error("Não há quantidade excedente para converter.");
+    return;
+  }
+
+  itemAtual.value = {...selectedItem.value, quantidadeItens: quantidadeEmExcesso};
+  modalConverterItem.value = true;
+}
+
+function closeConverterItemModal() {
+  modalConverterItem.value = false;
+}
+
+const confirmarConversao = () => {
+  if (!itemAtual.value || !itemNovo.value) {
+    toast.error('Selecione o item novo para conversão!')
+    return;
+  }
+
+  const itemIndex = medicaoData.value.itens.findIndex(i => i.id === itemAtual.value.id);
+  const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
+
+  if (itemIndex !== -1) {
+    medicaoData.value.itens[itemIndex].quantidadeItens = quantidadeDisponivel;
+  } else {
+    console.error('Item atual não encontrado em medicaoData.value.itens');
+  }
+
+  medicaoData.value.itens.push({
+    ...itemNovo.value,
+    quantidadeItens: itemNovo.value.quantidadeItens || "0.000"
+  });
+
+  modalConverterItem.value = false;
+}
+
+// Editar medição do contrato
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   // Crie um backup profundo (deep copy) do objeto original
