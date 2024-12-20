@@ -593,9 +593,10 @@
               </div>
             </td>
             <td class="text-2xl">
-                <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
-                  {{ subitem.quantidadeItens }}
-                </span>
+              <!-- <span v-for="(subitem, index) in lancamento.lancamentoItens" :key="index">
+                {{ subitem.quantidadeItens }}
+              </span> -->
+              {{ lancamento.lancamentoItens.reduce((total, subitem) => total + parseFloat(subitem.quantidadeItens), 0).toFixed(3) }}
             </td>
             <td class="text-2xl w-[200px]">
               {{ mostrarUnidadeMedida(lancamento.lancamentoItens) }}
@@ -874,7 +875,7 @@
               v-model="pedidoFaturamentoData.observacoes"
               rows="7"
               placeholder="Descrição..."
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-bl-3xl rounded-tl-3xl text-observacoes"
             />
           </div>
         </section>
@@ -893,92 +894,44 @@
             </tr>
           </thead>
           <tbody>
+            <template
+            v-for="(lancamento, lIndex) in contrato.lancamentos.filter((l) => pedidosFaturamento.includes(l.id))"
+            :key="lancamento.id"
+          >
             <tr
-              class="h-24 text-center"
-              :key="item.id"
-              v-for="(item, index) in contrato.lancamentos.filter(
-                (lancamento) => pedidosFaturamento.includes(lancamento.id)
-              )"
+              class="h-24 text-center cursor-pointer hover:bg-gray-100 transition"
+              @click="toggleExpand(lancamento.id, lancamento.lancamentoItens.length)"
             >
-              <td class="px-4">{{ item.id }}</td>
-              <td>{{ item.projetos }}</td>
+              <td class="px-4">
+                {{ lancamento.id }}
+              </td>
+              <td>{{ lancamento.projetos }}</td>
+              <td>{{ lancamento.competencia }}</td>
+              <td>{{ lancamento.lancamentoItens[0].unidadeMedida }}</td>
               <td>
-                {{item.competencia}}
+                {{ parseFloat(lancamento.lancamentoItens[0].quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
               </td>
               <td>
-                <div
-                  v-for="unidade in [
-                    ...new Set(
-                      item.lancamentoItens.map(
-                        (subitem) => subitem.unidadeMedida
-                      )
-                    ),
-                  ]"
-                  :key="unidade"
-                >
-                  <template
-                    v-if="
-                      item.lancamentoItens
-                        .filter((subitem) => subitem.unidadeMedida === unidade)
-                        .reduce(
-                          (total, subitem) =>
-                            total + parseFloat(subitem.quantidadeItens),
-                          0
-                        ) > 0
-                    "
-                  >
-                    <span class="flex justify-center">
-                      {{ unidade }}
-                    </span>
-                  </template>
-                </div>
-              </td>
-              <td>
-                <div
-                  v-for="unidade in [
-                    ...new Set(
-                      item.lancamentoItens.map(
-                        (subitem) => subitem.unidadeMedida
-                      )
-                    ),
-                  ]"
-                  :key="unidade"
-                >
-                  <template
-                    v-if="
-                      item.lancamentoItens
-                        .filter((subitem) => subitem.unidadeMedida === unidade)
-                        .reduce(
-                          (total, subitem) =>
-                            total + parseFloat(subitem.quantidadeItens),
-                          0
-                        ) > 0
-                    "
-                  >
-                    <span class="flex justify-center">
-                      {{
-                        item.lancamentoItens
-                          .filter(
-                            (subitem) => subitem.unidadeMedida === unidade
-                          )
-                          .reduce(
-                            (total, subitem) =>
-                              total + parseFloat(subitem.quantidadeItens),
-                            0
-                          )
-                      }}
-                    </span>
-                  </template>
-                </div>
-              </td>
-              <td>
-                {{
-                  formatCurrencySemArrendondar(
-                    calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
-                  )
-                }}
+                {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens(lancamento.lancamentoItens, lancamento.dias)) }}
               </td>
             </tr>
+
+            <!--Se houver itens convertidos, faz um dropdown -->
+            <tr
+              v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
+              :key="subItem.id"
+              v-show="expandedLancamentos[lancamento.id]"
+              class="h-24 text-center bg-gray-50"
+            >
+              <!-- <td colspan="3">O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{subItem.titulo}}</td> -->
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ subItem.unidadeMedida }}</td>
+              <td>{{ parseFloat(subItem.quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
+              <td></td>
+            </tr>
+          </template>
           </tbody>
         </table>
         <div>
@@ -1098,7 +1051,7 @@
               v-model="editingFaturamento.observacoes"
               rows="7"
               placeholder="Descrição..."
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-3xl text-observacoes"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-bl-3xl rounded-tl-3xl text-observacoes"
             />
           </div>
         </section>
@@ -1118,86 +1071,48 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                class="h-24 text-center"
-                v-for="item in editingFaturamento.faturamentoItens.map(
-                  (subItem) => subItem.lancamento
-                )"
-                :key="item.id"
-              >
-                <td class="px-4">{{ item.id }}</td>
-                <td>{{ item.projetos }}</td>
-                <td class="text-center">
-                  <input
-                    v-model="item.competencia"
-                    type="month"
-                    :disabled="isFaturamentoViewModal"
-                    :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-                    placeholder="Informe a competência"
-                    class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
-                  />
-                </td>
-                <td>
-                  <span
-                    class="flex justify-center"
-                    v-for="unidade in [
-                      ...new Set(
-                        item.lancamentoItens.map(
-                          (subitem) => subitem.unidadeMedida
-                        )
-                      ),
-                    ]"
-                    :key="unidade"
-                  >
-                    {{ unidade }}
-                  </span>
-                </td>
-                <td>
-                  <div
-                    v-for="unidade in [
-                      ...new Set(
-                        item.lancamentoItens.map(
-                          (subitem) => subitem.unidadeMedida
-                        )
-                      ),
-                    ]"
-                    :key="unidade"
-                  >
-                    <template
-                      v-if="
-                        item.lancamentoItens
-                          .filter((subitem) => subitem.unidadeMedida === unidade)
-                          .reduce(
-                            (total, subitem) =>
-                              total + parseFloat(subitem.quantidadeItens),
-                            0
-                          ) > 0
-                      "
-                    >
-                      <span class="flex justify-center">
-                        {{
-                          item.lancamentoItens
-                            .filter(
-                              (subitem) => subitem.unidadeMedida === unidade
-                            )
-                            .reduce(
-                              (total, subitem) =>
-                                total + parseFloat(subitem.quantidadeItens),
-                              0
-                            )
-                        }}
-                      </span>
-                    </template>
-                  </div>
-                </td>
-                <td>
-                  {{
-                    formatCurrencySemArrendondar(
-                      calcularSaldoLancamentoItens(item.lancamentoItens, item.dias)
-                    )
-                  }}
-                </td>
-              </tr>
+              <template v-for="(lancamento, lIndex) in editingFaturamento.faturamentoItens.map(fi => fi.lancamento)" :key="lancamento.id">
+                <tr
+                  class="h-24 text-center cursor-pointer hover:bg-gray-100 transition"
+                  @click="toggleExpand(lancamento.id, lancamento.lancamentoItens.length)"
+                >
+                  <td class="px-4">{{ lancamento.id }}</td>
+                  <td>{{ lancamento.projetos }}</td>
+                  <td class="text-center">
+                    <input
+                      @click.stop
+                      v-model="lancamento.competencia"
+                      type="month"
+                      :disabled="isFaturamentoViewModal"
+                      :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+                      placeholder="Informe a competência"
+                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                    />
+                  </td>
+                  <td>{{ lancamento.lancamentoItens[0].unidadeMedida }}</td>
+                  <td>
+                    {{ parseFloat(lancamento.lancamentoItens[0].quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
+                  </td>
+                  <td>
+                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens(lancamento.lancamentoItens, lancamento.dias)) }}
+                  </td>
+                </tr>
+
+                <!-- Linhas adicionais se houver mais subitens -->
+                <tr
+                  v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
+                  :key="subItem.id"
+                  v-show="expandedLancamentos[lancamento.id]"
+                  class="h-24 text-center bg-gray-50"
+                >
+                  <td colspan="3">
+                    <!-- <span>O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{subItem.titulo}}</span> -->
+                  </td>
+                  <td>{{ subItem.unidadeMedida }}</td>
+                  <td>{{ parseFloat(subItem.quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
+                  <td></td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -1320,7 +1235,7 @@
               v-model="medicaoData.descricao"
               rows="7"
               placeholder="Descrição..."
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-md text-observacoes"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-bl-3xl rounded-tl-3xl text-observacoes"
             />
           </div>
           <div class="flex gap-4 items-center">
@@ -1344,6 +1259,21 @@
           </div>
         </section>
         <div class="mt-8">
+          <div class="flex justify-end w-full gap-2">
+            <span
+              v-if="hasConversion"
+              @click="cancelConversion"
+              class="text-center px-4 py-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition w-40 bg-red-500 hover:bg-red-600 cursor-pointer"
+            >
+            Cancelar Conversão
+          </span>
+            <span
+              @click="openConverterItemModal"
+              class="text-center px-4 py-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition w-40 bg-green-500 hover:bg-green-600 cursor-pointer"
+            >
+            + Converter item
+          </span>
+        </div>
           <table
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
@@ -1386,7 +1316,7 @@
                     type="number"
                     class="border-2 text-center max-w-60"
                     min="0"
-                    v-bind="decimalConfig"
+                    v-bind="conversaoConfig"
                   />
                 </td>
                 <td v-if="medicaoData.tipo_medicao === 'Relatório Mensal'">
@@ -1432,9 +1362,7 @@
     :withouHeader="false"
     @close="closeEditLancamentoModal"
     maxWidth="8xl"
-    :modalTitle="
-      isLancamentoViewModal ? 'Visualizar Medição' : 'Editar Medição'
-    "
+    :modalTitle="isLancamentoViewModal ? 'Visualizar Medição' : 'Editar Medição'"
   >
     <template #content>
     <div class="flex border-b border-gray-200 mb-8 pt-4">
@@ -1501,12 +1429,8 @@
               <option>Não se aplica</option>
             </select>
           </div>
-          <div
-            class="flex gap-4 items-center"
-          >
-            <label class="font-bold text-3xl w-[200px]"
-              >Status da medição:</label
-            >
+          <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Status da medição:</label>
             <select
               v-model="editingLancamento.status"
               :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
@@ -1552,14 +1476,12 @@
               :disabled="isLancamentoViewModal"
               rows="7"
               placeholder="Descrição..."
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-md text-observacoes"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-1/2 border-gray-300 rounded-bl-3xl rounded-tl-3xl text-observacoes"
             />
           </div>
         </section>
         <section class="mt-8">
-          <table
-            class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
-          >
+          <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">#</th>
@@ -1643,6 +1565,108 @@
 
     </template>
   </JetDialogModal>
+
+ <!-- Modal de conversão -->
+ <JetDialogModal
+ :show="modalConverterItem"
+ @close="closeConverterItemModal"
+ maxWidth="6xl"
+ modalTitle="Converter Item"
+ :centered="true"
+>
+ <template #content class="p-4">
+   <div>
+     <h3 class="text-2xl mb-4 text-[#9E9E9E] font-normal">Informe os itens que você gostaria de fazer a conversão:</h3>
+   </div>
+
+   <form @submit.prevent="confirmarConversao" class="space-y-6">
+    <div class="flex flex-wrap gap-6 items-center">
+      <section class="flex flex-col w-full md:w-[48%] space-y-2">
+        <label class="font-medium text-2xl">Item atual:</label>
+        <select
+          v-model="itemAtual"
+          disabled
+          class="focus:border-black border-2 focus:border-4 focus:outline-none px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem]"
+        >
+          <option v-if="itemAtual" :value="itemAtual">
+            {{ itemAtual?.titulo }}
+          </option>
+        </select>
+      </section>
+
+      <section class="flex flex-col w-full md:w-[48%] space-y-2">
+        <label class="font-medium text-2xl">Quantidade</label>
+        <span>
+          <money3
+            v-model="itemAtual.quantidadeItens"
+            type="number"
+            disabled
+            class="border-2 text-center w-full py-4 rounded-lg h-[4.5rem]"
+            min="0"
+            v-bind="decimalConfig"
+          />
+        </span>
+      </section>
+    </div>
+
+    <div class="flex flex-wrap gap-6 items-center">
+      <section class="flex flex-col w-full md:w-[48%] space-y-2">
+        <label class="font-medium text-2xl">Item Novo:</label>
+        <select
+          v-model="itemNovo"
+          @change="() => {
+            if (itemNovo && typeof itemNovo === 'object') {
+              if (!itemNovo.quantidadeItens) {
+                itemNovo.quantidadeItens = '0.000'
+              }
+            }
+            calcular()
+          }"
+          class="focus:border-black focus:border-[3px] border-2 focus:outline-8 px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem]"
+        >
+          <option disabled hidden value="">Selecione o item para converter</option>
+          <option
+            v-for="item in itensParaConverter"
+            :value="item"
+            :key="item.id"
+          >
+            {{ item.titulo }}
+          </option>
+        </select>
+      </section>
+
+      <section class="flex flex-col w-full md:w-[48%] space-y-2">
+        <label class="font-medium text-2xl">Quantidade</label>
+        <span>
+          <money3
+            v-model="itemNovo.quantidadeItens"
+            type="number"
+            class="border-2 text-center w-full py-4 rounded-lg h-[4.5rem]"
+            min="0"
+            v-bind="conversaoConfig"
+            @change="calcular"
+          />
+        </span>
+      </section>
+    </div>
+
+    <footer class="mt-12 flex justify-end gap-4">
+      <button
+        @click="closeConverterItemModal"
+        class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+      >
+        Cancelar
+      </button>
+      <button
+        @click="confirmarConversao"
+        class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-lancamento w-40"
+      >
+        Confirmar
+      </button>
+    </footer>
+  </form>
+ </template>
+</JetDialogModal>
 
   <!-- Modal criar item -->
   <JetDialogModal
@@ -2255,6 +2279,7 @@ const modalEditItem = ref(false);
 const editingItem = ref({});
 const editingAditivo =  ref({});
 const modalEditLancamento = ref(false);
+const modalConverterItem = ref(false);
 const modalEditFaturamento = ref(false);
 const editingLancamento = ref({});
 const isLancamentoViewModal = ref(false);
@@ -2948,6 +2973,14 @@ const decimalConfig = {
   masked: false,
 };
 
+const conversaoConfig = {
+  precision: 3,
+  decimal: ",",
+  thousands: ".",
+  prefix: "",
+  masked: false,
+};
+
 // const deleteContrato = async (contratoAtual) => {
 //   Swal.fire({
 //       title: "Confirmar exclusão",
@@ -3408,15 +3441,15 @@ const calcularSaldoItem = (item) => {
 const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
   let saldoTotal = 0;
   lancamento.forEach((item) => {
-    const quantidadeItens = parseFloat(item.quantidadeItens) || 0;
-    const valorUnitario = parseFloat(item.valorUnitario) || 0;
+    const quantidadeItens = parseFloat(parseFloat(item.quantidadeItens).toFixed(6)) || 0;
+    const valorUnitario = parseFloat(parseFloat(item.valorUnitario).toFixed(6)) || 0;
     let valorTotalItem = 0;
     if (dias !== null) {
-      valorTotalItem += (valorUnitario / 30) * dias
-    } else {
-      valorTotalItem = quantidadeItens * valorUnitario;
-    }
-    saldoTotal += valorTotalItem;
+      valorTotalItem = parseFloat(((valorUnitario / 30) * dias).toFixed(6));
+  } else {
+      valorTotalItem = parseFloat((quantidadeItens * valorUnitario).toFixed(6));
+  }
+    saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(6));
   });
   return saldoTotal;
 };
@@ -3694,7 +3727,104 @@ const createNewItem = async () => {
   }
 };
 
-// Editar lancamento do contrato
+// Converter itens de medição
+const itemAtual = ref(null)
+const itemNovo = ref(null)
+const hasConversion = ref(false);
+
+function truncateToPrecision(value, precision = 3) {
+  const multiplier = Math.pow(10, precision);
+  return Math.floor(value * multiplier) / multiplier;
+}
+
+function calcular() {
+  if (!itemAtual.value || !itemNovo.value) return;
+
+  const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
+  const quantidadeEmExcesso =  parseFloat((selectedItem.value.quantidadeItens - quantidadeDisponivel).toFixed(6));
+  const novoValor = parseFloat(((itemAtual.value.valorUnitario * quantidadeEmExcesso) / itemNovo.value.valorUnitario).toFixed(6));
+
+  itemNovo.value.quantidadeItens = truncateToPrecision(novoValor, 3);
+}
+
+// Filtra o select de itens novos ao remover o item atual
+const itensParaConverter = computed(() => {
+  return contrato.value.contratoItens.filter(i => i.id !== itemAtual.value?.id)
+})
+
+function openConverterItemModal() {
+  if (!selectedItem.value) {
+    toast.error('Selecione um item antes de converter');
+    return;
+  }
+  itemNovo.value = { ...itemNovo.value, quantidadeItens: "0.000" }
+  const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
+  const quantidadeEmExcesso = selectedItem.value.quantidadeItens - quantidadeDisponivel
+
+  if (quantidadeEmExcesso <= 0) {
+    toast.error("Não há quantidade excedente para converter.");
+    return;
+  }
+
+  itemAtual.value = {...selectedItem.value, quantidadeItens: quantidadeEmExcesso};
+  modalConverterItem.value = true;
+}
+
+function closeConverterItemModal() {
+  modalConverterItem.value = false;
+}
+
+const confirmarConversao = () => {
+  if (!itemAtual.value || !itemNovo.value) {
+    toast.error('Selecione o item novo para conversão!')
+    return;
+  }
+
+  const itemIndex = medicaoData.value.itens.findIndex(i => i.id === itemAtual.value.id);
+  const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
+
+  if (itemIndex !== -1) {
+    medicaoData.value.itens[itemIndex].quantidadeItens = parseFloat(quantidadeDisponivel.toFixed(6));
+  } else {
+    console.error('Item atual não encontrado em medicaoData.value.itens');
+  }
+
+  medicaoData.value.itens.push({
+    ...itemNovo.value,
+    quantidadeItens: parseFloat(itemNovo.value.quantidadeItens.toFixed(6)) || "0.000000"
+  });
+
+  hasConversion.value = true;
+  modalConverterItem.value = false;
+}
+
+function cancelConversion() {
+  if (!itemNovo.value || !itemNovo.value.id) {
+    toast.error('Nenhum item para excluir!');
+    return;
+  }
+
+  const itemIndex = medicaoData.value.itens.findIndex(i => i.id === itemNovo.value.id);
+
+  if (itemIndex !== -1) {
+    medicaoData.value.itens.splice(itemIndex, 1);
+    toast.success('Item convertido excluído com sucesso!');
+  } else {
+    toast.error('Item convertido não encontrado!');
+  }
+
+  itemAtual.value = null;
+  itemNovo.value = null;
+  hasConversion.value = false;
+}
+
+const expandedLancamentos = ref({})
+function toggleExpand(id, quantidadeSubItens) {
+  if (quantidadeSubItens > 1) {
+    expandedLancamentos.value[id] = !expandedLancamentos.value[id]
+  }
+}
+// Editar medição do contrato
 const editingLancamentoBackup = ref(null);
 const openEditLancamentoModal = (lancamento) => {
   // Crie um backup profundo (deep copy) do objeto original
