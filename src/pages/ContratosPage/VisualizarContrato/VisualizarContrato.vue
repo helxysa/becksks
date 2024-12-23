@@ -1065,6 +1065,7 @@
                 <th class="text-xl">#</th>
                 <th class="text-xl">Projeto</th>
                 <th class="text-xl">Competência</th>
+                <th class="text-xl">Título</th>
                 <th class="text-xl">Unidade de medida</th>
                 <th class="text-xl">Quantidade</th>
                 <th class="text-xl">Valor do lançamento</th>
@@ -1073,7 +1074,7 @@
             <tbody>
               <template v-for="(lancamento, lIndex) in editingFaturamento.faturamentoItens.map(fi => fi.lancamento)" :key="lancamento.id">
                 <tr
-                  class="h-24 text-center cursor-pointer hover:bg-gray-100 transition"
+                  class="h-24 text-center transition"
                   @click="toggleExpand(lancamento.id, lancamento.lancamentoItens.length)"
                 >
                   <td class="px-4">{{ lancamento.id }}</td>
@@ -1089,28 +1090,51 @@
                       class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
                     />
                   </td>
+                  <td>{{ lancamento.lancamentoItens[0].titulo }}</td>
                   <td>{{ lancamento.lancamentoItens[0].unidadeMedida }}</td>
                   <td>
                     {{ parseFloat(lancamento.lancamentoItens[0].quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
                   </td>
                   <td>
-                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens(lancamento.lancamentoItens, lancamento.dias)) }}
+                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([lancamento.lancamentoItens[0]], lancamento.dias)) }}
                   </td>
                 </tr>
 
+                <!-- <tr
+                v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
+                :key="subItem.id"
+                v-show="expandedLancamentos[lancamento.id]"
+                class="h-24 text-center bg-gray-50"
+                > -->
                 <!-- Linhas adicionais se houver mais subitens -->
                 <tr
-                  v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
-                  :key="subItem.id"
-                  v-show="expandedLancamentos[lancamento.id]"
-                  class="h-24 text-center bg-gray-50"
-                >
-                  <td colspan="3">
-                    <!-- <span>O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{subItem.titulo}}</span> -->
+                v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
+                :key="subItem.id"
+                class="h-24 cursor-pointer text-center hover:bg-gray-100 transition"
+                :title="`O item ${lancamento.lancamentoItens[0].titulo} excedeu a quantidade disponível e foi convertido para o item ${subItem.titulo}`"
+              >
+                  <!-- <td colspan="3"> -->
+                  <!-- <span>O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{ subItem.titulo }}</span> -->
+                  <!-- </td> -->
+                  <td class="px-4">{{ lancamento.id }}</td>
+                  <td>{{ lancamento.projetos }}</td>
+                  <td class="text-center">
+                    <input
+                      @click.stop
+                      v-model="lancamento.competencia"
+                      type="month"
+                      :disabled="isFaturamentoViewModal"
+                      :class="{ 'bg-white border-none': isFaturamentoViewModal }"
+                      placeholder="Informe a competência"
+                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                    />
                   </td>
+                  <td>{{ subItem.titulo }}</td>
                   <td>{{ subItem.unidadeMedida }}</td>
                   <td>{{ parseFloat(subItem.quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
-                  <td></td>
+                  <td>
+                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([subItem], lancamento.dias)) }}
+                  </td>
                 </tr>
               </template>
             </tbody>
@@ -1619,7 +1643,7 @@
               if (!itemNovo.quantidadeItens) {
                 itemNovo.quantidadeItens = '0.000'
               }
-            }
+            }git add .
             calcular()
           }"
           class="focus:border-black focus:border-[3px] border-2 focus:outline-8 px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem]"
@@ -1641,6 +1665,7 @@
           <money3
             v-model="itemNovo.quantidadeItens"
             type="number"
+            disabled
             class="border-2 text-center w-full py-4 rounded-lg h-[4.5rem]"
             min="0"
             v-bind="conversaoConfig"
