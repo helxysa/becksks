@@ -3,7 +3,7 @@
         <transition leave-active-class="duration-200">
             <div
                 v-show="show"
-                class="fixed h-full inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
+                :class="['fixed inset-0 px-4 py-6 sm:px-0 z-50', centered ? 'flex items-center justify-center' : 'overflow-y-auto']"
                 scroll-region
             >
                 <transition
@@ -116,7 +116,7 @@ const props = defineProps({
     },
     maxWidth: {
         type: String,
-        default: "2xl",       
+        default: "2xl",
 
     },
     closeable: {
@@ -130,6 +130,10 @@ const props = defineProps({
     modalTitle: {
         type: String,
         default: 'Modal Title',
+    },
+    centered: {
+        type: Boolean,
+        default: false,
     },
 })
 
@@ -179,7 +183,7 @@ const maxWidthClass = computed(() => {
         "5xl": "sm:max-w-5xl",
         "6xl": "sm:max-w-6xl",
         "7xl": "sm:max-w-7xl",
-        "8xl": "sm:max-w-[1100px]",   
+        "8xl": "sm:max-w-[1100px]",
 
     }[props.maxWidth]
 })
