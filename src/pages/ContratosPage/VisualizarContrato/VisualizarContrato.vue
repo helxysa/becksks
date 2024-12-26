@@ -888,48 +888,52 @@
               <th class="text-xl">#</th>
               <th class="text-xl">Projeto</th>
               <th class="text-xl">Competência</th>
+              <th class="text-xl">Título</th>
               <th class="text-xl">Unidade de medida</th>
               <th class="text-xl">Quantidade</th>
               <th class="text-xl">Valor do lançamento</th>
             </tr>
           </thead>
           <tbody>
-            <template
-            v-for="(lancamento, lIndex) in contrato.lancamentos.filter((l) => pedidosFaturamento.includes(l.id))"
-            :key="lancamento.id"
-          >
-            <tr
-              class="h-24 text-center cursor-pointer hover:bg-gray-100 transition"
-              @click="toggleExpand(lancamento.id, lancamento.lancamentoItens.length)"
-            >
-              <td class="px-4">
-                {{ lancamento.id }}
-              </td>
+            <template v-for="(lancamento, lIndex) in contrato.lancamentos.filter((l) => pedidosFaturamento.includes(l.id))" :key="lancamento.id">
+            <tr class="h-24 text-center transition">
+              <td class="px-4">{{ lancamento.id }}</td>
               <td>{{ lancamento.projetos }}</td>
-              <td>{{ lancamento.competencia }}</td>
+              <td class="text-center">
+                <input
+                  @click.stop
+                  v-model="lancamento.competencia"
+                  type="month"
+                  placeholder="Informe a competência"
+                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                />
+              </td>
+              <td>{{ lancamento.lancamentoItens[0].titulo }}</td>
               <td>{{ lancamento.lancamentoItens[0].unidadeMedida }}</td>
               <td>
                 {{ parseFloat(lancamento.lancamentoItens[0].quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
               </td>
               <td>
-                {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens(lancamento.lancamentoItens, lancamento.dias)) }}
+                {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([lancamento.lancamentoItens[0]], lancamento.dias)) }}
               </td>
             </tr>
 
-            <!--Se houver itens convertidos, faz um dropdown -->
+            <!-- Linhas adicionais se houver subitens -->
             <tr
               v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
               :key="subItem.id"
-              v-show="expandedLancamentos[lancamento.id]"
-              class="h-24 text-center bg-gray-50"
+              class="h-24 text-center transition"
+              :title="`O item ${lancamento.lancamentoItens[0].titulo} excedeu a quantidade disponível e foi convertido para o item ${subItem.titulo}`"
             >
-              <!-- <td colspan="3">O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{subItem.titulo}}</td> -->
-              <td></td>
-              <td></td>
-              <td></td>
+              <td class="px-4">{{ lancamento.id }}</td>
+              <td>{{ lancamento.projetos }}</td>
+              <td class="text-center">{{ formataMesAno(lancamento.competencia) }}</td>
+              <td>{{ subItem.titulo }}</td>
               <td>{{ subItem.unidadeMedida }}</td>
-              <td>{{ parseFloat(subItem.quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
-              <td></td>
+              <td>{{ parseFloat(subItem.quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 6 }) }}</td>
+              <td>
+                {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([subItem], lancamento.dias)) }}
+              </td>
             </tr>
           </template>
           </tbody>
@@ -1079,17 +1083,16 @@
                 >
                   <td class="px-4">{{ lancamento.id }}</td>
                   <td>{{ lancamento.projetos }}</td>
-                  <td class="text-center">
+                  <td class="text-center" v-if="!isFaturamentoViewModal">
                     <input
                       @click.stop
                       v-model="lancamento.competencia"
                       type="month"
-                      :disabled="isFaturamentoViewModal"
-                      :class="{ 'bg-white border-none': isFaturamentoViewModal }"
                       placeholder="Informe a competência"
                       class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
                     />
                   </td>
+                  <td v-else>{{ formataMesAno(lancamento.competencia) }}</td>
                   <td>{{ lancamento.lancamentoItens[0].titulo }}</td>
                   <td>{{ lancamento.lancamentoItens[0].unidadeMedida }}</td>
                   <td>
@@ -1106,7 +1109,7 @@
                 v-show="expandedLancamentos[lancamento.id]"
                 class="h-24 text-center bg-gray-50"
                 > -->
-                <!-- Linhas adicionais se houver mais subitens -->
+                <!-- Linhas adicionais se houver subitens -->
                 <tr
                 v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
                 :key="subItem.id"
@@ -1117,21 +1120,11 @@
                   <!-- <span>O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{ subItem.titulo }}</span> -->
                   <!-- </td> -->
                   <td class="px-4">{{ lancamento.id }}</td>
-                  <td>{{ lancamento.projetos }}</td>
-                  <td class="text-center">
-                    <input
-                      @click.stop
-                      v-model="lancamento.competencia"
-                      type="month"
-                      :disabled="isFaturamentoViewModal"
-                      :class="{ 'bg-white border-none': isFaturamentoViewModal }"
-                      placeholder="Informe a competência"
-                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
-                    />
-                  </td>
+                  <td class="text-center">{{ lancamento.projetos }}</td>
+                  <td class="text-center">{{ formataMesAno(lancamento.competencia) }}</td>
                   <td>{{ subItem.titulo }}</td>
                   <td>{{ subItem.unidadeMedida }}</td>
-                  <td>{{ parseFloat(subItem.quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}</td>
+                  <td>{{ formatQuantidadeItens(subItem.quantidadeItens) }}</td>
                   <td>
                     {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([subItem], lancamento.dias)) }}
                   </td>
@@ -1334,14 +1327,17 @@
                     ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
                 </td>
-                <td>
+                <td v-if="!item.convertido">
                   <money3
                     v-model="item.quantidadeItens"
                     type="number"
                     class="border-2 text-center max-w-60"
                     min="0"
-                    v-bind="conversaoConfig"
+                    v-bind="decimalConfig"
                   />
+                </td>
+                <td v-else>
+                  {{ formatQuantidadeItens(item.quantidadeItens) }}
                 </td>
                 <td v-if="medicaoData.tipo_medicao === 'Relatório Mensal'">
                   <input
@@ -1539,7 +1535,7 @@
                     ).toLocaleString('pt-BR', { minimumFractionDigits: 3 })
                   }}
                 </td>
-                <td>
+                <td v-if="!item.convertido">
                   <money3
                     v-model="item.quantidadeItens"
                     type="number"
@@ -1550,6 +1546,7 @@
                     v-bind="decimalConfig"
                   />
                 </td>
+                <td v-else>{{ formatQuantidadeItens(item.quantidadeItens) }}</td>
                 <td v-if="editingLancamento.tipoMedicao === 'Relatório Mensal'">
                   <input
                     v-model="editingLancamento.dias"
@@ -2984,12 +2981,19 @@ const decimalConfig = {
 };
 
 const conversaoConfig = {
-  precision: 3,
+  precision: 6,
   decimal: ",",
   thousands: ".",
   prefix: "",
   masked: false,
 };
+
+function formatQuantidadeItens(valor) {
+  if (!valor) return "0,000000";
+  return parseFloat(valor)
+    .toFixed(6) // Garante 6 casas decimais
+    .replace('.', ','); // Substitui o ponto pelo separador de vírgula
+}
 
 // const deleteContrato = async (contratoAtual) => {
 //   Swal.fire({
@@ -3165,6 +3169,8 @@ const createLancamento = async () => {
     payload.dias = medicaoData.value.dias || null;
   }
 
+  console.log('payload', payload)
+
   try {
     const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
 
@@ -3293,7 +3299,7 @@ const verificaIsFaturado = async (lancamentos, faturamentos) => {
     if (
       !lancamento.isFaturado &&
       (lancamento.status === 'Encaminhada p/ Faturamento' || lancamento.status === 'Finalizada') &&
-      lancamento.tipoMedicao === 'Detalhada'
+      lancamento.tipoMedicao !== 'Estimada'
     ) {
       await alterarStatusMedicao(lancamento.id, 'Disponível p/ Faturamento');
       alterouStatus.value = true;
@@ -3753,8 +3759,9 @@ function calcular() {
   const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
   const quantidadeEmExcesso =  parseFloat((selectedItem.value.quantidadeItens - quantidadeDisponivel).toFixed(6));
   const novoValor = parseFloat(((itemAtual.value.valorUnitario * quantidadeEmExcesso) / itemNovo.value.valorUnitario).toFixed(6));
+  console.log('novoValor', novoValor)
 
-  itemNovo.value.quantidadeItens = truncateToPrecision(novoValor, 3);
+  itemNovo.value.quantidadeItens = truncateToPrecision(novoValor, 6);
 }
 
 // Filtra o select de itens novos ao remover o item atual
@@ -3801,7 +3808,8 @@ const confirmarConversao = () => {
 
   medicaoData.value.itens.push({
     ...itemNovo.value,
-    quantidadeItens: parseFloat(itemNovo.value.quantidadeItens.toFixed(6)) || "0.000000"
+    quantidadeItens: parseFloat(itemNovo.value.quantidadeItens.toFixed(6)) || "0.000000",
+    convertido: true,
   });
 
   hasConversion.value = true;
@@ -3854,6 +3862,10 @@ const openEditLancamentoModal = (lancamento) => {
     lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
   };
 
+  if (editingLancamento.value.lancamentoItens.length > 1) {
+    editingLancamento.value.lancamentoItens[1].convertido = true;
+  }
+
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
@@ -3871,6 +3883,9 @@ const openViewLancamentoModal = (lancamento) => {
     competencia: competenciaFormatada,
     lancamentoItens: itensComQuantidade,
   };
+  if (editingLancamento.value.lancamentoItens.length > 1) {
+    editingLancamento.value.lancamentoItens[1].convertido = true;
+  }
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
@@ -4080,11 +4095,11 @@ const selecionarContrato = async (contratoData) => {
   }
 };
 
-const formataMesAno = (competencia) => {
+const formataMesAno = (competencia, tipo = "caixaAlta") => {
 if (!competencia) return '';
   try {
     const date = parseISO(competencia);
-    return format(date, "MMMM yyyy", { locale: ptBR }).toUpperCase();
+      return format(date, "MMMM yyyy", { locale: ptBR }).toUpperCase();
   } catch (error) {
     console.error('Erro ao formatar competência:', error);
     return competencia;
