@@ -1110,7 +1110,7 @@
                 <tr
                 v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
                 :key="subItem.id"
-                class="h-24 cursor-pointer text-center hover:bg-gray-100 transition"
+                class="h-24 text-center transition"
                 :title="`O item ${lancamento.lancamentoItens[0].titulo} excedeu a quantidade disponível e foi convertido para o item ${subItem.titulo}`"
               >
                   <!-- <td colspan="3"> -->
