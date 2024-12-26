@@ -3169,8 +3169,6 @@ const createLancamento = async () => {
     payload.dias = medicaoData.value.dias || null;
   }
 
-  console.log('payload', payload)
-
   try {
     const response = await api.post(`/contratos/${contratoId}/lancamentos`, payload)
 
@@ -3759,7 +3757,6 @@ function calcular() {
   const quantidadeDisponivel = calcularItensRestante(selectedItem.value.id, selectedItem.value.saldoQuantidadeContratada)
   const quantidadeEmExcesso =  parseFloat((selectedItem.value.quantidadeItens - quantidadeDisponivel).toFixed(6));
   const novoValor = parseFloat(((itemAtual.value.valorUnitario * quantidadeEmExcesso) / itemNovo.value.valorUnitario).toFixed(6));
-  console.log('novoValor', novoValor)
 
   itemNovo.value.quantidadeItens = truncateToPrecision(novoValor, 6);
 }
