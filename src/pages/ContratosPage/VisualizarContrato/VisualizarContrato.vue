@@ -986,7 +986,7 @@
           <div class="flex justify-between items-center gap-4">
             <label class="font-bold text-3xl w-[180px]">Valor total:</label>
             <span class="font-medium text-3xl">{{
-              formatCurrencySemArrendondar(calcularTotalFaturamento(editingFaturamento))
+              formatCurrencySemArrendondar(calcularSaldoFaturamentoItens(editingFaturamento.faturamentoItens))
             }}</span>
           </div>
           <div class="flex gap-4 justify-between items-center">
@@ -1643,7 +1643,7 @@
               if (!itemNovo.quantidadeItens) {
                 itemNovo.quantidadeItens = '0.000'
               }
-            }git add .
+            }
             calcular()
           }"
           class="focus:border-black focus:border-[3px] border-2 focus:outline-8 px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem]"
@@ -2757,21 +2757,6 @@ const calcularTotalLancamento = (lancamentos) => {
     });
   });
 
-  return total;
-};
-
-const calcularTotalFaturamento = (faturamento) => {
-  let total = 0;
-
-  faturamento.faturamentoItens.forEach((faturamentoItem) => {
-    faturamentoItem.lancamento.lancamentoItens.forEach((lancamentoItem) => {
-      if(faturamentoItem.lancamento.dias){
-        total += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(faturamentoItem.lancamento.dias);
-      } else {
-        total += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens);
-      }
-    });
-  });
   return total;
 };
 
