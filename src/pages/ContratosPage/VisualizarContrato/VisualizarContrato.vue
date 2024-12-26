@@ -888,7 +888,7 @@
               <th class="text-xl">#</th>
               <th class="text-xl">Projeto</th>
               <th class="text-xl">Competência</th>
-              <th class="text-xl">Título</th>
+              <th class="text-xl">Item</th>
               <th class="text-xl">Unidade de medida</th>
               <th class="text-xl">Quantidade</th>
               <th class="text-xl">Valor do lançamento</th>
@@ -1069,7 +1069,7 @@
                 <th class="text-xl">#</th>
                 <th class="text-xl">Projeto</th>
                 <th class="text-xl">Competência</th>
-                <th class="text-xl">Título</th>
+                <th class="text-xl">Item</th>
                 <th class="text-xl">Unidade de medida</th>
                 <th class="text-xl">Quantidade</th>
                 <th class="text-xl">Valor do lançamento</th>
@@ -1856,7 +1856,7 @@
           <div class="flex gap-4 justify-between items-center">
             <label class="font-bold text-3xl">Valor Unitário:</label>
             <money3
-              :disabled="isItemViewModal"
+              disabled
               v-model="editingItem.valorUnitario"
               type="text"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
@@ -1870,7 +1870,7 @@
             <label class="font-bold text-3xl">Quantidade Contratada:</label>
             <money3
               v-model="editingItem.saldoQuantidadeContratada"
-              :disabled="isItemViewModal"
+              disabled
               type="number"
               class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
               required
