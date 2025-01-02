@@ -74,16 +74,24 @@
             <button
               v-if="!anexo.isEditing"
               @click="startEditing(anexo)"
-              class="text-gray-500 hover:text-gray-700 transition duration-200 ease-in-out transform hover:scale-110 text-base text-[1.25rem]"
+              class="text-gray-500 hover:text-gray-700 transition duration-200 ease-in-out transform hover:scale-110 text-base text-[1.25rem] mt-[2px]"
             >
               ✏️
             </button>
             <button
               v-if="!anexo.isEditing"
               @click="deleteFile(anexo.id)"
-              class="text-[#e74c3c] hover:text-[#c0392b] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem]"
+              class="text-[#e74c3c] hover:text-[#c0392b] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem] mt-[2px]"
             >
               &times;
+            </button>
+            <button
+              v-if="!anexo.isEditing"
+              @click.prevent="downloadAnexo(anexo)"
+              title="Download"
+              aria-label="Download Anexo"
+            >
+            <Icon icon="material-symbols:download-rounded" width="19" class="text-[#3498db] hover:text-[#2980b9] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem]"/>
             </button>
           </div>
         </div>
@@ -96,6 +104,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { api } from '@/services/api';
+import { Icon } from '@iconify/vue';
 
 const selectedFiles = ref(null);
 const anexos = ref([]);
@@ -214,6 +223,33 @@ const deleteFile = async (id) => {
     errorMessage.value = 'Erro ao excluir o arquivo.';
   }
 };
+
+const downloadAnexo = async (anexo) => {
+  try {
+    const fileUrl = convertUrl(anexo.file_url);
+
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error('Erro ao baixar o arquivo');
+    }
+    const blob = await response.blob();
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = anexo.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  } catch (error) {
+    console.error('Erro ao baixar o anexo:', error);
+    errorMessage.value = 'Erro ao baixar o anexo. Tente novamente.';
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
+  }
+};
+
 
 const startEditing = (anexo) => {
   anexo.isEditing = true;
