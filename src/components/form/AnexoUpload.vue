@@ -86,6 +86,14 @@
             >
               &times;
             </button>
+            <button
+              v-if="!anexo.isEditing"
+              @click.prevent="downloadAnexo(anexo)"
+              title="Download"
+              aria-label="Download Anexo"
+            >
+            <Icon icon="material-symbols:download-rounded" width="19" class="text-[#3498db] hover:text-[#2980b9] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem]"/>
+            </button>
           </div>
         </div>
       </div>
@@ -97,6 +105,7 @@
 <script setup>
 import { ref, onMounted, computed, watch, defineExpose } from 'vue';
 import { api } from '@/services/api';
+import { Icon } from '@iconify/vue';
 
 const selectedFiles = ref(null);
 const anexos = ref([]);
@@ -260,6 +269,27 @@ const updateFileName = async (anexo) => {
       errorMessage.value = 'Erro ao atualizar o nome do arquivo.';
       successMessage.value = '';
     }
+  }
+};
+
+const downloadAnexo = async (anexo) => {
+  try {
+    if (!anexo.file_url) {
+      throw new Error('URL do arquivo não encontrada.');
+    }
+
+    const link = document.createElement('a');
+    link.href = anexo.file_url;
+    link.download = anexo.fileName || 'arquivo';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); 
+  } catch (error) {
+    console.error('Erro ao fazer download do arquivo:', error);
+    errorMessage.value = 'Erro ao fazer download do arquivo. Tente novamente.';
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
   }
 };
 
