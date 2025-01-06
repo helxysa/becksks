@@ -49,18 +49,171 @@
         </div>
       </section>
       <section
-        class="h-full w-48 gap-4 flex items-center justify-center cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-50"
-        @click="logout"
+        class="h-full gap-4 flex items-center justify-center cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-50"
+        @click="toggleDropdownUser"
       >
         <Icon
           icon="carbon:user-avatar"
           width="3rem"
           class="text-blue-500"
         />
-        <p>Sair</p>
+        <span class="font-semibold ">{{ userProfile?.nome || "Usuário" }}</span>
+        <Icon
+          icon="solar:alt-arrow-down-linear"
+          width="3rem"
+          class="text-blue-500"
+        />
       </section>
+    <div
+        v-if="isDropdownUserOpen"
+        class="absolute right-0 top-28 mt-2 w-fit bg-white border border-gray-300 rounded-md shadow-lg z-50"
+      >
+        <ul>
+          <li class="h-full p-4 w-full flex flex-row gap-6 text-gray-700 hover:bg-blue-50">
+              <Icon
+                icon="carbon:user-avatar"
+                width="3rem"
+                class="text-blue-500"
+              />
+            <div class="flex flex-col">
+              <span>{{ userProfile?.nome || "Usuário" }}</span>
+              <span v-if="userProfile?.cargo" class="text-lg font-extralight text-gray-400 uppercase">{{ userProfile?.cargo || "" }}</span>
+              <span v-if="userProfile?.setor" class="text-lg font-extralight text-gray-400 uppercase">{{ userProfile?.setor || "" }}</span>
+              <span v-if="userProfile?.email" class="text-lg font-extralight text-gray-400 uppercase">{{ userProfile?.email || "" }}</span>
+            </div>
+          </li>
+          <li class="h-full p-4 w-full flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-50" @click="openSettingsModal">
+            <Icon icon="carbon:settings" width="2.8rem" class="hover:text-blue-500" />
+            <span>Informações do usuário</span>
+          </li>
+          <li class="h-full p-4 w-full flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-50" @click="openChangePasswordModal">
+            <Icon icon="carbon:password" width="2.8rem" class="hover:text-blue-500" />
+            <span>Alterar senha</span>
+          </li>
+        <li class="h-full p-4 w-full flex items-center gap-2 cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-50" @click="logout">
+          <Icon icon="material-symbols-light:logout-rounded" width="3rem" class="hover:text-blue-500" />
+          <span>Sair</span>
+        </li>
+        </ul>
+      </div>
     </div>
-  </header>
+
+<JetDialogModal
+  :show="isSettingsModalOpen"
+  :withouHeader="false"
+  @close="closeSettingsModal"
+  maxWidth="4xl"
+  centered
+  :modalTitle="'Informações do usuário'"
+  >
+    <template #content>
+      <form @submit.prevent="saveSettings">
+        <div class="grid grid-cols-1 gap-6">
+          <div>
+            <label for="nome" class="block text-3xl font-semibold mb-2 text-gray-700">Nome</label>
+            <input
+              id="nome"
+              v-model="newUser.nome"
+              type="text"
+             class="text-2xl font-sans pl-4 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            />
+          </div>
+
+          <div>
+            <label for="cargo" class="block text-3xl font-semibold mb-2 text-gray-700">Cargo</label>
+            <input
+              id="cargo"
+              v-model="newUser.cargo"
+              type="text"
+             class="text-2xl font-sans pl-4 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            />
+          </div>
+
+          <div>
+            <label for="setor" class="block text-3xl font-semibold mb-2 text-gray-700">Setor</label>
+            <input
+              id="setor"
+              v-model="newUser.setor"
+              type="text"
+             class="text-2xl font-sans pl-4 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+            />
+          </div>
+        </div>
+        <footer class="mt-6 flex justify-end gap-4">
+          <button
+            @click="closeSettingsModal"
+            type="button"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"
+            :disabled="isSaveDisabled || isSubmitting"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save hover:bg-[#0ea5e9] bg-[#00AFEF] w-40"
+          >
+            Salvar
+          </button>
+        </footer>
+      </form>
+    </template>
+  </JetDialogModal>
+
+  <JetDialogModal
+  :show="isChangePasswordModalOpen"
+  :withouHeader="false"
+  @close="closeChangePasswordModal"
+  maxWidth="4xl"
+  centered
+  :modalTitle="'Alterar senha'"
+  >
+    <template #content>
+      <form @submit.prevent="handleChangePassword">
+        <div class="grid grid-cols-1 gap-6">
+          <div class="font-sans">
+            <label for="newPassword" class="block text-3xl font-semibold mb-2 text-gray-700">Nova Senha</label>
+            <input
+              v-model="newPassword"
+              type="password"
+              id="newPassword"
+              class="text-2xl font-sans pl-4 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              placeholder="Digite sua nova senha"
+            />
+            <p v-if="errors?.newPassword" class="text-red-500 mt-2">{{ errors?.newPassword }}</p>
+          </div>
+
+          <div class="font-sans">
+            <label for="confirmPassword" class="block text-3xl font-semibold mb-2 text-gray-700">Confirmar Senha</label>
+            <input
+              v-model="confirmPassword"
+              type="password"
+              id="confirmPassword"
+              class="text-2xl font-sans pl-4 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
+              placeholder="Confirme sua senha"
+            />
+            <p v-if="errors?.confirmPassword" class="text-red-500 mt-2">{{ errors?.confirmPassword }}</p>
+          </div>
+        </div>
+        <footer class="mt-6 flex justify-end gap-4">
+          <button
+            @click="closeChangePasswordModal"
+            type="button"
+            class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition hover:bg-gray-100 h-14 w-40"
+          >
+            Fechar
+          </button>
+          <button
+            type="submit"
+            :disabled="isSaveChangePasswordDisabled || isSubmitting"
+            class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save hover:bg-[#0ea5e9] bg-[#00AFEF] w-40"
+          >
+            Salvar
+          </button>
+        </footer>
+      </form>
+    </template>
+  </JetDialogModal>
+</header>
 </template>
 
 <script setup>
@@ -73,8 +226,9 @@ import { api } from "@/services/api";
 import { useProfileStore } from '@/stores/ProfileStore';
 import socket, { notificacoes } from '../../websocket.js';
 import { usePermissions } from '@/composables/usePermission';
+import JetDialogModal from "@/components/modals/DialogModal.vue";
 
-const store = useProfileStore()
+const store = useProfileStore();
 const { hasPermission } = usePermissions();
 const router = useRouter();
 const isDropdownOpen = ref(false);
@@ -91,6 +245,122 @@ const toggleDropdown = () => {
     isAnimating.value = false;
     isDropdownOpen.value = !isDropdownOpen.value;
   }, 150);
+};
+
+// configurações, alteração de senha e dropdown usuario
+const userProfile = ref(JSON.parse(localStorage.getItem("profileUser")) || {});
+const newUser = ref({ ...userProfile.value });
+const isDropdownUserOpen = ref(false);
+const isSettingsModalOpen = ref(false);
+const isSubmitting = ref(false);
+
+const isSaveDisabled = computed(() => {
+  const isUserUnchanged = JSON.stringify(newUser.value) === JSON.stringify(userProfile.value);
+  return isUserUnchanged
+});
+
+const toggleDropdownUser = () => {
+  isDropdownUserOpen.value = !isDropdownUserOpen.value;
+};
+const openSettingsModal = () => {
+  isSettingsModalOpen.value = true;
+  isDropdownUserOpen.value = false;
+};
+
+const closeSettingsModal = () => {
+  isSettingsModalOpen.value = false;
+};
+
+const saveSettings = async () => {
+  isSubmitting.value = true;
+
+  const userData = {
+    nome: newUser.value.nome,
+    cargo: newUser.value.cargo,
+    setor: newUser.value.setor,
+  }
+
+  try {
+    const response = await api.put(`/users/update/${newUser.value.id}`, userData);
+    toast.success("Informações atualizadas com sucesso!", { theme: "colored" });
+
+    // Atualiza o perfil do usuário no localStorage
+    localStorage.setItem("profileUser", JSON.stringify(newUser.value));
+    userProfile.value = { ...newUser.value };
+
+    closeSettingsModal();
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Erro ao salvar alterações. Tente novamente.";
+    toast.error(errorMessage, { theme: "colored" });
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// Alteração de senha do usuário
+const errors = ref({});
+const isChangePasswordModalOpen = ref(false);
+const newPassword = ref('');
+const confirmPassword = ref('');
+
+const isSaveChangePasswordDisabled = computed(()=>{
+  const isPasswordUnchanged = !newPassword.value && !confirmPassword.value;
+  return isPasswordUnchanged
+})
+
+const openChangePasswordModal = () => {
+  isChangePasswordModalOpen.value = true;
+  isDropdownUserOpen.value = false;
+};
+
+const closeChangePasswordModal = () => {
+  isChangePasswordModalOpen.value = false;
+};
+
+const handleChangePassword = async () => {
+  errors.value = {};
+
+  if (newPassword.value.length < 8) {
+    errors.value.newPassword = 'A senha deve ter pelo menos 8 caracteres.';
+    return;
+  }
+
+  const passwordRules = [
+    /[A-Z]/,
+    /[a-z]/,
+    /\d/,
+    /[!@#\$%\^&\*]/,
+  ];
+
+  const invalidPassword = passwordRules.some((rule) => !rule.test(newPassword.value));
+  if (invalidPassword) {
+    errors.value.newPassword = 'A senha deve conter caracteres maiúsculos, minúsculos, números e especiais.';
+    return;
+  }
+
+  if (newPassword.value !== confirmPassword.value) {
+    errors.value.confirmPassword = 'As senhas não coincidem.';
+    return;
+  }
+
+  isSubmitting.value = true
+
+  try {
+    await api.put(`/users/alterar-senha/${newUser.value.id}`, {
+      newPassword: newPassword.value,
+    });
+    toast.success('Senha alterada com sucesso!', { theme: 'colored' });
+    newPassword.value = '';
+    confirmPassword.value = '';
+    errors.value = {};
+    closeChangePasswordModal()
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Erro ao alterar a senha. Por favor, tente novamente.';
+    toast.error(errorMessage, { theme: 'colored' });
+    console.error('Erro ao alterar senha:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 const logout = async () => {
@@ -234,6 +504,12 @@ const fetchContratos = async () => {
 };
 
   onMounted(() => {
+    const profile = JSON.parse(localStorage.getItem('profileUser'));
+    if (profile) {
+      userProfile.value = profile;
+    } else {
+      console.error("Perfil do usuário não encontrado.");
+    }
     fetchContratos();
     loadMedicaoMensagensFromLocalStorage();
     verificarVencimentoContratos();

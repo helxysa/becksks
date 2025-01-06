@@ -70,20 +70,33 @@
               </button>
             </div>
           </div>
-          <div class="flex items-center gap-2" v-if="!isViewOnly">
+          <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" v-if="!isViewOnly">
+              <button
+                type="button"
+                v-if="!anexo.isEditing"
+                @click="startEditing(anexo)"
+                class="text-gray-500 hover:text-gray-700 transition duration-200 ease-in-out transform hover:scale-110 text-base text-[1.25rem] mt-[2px]"
+              >
+                ✏️
+              </button>
+              <button
+                type="button"
+                v-if="!anexo.isEditing"
+                @click="deleteFile(anexo.id)"
+                class="text-[#e74c3c] hover:text-[#c0392b] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem] mt-[2px]"
+              >
+                &times;
+              </button>
+          </div>
             <button
+              type="button"
               v-if="!anexo.isEditing"
-              @click="startEditing(anexo)"
-              class="text-gray-500 hover:text-gray-700 transition duration-200 ease-in-out transform hover:scale-110 text-base text-[1.25rem]"
+              @click.prevent="downloadAnexo(anexo)"
+              title="Download"
+              aria-label="Download Anexo"
             >
-              ✏️
-            </button>
-            <button
-              v-if="!anexo.isEditing"
-              @click="deleteFile(anexo.id)"
-              class="text-[#e74c3c] hover:text-[#c0392b] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem]"
-            >
-              &times;
+            <Icon icon="material-symbols:download-rounded" width="19" class="text-[#3498db] hover:text-[#2980b9] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem]"/>
             </button>
           </div>
         </div>
@@ -96,6 +109,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { api } from '@/services/api';
+import { Icon } from '@iconify/vue';
+import Swal from 'sweetalert2';
 
 const selectedFiles = ref(null);
 const anexos = ref([]);
@@ -201,19 +216,61 @@ const fetchAnexos = async () => {
 };
 
 const deleteFile = async (id) => {
-  try {
-    let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
+  const result = await Swal.fire({
+    title: 'Tem certeza?',
+    text: 'Esta ação irá deletar o anexo permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e74c3c',
+    cancelButtonColor: '#3498db',
+    confirmButtonText: 'Sim, deletar!',
+    cancelButtonText: 'Cancelar',
+  }).then(async (result)=>{
+    if (result.isConfirmed){
+      try {
+        let variantUrl = props.variant === 'contrato' ? 'contratos' : props.variant === 'medicao' ? 'medicao' : 'faturamento';
 
-    await api.delete(`/${variantUrl}/anexos/${id}`);
-    successMessage.value = 'Arquivo excluído com sucesso!';
-    fetchAnexos();
-    setTimeout(() => {
-      successMessage.value = '';
-    }, 3000);
+        await api.delete(`/${variantUrl}/anexos/${id}`);
+        successMessage.value = 'Arquivo excluído com sucesso!';
+        fetchAnexos();
+        setTimeout(() => {
+          successMessage.value = '';
+        }, 3000);
+      } catch (error) {
+        errorMessage.value = 'Erro ao excluir o arquivo.';
+      }
+    }
+  })
+
+
+};
+
+const downloadAnexo = async (anexo) => {
+  try {
+    const fileUrl = convertUrl(anexo.file_url);
+
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error('Erro ao baixar o arquivo');
+    }
+    const blob = await response.blob();
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = anexo.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
   } catch (error) {
-    errorMessage.value = 'Erro ao excluir o arquivo.';
+    console.error('Erro ao baixar o anexo:', error);
+    errorMessage.value = 'Erro ao baixar o anexo. Tente novamente.';
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
   }
 };
+
 
 const startEditing = (anexo) => {
   anexo.isEditing = true;
