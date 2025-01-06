@@ -73,6 +73,7 @@
           </div>
           <div class="flex items-center gap-2">
             <button
+              type="button"
               v-if="!anexo.isEditing"
               @click="startEditing(anexo)"
               class="text-gray-500 hover:text-gray-700 transition duration-200 ease-in-out transform hover:scale-110 text-base text-[1.25rem]"
@@ -80,6 +81,7 @@
               ✏️
             </button>
             <button
+              type="button"
               v-if="!anexo.isEditing"
               @click="deleteFile(anexo.id)"
               class="text-[#e74c3c] hover:text-[#c0392b] transition duration-200 ease-in-out transform hover:scale-110 text-[2.5rem]"
@@ -87,6 +89,7 @@
               &times;
             </button>
             <button
+              type="button"
               v-if="!anexo.isEditing"
               @click.prevent="downloadAnexo(anexo)"
               title="Download"
@@ -106,6 +109,7 @@
 import { ref, onMounted, computed, watch, defineExpose } from 'vue';
 import { api } from '@/services/api';
 import { Icon } from '@iconify/vue';
+import Swal from 'sweetalert2';
 
 const selectedFiles = ref(null);
 const anexos = ref([]);
@@ -208,23 +212,34 @@ const fetchAnexos = async () => {
 };
 
 const deleteFile = async (id) => {
-  const indexLocal = props.localAnexos.findIndex(anexo => anexo.id === id);
-  if (indexLocal !== -1) {
-    props.localAnexos.splice(indexLocal, 1);
-    return;
-  }
+  const result = await Swal.fire({
+    title: 'Tem certeza?',
+    text: 'Esta ação irá deletar o anexo permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e74c3c',
+    cancelButtonColor: '#3498db',
+    confirmButtonText: 'Sim, deletar!',
+    cancelButtonText: 'Cancelar',
+  }).then(async (result)=>{
+    const indexLocal = props.localAnexos.findIndex(anexo => anexo.id === id);
+    if (indexLocal !== -1) {
+      props.localAnexos.splice(indexLocal, 1);
+      return;
+    }
 
-  try {
-    let variantUrl = getVariantUrl();
-    await api.delete(`/${variantUrl}/anexos/${id}`);
-    successMessage.value = 'Arquivo excluído com sucesso!';
-    fetchAnexos();
-    setTimeout(() => {
-      successMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    errorMessage.value = 'Erro ao excluir o arquivo.';
-  }
+    try {
+      let variantUrl = getVariantUrl();
+      await api.delete(`/${variantUrl}/anexos/${id}`);
+      successMessage.value = 'Arquivo excluído com sucesso!';
+      fetchAnexos();
+      setTimeout(() => {
+        successMessage.value = '';
+      }, 3000);
+    } catch (error) {
+      errorMessage.value = 'Erro ao excluir o arquivo.';
+    }
+  })
 };
 
 
@@ -283,7 +298,7 @@ const downloadAnexo = async (anexo) => {
     link.download = anexo.fileName || 'arquivo';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link); 
+    document.body.removeChild(link);
   } catch (error) {
     console.error('Erro ao fazer download do arquivo:', error);
     errorMessage.value = 'Erro ao fazer download do arquivo. Tente novamente.';
