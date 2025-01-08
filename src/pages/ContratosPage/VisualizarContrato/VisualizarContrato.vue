@@ -2250,7 +2250,8 @@ const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 // Guias dos modais de criação
 const anexoUploadRef = ref(null);
 // Medicao
-const selectedStatuses= ref([])
+let isResettingForm = false;
+const selectedStatuses = ref([])
 const allStatuses = ref([
   'Não Autorizada',
   'Autorizada',
@@ -3109,6 +3110,7 @@ const closeModalLancamento = () => {
 
 
 const resetForm = () => {
+  isResettingForm = true;
   selectNovoLancamento.value = "";
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
@@ -3887,7 +3889,7 @@ function cancelConversion() {
 
   if (itemIndex !== -1) {
     medicaoData.value.itens.splice(itemIndex, 1);
-    toast.success('Item convertido excluído com sucesso!');
+    toast.error('Item convertido cancelado!');
   } else {
     toast.error('Item convertido não encontrado!');
   }
@@ -3898,6 +3900,10 @@ function cancelConversion() {
 }
 
 watch(selectedItem, (newItem, oldItem) => {
+  if (isResettingForm) {
+    // Ignora mudanças durante o reset do formulário
+    return;
+  }
   // Verifica se havia um item convertido para cancelar a conversão caso o item selecionado seja alterado
   if (hasConversion.value) {
     cancelConversion(); // Remove o item convertido
