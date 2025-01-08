@@ -895,7 +895,7 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="(lancamento, lIndex) in contrato.lancamentos.filter((l) => pedidosFaturamento.includes(l.id))" :key="lancamento.id">
+            <template v-for="(lancamento, lIndex) in medicaoItemData.filter((l) => pedidosFaturamento.includes(l.id))" :key="lancamento.id">
             <tr class="h-24 text-center transition">
               <td class="px-4">{{ lancamento.id }}</td>
               <td>{{ lancamento.projetos }}</td>
@@ -905,7 +905,7 @@
                   v-model="lancamento.competencia"
                   type="month"
                   placeholder="Informe a competência"
-                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center uppercase"
                 />
               </td>
               <td>{{ lancamento.lancamentoItens[0].titulo }}</td>
@@ -1045,7 +1045,7 @@
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
               v-model="editingFaturamento.competencia"
               placeholder="Informe a competência"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14 uppercase"
             />
           </div>
           <div class="gap-4 flex items-center justify-between">
@@ -1089,7 +1089,7 @@
                       v-model="lancamento.competencia"
                       type="month"
                       placeholder="Informe a competência"
-                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center uppercase"
                     />
                   </td>
                   <td v-else>{{ formataMesAno(lancamento.competencia) }}</td>
@@ -2600,6 +2600,11 @@ const fetchContratoMedicoes = async (id, page, search = '') => {
     medicaoItemMeta.value = response.data.meta;
 
     medicaoItemData.value.forEach((medicao) => {
+      // Remove o dia da competencia para se adequar ao input date Month
+      if (medicao.competencia) {
+        const [ano, mes] = medicao.competencia.split('-');
+        medicao.competencia = `${ano}-${mes}`;
+      }
       medicao.lancamentoItens.forEach((lancamentoItem) => {
         const itemContrato = contratoItemData.value.find(
           (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
@@ -3145,6 +3150,7 @@ const createLancamento = async () => {
   let itensQuantidadePreenchida = medicaoData.value.itens.map((item) => ({
     id_item: item.id,
     quantidade_itens: item.quantidadeItens || "0.000",
+    convertido: item.convertido || false,
   }));
 
   // const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
@@ -3591,12 +3597,14 @@ const calcularQuantidadeItens = (lancamentoItens) => {
 };
 
 const mostrarUnidadeMedida = (lancamentoItens) => {
-  let unidadeMedida = "";
+  const existeConvertido = lancamentoItens.some(item => item.convertido)
 
-  lancamentoItens.forEach((item) => {
-    unidadeMedida = item.unidadeMedida;
-  });
-  return unidadeMedida;
+  if (existeConvertido) {
+    const naoConvertido = lancamentoItens.find(item => !item.convertido)
+    return naoConvertido ? naoConvertido.unidadeMedida : ""
+  }
+
+  return lancamentoItens[0]?.unidadeMedida || "";
 };
 
 // Editar Item do contrato
@@ -3928,38 +3936,39 @@ const openEditLancamentoModal = (lancamento) => {
   const competencia = lancamento.competencia || "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
 
+  const lancamentoItens = lancamento.lancamentoItens.length === 2
+    ? lancamento.lancamentoItens.sort((a, b) => (b.convertido ? -1 : 1))
+    : lancamento.lancamentoItens;
+
   // Faça uma cópia profunda também dos itens de lançamento
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
     competencia: competenciaFormatada,
-    lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
+    lancamentoItens: JSON.parse(JSON.stringify(lancamentoItens)) // Deep copy dos itens
   };
-
-  if (editingLancamento.value.lancamentoItens.length > 1) {
-    editingLancamento.value.lancamentoItens[1].convertido = true;
-  }
-
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
 
 const openViewLancamentoModal = (lancamento) => {
   isLancamentoViewModal.value = true;
-  const itensComQuantidade = lancamento.lancamentoItens
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
   const competencia = lancamento.competencia || "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
+  const lancamentoItens = lancamento.lancamentoItens.length === 2
+    ? lancamento.lancamentoItens.sort((a, b) => (b.convertido ? -1 : 1))
+    : lancamento.lancamentoItens;
+
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
     competencia: competenciaFormatada,
-    lancamentoItens: itensComQuantidade,
+    lancamentoItens: lancamentoItens,
   };
-  if (editingLancamento.value.lancamentoItens.length > 1) {
-    editingLancamento.value.lancamentoItens[1].convertido = true;
-  }
+
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
