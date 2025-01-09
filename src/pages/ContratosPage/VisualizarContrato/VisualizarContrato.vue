@@ -3987,9 +3987,36 @@ const closeEditLancamentoModal = () => {
   isLancamentoViewModal.value = false;
 };
 
+const calcularItensRestanteEdicao = (idItem, quantidadeContratada, lancamentoAtualId) => {
+  let quantidadeUtilizada = 0;
+
+  contrato.value.lancamentos.forEach((lancamento) => {
+    // Ignorar lançamentos que não estão finalizados ou o próprio lançamento em edição
+    if (
+      lancamento.status === "Autorizada" ||
+      lancamento.status === "Não Autorizada" ||
+      lancamento.status === "Cancelada" ||
+      lancamento.status === "Não Iniciada" ||
+      lancamento.status === "Em Andamento" ||
+      lancamento.id === lancamentoAtualId
+    ) {
+      return;
+    }
+
+    lancamento.lancamentoItens.forEach((lancamentoItem) => {
+      if (idItem === lancamentoItem.contratoItemId) {
+        quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
+      }
+    });
+  });
+
+  const quantidadeRestante = parseFloat((quantidadeContratada - quantidadeUtilizada).toFixed(6));
+
+  return quantidadeRestante;
+};
+
 const saveEditedLancamento = async () => {
-  if (!editingLancamento.value.projetos || editingLancamento.value.projetos === null)
-  {
+  if (!editingLancamento.value.projetos || editingLancamento.value.projetos === null) {
     toast.error("Adicione o nome do projeto.", {
       theme: "colored",
       type: "error",
@@ -3997,21 +4024,17 @@ const saveEditedLancamento = async () => {
     return;
   }
 
-  let itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
+  const itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
     .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id: item.id,
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
-      quantidade_itens: item.quantidadeItens.toString(),
+      quantidade_itens: item.quantidadeItens || "0.000",
     }));
 
-  const todosQuantidadeZero = itensQuantidadePreenchida.every(
-    (item) => item.quantidade_itens === "0"
-  );
-
-  if (todosQuantidadeZero) {
-    toast.error("Adicione pelo menos um item ao lancamento.", {
+  if (itensQuantidadePreenchida.every((item) => item.quantidade_itens === "0")) {
+    toast.error("Adicione pelo menos um item ao lançamento.", {
       theme: "colored",
       type: "error",
     });
@@ -4019,7 +4042,7 @@ const saveEditedLancamento = async () => {
   }
 
   if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item para editar o lancamento.", {
+    toast("Adicione pelo menos um item para editar o lançamento.", {
       theme: "colored",
       type: "error",
     });
@@ -4027,18 +4050,12 @@ const saveEditedLancamento = async () => {
   }
 
   const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
-    let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
-      (total, lancamento) => {
-        return ( total + lancamento.lancamentoItens.reduce((subTotal, lancamentoItem) => {
-            if ( lancamentoItem.contratoItemId === item.contrato_item_id &&  lancamentoItem.id !== item.id) {
-              return subTotal + parseFloat(lancamentoItem.quantidadeItens);
-            } return subTotal }, 0));
-      }, 0);
-    const saldoQuantidadeContratada = parseFloat(item.saldo_quantidade_contratada);
-    const quantidadeItens = parseFloat(item.quantidade_itens);
-    const quantidadeDisponivel = saldoQuantidadeContratada - quantidadeTotalLançada;
-
-    return quantidadeItens > parseFloat((saldoQuantidadeContratada - quantidadeTotalLançada).toFixed(3))
+    const quantidadeRestante = calcularItensRestanteEdicao(
+      item.contrato_item_id,
+      item.saldo_quantidade_contratada,
+      editingLancamento.value.id
+    );
+    return parseFloat(item.quantidade_itens) > quantidadeRestante;
   });
 
   if (quantidadeExcedida) {
@@ -4046,12 +4063,12 @@ const saveEditedLancamento = async () => {
     return;
   }
 
-  if (editingLancamento.value.status === "" || editingLancamento.value.status === null) {
-    toast.error("Selecione um status para a medição.")
+  if (!editingLancamento.value.status) {
+    toast.error("Selecione um status para a medição.");
     return;
   }
 
-  let payload = {
+  const payload = {
     data_medicao: editingLancamento.value.dataMedicao,
     competencia: editingLancamento.value.competencia,
     descricao: editingLancamento.value.descricao,
@@ -4070,30 +4087,31 @@ const saveEditedLancamento = async () => {
   }
 
   try {
-    const response = await api
-      .put(`/lancamentos/${editingLancamento.value.id}`, payload)
-      .then((response) => {
-        Object.assign(editingLancamento.value);
-        toast("Medição atualizada com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-        if( response.data.status === 'Disponível p/ Faturamento' ) {
-          socket.emit('medicao:update', {
-            id: response.data.id,
-            status: response.data.status,
-            contratoId: contratoOriginal.value.id,
-            message: `O status da medição ${response.data.id} foi alterado para: ${response.data.status}`,
-          });
-        }
-        modalEditLancamento.value = false;
-        editingLancamentoBackup.value = null;
-        fetchContrato(contratoId);
+    const response = await api.put(`/lancamentos/${editingLancamento.value.id}`, payload);
+    Object.assign(editingLancamento.value, response.data);
+    toast("Medição atualizada com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+
+    if (response.data.status === "Disponível p/ Faturamento") {
+      socket.emit("medicao:update", {
+        id: response.data.id,
+        status: response.data.status,
+        contratoId: contratoOriginal.value.id,
+        message: `O status da medição ${response.data.id} foi alterado para: ${response.data.status}`,
       });
+    }
+
+    modalEditLancamento.value = false;
+    editingLancamentoBackup.value = null;
+    fetchContrato(contratoId);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao atualizar lançamento:", error);
+    toast.error(error?.response?.data || "Não foi possível atualizar o lançamento.");
   }
 };
+
 
 const calcularPodeRenovar = () => {
   const totalUtilizado = calcularSaldoDisponivel(
