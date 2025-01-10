@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // import Register from "@/pages/Register.vue";
 const DashboardPage = () => import("../pages/DashboardPage/DashboardPage.vue");
 const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
+const RelatorioPage = () => import("../pages/Relatorio/RelatoriosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
 const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue");
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
@@ -11,11 +12,10 @@ const ViewTermoAditivoPage = () => import("../pages/ContratosPage/VisualizarTerm
 const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
 
-
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
 import ResetPassword from "@/pages/Login/ResetPassword.vue";
-import UsersPage from '@/pages/UsersPage/UsersPage.vue';
+import UsersPage from "@/pages/UsersPage/UsersPage.vue";
 import EditAditivoForm from "@/components/EditAditivoForm.vue";
 import LogView from "@/pages/LogsPage/LogView.vue";
 
@@ -29,7 +29,7 @@ const routes = [
   {
     path: "/login",
     component: Login,
-    name:'Login'
+    name: "Login",
   },
   {
     path: "/alterar-senha",
@@ -38,8 +38,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/esqueci-minha-senha',
-    name: 'ResetPassword',
+    path: "/esqueci-minha-senha",
+    name: "ResetPassword",
     component: ResetPassword,
   },
   // {
@@ -87,6 +87,12 @@ const routes = [
     path: "/visualizar/termoAditivo/:id",
     name: "visualizarTermoAditivo",
     component: ViewTermoAditivoPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/relatorio",
+    name: "Relatório",
+    component: RelatorioPage,
     meta: { requiresAuth: true },
   },
   {

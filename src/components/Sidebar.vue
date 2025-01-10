@@ -48,6 +48,12 @@ const routes = [
     permission: { name: "contratos", action: "Visualizar" },
   },
   {
+    path: "/relatorio",
+    label: "Relatório",
+    icon: "eos-icons:project",
+    permission: { name: "contratos", action: "Visualizar" },
+  },
+  {
     path: "/perfis",
     label: "Perfis",
     icon: "eos-icons:admin-outlined",
