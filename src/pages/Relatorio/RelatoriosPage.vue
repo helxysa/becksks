@@ -26,7 +26,7 @@
         v-model="selectedProjeto"
         class="block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <option value="" disabled>Escolha um projeto</option>
+        <option value="">Escolha um projeto</option>
         <option v-for="projeto in projetos" :key="projeto.id" :value="projeto.nome">
           {{ projeto.nome }}
         </option>
@@ -36,8 +36,8 @@
     <!-- Botão Filtrar -->
     <button
       @click="fetchRelatorio"
-      :disabled="!selectedContratoId || !selectedProjeto"
-      class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+      :disabled="!selectedContratoId"
+      class="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
     >
       Filtrar
     </button>
@@ -68,21 +68,103 @@
         </ul>
       </section>
     </div>
+    <!-- Gráficos -->
+    <div v-if="relatorio" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+      <!-- Série Histórica Mensal -->
+      <div class="bg-white p-12 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Série Histórica Mensal</h2>
+        <SerieHistoricaMensal :data="serieHistoricaMensalData" />
+      </div>
+
+      <!-- Distribuição de Valores -->
+      <div class="bg-white p-12 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Distribuição de Valores</h2>
+        <DonutChart :data="chartData" />
+      </div>
+    </div>
+
+    <!-- Distribuição por Projeto -->
+    <div v-if="relatorio" class="mt-6 bg-white p-4 rounded-lg shadow-md w-full p-12 ">
+      <h2 class="text-2xl font-bold mb-12 text-[#63696E]">Distribuição por Projeto</h2>
+      <HorizontalBarChart :data="horizontalBarChartData" />
+    </div>
+
     <TabelasDoContrato :contrato="relatorio.contrato" v-if="relatorio" />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { api } from "@/services/api";
 import TabelasDoContrato from './TabelasDoContrato.vue'
-
+import DonutChart from './components/DonutsChart.vue';
+import HorizontalBarChart from './components/HorizontalBarChart.vue';
+import SerieHistoricaMensal from './components/SerieHistoricaMensal.vue';
 // Dados do Contrato e Relatório
 const contratos = ref([]);
 const projetos = ref([]);
 const selectedContratoId = ref('');
 const selectedProjeto = ref('');
 const relatorio = ref(null);
+
+// Dados para o gráfico donuts
+const chartData = computed(() => {
+  if (!relatorio.value) return null;
+
+  const { saldoAtual, distribuicaoPorStatus, saldoTotal } = relatorio.value;
+  const pago = distribuicaoPorStatus?.Pago?.total || 0;
+  const aguardandoPagamento = distribuicaoPorStatus?.['Aguardando Pagamento']?.total || 0;
+  const aguardandoFaturamento = distribuicaoPorStatus?.['Aguardando Faturamento']?.total || 0;
+  const saldoDisponivel = saldoAtual || 0;
+
+  const labels = ['Pago', 'Aguardando Pagamento', 'Aguardando Faturamento', 'Saldo Disponível'];
+  const values = [pago, aguardandoPagamento, aguardandoFaturamento, saldoDisponivel];
+  const colors = ['#27AEE5', '#3B82F6', '#0E1F4D', '#7BB600'];
+
+  return { labels, values, colors, saldoTotal };
+});
+
+// Dados para o gráfico de barras horizontais empilhadas
+const horizontalBarChartData = computed(() => {
+  if (!relatorio.value) return null;
+
+  const { saldoAtual, saldoTotal } = relatorio.value;
+  const distribuicao = relatorio.value.distribuicaoPorProjeto;
+  const projetos = Object.keys(distribuicao);
+
+  const valores = [
+    projetos.map((projeto) => distribuicao[projeto]?.pago || 0),
+    projetos.map((projeto) => distribuicao[projeto]?.aguardandoPagamento || 0),
+    projetos.map((projeto) => distribuicao[projeto]?.aguardandoFaturamento || 0),
+    projetos.map((projeto) => {
+      const totalProjeto = distribuicao[projeto]?.total || 0;
+      const saldoProjeto = saldoAtual - totalProjeto;
+      return saldoProjeto > 0 ? saldoProjeto : 0;
+    }),
+  ];
+
+  const labels = ['Pago', 'Aguardando Pagamento', 'Aguardando Faturamento', 'Saldo Disponível'];
+  const cores = ['#27AEE5', '#3B82F6', '#0E1F4D', '#7BB600'];
+
+  return {
+    projetos,
+    valores,
+    labels,
+    cores,
+    saldoTotal
+  };
+});
+
+// Dados para o gráfico de serie historica mensal
+const serieHistoricaMensalData = computed(() => {
+  if (!relatorio.value) return null;
+
+  return {
+    months: relatorio.value.serieHistorica.months,
+    pagamentos: relatorio.value.serieHistorica.pagamentos,
+    valorContrato: relatorio.value.saldoTotal,
+  };
+});
 
 // Fetch Contratos
 const fetchContratos = async () => {
@@ -113,10 +195,13 @@ const fetchProjetos = async () => {
 
 // Fetch Relatório
 const fetchRelatorio = async () => {
-  if (!selectedContratoId.value || !selectedProjeto.value) return;
+  if (!selectedContratoId.value) return;
+
+  const projetosToSend = selectedProjeto.value ? [selectedProjeto.value] : [];
+
   try {
     const response = await api.post(`/contratos/relatorio/${selectedContratoId.value}`, {
-      projetos: [selectedProjeto.value],
+      projetos: projetosToSend
     });
     relatorio.value = response.data;
   } catch (error) {
@@ -127,11 +212,12 @@ const fetchRelatorio = async () => {
 // Inicializa Contratos
 fetchContratos();
 
-watch(
-  () => relatorio.value,
-  (newVal) => {
-    console.log('contrato.contratoItens mudou:', newVal);
-  },
-  { immediate: true }
-);
+// watch(
+//   () => relatorio.value,
+//   (newVal) => {
+//     console.log('', newVal);
+//   },
+//   { immediate: true }
+// );
+
 </script>
