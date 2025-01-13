@@ -21,10 +21,10 @@
             <td class="p-4">{{ item.titulo }}</td>
             <td class="p-4">{{ item.unidadeMedida }}</td>
             <td class="p-4">
-              R$ {{ (Number(item.valorUnitario) * Number(item.saldoQuantidadeContratada)).toFixed(2) }}
+              {{ formatCurrencySemArrendondar(item.valorUnitario * item.saldoQuantidadeContratada) }}
             </td>
             <td class="p-4">
-              R$ {{ Number(item.saldoQuantidadeContratada).toFixed(2) }}
+              {{ formatCurrencySemArrendondar(item.saldoQuantidadeContratada) }}
             </td>
           </tr>
 
@@ -105,7 +105,7 @@
             <td class="p-4">{{ fat.notaFiscal || 'N/A' }}</td>
             <!-- Total calculado -->
             <td class="p-4">
-              R$ {{ calculateFaturamentoTotal(fat).toFixed(2) }}
+              {{ formatCurrencySemArrendondar(calcularSaldoFaturamentoItens(fat.faturamentoItens))}}
             </td>
             <!-- Status (situação) -->
             <td class="p-4">{{ fat.status || '—' }}</td>
@@ -175,8 +175,37 @@ function calculateFaturamentoTotal(faturamento) {
     return accFatur + somaLancamento;
   }, 0);
 }
-</script>
 
-<style scoped>
-/* Exemplo de estilização adicional, se quiser */
-</style>
+const calcularSaldoFaturamentoItens = (faturamento) => {
+  let saldoTotal = 0;
+
+  faturamento.forEach((faturamentoObjeto) => {
+    let lancamentoTemDias = faturamentoObjeto.lancamento.dias
+    faturamentoObjeto.lancamento.lancamentoItens.forEach(lancamentoItem => {
+      if(lancamentoTemDias) {
+        saldoTotal += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamentoTemDias);
+      } else {
+        saldoTotal += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens)
+      }
+    })
+  })
+  return saldoTotal;
+};
+
+const formatCurrencySemArrendondar = (value) => {
+  // Divide o valor em inteiros e decimais
+  const [parteInteira, parteDecimal] = value.toString().split('.');
+
+  // Formata a parte inteira com separador de milhar
+  const inteiroFormatado = parteInteira.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  // Trunca as casas decimais para 2 dígitos, sem arredondar
+  const decimalFormatado = (parteDecimal || '00').substring(0, 2).padEnd(2, '0');
+  // Garante duas casas decimais, preenchendo com zeros quando necessário
+  // const decimalFormatado = (parteDecimal || '00').padEnd(2, '0');
+
+  // Retorna no formato de moeda brasileiro
+  return `R$ ${inteiroFormatado},${decimalFormatado}`;
+};
+
+</script>
