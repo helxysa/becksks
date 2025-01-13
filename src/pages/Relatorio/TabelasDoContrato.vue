@@ -1,119 +1,119 @@
 <template>
-  <div>
+  <div class="flex flex-col gap-12">
     <!-- ITENS DO CONTRATO -->
-    <div class="mb-6">
-      <h2 class="text-xl font-semibold mb-4">Itens do Contrato</h2>
-      <table class="w-full bg-white rounded-lg shadow-md">
-        <thead class="bg-blue-500 text-white">
-          <tr>
-            <th class="px-4 py-2">Nome do Item</th>
-            <th class="px-4 py-2">Unidade</th>
-            <th class="px-4 py-2">Valor Total</th>
-            <th class="px-4 py-2">Saldo Atual</th>
+    <div class="border border-[#3B82F6] rounded-xl p-12">
+      <h2 class="text-2xl font-semibold mb-4">Itens</h2>
+      <table class="w-full">
+        <thead class="bg-[#F5F7FB]">
+          <tr class="text-left">
+            <th class="p-4">Nome do Item</th>
+            <th class="p-4">Unidade</th>
+            <th class="p-4">Valor Total</th>
+            <th class="p-4">Saldo Atual</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="item in contratoItens"
             :key="item.id"
-            class="text-center border-b"
+            class=" border-b"
           >
-            <td class="px-4 py-2">{{ item.titulo }}</td>
-            <td class="px-4 py-2">{{ item.unidadeMedida }}</td>
-            <td class="px-4 py-2">
+            <td class="p-4">{{ item.titulo }}</td>
+            <td class="p-4">{{ item.unidadeMedida }}</td>
+            <td class="p-4">
               R$ {{ (Number(item.valorUnitario) * Number(item.saldoQuantidadeContratada)).toFixed(2) }}
             </td>
-            <td class="px-4 py-2">
+            <td class="p-4">
               R$ {{ Number(item.saldoQuantidadeContratada).toFixed(2) }}
             </td>
           </tr>
 
           <!-- Mensagem se não houver itens -->
           <tr v-if="contratoItens.length === 0">
-            <td colspan="4" class="text-center py-2">Nenhum item encontrado</td>
+            <td colspan="4" class=" py-2">Nenhum item encontrado</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- TABELA MEDIÇÕES (Lançamentos) -->
-    <div class="mb-6">
-      <h2 class="text-xl font-semibold mb-4">Medições</h2>
-      <table class="w-full bg-white rounded-lg shadow-md">
-        <thead class="bg-green-500 text-white">
-          <tr>
-            <th class="px-4 py-2">Data</th>
-            <th class="px-4 py-2">Projeto</th>
-            <th class="px-4 py-2">Unidade</th>
-            <th class="px-4 py-2">Medição (ID)</th>
+    <div class="border border-[#3B82F6] rounded-xl p-12">
+      <h2 class="text-2xl font-semibold mb-4">Medições</h2>
+      <table class="w-full">
+        <thead class="bg-[#F5F7FB]">
+          <tr class="text-left font-thin text-2xl important">
+            <th class="p-4 text-2xl">Data</th>
+            <th class="p-4 text-2xl">Projeto</th>
+            <th class="p-4 text-2xl">Unidade</th>
+            <th class="p-4 text-2xl">Medição (ID)</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="lanc in lancamentos"
             :key="lanc.id"
-            class="text-center border-b"
+            class=" border-b"
           >
             <!-- Data da medição -->
-            <td class="px-4 py-2">{{ formatDate(lanc.dataMedicao) }}</td>
+            <td class="p-4">{{ formatDate(lanc.dataMedicao) }}</td>
             <!-- Projeto(s) -->
-            <td class="px-4 py-2">
+            <td class="p-4">
               {{ lanc.projetos || '—' }}
             </td>
             <!-- Unidade: vou exibir a unidade do primeiro item -->
-            <td class="px-4 py-2">
+            <td class="p-4">
               {{ lanc.lancamentoItens[0]?.unidadeMedida || 'N/A' }}
             </td>
             <!-- Medição (ID do próprio lançamento) -->
-            <td class="px-4 py-2">
+            <td class="p-4">
               {{ lanc.id }}
             </td>
           </tr>
 
           <!-- Mensagem se não houver lancamentos -->
           <tr v-if="lancamentos.length === 0">
-            <td colspan="4" class="text-center py-2">Nenhuma medição encontrada</td>
+            <td colspan="4" class=" py-2">Nenhuma medição encontrada</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- TABELA FATURAMENTOS -->
-    <div class="mb-6">
-      <h2 class="text-xl font-semibold mb-4">Faturamentos</h2>
-      <table class="w-full bg-white rounded-lg shadow-md">
-        <thead class="bg-yellow-500 text-white">
-          <tr>
-            <th class="px-4 py-2">Data</th>
-            <th class="px-4 py-2">Competência</th>
-            <th class="px-4 py-2">Nota Fiscal</th>
-            <th class="px-4 py-2">Total</th>
-            <th class="px-4 py-2">Situação</th>
+    <div class="border border-[#3B82F6] rounded-xl p-12">
+      <h2 class="text-2xl font-semibold mb-4">Faturamentos</h2>
+      <table class="w-full">
+        <thead class="bg-[#F5F7FB]">
+          <tr class="text-left">
+            <th class="p-4 text-2xl">Data</th>
+            <th class="p-4 text-2xl">Competência</th>
+            <th class="p-4 text-2xl">Nota Fiscal</th>
+            <th class="p-4 text-2xl">Total</th>
+            <th class="p-4 text-2xl">Situação</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="fat in faturamentos"
             :key="fat.id"
-            class="text-center border-b"
+            class=" border-b"
           >
             <!-- Data do faturamento -->
-            <td class="px-4 py-2">{{ formatDate(fat.dataFaturamento) }}</td>
+            <td class="p-4">{{ formatDate(fat.dataFaturamento) }}</td>
             <!-- Competência -->
-            <td class="px-4 py-2">{{ fat.competencia || '—' }}</td>
+            <td class="p-4">{{ fat.competencia || '—' }}</td>
             <!-- Nota Fiscal (ou N/A) -->
-            <td class="px-4 py-2">{{ fat.notaFiscal || 'N/A' }}</td>
+            <td class="p-4">{{ fat.notaFiscal || 'N/A' }}</td>
             <!-- Total calculado -->
-            <td class="px-4 py-2">
+            <td class="p-4">
               R$ {{ calculateFaturamentoTotal(fat).toFixed(2) }}
             </td>
             <!-- Status (situação) -->
-            <td class="px-4 py-2">{{ fat.status || '—' }}</td>
+            <td class="p-4">{{ fat.status || '—' }}</td>
           </tr>
 
           <!-- Mensagem se não houver faturamentos -->
           <tr v-if="faturamentos.length === 0">
-            <td colspan="5" class="text-center py-2">Nenhum faturamento encontrado</td>
+            <td colspan="5" class=" py-2">Nenhum faturamento encontrado</td>
           </tr>
         </tbody>
       </table>

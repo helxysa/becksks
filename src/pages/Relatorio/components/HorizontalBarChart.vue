@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[50rem]">
+  <div class="h-fit">
     <canvas ref="canvas"></canvas>
   </div>
 </template>

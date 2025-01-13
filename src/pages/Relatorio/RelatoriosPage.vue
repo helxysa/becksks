@@ -1,105 +1,145 @@
 <template>
-  <div class="p-6 bg-gray-100 min-h-screen">
-    <h1 class="text-2xl font-bold mb-4">Relatório de Contratos</h1>
+  <div class="p-4 border-lg bg-[#F1F8FE] min-h-screen">
+    <div class="bg-white p-12 exclude-from-pdf">
+      <h1 class="text-4xl mb-12">RELATÓRIO</h1>
+      <section class="flex gap-8">
+        <!-- Contrato Input -->
+        <div class="mb-4">
+          <label for="contratoSelect" class="block text-gray-700 font-medium mb-2 text-3xl">Contrato</label>
+          <select
+            id="contratoSelect"
+            v-model="selectedContratoId"
+            @change="fetchProjetos"
+            class="block w-full p-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" disabled>Escolha um contrato</option>
+            <option v-for="contrato in contratos" :key="contrato.id" :value="contrato.id">
+              {{ contrato.nome }}
+            </option>
+          </select>
+        </div>
 
-    <!-- Contrato Input -->
-    <div class="mb-4">
-      <label for="contratoSelect" class="block text-gray-700 font-medium mb-2">Selecione um Contrato:</label>
-      <select
-        id="contratoSelect"
-        v-model="selectedContratoId"
-        @change="fetchProjetos"
-        class="block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="" disabled>Escolha um contrato</option>
-        <option v-for="contrato in contratos" :key="contrato.id" :value="contrato.id">
-          {{ contrato.nome }}
-        </option>
-      </select>
+        <!-- Projeto Input -->
+        <div class="mb-4">
+          <label for="projeto" class="block text-gray-700 font-medium mb-2 text-3xl">Projeto</label>
+          <select
+            id="projeto"
+            v-model="selectedProjeto"
+            :disabled="!projetos.length"
+            class="block w-full p-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
+          >
+            <option value="">Escolha um projeto</option>
+            <option v-for="projeto in projetos" :key="projeto.id" :value="projeto.nome">
+              {{ projeto.nome }}
+            </option>
+          </select>
+        </div>
+      </section>
+      <!-- Botão Filtrar -->
+       <div class="flex justify-end">
+        <button
+          @click="fetchRelatorio"
+          :disabled="!selectedContratoId"
+          class="w-full sm:w-auto bg-blue-500 text-white px-20 py-4 rounded-lg text-3xl  hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-transform ease-in-out transform hover:-translate-y-[2px]"
+        >
+          Filtrar
+        </button>
+      </div>
     </div>
 
-    <!-- Projeto Input -->
-    <div v-if="projetos.length > 0" class="mb-4">
-      <label for="projeto" class="block text-gray-700 font-medium mb-2">Selecione um Projeto:</label>
-      <select
-        id="projeto"
-        v-model="selectedProjeto"
-        class="block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="">Escolha um projeto</option>
-        <option v-for="projeto in projetos" :key="projeto.id" :value="projeto.nome">
-          {{ projeto.nome }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Botão Filtrar -->
-    <button
-      @click="fetchRelatorio"
-      :disabled="!selectedContratoId"
-      class="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-    >
-      Filtrar
-    </button>
+    <div class="bg-white">
+    <!-- Pagina 1 -->
+    <section id="page1">
 
     <!-- Exibição do Relatório -->
-    <div v-if="relatorio" class="mt-6 bg-white p-4 rounded-lg shadow-md">
-      <h2 class="text-xl font-bold mb-4">Relatório</h2>
-      <p class="mb-2"><strong>Saldo Total:</strong> R$ {{ relatorio.saldoTotal.toFixed(2) }}</p>
-      <p class="mb-2"><strong>Saldo Atual:</strong> R$ {{ relatorio.saldoAtual.toFixed(2) }}</p>
-      <p class="mb-4"><strong>Total de Projetos:</strong> {{ relatorio.totalProjetos }}</p>
+    <div v-if="relatorio" class="mt-6 bg-white px-12 pt-12 rounded-lg">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-4xl font-bold text-gray-700">
+          {{ relatorio.contrato.nomeContrato }}
+        </h2>
+        <button
+          @click="generatePDF"
+          class="w-full sm:w-auto bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed exclude-from-pdf"
+        >
+          Baixar Relatório em PDF
+        </button>
+      </div>
 
-      <section>
-        <h3 class="text-lg font-medium mb-2">Distribuição por Projeto:</h3>
-        <ul>
-          <li
-            v-for="(data, projeto) in relatorio.distribuicaoPorProjeto"
-            :key="projeto"
-            class="mb-2"
-          >
-            <strong>{{ projeto }}</strong>:
-            <div class="ml-4">
-              <p>Total: R$ {{ data.total.toFixed(2) }}</p>
-              <p>Pago: R$ {{ data.pago.toFixed(2) }}</p>
-              <p>Aguardando Pagamento: R$ {{ data.aguardandoPagamento.toFixed(2) }}</p>
-              <p>Aguardando Faturamento: R$ {{ data.aguardandoFaturamento.toFixed(2) }}</p>
-            </div>
-          </li>
-        </ul>
-      </section>
+    <!-- Contêiner Principal -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Card 1: Cliente -->
+      <div class="p-4 border border-[#3B82F6] rounded-lg col-span-2">
+        <p class="text-gray-500">Cliente:   {{ relatorio.contrato.nomeCliente }}</p>
+        <p class="text-gray-500 mt-2">Período de vigência: xxxxxxxxx</p>
+        <p class="text-gray-500 mt-2">Total de projetos: {{ relatorio.totalProjetos}}</p>
+      </div>
+
+      <!-- Wrapper para Cards 2 e 3 -->
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Card 2: Valor Total -->
+        <div class="p-4 border border-[#3B82F6] rounded-lg grid place-items-start">
+          <p class="text-gray-500">Valor total</p>
+          <p class="font-medium text-gray-700">
+            R$ {{ relatorio.saldoTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+          </p>
+        </div>
+        <!-- Card 3: Saldo Atual -->
+        <div class="p-4 border border-[#3B82F6] rounded-lg grid place-items-start">
+          <p class="text-gray-500">Saldo Atual</p>
+          <p class="font-medium text-gray-700">
+            R$ {{ relatorio.saldoAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+          </p>
+        </div>
     </div>
+  </div>
+</div>
+
+<div class="px-12 pb-12">
     <!-- Gráficos -->
-    <div v-if="relatorio" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+    <div v-if="relatorio" class="bg-white mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Série Histórica Mensal -->
-      <div class="bg-white p-12 rounded-lg shadow-md">
+      <div class="p-12 border border-[#3B82F6] rounded-xl">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Série Histórica Mensal</h2>
         <SerieHistoricaMensal :data="serieHistoricaMensalData" />
       </div>
 
       <!-- Distribuição de Valores -->
-      <div class="bg-white p-12 rounded-lg shadow-md">
+      <div class="p-12 border border-[#3B82F6] rounded-xl">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Distribuição de Valores</h2>
         <DonutChart :data="chartData" />
       </div>
     </div>
 
+
     <!-- Distribuição por Projeto -->
-    <div v-if="relatorio" class="mt-6 bg-white p-4 rounded-lg shadow-md w-full p-12 ">
+    <div v-if="relatorio" class="mt-6 p-12 bg-white border border-[#3B82F6] rounded-xl">
       <h2 class="text-2xl font-bold mb-12 text-[#63696E]">Distribuição por Projeto</h2>
       <HorizontalBarChart :data="horizontalBarChartData" />
     </div>
+  </div>
 
+  </section>
+
+  <!-- Página 2 -->
+  <section id="page2" class="px-12">
     <TabelasDoContrato :contrato="relatorio.contrato" v-if="relatorio" />
+  </section>
+</div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { api } from "@/services/api";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import logoBase64 from '../../assets/imagens/logoBase64.js'
 import TabelasDoContrato from './TabelasDoContrato.vue'
 import DonutChart from './components/DonutsChart.vue';
 import HorizontalBarChart from './components/HorizontalBarChart.vue';
 import SerieHistoricaMensal from './components/SerieHistoricaMensal.vue';
+
 // Dados do Contrato e Relatório
 const contratos = ref([]);
 const projetos = ref([]);
@@ -209,15 +249,74 @@ const fetchRelatorio = async () => {
   }
 };
 
+const addHeader = (doc, pageNumber) => {
+  const imgWidth = 40; // Largura da imagem
+  const imgHeight = 20; // Altura da imagem
+  doc.addImage(logoBase64, 'PNG', 10, 10, imgWidth, imgHeight); // Adiciona a imagem no topo
+  doc.setFont('Helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('Relatório de Contratos', 50, 20); // Ajuste a posição do texto conforme necessário
+  doc.setFontSize(10);
+  doc.text(`Página ${pageNumber}`, 190, 20, { align: 'right' }); // Ajuste a posição do número da página
+};
+
+// Gerar pdf
+const generatePDF = async () => {
+  const excludeElements = document.querySelectorAll('.exclude-from-pdf');
+  const graficos = document.querySelector('#page1');
+  const tabelas = document.querySelector('#page2');
+  excludeElements.forEach((el) => (el.style.display = 'none'));
+
+  try {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    // Renderiza os gráficos
+    const graficosCanvas = await html2canvas(graficos, {
+      scale: 3,
+      useCORS: true,
+      logging: false,
+      allowTaint: false,
+    });
+
+
+    // Ajuste o DPI temporariamente
+    const originalRatio = window.devicePixelRatio;
+    Object.defineProperty(window, 'devicePixelRatio', {
+      get: () => 3, // Aumente o DPI
+    });
+
+    // Restaura o DPI original
+    Object.defineProperty(window, 'devicePixelRatio', {
+      get: () => originalRatio,
+    });
+
+    const imgWidth = pdf.internal.pageSize.getWidth();
+    const imgHeightGraficos = (graficosCanvas.height * imgWidth) / graficosCanvas.width;
+    pdf.addImage(graficosCanvas.toDataURL('image/png', 1.0), 'PNG', 3, 35, imgWidth - 5, imgHeightGraficos);
+    addHeader(pdf, 1);
+
+    pdf.addPage();
+    // Renderiza as tabelas
+    const tabelasCanvas = await html2canvas(tabelas, { scale: 3, useCORS: true });
+    const imgHeightTabelas = (tabelasCanvas.height * imgWidth) / tabelasCanvas.width;
+    pdf.addImage(tabelasCanvas.toDataURL('image/png', 1.0), 'PNG', 3, 35, imgWidth - 5, imgHeightTabelas);
+    addHeader(pdf, 2);
+
+    // Salva o PDF
+    pdf.save('relatorio.pdf');
+  } catch (error) {
+    console.error('Erro ao gerar PDF:', error);
+  } finally {
+    excludeElements.forEach((el) => (el.style.display = 'block'));
+  }
+};
+
+
 // Inicializa Contratos
 fetchContratos();
-
-// watch(
-//   () => relatorio.value,
-//   (newVal) => {
-//     console.log('', newVal);
-//   },
-//   { immediate: true }
-// );
 
 </script>
