@@ -58,7 +58,7 @@
           {{ relatorio.contrato.nomeContrato }}
         </h2>
         <button
-          @click="generatePDF"
+          @click="downloadPdf"
           class="w-full sm:w-auto bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed exclude-from-pdf"
         >
           Baixar Relatório em PDF
@@ -240,7 +240,7 @@ const fetchRelatorio = async () => {
   const projetosToSend = selectedProjeto.value ? [selectedProjeto.value] : [];
 
   try {
-    const response = await api.post(`/contratos/relatorio/${selectedContratoId.value}`, {
+    const response = await api.post(`/contratos/${selectedContratoId.value}/relatorio`, {
       projetos: projetosToSend
     });
     relatorio.value = response.data;
@@ -312,6 +312,39 @@ const generatePDF = async () => {
     console.error('Erro ao gerar PDF:', error);
   } finally {
     excludeElements.forEach((el) => (el.style.display = 'block'));
+  }
+};
+
+async function urlToBlob(url) {
+  const response = await fetch(url);  // Fazendo a requisição para a URL
+  const blob = await response.blob();  // Convertendo a resposta em Blob
+  const objectURL = URL.createObjectURL(blob);  // Criando um objeto URL a partir do Blob
+  return objectURL;  // Retorna o objeto URL
+}
+
+const downloadPdf = async () => {
+  if (!selectedContratoId.value) {
+    return;
+  }
+
+  try {
+    const response = await api.get(`/contratos/${selectedContratoId.value}/relatorio/pdf`);
+    const fileURL =  await urlToBlob(response.data.url)
+    window.open(fileURL, '_blank');
+    // // 2. Cria um link temporário para forçar o download
+    const link = document.createElement('a');
+    link.href = fileURL;
+    link.setAttribute('download', `relatorio-${selectedContratoId.value}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+
+    // Remove o link temporário
+    document.body.removeChild(link);
+
+    // Revoga a URL temporária para liberar memória
+    URL.revokeObjectURL(fileURL);
+  } catch (error) {
+    console.error('Erro ao fazer download do PDF:', error);
   }
 };
 
