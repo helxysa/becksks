@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 border-lg bg-[#F1F8FE] min-h-screen">
-    <div class="bg-white p-12 exclude-from-pdf">
+    <div class="bg-white p-12 exclude-from-pdf w-full max-w-[1920px] flex flex-col">
       <h1 class="text-4xl mb-12">RELATÓRIO</h1>
       <section class="flex gap-8">
         <!-- Contrato Input -->
@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <div class="bg-white">
+    <div class="bg-white w-full max-w-[1920px] flex flex-col justify-center">
     <!-- Pagina 1 -->
     <section id="page1">
 
@@ -58,7 +58,7 @@
           {{ relatorio.contrato.nomeContrato }}
         </h2>
         <button
-          @click="downloadPdf"
+          @click="generatePDF"
           class="w-full sm:w-auto bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed exclude-from-pdf"
         >
           Baixar Relatório em PDF
@@ -112,7 +112,7 @@
 
 
     <!-- Distribuição por Projeto -->
-    <div v-if="relatorio" class="mt-6 p-12 bg-white border border-[#3B82F6] rounded-xl">
+    <div v-if="relatorio && selectedProjeto === ''" class="mt-6 p-12 bg-white border border-[#3B82F6] rounded-xl">
       <h2 class="text-2xl font-bold mb-12 text-[#63696E]">Distribuição por Projeto</h2>
       <HorizontalBarChart :data="horizontalBarChartData" />
     </div>
@@ -124,7 +124,7 @@
   <section id="page2" class="px-12">
     <TabelasDoContrato :contrato="relatorio.contrato" v-if="relatorio" />
   </section>
-</div>
+    </div>
 
   </div>
 </template>

@@ -8,8 +8,8 @@
           <tr class="text-left">
             <th class="p-4">Nome do Item</th>
             <th class="p-4">Unidade</th>
-            <th class="p-4">Valor Total</th>
-            <th class="p-4">Saldo Atual</th>
+            <th class="p-4">Saldo</th>
+            <th class="p-4">Quantidade restante</th>
           </tr>
         </thead>
         <tbody>
@@ -24,7 +24,7 @@
               {{ formatCurrencySemArrendondar(item.valorUnitario * item.saldoQuantidadeContratada) }}
             </td>
             <td class="p-4">
-              {{ formatCurrencySemArrendondar(item.saldoQuantidadeContratada) }}
+              {{ calcularItensRestante(item.id, item.saldoQuantidadeContratada).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
             </td>
           </tr>
 
@@ -45,7 +45,7 @@
             <th class="p-4 text-2xl">Data</th>
             <th class="p-4 text-2xl">Projeto</th>
             <th class="p-4 text-2xl">Unidade</th>
-            <th class="p-4 text-2xl">Medição (ID)</th>
+            <th class="p-4 text-2xl">Medição</th>
           </tr>
         </thead>
         <tbody>
@@ -55,7 +55,7 @@
             class=" border-b"
           >
             <!-- Data da medição -->
-            <td class="p-4">{{ formatDate(lanc.dataMedicao) }}</td>
+            <td class="p-4">{{ formatDatePTBR(lanc.dataMedicao) }}</td>
             <!-- Projeto(s) -->
             <td class="p-4">
               {{ lanc.projetos || '—' }}
@@ -64,9 +64,9 @@
             <td class="p-4">
               {{ lanc.lancamentoItens[0]?.unidadeMedida || 'N/A' }}
             </td>
-            <!-- Medição (ID do próprio lançamento) -->
+            <!-- Medição -->
             <td class="p-4">
-              {{ lanc.id }}
+              {{ lanc.lancamentoItens.reduce((total, subitem) => total + parseFloat(subitem.quantidadeItens), 0).toFixed(3) }}
             </td>
           </tr>
 
@@ -98,9 +98,9 @@
             class=" border-b"
           >
             <!-- Data do faturamento -->
-            <td class="p-4">{{ formatDate(fat.dataFaturamento) }}</td>
+            <td class="p-4">{{ formatDatePTBR(fat.dataFaturamento) }} </td>
             <!-- Competência -->
-            <td class="p-4">{{ fat.competencia || '—' }}</td>
+            <td class="p-4">{{ formataMesAno(fat.competencia) }}</td>
             <!-- Nota Fiscal (ou N/A) -->
             <td class="p-4">{{ fat.notaFiscal || 'N/A' }}</td>
             <!-- Total calculado -->
@@ -124,6 +124,8 @@
 
 <script setup>
 import { computed } from 'vue';
+import { format, formatISO, startOfDay, parseISO } from "date-fns";
+import { ptBR } from 'date-fns/locale';
 
 // 1) Recebe a prop "contrato"
 const { contrato } = defineProps({
@@ -148,12 +150,13 @@ const faturamentos = computed(() => {
   return contrato?.faturamentos || [];
 });
 
-// Função para formatar data (exibir no padrão local, por exemplo)
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString();
-}
+const formatDatePTBR = (isoString) => {
+  const [datePart] = isoString.split("T");
+
+  const [ano, mes, dia] = datePart.split("-");
+
+  return `${dia}/${mes}/${ano}`;
+};
 
 // Função para calcular o total de um faturamento
 // Exemplo: somar todos os lancamentos -> todos os lancamentoItens -> valorUnitario * quantidadeItens
@@ -192,6 +195,30 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
   return saldoTotal;
 };
 
+const calcularItensRestante = (idItem, quantidadeContratada) => {
+  let quantidadeUtilizada = 0;
+  let quantidadeRestante = 0;
+  console.log('props', contrato)
+  contrato.lancamentos.forEach((lancamento) => {
+    if (
+      lancamento.status === "Autorizada" ||
+      lancamento.status === "Não Autorizada" ||
+      lancamento.status === "Cancelada" ||
+      lancamento.status === "Não Iniciada" ||
+      lancamento.status === "Em Andamento"
+    ) {
+      return;
+    }
+    lancamento.lancamentoItens.forEach((lancamentoItem) => {
+      if (idItem === lancamentoItem.contratoItemId) {
+        quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
+      }
+    });
+  });
+  quantidadeRestante = parseFloat((quantidadeContratada - quantidadeUtilizada).toFixed(3));
+  return quantidadeRestante;
+};
+
 const formatCurrencySemArrendondar = (value) => {
   // Divide o valor em inteiros e decimais
   const [parteInteira, parteDecimal] = value.toString().split('.');
@@ -207,5 +234,17 @@ const formatCurrencySemArrendondar = (value) => {
   // Retorna no formato de moeda brasileiro
   return `R$ ${inteiroFormatado},${decimalFormatado}`;
 };
+
+const formataMesAno = (competencia, tipo = "caixaAlta") => {
+if (!competencia) return '';
+  try {
+    const date = parseISO(competencia);
+    console.log('date', date)
+      return format(date, "MMMM yyyy", { locale: ptBR }).toUpperCase();
+  } catch (error) {
+    console.error('Erro ao formatar competência:', error);
+    return competencia;
+  }
+}
 
 </script>
