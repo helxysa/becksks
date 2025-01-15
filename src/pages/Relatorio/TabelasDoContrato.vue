@@ -198,7 +198,6 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
 const calcularItensRestante = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0;
   let quantidadeRestante = 0;
-  console.log('props', contrato)
   contrato.lancamentos.forEach((lancamento) => {
     if (
       lancamento.status === "Autorizada" ||

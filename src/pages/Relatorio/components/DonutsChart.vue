@@ -1,6 +1,6 @@
 <template>
-  <div class="h-fit max-h-[40rem] flex items-center justify-center">
-    <canvas ref="canvas" class="w-[350px] h-[350px]"></canvas>
+  <div class="h-[90%] flex items-center justify-center">
+    <canvas ref="canvas" class="w-[300px] h-[300px]"></canvas>
   </div>
 </template>
 
@@ -65,7 +65,14 @@ const renderChart = () => {
           },
         },
         legend: {
-          position: 'top',
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12,
+              family: 'Arial, sans-serif',
+            },
+          },
         },
       },
     },

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[40rem] flex items-center justify-center">
+  <div class="h-[90%] flex items-center justify-center">
     <canvas ref="canvas"></canvas>
   </div>
 </template>

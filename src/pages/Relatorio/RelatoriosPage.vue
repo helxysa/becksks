@@ -58,7 +58,7 @@
           {{ relatorio.contrato.nomeContrato }}
         </h2>
         <button
-          @click="generatePDF"
+          @click="downloadPdf"
           class="w-full sm:w-auto bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed exclude-from-pdf"
         >
           Baixar Relatório em PDF
@@ -94,17 +94,20 @@
   </div>
 </div>
 
-<div class="px-12 pb-12">
+<div v-if="loading" class="flex justify-center items-center h-[400px]">
+  <p class="text-lg text-gray-500">Carregando gráficos...</p>
+</div>
+<div v-else class="px-12 pb-12" id="graph">
     <!-- Gráficos -->
     <div v-if="relatorio" class="bg-white mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Série Histórica Mensal -->
-      <div class="p-12 border border-[#3B82F6] rounded-xl">
+      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': !noBorder }">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Série Histórica Mensal</h2>
         <SerieHistoricaMensal :data="serieHistoricaMensalData" />
       </div>
 
       <!-- Distribuição de Valores -->
-      <div class="p-12 border border-[#3B82F6] rounded-xl">
+      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': !noBorder }">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Distribuição de Valores</h2>
         <DonutChart :data="chartData" />
       </div>
@@ -112,7 +115,11 @@
 
 
     <!-- Distribuição por Projeto -->
-    <div v-if="relatorio && selectedProjeto === ''" class="mt-6 p-12 bg-white border border-[#3B82F6] rounded-xl">
+    <div
+      v-if="relatorio && selectedProjeto === ''"
+      class="mt-6 p-12 bg-white rounded-xl w-full"
+      :class="{ 'border border-[#3B82F6]': !noBorder }"
+    >
       <h2 class="text-2xl font-bold mb-12 text-[#63696E]">Distribuição por Projeto</h2>
       <HorizontalBarChart :data="horizontalBarChartData" />
     </div>
@@ -146,7 +153,8 @@ const projetos = ref([]);
 const selectedContratoId = ref('');
 const selectedProjeto = ref('');
 const relatorio = ref(null);
-
+const noBorder = ref(false);
+const loading = ref(false);
 // Dados para o gráfico donuts
 const chartData = computed(() => {
   if (!relatorio.value) return null;
@@ -238,7 +246,7 @@ const fetchRelatorio = async () => {
   if (!selectedContratoId.value) return;
 
   const projetosToSend = selectedProjeto.value ? [selectedProjeto.value] : [];
-
+  relatorio.value = null;
   try {
     const response = await api.post(`/contratos/${selectedContratoId.value}/relatorio`, {
       projetos: projetosToSend
@@ -324,32 +332,79 @@ async function urlToBlob(url) {
 
 const downloadPdf = async () => {
   if (!selectedContratoId.value) {
+    console.error('Nenhum contrato selecionado!');
     return;
   }
 
   try {
-    const response = await api.get(`/contratos/${selectedContratoId.value}/relatorio/pdf`);
-    const fileURL =  await urlToBlob(response.data.url)
-    window.open(fileURL, '_blank');
-    // // 2. Cria um link temporário para forçar o download
-    const link = document.createElement('a');
-    link.href = fileURL;
-    link.setAttribute('download', `relatorio-${selectedContratoId.value}.pdf`);
-    document.body.appendChild(link);
-    link.click();
+    // Captura os gráficos como imagens base64
+    const graficos = document.querySelector('#graph');
 
-    // Remove o link temporário
-    document.body.removeChild(link);
+    if (!graficos) {
+      console.error('Elementos de gráficos não encontrados.');
+      return;
+    }
+    noBorder.value = true;
 
-    // Revoga a URL temporária para liberar memória
-    URL.revokeObjectURL(fileURL);
+    // Aplica uma classe temporária para ajustar o CSS
+    const originalClass = graficos.className; // Salva a classe original
+    graficos.className += ' print-resolution'; // Adiciona uma classe temporária
+
+    // Aguarda um ciclo de renderização para aplicar o novo estilo
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    loading.value = true;
+
+    const graficosCanvas = await html2canvas(graficos, {
+      scale: 2,
+      useCORS: true,
+    });
+
+    // Restaura a classe original
+    graficos.className = originalClass;
+
+    // Converte os gráficos para Base64 e faz o download
+    const graficoBase64 = graficosCanvas.toDataURL('image/png', 1.0);
+
+    // Envia os gráficos ao back-end junto com a requisição para gerar o PDF
+    const response = await api.post(`/contratos/${selectedContratoId.value}/relatorio/pdf`, {
+      projetos: selectedProjeto.value ? [selectedProjeto.value] : [],
+      grafico: graficoBase64,
+    });
+    noBorder.value = false;
+    loading.value = false;
+    if (response.data.url) {
+      const fileURL =  await urlToBlob(response.data.url)
+      window.open(fileURL, '_blank');
+      // Faz o download do PDF gerado
+      // const link = document.createElement('a');
+      // link.href = response.data.url;
+      // link.setAttribute('download', `relatorio-${selectedContratoId.value}.pdf`);
+      // document.body.appendChild(link);
+      // link.click();
+      // document.body.removeChild(link);
+    } else {
+      console.error('Erro ao gerar o PDF no back-end.');
+    }
   } catch (error) {
-    console.error('Erro ao fazer download do PDF:', error);
+    console.error('Erro ao baixar o PDF:', error);
   }
 };
-
 
 // Inicializa Contratos
 fetchContratos();
 
 </script>
+
+
+<style>
+.print-resolution {
+  width: 1218px !important;
+  height: auto !important;
+  display: block;
+}
+
+.print-resolution canvas {
+  width: 100% !important;
+  height: auto !important;
+}
+</style>

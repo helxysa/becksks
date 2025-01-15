@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="max-h-[90%] w-full flex items-center justify-center">
     <canvas ref="canvas"></canvas>
   </div>
 </template>
@@ -42,8 +42,12 @@ watch(
   }
 );
 
-const renderChart = () => {
+const renderChart = (customOptions = {}) => {
   const { projetos, valores, labels, cores, saldoTotal } = props.data;
+
+  if (chart.value) {
+    chart.value.destroy(); // Destruir gráfico anterior
+  }
 
   chart.value = new Chart(canvas.value, {
     type: 'bar',
@@ -59,6 +63,7 @@ const renderChart = () => {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       indexAxis: 'y',
       scales: {
         x: {
@@ -89,6 +94,7 @@ const renderChart = () => {
           position: 'bottom',
         },
       },
+      ...customOptions,
     },
   });
 };
