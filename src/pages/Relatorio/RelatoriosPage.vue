@@ -251,8 +251,8 @@ const serieHistoricaMensalData = computed(() => {
 // Fetch Contratos
 const fetchContratos = async () => {
   try {
-    const response = await api.get('/contratos');
-    contratos.value = response.data.map((contrato) => ({
+    const response = await api.get('/contratos-e-termos');
+    contratos.value = response.data.data.map((contrato) => ({
       id: contrato.id,
       nome: contrato.nomeContrato,
     }));
