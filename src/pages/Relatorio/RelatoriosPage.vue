@@ -409,7 +409,7 @@ const downloadPdf = async () => {
     // Envia os gráficos ao back-end junto com a requisição para gerar o PDF
     const response = await api.post(`/contratos/${selectedContratoId.value}/relatorio/pdf`, {
       projetos: selectedProjeto.value ? [selectedProjeto.value] : [],
-      grafico: graficoBase64,
+      grafico: null,
     });
     console.log('rep', response.data)
     noBorder.value = false;
