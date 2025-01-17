@@ -417,12 +417,12 @@ const downloadPdf = async () => {
       const fileURL =  await urlToBlob(response.data.url)
       window.open(fileURL, '_blank');
       // Faz o download do PDF gerado
-      // const link = document.createElement('a');
-      // link.href = response.data.url;
-      // link.setAttribute('download', `relatorio-${selectedContratoId.value}.pdf`);
-      // document.body.appendChild(link);
-      // link.click();
-      // document.body.removeChild(link);
+      const link = document.createElement('a');
+      link.href = response.data.url;
+      link.setAttribute('download', `relatorio-${selectedContratoId.value}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } else {
       console.error('Erro ao gerar o PDF no back-end.');
     }
