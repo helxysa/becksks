@@ -411,7 +411,6 @@ const downloadPdf = async () => {
       projetos: selectedProjeto.value ? [selectedProjeto.value] : [],
       grafico: null,
     });
-    console.log('rep', response.data)
     noBorder.value = false;
     loading.value = false;
     if (response.data.url) {
