@@ -2,7 +2,7 @@
   <div class="p-4 border-lg bg-[#F1F8FE] min-h-screen">
     <div class="bg-white p-12 exclude-from-pdf w-full max-w-[1920px] flex flex-col">
       <h1 class="text-4xl mb-12">RELATÓRIO</h1>
-      <section class="flex gap-8">
+      <section class="flex gap-8 items-center">
         <!-- Contrato Input -->
         <div class="mb-4">
           <label for="contratoSelect" class="block text-gray-700 font-medium mb-2 text-3xl">Contrato</label>
@@ -36,9 +36,10 @@
         </div>
 
            <!-- Data Início -->
-           <div class="mb-4">
+          <div class="mb-4">
             <label for="dataInicio" class="block text-gray-700 font-medium mb-2 text-3xl">Data Início</label>
             <input
+              :disabled="!selectedContratoId"
               id="dataInicio"
               type="date"
               v-model="dataInicio"
@@ -50,12 +51,17 @@
           <div class="mb-4">
             <label for="dataFim" class="block text-gray-700 font-medium mb-2 text-3xl">Data Fim</label>
             <input
+             :disabled="!dataInicio"
               id="dataFim"
               type="date"
               v-model="dataFim"
               class="block h-[52px] w-full p-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
             />
           </div>
+
+          <span @click="resetFilters" class="mt-6 p-2 rounded-full cursor-pointer transition-transform duration-75 ease-in-out active:scale-125 active:-rotate-180">
+            <Icon icon="system-uicons:reset" width="2.5rem" class="text-blue-800" />
+          </span>
       </section>
       <!-- Botão Filtrar -->
        <div class="flex justify-end">
@@ -161,6 +167,8 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
 import { api } from "@/services/api";
+import { Icon } from "@iconify/vue";
+import { toast } from "vue3-toastify";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import logoBase64 from '../../assets/imagens/logoBase64.js'
@@ -270,6 +278,11 @@ const fetchProjetos = async () => {
 // Fetch Relatório
 const fetchRelatorio = async () => {
   if (!selectedContratoId.value) return;
+
+  if (dataInicio.value && !dataFim.value) {
+    toast.error('Selecione o inicio e o fim do período.');
+    return;
+  }
 
   const projetosToSend = selectedProjeto.value ? [selectedProjeto.value] : [];
   relatorio.value = null;
@@ -416,6 +429,15 @@ const downloadPdf = async () => {
   } catch (error) {
     console.error('Erro ao baixar o PDF:', error);
   }
+};
+
+const resetFilters = () => {
+  selectedContratoId.value = '';
+  selectedProjeto.value = '';
+  dataInicio.value = '';
+  dataFim.value = '';
+  projetos.value = [];
+  relatorio.value = null;
 };
 
 // Inicializa Contratos
