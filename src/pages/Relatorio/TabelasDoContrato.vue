@@ -46,6 +46,7 @@
             <th class="p-4 text-2xl">Projeto</th>
             <th class="p-4 text-2xl">Unidade</th>
             <th class="p-4 text-2xl">Medição</th>
+            <th class="p-4 text-2xl">Tipo</th>
           </tr>
         </thead>
         <tbody>
@@ -68,6 +69,7 @@
             <td class="p-4">
               {{ lanc.lancamentoItens.reduce((total, subitem) => total + parseFloat(subitem.quantidadeItens), 0).toFixed(3) }}
             </td>
+            <td>{{ lanc.tipoMedicao }}</td>
           </tr>
 
           <!-- Mensagem se não houver lancamentos -->
