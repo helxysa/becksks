@@ -200,6 +200,12 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
 const calcularItensRestante = (idItem, quantidadeContratada) => {
   let quantidadeUtilizada = 0;
   let quantidadeRestante = 0;
+
+  if (!contrato?.lancamentos || !Array.isArray(contrato.lancamentos)) {
+    console.error("Erro: contrato.lancamentos não está definido ou não é um array.");
+    return quantidadeContratada; // Retorna a quantidade contratada como o restante
+  }
+
   contrato.lancamentos.forEach((lancamento) => {
     if (
       lancamento.status === "Autorizada" ||
@@ -210,6 +216,12 @@ const calcularItensRestante = (idItem, quantidadeContratada) => {
     ) {
       return;
     }
+
+    if (!lancamento?.lancamentoItens || !Array.isArray(lancamento.lancamentoItens)) {
+      console.log(`Lancamento ${lancamento.id} não possui lancamentoItens ou não é um array.`);
+      return;
+    }
+
     lancamento.lancamentoItens.forEach((lancamentoItem) => {
       if (idItem === lancamentoItem.contratoItemId) {
         quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
