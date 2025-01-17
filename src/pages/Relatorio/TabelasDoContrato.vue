@@ -183,8 +183,8 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
   let saldoTotal = 0;
 
   faturamento.forEach((faturamentoObjeto) => {
-    let lancamentoTemDias = faturamentoObjeto.lancamento.dias
-    faturamentoObjeto.lancamento.lancamentoItens.forEach(lancamentoItem => {
+    let lancamentoTemDias = faturamentoObjeto?.lancamento?.dias
+    faturamentoObjeto?.lancamento?.lancamentoItens?.forEach(lancamentoItem => {
       if(lancamentoTemDias) {
         saldoTotal += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamentoTemDias);
       } else {

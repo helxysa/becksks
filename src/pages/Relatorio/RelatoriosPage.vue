@@ -34,6 +34,28 @@
             </option>
           </select>
         </div>
+
+           <!-- Data Início -->
+           <div class="mb-4">
+            <label for="dataInicio" class="block text-gray-700 font-medium mb-2 text-3xl">Data Início</label>
+            <input
+              id="dataInicio"
+              type="date"
+              v-model="dataInicio"
+              class="block h-[52px] w-full p-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
+            />
+          </div>
+
+          <!-- Data Fim -->
+          <div class="mb-4">
+            <label for="dataFim" class="block text-gray-700 font-medium mb-2 text-3xl">Data Fim</label>
+            <input
+              id="dataFim"
+              type="date"
+              v-model="dataFim"
+              class="block h-[52px] w-full p-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:cursor-not-allowed"
+            />
+          </div>
       </section>
       <!-- Botão Filtrar -->
        <div class="flex justify-end">
@@ -152,6 +174,8 @@ const contratos = ref([]);
 const projetos = ref([]);
 const selectedContratoId = ref('');
 const selectedProjeto = ref('');
+const dataInicio = ref('');
+const dataFim = ref('');
 const relatorio = ref(null);
 const noBorder = ref(false);
 const loading = ref(false);
@@ -205,7 +229,9 @@ const horizontalBarChartData = computed(() => {
 
 // Dados para o gráfico de serie historica mensal
 const serieHistoricaMensalData = computed(() => {
-  if (!relatorio.value) return null;
+  if (!relatorio.value || !relatorio.value.serieHistorica) {
+    return { months: [], pagamentos: [], valorContrato: 0 }; // Valores padrão
+  }
 
   return {
     months: relatorio.value.serieHistorica.months,
@@ -249,7 +275,9 @@ const fetchRelatorio = async () => {
   relatorio.value = null;
   try {
     const response = await api.post(`/contratos/${selectedContratoId.value}/relatorio`, {
-      projetos: projetosToSend
+      projetos: projetosToSend,
+      dataInicio: dataInicio.value || null,
+      dataFim: dataFim.value || null,
     });
     relatorio.value = response.data;
   } catch (error) {
