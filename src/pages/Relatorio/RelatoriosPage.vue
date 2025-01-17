@@ -165,7 +165,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { api } from "@/services/api";
 import { Icon } from "@iconify/vue";
 import { toast } from "vue3-toastify";
@@ -440,8 +440,9 @@ const resetFilters = () => {
   relatorio.value = null;
 };
 
-// Inicializa Contratos
-fetchContratos();
+onMounted(() => {
+  fetchContratos();
+})
 
 </script>
 
