@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 // import Register from "@/pages/Register.vue";
 const DashboardPage = () => import("../pages/DashboardPage/DashboardPage.vue");
 const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
-const RelatorioPage = () => import("../pages/Relatorio/RelatoriosPage.vue");
+// const RelatorioPage = () => import("../pages/Relatorio/RelatoriosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
 const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue");
 const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
@@ -89,12 +89,12 @@ const routes = [
     component: ViewTermoAditivoPage,
     meta: { requiresAuth: true },
   },
-  {
-    path: "/relatorio",
-    name: "Relatório",
-    component: RelatorioPage,
-    meta: { requiresAuth: true },
-  },
+  // {
+  //   path: "/relatorio",
+  //   name: "Relatório",
+  //   component: RelatorioPage,
+  //   meta: { requiresAuth: true },
+  // },
   {
     path: "/perfis",
     name: "Perfis",
