@@ -129,23 +129,22 @@
     <!-- Gráficos -->
     <div v-if="relatorio" class="bg-white mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Série Histórica Mensal -->
-      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': noBorder }">
+      <div class="p-12 rounded-xl max-h-[400px] border border-[#3B82F6]" :class="{ 'border border-[#3B82F6]': noBorder }">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Série Histórica Mensal</h2>
         <SerieHistoricaMensal :data="serieHistoricaMensalData" />
       </div>
 
       <!-- Distribuição de Valores -->
-      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': noBorder }">
+      <div class="p-12 rounded-xl max-h-[400px] border border-[#3B82F6]" :class="{ 'border border-[#3B82F6]': noBorder }">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Distribuição de Valores</h2>
         <DonutChart :data="chartData" />
       </div>
     </div>
 
-
     <!-- Distribuição por Projeto -->
     <div
       v-if="relatorio && selectedProjeto === ''"
-      class="mt-6 p-12 bg-white rounded-xl w-full"
+      class="mt-6 p-12 bg-white rounded-xl w-full border border-[#3B82F6]"
       :class="{ 'border border-[#3B82F6]': noBorder }"
     >
       <h2 class="text-2xl font-bold mb-12 text-[#63696E]">Distribuição por Projeto</h2>
@@ -284,6 +283,8 @@ const fetchRelatorio = async () => {
     return;
   }
 
+  loading.value = true;
+
   const projetosToSend = selectedProjeto.value ? [selectedProjeto.value] : [];
   relatorio.value = null;
   try {
@@ -293,6 +294,8 @@ const fetchRelatorio = async () => {
       dataFim: dataFim.value || null,
     });
     relatorio.value = response.data;
+    loading.value = false;
+
   } catch (error) {
     console.error('Erro ao buscar relatório:', error);
   }
@@ -396,7 +399,7 @@ const downloadPdf = async () => {
     loading.value = true;
 
     const graficosCanvas = await html2canvas(graficos, {
-      scale: 2,
+      scale: 3,
       useCORS: true,
     });
 

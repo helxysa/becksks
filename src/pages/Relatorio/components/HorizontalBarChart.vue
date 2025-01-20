@@ -1,5 +1,5 @@
 <template>
-  <div class="max-h-[90%] w-full flex items-center justify-center">
+  <div class="w-full flex items-center justify-center">
     <canvas ref="canvas"></canvas>
   </div>
 </template>
@@ -58,7 +58,7 @@ const renderChart = (customOptions = {}) => {
         data,
         backgroundColor: cores[index],
         borderWidth: 1,
-        barPercentage: 0.2,
+        barPercentage: 0.5,
       })),
     },
     options: {
