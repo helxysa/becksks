@@ -47,12 +47,12 @@ const routes = [
     icon: "eos-icons:project",
     permission: { name: "contratos", action: "Visualizar" },
   },
-  // {
-  //   path: "/relatorio",
-  //   label: "Relatório",
-  //   icon: "eos-icons:project",
-  //   permission: { name: "contratos", action: "Visualizar" },
-  // },
+  {
+    path: "/relatorio",
+    label: "Relatório",
+    icon: "eos-icons:project",
+    permission: { name: "contratos", action: "Visualizar" },
+  },
   {
     path: "/perfis",
     label: "Perfis",

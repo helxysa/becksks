@@ -129,13 +129,13 @@
     <!-- Gráficos -->
     <div v-if="relatorio" class="bg-white mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Série Histórica Mensal -->
-      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': !noBorder }">
+      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': noBorder }">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Série Histórica Mensal</h2>
         <SerieHistoricaMensal :data="serieHistoricaMensalData" />
       </div>
 
       <!-- Distribuição de Valores -->
-      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': !noBorder }">
+      <div class="p-12 rounded-xl max-h-[400px]" :class="{ 'border border-[#3B82F6]': noBorder }">
         <h2 class="text-2xl font-bold mb-8 text-[#63696E]">Distribuição de Valores</h2>
         <DonutChart :data="chartData" />
       </div>
@@ -146,7 +146,7 @@
     <div
       v-if="relatorio && selectedProjeto === ''"
       class="mt-6 p-12 bg-white rounded-xl w-full"
-      :class="{ 'border border-[#3B82F6]': !noBorder }"
+      :class="{ 'border border-[#3B82F6]': noBorder }"
     >
       <h2 class="text-2xl font-bold mb-12 text-[#63696E]">Distribuição por Projeto</h2>
       <HorizontalBarChart :data="horizontalBarChartData" />
