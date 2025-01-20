@@ -895,7 +895,7 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="(lancamento, lIndex) in contrato.lancamentos.filter((l) => pedidosFaturamento.includes(l.id))" :key="lancamento.id">
+            <template v-for="(lancamento, lIndex) in medicaoItemData.filter((l) => pedidosFaturamento.includes(l.id))" :key="lancamento.id">
             <tr class="h-24 text-center transition">
               <td class="px-4">{{ lancamento.id }}</td>
               <td>{{ lancamento.projetos }}</td>
@@ -905,7 +905,7 @@
                   v-model="lancamento.competencia"
                   type="month"
                   placeholder="Informe a competência"
-                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                  class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center uppercase"
                 />
               </td>
               <td>{{ lancamento.lancamentoItens[0].titulo }}</td>
@@ -1045,7 +1045,7 @@
               :class="{ 'bg-white border-none': isFaturamentoViewModal }"
               v-model="editingFaturamento.competencia"
               placeholder="Informe a competência"
-              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+              class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14 uppercase"
             />
           </div>
           <div class="gap-4 flex items-center justify-between">
@@ -1089,7 +1089,7 @@
                       v-model="lancamento.competencia"
                       type="month"
                       placeholder="Informe a competência"
-                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center"
+                      class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center uppercase"
                     />
                   </td>
                   <td v-else>{{ formataMesAno(lancamento.competencia) }}</td>
@@ -1276,27 +1276,12 @@
           </div>
         </section>
         <div class="mt-8">
-          <div class="flex justify-end w-full gap-2">
-            <span
-              v-if="hasConversion"
-              @click="cancelConversion"
-              class="text-center px-4 py-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition w-40 bg-red-500 hover:bg-red-600 cursor-pointer"
-            >
-            Cancelar Conversão
-          </span>
-            <span
-              @click="openConverterItemModal"
-              class="text-center px-4 py-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition w-40 bg-green-500 hover:bg-green-600 cursor-pointer"
-            >
-            + Converter item
-          </span>
-        </div>
           <table
             class="table-auto border border-slate-200 rounded-2xl w-full mt-12"
           >
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
-                <th class="text-xl">#</th>
+                <th class="text-xl pl-6">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
                 <th class="text-xl">Quantidade contratada</th>
@@ -1311,7 +1296,7 @@
                 v-for="item in medicaoData.itens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
+                <td class="text-2xl pl-6">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <td>
@@ -1352,6 +1337,24 @@
               </tr>
             </tbody>
           </table>
+          <div class="flex justify-end w-full gap-2 mt-12">
+          <button
+            type="button"
+            v-if="hasConversion"
+            @click="cancelConversion"
+            class="text-center p-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition bg-red-500 hover:bg-red-600 cursor-pointer"
+          >
+            Cancelar Conversão
+          </button>
+          <button
+            type="button"
+            :disabled="!canConvertItem"
+            @click="openConverterItemModal"
+            class="text-center p-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition bg-green-500 hover:bg-green-600 cursor-pointer"
+          >
+            + Converter item
+          </button>
+        </div>
           <div>
             <AnexoUpload ref="anexoUploadRef" :resourceId="medicaoId" variant="medicao" :localAnexos="medicaoLocalAnexos" />
           </div>
@@ -1504,7 +1507,7 @@
           <table class="table-auto border border-slate-200 rounded-2xl w-full mt-12">
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
-                <th class="text-xl">#</th>
+                <th class="text-xl pl-6">#</th>
                 <th class="text-xl">Item</th>
                 <th class="text-xl">U.M (Unidade Medida)</th>
                 <th class="text-xl">Quantidade contratada</th>
@@ -1519,7 +1522,7 @@
                 v-for="item in editingLancamento.lancamentoItens"
                 :key="item.id"
               >
-                <td class="text-2xl">{{ item.contagem_dinamica }}</td>
+                <td class="text-2xl pl-6">{{ item.contagem_dinamica }}</td>
                 <td class="text-2xl">{{ item.titulo }}</td>
                 <td class="text-2xl">{{ item.unidadeMedida }}</td>
                 <td>
@@ -1601,25 +1604,39 @@
    </div>
 
    <form @submit.prevent="confirmarConversao" class="space-y-6">
-    <div class="flex flex-wrap gap-6 items-center">
-      <section class="flex flex-col w-full md:w-[48%] space-y-2">
-        <label class="font-medium text-2xl">Item atual:</label>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <section class="flex flex-col md:col-span-5 space-y-2">
+        <label class="font-medium text-2xl">Item Atual:</label>
         <select
           v-model="itemAtual"
           disabled
           class="focus:border-black border-2 focus:border-4 focus:outline-none px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem]"
+          :title="`${itemAtual?.titulo} (${itemAtual?.unidadeMedida})`"
         >
-          <option v-if="itemAtual" :value="itemAtual">
-            {{ itemAtual?.titulo }}
+          <option v-if="itemAtual" :value="itemAtual" :title="`${itemAtual.titulo} (${itemAtual.unidadeMedida})`" class="overflow-hidden text-ellipsis whitespace-nowrap w-40">
+            {{ itemAtual?.titulo }} ({{ itemAtual?.unidadeMedida }})
           </option>
         </select>
       </section>
 
-      <section class="flex flex-col w-full md:w-[48%] space-y-2">
-        <label class="font-medium text-2xl">Quantidade</label>
+      <section class="flex flex-col md:col-span-2 space-y-2">
+        <label class="font-medium text-2xl">Unidade:</label>
+        <input
+          type="text"
+          :value="itemAtual?.unidadeMedida"
+          :title="itemAtual?.unidadeMedida"
+          disabled
+          class="border-2 text-center px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem] bg-gray-100 text-gray-700"
+          readonly
+        />
+      </section>
+
+      <section class="flex flex-col md:col-span-5 space-y-2">
+        <label class="font-medium text-2xl">Quantidade Excedida:</label>
         <span>
           <money3
             v-model="itemAtual.quantidadeItens"
+            :title="itemAtual.quantidadeItens"
             type="number"
             disabled
             class="border-2 text-center w-full py-4 rounded-lg h-[4.5rem]"
@@ -1630,8 +1647,8 @@
       </section>
     </div>
 
-    <div class="flex flex-wrap gap-6 items-center">
-      <section class="flex flex-col w-full md:w-[48%] space-y-2">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <section class="flex flex-col md:col-span-5 space-y-2">
         <label class="font-medium text-2xl">Item Novo:</label>
         <select
           v-model="itemNovo"
@@ -1644,23 +1661,36 @@
             calcular()
           }"
           class="focus:border-black focus:border-[3px] border-2 focus:outline-8 px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem]"
+          :title="`${itemNovo?.titulo} (${itemNovo?.unidadeMedida})`"
         >
           <option disabled hidden value="">Selecione o item para converter</option>
           <option
             v-for="item in itensParaConverter"
             :value="item"
             :key="item.id"
+            :title="`${item.titulo} (${item.unidadeMedida})`"
           >
-            {{ item.titulo }}
+            {{ item.titulo }} ({{item.unidadeMedida}})
           </option>
         </select>
       </section>
 
-      <section class="flex flex-col w-full md:w-[48%] space-y-2">
-        <label class="font-medium text-2xl">Quantidade</label>
+      <section class="flex flex-col md:col-span-2 space-y-2">
+        <label class="font-medium text-2xl">Unidade:</label>
+        <input
+          v-model="itemNovo.unidadeMedida"
+          :title="itemNovo.unidadeMedida"
+          disabled
+          class="focus:border-black border-2 focus:border-4 focus:outline-none px-4 py-4 rounded-lg w-full border-gray-300 h-[4.5rem] text-center"
+        />
+      </section>
+
+      <section class="flex flex-col md:col-span-5 space-y-2">
+        <label class="font-medium text-2xl">Quantidade Convertida:</label>
         <span>
           <money3
             v-model="itemNovo.quantidadeItens"
+            :title="itemNovo.quantidadeItens"
             type="number"
             disabled
             class="border-2 text-center w-full py-4 rounded-lg h-[4.5rem]"
@@ -2220,7 +2250,8 @@ const editFaturamentoCurrentTab = ref(editFaturamentoTabs[0])
 // Guias dos modais de criação
 const anexoUploadRef = ref(null);
 // Medicao
-const selectedStatuses= ref([])
+let isResettingForm = false;
+const selectedStatuses = ref([])
 const allStatuses = ref([
   'Não Autorizada',
   'Autorizada',
@@ -2569,6 +2600,11 @@ const fetchContratoMedicoes = async (id, page, search = '') => {
     medicaoItemMeta.value = response.data.meta;
 
     medicaoItemData.value.forEach((medicao) => {
+      // Remove o dia da competencia para se adequar ao input date Month
+      if (medicao.competencia) {
+        const [ano, mes] = medicao.competencia.split('-');
+        medicao.competencia = `${ano}-${mes}`;
+      }
       medicao.lancamentoItens.forEach((lancamentoItem) => {
         const itemContrato = contratoItemData.value.find(
           (contratoItem) => contratoItem.id === lancamentoItem.contratoItemId
@@ -3079,6 +3115,7 @@ const closeModalLancamento = () => {
 
 
 const resetForm = () => {
+  isResettingForm = true;
   selectNovoLancamento.value = "";
   contrato.value.contratoItens.forEach((item) => {
     item.quantidadeItens = null;
@@ -3090,14 +3127,8 @@ const resetForm = () => {
 };
 
 const addItemToTable = (selectedItem) => {
-if (!selectedItem) return;
-
-medicaoData.value.itens = [selectedItem];
-// if (selectedItem) {
-//   medicaoData.value.itens = [selectedItem];
-// } else {
-//   console.log("Nenhum item selecionado");
-// }
+  if (!selectedItem) return;
+  medicaoData.value.itens = [selectedItem];
 };
 
 const createLancamento = async () => {
@@ -3119,15 +3150,25 @@ const createLancamento = async () => {
   let itensQuantidadePreenchida = medicaoData.value.itens.map((item) => ({
     id_item: item.id,
     quantidade_itens: item.quantidadeItens || "0.000",
+    convertido: item.convertido || false,
   }));
 
-  const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
+  // const quantidadeExcedida = contrato.value.contratoItens.some((item) => {
+  //   const quantidadeRestante = calcularItensRestante(
+  //     item.id,
+  //     item.saldoQuantidadeContratada
+  //   );
+  //   return item.quantidadeItens > quantidadeRestante;
+  // });
+  const quantidadeExcedida = medicaoData.value.itens.some((item) => {
     const quantidadeRestante = calcularItensRestante(
       item.id,
       item.saldoQuantidadeContratada
     );
-    return item.quantidadeItens > quantidadeRestante;
+
+    return parseFloat(item.quantidadeItens || 0) > quantidadeRestante;
   });
+
   if (quantidadeExcedida) {
     toast.error("A quantidade a ser lançada não pode ultrapassar a quantidade disponível.");
     return;
@@ -3190,7 +3231,7 @@ const createLancamento = async () => {
     fetchContrato(contratoId);
   } catch (error) {
     console.error("Erro ao criar medição:", error);
-    toast.error("Não foi possível criar a medição", error);
+    toast.error(error?.response?.data || "Não foi possível criar a medição");
   }
 };
 
@@ -3556,12 +3597,14 @@ const calcularQuantidadeItens = (lancamentoItens) => {
 };
 
 const mostrarUnidadeMedida = (lancamentoItens) => {
-  let unidadeMedida = "";
+  const existeConvertido = lancamentoItens.some(item => item.convertido)
 
-  lancamentoItens.forEach((item) => {
-    unidadeMedida = item.unidadeMedida;
-  });
-  return unidadeMedida;
+  if (existeConvertido) {
+    const naoConvertido = lancamentoItens.find(item => !item.convertido)
+    return naoConvertido ? naoConvertido.unidadeMedida : ""
+  }
+
+  return lancamentoItens[0]?.unidadeMedida || "";
 };
 
 // Editar Item do contrato
@@ -3746,6 +3789,24 @@ const itemAtual = ref(null)
 const itemNovo = ref(null)
 const hasConversion = ref(false);
 
+const canConvertItem = computed(() => {
+  if (hasConversion.value) {
+    return false; // Conversão já realizada - botão desabilitado
+  }
+
+  if (!selectedItem.value) {
+    return false; // Sem item selecionado - botão desabilitado
+  }
+
+  const item = medicaoData.value.itens.find(i => i.id === selectedItem.value.id);
+  if (!item) {
+    return false; // Item não encontrado - botão desabilitado
+  }
+
+  const quantidadeDisponivel = calcularItensRestante(item.id, item.saldoQuantidadeContratada);
+  return parseFloat(item.quantidadeItens) > quantidadeDisponivel; // Apenas habilita se exceder a quantidade disponível
+});
+
 function truncateToPrecision(value, precision = 3) {
   const multiplier = Math.pow(10, precision);
   return Math.floor(value * multiplier) / multiplier;
@@ -3762,9 +3823,22 @@ function calcular() {
 }
 
 // Filtra o select de itens novos ao remover o item atual
+// const itensParaConverter = computed(() => {
+//   return contrato.value.contratoItens.filter(i => i.id !== itemAtual.value?.id)
+// })
+
 const itensParaConverter = computed(() => {
-  return contrato.value.contratoItens.filter(i => i.id !== itemAtual.value?.id)
-})
+  return contrato.value.contratoItens.filter(i => {
+    // Exclui o item atual
+    if (i.id === itemAtual.value?.id) {
+      return false;
+    }
+
+    // Verifica se há quantidade disponível
+    const quantidadeDisponivel = calcularItensRestante(i.id, i.saldoQuantidadeContratada);
+    return quantidadeDisponivel > 0; // Inclui apenas itens com quantidade disponível
+  });
+});
 
 function openConverterItemModal() {
   if (!selectedItem.value) {
@@ -3823,7 +3897,7 @@ function cancelConversion() {
 
   if (itemIndex !== -1) {
     medicaoData.value.itens.splice(itemIndex, 1);
-    toast.success('Item convertido excluído com sucesso!');
+    toast.error('Item convertido cancelado!');
   } else {
     toast.error('Item convertido não encontrado!');
   }
@@ -3832,6 +3906,17 @@ function cancelConversion() {
   itemNovo.value = null;
   hasConversion.value = false;
 }
+
+watch(selectedItem, (newItem, oldItem) => {
+  if (isResettingForm) {
+    // Ignora mudanças durante o reset do formulário
+    return;
+  }
+  // Verifica se havia um item convertido para cancelar a conversão caso o item selecionado seja alterado
+  if (hasConversion.value) {
+    cancelConversion(); // Remove o item convertido
+  }
+});
 
 const expandedLancamentos = ref({})
 function toggleExpand(id, quantidadeSubItens) {
@@ -3851,38 +3936,39 @@ const openEditLancamentoModal = (lancamento) => {
   const competencia = lancamento.competencia || "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
 
+  const lancamentoItens = lancamento.lancamentoItens.length === 2
+    ? lancamento.lancamentoItens.sort((a, b) => (b.convertido ? -1 : 1))
+    : lancamento.lancamentoItens;
+
   // Faça uma cópia profunda também dos itens de lançamento
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
     competencia: competenciaFormatada,
-    lancamentoItens: JSON.parse(JSON.stringify(lancamento.lancamentoItens)) // Deep copy dos itens
+    lancamentoItens: JSON.parse(JSON.stringify(lancamentoItens)) // Deep copy dos itens
   };
-
-  if (editingLancamento.value.lancamentoItens.length > 1) {
-    editingLancamento.value.lancamentoItens[1].convertido = true;
-  }
-
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
 
 const openViewLancamentoModal = (lancamento) => {
   isLancamentoViewModal.value = true;
-  const itensComQuantidade = lancamento.lancamentoItens
   const dataMedicao = lancamento.dataMedicao || "";
   const dataFormatada = dataMedicao.split("T")[0];
   const competencia = lancamento.competencia || "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
+
+  const lancamentoItens = lancamento.lancamentoItens.length === 2
+    ? lancamento.lancamentoItens.sort((a, b) => (b.convertido ? -1 : 1))
+    : lancamento.lancamentoItens;
+
   editingLancamento.value = {
     ...lancamento,
     dataMedicao: dataFormatada,
     competencia: competenciaFormatada,
-    lancamentoItens: itensComQuantidade,
+    lancamentoItens: lancamentoItens,
   };
-  if (editingLancamento.value.lancamentoItens.length > 1) {
-    editingLancamento.value.lancamentoItens[1].convertido = true;
-  }
+
   modalEditLancamento.value = true;
   fetchProjetos(route.params.id);
 };
@@ -3901,9 +3987,36 @@ const closeEditLancamentoModal = () => {
   isLancamentoViewModal.value = false;
 };
 
+const calcularItensRestanteEdicao = (idItem, quantidadeContratada, lancamentoAtualId) => {
+  let quantidadeUtilizada = 0;
+
+  contrato.value.lancamentos.forEach((lancamento) => {
+    // Ignorar lançamentos que não estão finalizados ou o próprio lançamento em edição
+    if (
+      lancamento.status === "Autorizada" ||
+      lancamento.status === "Não Autorizada" ||
+      lancamento.status === "Cancelada" ||
+      lancamento.status === "Não Iniciada" ||
+      lancamento.status === "Em Andamento" ||
+      lancamento.id === lancamentoAtualId
+    ) {
+      return;
+    }
+
+    lancamento.lancamentoItens.forEach((lancamentoItem) => {
+      if (idItem === lancamentoItem.contratoItemId) {
+        quantidadeUtilizada += parseFloat(lancamentoItem.quantidadeItens);
+      }
+    });
+  });
+
+  const quantidadeRestante = parseFloat((quantidadeContratada - quantidadeUtilizada).toFixed(6));
+
+  return quantidadeRestante;
+};
+
 const saveEditedLancamento = async () => {
-  if (!editingLancamento.value.projetos || editingLancamento.value.projetos === null)
-  {
+  if (!editingLancamento.value.projetos || editingLancamento.value.projetos === null) {
     toast.error("Adicione o nome do projeto.", {
       theme: "colored",
       type: "error",
@@ -3911,21 +4024,17 @@ const saveEditedLancamento = async () => {
     return;
   }
 
-  let itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
+  const itensQuantidadePreenchida = editingLancamento.value.lancamentoItens
     .filter((item) => item.quantidadeItens)
     .map((item) => ({
       id: item.id,
       contrato_item_id: item.contratoItemId,
       saldo_quantidade_contratada: item.saldoQuantidadeContratada,
-      quantidade_itens: item.quantidadeItens.toString(),
+      quantidade_itens: item.quantidadeItens || "0.000",
     }));
 
-  const todosQuantidadeZero = itensQuantidadePreenchida.every(
-    (item) => item.quantidade_itens === "0"
-  );
-
-  if (todosQuantidadeZero) {
-    toast.error("Adicione pelo menos um item ao lancamento.", {
+  if (itensQuantidadePreenchida.every((item) => item.quantidade_itens === "0")) {
+    toast.error("Adicione pelo menos um item ao lançamento.", {
       theme: "colored",
       type: "error",
     });
@@ -3933,7 +4042,7 @@ const saveEditedLancamento = async () => {
   }
 
   if (itensQuantidadePreenchida.length === 0) {
-    toast("Adicione pelo menos um item para editar o lancamento.", {
+    toast("Adicione pelo menos um item para editar o lançamento.", {
       theme: "colored",
       type: "error",
     });
@@ -3941,18 +4050,12 @@ const saveEditedLancamento = async () => {
   }
 
   const quantidadeExcedida = itensQuantidadePreenchida.some((item) => {
-    let quantidadeTotalLançada = contrato.value.lancamentos.reduce(
-      (total, lancamento) => {
-        return ( total + lancamento.lancamentoItens.reduce((subTotal, lancamentoItem) => {
-            if ( lancamentoItem.contratoItemId === item.contrato_item_id &&  lancamentoItem.id !== item.id) {
-              return subTotal + parseFloat(lancamentoItem.quantidadeItens);
-            } return subTotal }, 0));
-      }, 0);
-    const saldoQuantidadeContratada = parseFloat(item.saldo_quantidade_contratada);
-    const quantidadeItens = parseFloat(item.quantidade_itens);
-    const quantidadeDisponivel = saldoQuantidadeContratada - quantidadeTotalLançada;
-
-    return quantidadeItens > parseFloat((saldoQuantidadeContratada - quantidadeTotalLançada).toFixed(3))
+    const quantidadeRestante = calcularItensRestanteEdicao(
+      item.contrato_item_id,
+      item.saldo_quantidade_contratada,
+      editingLancamento.value.id
+    );
+    return parseFloat(item.quantidade_itens) > quantidadeRestante;
   });
 
   if (quantidadeExcedida) {
@@ -3960,12 +4063,12 @@ const saveEditedLancamento = async () => {
     return;
   }
 
-  if (editingLancamento.value.status === "" || editingLancamento.value.status === null) {
-    toast.error("Selecione um status para a medição.")
+  if (!editingLancamento.value.status) {
+    toast.error("Selecione um status para a medição.");
     return;
   }
 
-  let payload = {
+  const payload = {
     data_medicao: editingLancamento.value.dataMedicao,
     competencia: editingLancamento.value.competencia,
     descricao: editingLancamento.value.descricao,
@@ -3984,30 +4087,31 @@ const saveEditedLancamento = async () => {
   }
 
   try {
-    const response = await api
-      .put(`/lancamentos/${editingLancamento.value.id}`, payload)
-      .then((response) => {
-        Object.assign(editingLancamento.value);
-        toast("Medição atualizada com sucesso!", {
-          theme: "colored",
-          type: "success",
-        });
-        if( response.data.status === 'Disponível p/ Faturamento' ) {
-          socket.emit('medicao:update', {
-            id: response.data.id,
-            status: response.data.status,
-            contratoId: contratoOriginal.value.id,
-            message: `O status da medição ${response.data.id} foi alterado para: ${response.data.status}`,
-          });
-        }
-        modalEditLancamento.value = false;
-        editingLancamentoBackup.value = null;
-        fetchContrato(contratoId);
+    const response = await api.put(`/lancamentos/${editingLancamento.value.id}`, payload);
+    Object.assign(editingLancamento.value, response.data);
+    toast("Medição atualizada com sucesso!", {
+      theme: "colored",
+      type: "success",
+    });
+
+    if (response.data.status === "Disponível p/ Faturamento") {
+      socket.emit("medicao:update", {
+        id: response.data.id,
+        status: response.data.status,
+        contratoId: contratoOriginal.value.id,
+        message: `O status da medição ${response.data.id} foi alterado para: ${response.data.status}`,
       });
+    }
+
+    modalEditLancamento.value = false;
+    editingLancamentoBackup.value = null;
+    fetchContrato(contratoId);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao atualizar lançamento:", error);
+    toast.error(error?.response?.data || "Não foi possível atualizar o lançamento.");
   }
 };
+
 
 const calcularPodeRenovar = () => {
   const totalUtilizado = calcularSaldoDisponivel(
