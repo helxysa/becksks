@@ -19,7 +19,6 @@
           ref="fileInput"
           class="hidden"
           @change="handleFileSelect"
-          accept=".pdf,.doc,.docx,.xlsx,.csv,.jpg,.png,.zip,.rar"
           multiple
         />
       </label>
