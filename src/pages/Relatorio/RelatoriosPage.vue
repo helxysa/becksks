@@ -98,8 +98,8 @@
       <!-- Card 1: Cliente -->
       <div class="p-4 border border-[#3B82F6] rounded-lg col-span-2">
         <p class="text-gray-500">Cliente:   {{ relatorio.contrato.nomeCliente }}</p>
-        <p class="text-gray-500 mt-2">Período de vigência: xxxxxxxxx</p>
-        <p class="text-gray-500 mt-2">Total de projetos: {{ relatorio.totalProjetos}}</p>
+        <p class="text-gray-500 mt-2">Período de vigência: {{formatDate(relatorio.contrato.dataInicio)}} - {{formatDate(relatorio.contrato.dataFim)}}</p>
+        <p class="text-gray-500 mt-2" v-if="relatorio && selectedProjeto === ''">Total de projetos: {{ relatorio.totalProjetos}}</p>
       </div>
 
       <!-- Wrapper para Cards 2 e 3 -->
@@ -441,6 +441,14 @@ const resetFilters = () => {
   dataFim.value = '';
   projetos.value = [];
   relatorio.value = null;
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return isNaN(date)
+    ? ""
+    : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
 };
 
 onMounted(() => {
