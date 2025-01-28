@@ -11,6 +11,8 @@ const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato
 const ViewTermoAditivoPage = () => import("../pages/ContratosPage/VisualizarTermoAditivo/VisualizarTermoAditivo.vue")
 const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
+const PrestacaoServicos = () => import("../pages/PrestacaoServicos/PrestacaoPage.vue")
+const FormContratoPJPage = () => import("../pages/PrestacaoServicos/FormContratoPJPage.vue")
 
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
@@ -42,10 +44,18 @@ const routes = [
     name: "ResetPassword",
     component: ResetPassword,
   },
-  // {
-  //   path: "/cadastro",
-  //   component: Register,
-  // },
+  {
+    path: "/contratos/pj",
+    name: "ContratoPJ",
+    component: PrestacaoServicos,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/cadastro/contratos/pj",
+    name: "FormContratoPJ",
+    component: FormContratoPJPage,
+    meta: { requiresAuth: true },
+  },
   {
     path: "/contratos",
     name: "Contratos",

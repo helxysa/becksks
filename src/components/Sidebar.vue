@@ -18,7 +18,7 @@
             active-class="bg-[#1E3A8A] text-white shadow-md"
           >
             <Icon :icon="route.icon" height="20" />
-            <span class="ms-3 text-3xl font-bold">{{ route.label }}</span>
+            <span class="ms-3 text-2xl font-bold">{{ route.label }}</span>
           </router-link>
         </li>
       </ul>
@@ -48,10 +48,16 @@ const routes = [
     permission: { name: "contratos", action: "Visualizar" },
   },
   {
+    path: "/contratos/pj",
+    label: "Prestação de Serviços",
+    icon: "eos-icons:project",
+    permission: { name: "prestacao_servico", action: "Visualizar" },
+  },
+  {
     path: "/relatorio",
     label: "Relatório",
     icon: "eos-icons:project",
-    permission: { name: "contratos", action: "Visualizar" },
+    permission: { name: "relatorios", action: "Visualizar" },
   },
   {
     path: "/perfis",
