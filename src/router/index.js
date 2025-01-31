@@ -13,6 +13,7 @@ const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
 const PrestacaoServicos = () => import("../pages/PrestacaoServicos/PrestacaoPage.vue")
 const FormContratoPJPage = () => import("../pages/PrestacaoServicos/FormContratoPJPage.vue")
+const ContratoPJ = () => import("../pages/PrestacaoServicos/ContratoPJ.vue")
 
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
@@ -46,13 +47,25 @@ const routes = [
   },
   {
     path: "/contratos/pj",
-    name: "ContratoPJ",
+    name: "listagem-contratos-pj",
     component: PrestacaoServicos,
     meta: { requiresAuth: true },
   },
   {
     path: "/cadastro/contratos/pj",
     name: "FormContratoPJ",
+    component: FormContratoPJPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contratos/pj/:id",
+    name: "contrato-detalhes",
+    component: ContratoPJ,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contratos/pj/:id",
+    name: "contrato-editar",
     component: FormContratoPJPage,
     meta: { requiresAuth: true },
   },

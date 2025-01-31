@@ -72,9 +72,7 @@
 
     <!-- Detalhes do contrato -->
     <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-      <div
-        class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md"
-      >
+      <div class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md">
         <h3 class="text-2xl font-semibold text-gray-800 mb-4">
           Informações do Contrato
         </h3>

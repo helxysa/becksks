@@ -10,7 +10,7 @@
         />
       </span>
       <h1 class="text-5xl font-bold">
-        Formulário de Contrato de Prestação de Serviço
+        {{ isEdicao ? 'Editar Contrato de Prestação de Serviço' : 'Novo Contrato de Prestação de Serviço' }}
       </h1>
     </div>
 
@@ -70,7 +70,7 @@
         />
       </div>
 
-      <!-- Cidade e Estado -->
+      <!-- Cidade -->
       <div class="flex flex-col items-start gap-3 mt-8">
         <label class="font-semibold">Cidade</label>
         <input
@@ -83,6 +83,7 @@
         />
       </div>
 
+      <!-- Estado -->
       <div class="flex flex-col items-start gap-3 mt-8">
         <label class="font-semibold">Estado</label>
         <select
@@ -248,7 +249,7 @@
             Selecione a forma de pagamento
           </option>
           <option value="pix">PIX</option>
-          <option value="transferencia">Transferência Bancária</option>
+          <option value="transferencia_bancaria">Transferência Bancária</option>
         </select>
       </div>
 
@@ -270,7 +271,7 @@
 
       <!-- Se for Transferência, exibir dados bancários separados -->
       <div
-        v-if="contratoForm.forma_pagamento === 'transferencia'"
+        v-if="contratoForm.forma_pagamento === 'transferencia_bancaria'"
         class="flex flex-col gap-3 mt-8"
       >
         <label class="font-semibold">Banco</label>
@@ -309,7 +310,6 @@
           <option disabled hidden value="">Selecione o tipo de conta</option>
           <option value="corrente">Conta Corrente</option>
           <option value="poupanca">Conta Poupança</option>
-          <option value="salario">Conta Salário</option>
         </select>
 
         <label class="font-semibold">Nome do Titular</label>
@@ -331,7 +331,7 @@
           class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
         >
           <option disabled hidden value="">Selecione o serviço</option>
-          <option value="analista_uiux">Analista de UI/UX designer</option>
+          <option value="analista_ui_ux">Analista de UI/UX designer</option>
           <option value="analista_qualidade">Analista de Qualidade</option>
           <option value="desenvolvedor">Desenvolvedor</option>
           <option value="analista">Analista</option>
@@ -386,7 +386,6 @@
               :key="idx"
               class="text-center"
             >
-              <!-- Aqui exibimos o nome do projeto do SELECT -->
               <td class="p-4 text-xl">{{ proj.nomeProjeto }}</td>
               <td class="p-4 text-xl">{{ proj.servicoPrestado }}</td>
               <td class="p-4 text-xl">{{ proj.esforcoEstimado }}</td>
@@ -412,7 +411,7 @@
         </table>
       </div>
 
-      <!-- Observação -->
+      <!-- Observações -->
       <div class="flex flex-col items-start gap-3 mt-8">
         <label class="font-semibold">Observações</label>
         <textarea
@@ -538,7 +537,8 @@
 
 <script setup>
 /* Imports e dependências */
-import { ref, reactive, onMounted, computed, watch } from "vue";
+import { ref, reactive, onMounted, computed, watch, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { Money3Component as money3 } from "v-money3";
 import JetDialogModal from "@/components/modals/DialogModal.vue";
@@ -547,7 +547,7 @@ import { toast } from "vue3-toastify";
 import { ufs } from "@/services/ufs.js";
 import { api } from "@/services/api";
 
-// Configurações para money3
+/** Configurações para v-money3 */
 const moneyConfig = {
   precision: 2,
   decimal: ",",
@@ -555,6 +555,13 @@ const moneyConfig = {
   prefix: "R$ ",
   masked: false,
 };
+
+// Router
+const route = useRoute();
+const router = useRouter();
+
+// Flag para saber se é edição (quando existir :id na rota)
+const isEdicao = computed(() => !!route.params.id);
 
 // Estado reativo do formulário
 const contratoForm = reactive({
@@ -594,21 +601,87 @@ const contratoForm = reactive({
 // Lista de projetos (buscada do back-end no onMounted)
 const listaProjetos = ref([]);
 
-// Ao montar o componente, buscamos os projetos
-onMounted(() => {
-  buscarProjetos();
+// Ao montar o componente, buscamos:
+// 1) A lista de projetos
+// 2) Se estiver em modo edição, carregamos os dados do contrato
+onMounted(async () => {
+  await buscarProjetos();
+  if (isEdicao.value) {
+    await carregarContrato(route.params.id);
+  }
 });
 
-// Função que faz o GET em /projetos
+/** Função que faz o GET em /projetos */
 async function buscarProjetos() {
   try {
     const response = await api.get("/projetos");
-    console.log(response.data);
-    // A API retorna { status, data, message } etc.
-    listaProjetos.value = response.data.data; // conforme seu response
+    listaProjetos.value = response.data.data;
   } catch (error) {
     console.error("Erro ao buscar projetos", error);
     toast.error("Não foi possível carregar a lista de projetos.");
+  }
+}
+
+/**
+ * Função para carregar o contrato em modo de edição
+ * GET /contrato/pj/:id
+ */
+async function carregarContrato(id) {
+  try {
+    const response = await api.get(`/contrato/pj/${id}`);
+    const data = response.data;
+
+    contratoForm.razao_social = data.razaoSocial || "";
+    contratoForm.nome_fantasia = data.nomeFantasia || "";
+    contratoForm.cnpj = data.cnpj || "";
+    contratoForm.endereco = data.enderecoCompleto || "";
+    contratoForm.cidade = data.cidade || "";
+    contratoForm.estado = data.estado || "";
+    contratoForm.telefone_empresa = data.telefoneEmpresa || "";
+    contratoForm.email_empresa = data.emailEmpresa || "";
+    contratoForm.representante_legal = data.representanteLegal || "";
+    contratoForm.telefone_representante = data.telefoneRepresentante || "";
+    contratoForm.email_representante = data.emailRepresentante || "";
+    contratoForm.tipo_contrato = data.tipoContrato || "";
+    contratoForm.data_inicio = data.dataInicio || "";
+    contratoForm.data_fim = data.dataFim || "";
+    contratoForm.valor_mensal = data.valorMensal ? `R$ ${data.valorMensal}` : "";
+    contratoForm.valor_hora = data.valorHora ? `R$ ${data.valorHora}` : "";
+    contratoForm.forma_pagamento = data.formaPagamento || "";
+    contratoForm.chave_pix = data.chavePix || "";
+    contratoForm.banco = data.banco || "";
+    contratoForm.agencia = data.agencia || "";
+    contratoForm.numeroConta = data.numeroConta || "";
+    contratoForm.tipoConta = data.tipoConta || "";
+    contratoForm.nomeTitular = data.nomeTitular || "";
+    contratoForm.servico_prestado = data.servicoPrestado || "";
+    contratoForm.escopo_trabalho = data.escopoTrabalho || "";
+    contratoForm.observacoes = data.observacao || "";
+
+    // nextTick para a mascara do cnpj ter efeito no input ao carregar o contrato para edição
+    nextTick(()=> {
+      const input = document.querySelector('input[type="text"][placeholder="Informe o CNPJ"]');
+      if (input) {
+      input.value = contratoForm.cnpj;
+      handleCnpjMask({ target: input });
+    }
+    })
+
+    // Projetos - caso venham já vinculados no contrato
+    if (Array.isArray(data.projetos)) {
+      contratoForm.projetos = data.projetos.map((p) => {
+        return {
+          projetoId: p.id,
+          nomeProjeto: p.projeto || "",
+          servicoPrestado: p.servico_prestado || "",
+          esforcoEstimado: p.esforco_estimado || "",
+          gestorProjeto: p.gestor_projeto || "",
+        };
+      });
+    }
+  } catch (error) {
+    console.error("Erro ao carregar contrato:", error);
+    toast.error("Não foi possível carregar os dados do contrato para edição.");
   }
 }
 
@@ -622,7 +695,7 @@ function handlePhoneRepresentante(e) {
   contratoForm.telefone_representante = phoneMask(e.target.value);
 }
 
-/** Função simples de máscara de telefone */
+/** Função de máscara de telefone */
 function phoneMask(value) {
   if (!value) return "";
   let val = value.replace(/\D/g, "");
@@ -631,43 +704,32 @@ function phoneMask(value) {
   return val;
 }
 
+/** Máscara de CNPJ que permite dois caracteres no final*/
 function handleCnpjMask(e) {
   let v = e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, "");
-
-  // Se quiser manter a formatação parcial, adaptando:
-  // até 14 caracteres numéricos, e se passar disso, permitir letras
-  // Ex.: 12.345.678/0001-99AB
-  // Vamos só inserir pontuação até chegar nos 14 dígitos iniciais
-  // e depois se vier letras, deixamos no final.
-
-  // Extrair somente a parte numérica inicial
   const numeros = v.replace(/[^0-9]/g, "");
   const letras = v.replace(/[^A-Z]/g, "");
-
-  // até 14 dígitos
   let nums14 = numeros.substring(0, 14);
 
-  // Formata os 14 dígitos no estilo CNPJ
   nums14 = nums14.replace(/^(\d{2})(\d)/, "$1.$2");
   nums14 = nums14.replace(/^(\d{2}\.\d{3})(\d)/, "$1.$2");
   nums14 = nums14.replace(/\.(\d{3})(\d)/, ".$1/$2");
   nums14 = nums14.replace(/(\d{4})(\d)/, "$1-$2");
 
-  // Se houver letras no final, acrescentar (limitado a 2 letras)
   let finalLetras = letras.substring(0, 2);
 
   e.target.value = nums14 + finalLetras;
   contratoForm.cnpj = e.target.value;
 }
 
-/**
- * Quando formos enviar o payload, remove
- * toda a pontuação do CNPJ e mantem apenas dígitos + letras (até 16).
- */
+/** Remove pontuação do CNPJ para enviar ao backend */
 function limparCnpj(cnpj) {
   return cnpj.toUpperCase().replace(/[^0-9A-Z]/g, "");
 }
 
+/**
+ * Cria ou atualiza o contrato no backend
+ */
 async function salvarContrato() {
   try {
     const finalPayload = {
@@ -686,21 +748,16 @@ async function salvarContrato() {
       tipoContrato: contratoForm.tipo_contrato,
       dataInicio: contratoForm.data_inicio || null,
       dataFim: contratoForm.data_fim || null,
-      valorMensal:Number(contratoForm.valor_mensal.toString().replace(/[^\d,]/g, "").replace(",", ".")) || null,
-      valorHora:Number(contratoForm.valor_hora.toString().replace(/[^\d,]/g, "").replace(",", ".")) || null,
+      valorMensal: contratoForm.valor_mensal || null,
+      valorHora: contratoForm.valor_hora || null,
 
       formaPagamento: contratoForm.forma_pagamento,
-
-      // Se for PIX, enviamos a chave
-      chavePix:
-        contratoForm.forma_pagamento === "pix" ? contratoForm.chave_pix : null,
-
-      // Se for transferência, enviamos os dados
-      banco:contratoForm.forma_pagamento === "transferencia" ? contratoForm.banco : null,
-      agencia:contratoForm.forma_pagamento === "transferencia" ? contratoForm.agencia : null,
-      numeroConta:contratoForm.forma_pagamento === "transferencia" ? contratoForm.numeroConta : null,
-      tipoConta:contratoForm.forma_pagamento === "transferencia" ? contratoForm.tipoConta : null,
-      nomeTitular:contratoForm.forma_pagamento === "transferencia" ? contratoForm.nomeTitular : null,
+      chavePix: contratoForm.forma_pagamento === "pix" ? contratoForm.chave_pix : null,
+      banco: contratoForm.forma_pagamento === "transferencia_bancaria" ? contratoForm.banco : null,
+      agencia: contratoForm.forma_pagamento === "transferencia_bancaria" ? contratoForm.agencia : null,
+      numeroConta: contratoForm.forma_pagamento === "transferencia_bancaria" ? contratoForm.numeroConta : null,
+      tipoConta: contratoForm.forma_pagamento === "transferencia_bancaria" ? contratoForm.tipoConta : null,
+      nomeTitular: contratoForm.forma_pagamento === "transferencia_bancaria" ? contratoForm.nomeTitular : null,
 
       servicoPrestado: contratoForm.servico_prestado,
       escopoTrabalho: contratoForm.escopo_trabalho,
@@ -717,11 +774,16 @@ async function salvarContrato() {
       }),
     };
 
-    // Requisição POST
-    const response = await api.post("/contrato/pj", finalPayload);
+    // Se estamos em edição, fazemos PUT /contrato/pj/:id
+    // Senão, POST /contrato/pj
+    if (isEdicao.value) {
+      await api.put(`/contrato/pj/${route.params.id}`, finalPayload);
+      toast.success("Contrato atualizado com sucesso!");
+    } else {
+      await api.post("/contrato/pj", finalPayload);
+      toast.success("Contrato de Prestação de Serviço cadastrado com sucesso!");
+    }
 
-    console.log("Payload final a enviar:", finalPayload);
-    toast.success("Contrato de Prestação de Serviço cadastrado com sucesso!");
     voltarListagem();
   } catch (error) {
     toast.error("Não foi possível salvar o contrato!");
@@ -731,7 +793,7 @@ async function salvarContrato() {
 
 /** Redireciona para listagem */
 function voltarListagem() {
-  window.location.href = "/contratos/pj";
+  router.push("/contratos/pj");
 }
 
 /** Modal de Projetos */
@@ -813,14 +875,11 @@ function removerProjeto(index) {
   });
 }
 
+/** Se o tipo de contrato mudar para tempo_indeterminado ou projeto_especifico, limpamos a data de fim */
 watch(
   () => contratoForm.tipo_contrato,
   (novoTipo) => {
-    // Se for tempo_indeterminado ou projeto_especifico, limpa data_fim
-    if (
-      novoTipo === "tempo_indeterminado" ||
-      novoTipo === "projeto_especifico"
-    ) {
+    if (novoTipo === "tempo_indeterminado" || novoTipo === "projeto_especifico") {
       contratoForm.data_fim = "";
     }
   }
