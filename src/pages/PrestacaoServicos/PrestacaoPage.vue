@@ -11,6 +11,7 @@
         Novo contrato
       </router-link>
     </div>
+    <ListContratoPJ />
   </div>
 </template>
 
@@ -18,6 +19,7 @@
 import { Icon } from "@iconify/vue";
 import { useProfileStore } from '@/stores/ProfileStore';
 import { usePermissions } from '@/composables/usePermission';
+import ListContratoPJ from './ListContratoPJ.vue'
 
 const { hasPermission } = usePermissions();
 const store = useProfileStore()
