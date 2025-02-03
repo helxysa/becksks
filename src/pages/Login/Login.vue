@@ -109,7 +109,15 @@ const handleLogin = async () => {
     if (!response.data.user.passwordChanged) {
       localStorage.setItem("userId", response.data.user.id);
       router.push({ name: "ChangePassword" });
-    } else {
+    }
+    else if (response.data.user.prestadorServicos) {
+      // Redirecionar prestador para sua página de contrato
+      router.push({
+        name: "contrato-detalhes",
+        params: { id: response.data.user.contratoPjId }
+      });
+    }
+    else {
       localStorage.removeItem("userId");
       isAuthenticated.value = true;
       if(hasPermission('Dashboard', 'Visualizar')) {

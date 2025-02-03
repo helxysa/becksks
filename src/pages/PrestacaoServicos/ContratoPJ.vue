@@ -1,7 +1,7 @@
 <template>
   <!-- Botão de Voltar -->
   <div class="flex items-center gap-2">
-    <span @click="voltarListagem" class="cursor-pointer" title="Voltar">
+    <span @click="voltarListagem" class="cursor-pointer" title="Voltar" v-if="!hasPermission('prestacao_servico', 'Visualizar Contrato')">
       <Icon
         icon="ic:round-arrow-back"
         height="28"
@@ -141,7 +141,9 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from "@iconify/vue";
 import { api } from '@/services/api';
+import { usePermissions } from '@/composables/usePermission';
 
+const { hasPermission } = usePermissions();
 const route = useRoute()
 const router = useRouter()
 const contrato = ref(null)
