@@ -109,7 +109,6 @@ function hasPermission(permission) {
 // Se o usuário for prestador, atualize dinamicamente a rota de "Prestação de Serviços"
 const accessibleRoutes = computed(() => {
   const user = JSON.parse(localStorage.getItem("profileUser") || "{}");
-  console.log(user)
   return routes.map((route) => {
     if (route.label === "Prestação de Serviços" && user && user.prestadorServicos) {
       return {
