@@ -106,7 +106,22 @@ function hasPermission(permission) {
   });
 }
 
-const accessibleRoutes = computed(() =>
-  routes.filter((route) => hasPermission(route.permission))
-);
+// Se o usuário for prestador, atualize dinamicamente a rota de "Prestação de Serviços"
+const accessibleRoutes = computed(() => {
+  const user = JSON.parse(localStorage.getItem("profileUser") || "{}");
+  return routes.map((route) => {
+    if (route.label === "Prestação de Serviços" && user && user.prestadorServicos) {
+      return {
+        ...route,
+        path: `/contratos/pj/${user.contratoPjId}`,
+        permission: { ...route.permission, action: ["Visualizar Contrato"] },
+      };
+    }
+    return route;
+  }).filter((route) => hasPermission(route.permission));
+});
+
+// const accessibleRoutes = computed(() =>
+//   routes.filter((route) => hasPermission(route.permission))
+// );
 </script>

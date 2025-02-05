@@ -46,6 +46,7 @@
       <div class="flex flex-col items-start gap-3 mt-8">
         <label class="font-semibold">CNPJ</label>
         <input
+          :disabled="isEdicao"
           class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
           required
           type="text"
@@ -422,6 +423,14 @@
         />
       </div>
 
+      <!-- Seção de Anexos -->
+      <div v-if="isEdicao">
+        <Anexos :key="contratoId" :resourceId="contratoId" variant="pj" />
+      </div>
+      <div v-else>
+        <AnexoUpload ref="anexoUploadRef" :resourceId="contratoId" variant="pj" :localAnexos="localAnexos" />
+      </div>
+
       <!-- Botões de ação -->
       <div class="mt-8 flex gap-8 justify-end">
         <button
@@ -546,8 +555,14 @@ import Swal from "sweetalert2";
 import { toast } from "vue3-toastify";
 import { ufs } from "@/services/ufs.js";
 import { api } from "@/services/api";
+import AnexoUpload from '../../components/form/AnexoUpload.vue';
+import Anexos from '../../components/form/Anexos.vue';
 
-/** Configurações para v-money3 */
+// Variáveis para Anexos
+const contratoId = ref(null)
+const anexoUploadRef = ref(null);
+const localAnexos = ref([]);
+// Configurações para v-money3
 const moneyConfig = {
   precision: 2,
   decimal: ",",
@@ -608,6 +623,7 @@ onMounted(async () => {
   await buscarProjetos();
   if (isEdicao.value) {
     await carregarContrato(route.params.id);
+    contratoId.value = route.params.id
   }
 });
 
@@ -730,7 +746,7 @@ function limparCnpj(cnpj) {
 /**
  * Cria ou atualiza o contrato no backend
  */
-async function salvarContrato() {
+ const criarContrato = async () => {
   try {
     const finalPayload = {
       razaoSocial: contratoForm.razao_social,
@@ -774,20 +790,36 @@ async function salvarContrato() {
       }),
     };
 
+    let response = null;
     // Se estamos em edição, fazemos PUT /contrato/pj/:id
     // Senão, POST /contrato/pj
     if (isEdicao.value) {
-      await api.put(`/contrato/pj/${route.params.id}`, finalPayload);
+      response = await api.put(`/contrato/pj/${route.params.id}`, finalPayload);
       toast.success("Contrato atualizado com sucesso!");
     } else {
-      await api.post("/contrato/pj", finalPayload);
+      response = await api.post("/contrato/pj", finalPayload);
       toast.success("Contrato de Prestação de Serviço cadastrado com sucesso!");
     }
-
-    voltarListagem();
+    return response.data.contrato.id;
   } catch (error) {
     toast.error("Não foi possível salvar o contrato!");
     console.error(error);
+  }
+}
+
+const salvarContrato = async () => {
+  const contratoIdTemp = await criarContrato();
+  if (contratoIdTemp) {
+    contratoId.value = contratoIdTemp;
+
+    // Aguarde um próximo ciclo de atualização do Vue
+    await nextTick();
+
+    if (anexoUploadRef.value && localAnexos.value.length > 0) {
+      await anexoUploadRef.value.uploadAnexosPendentes();
+    }
+
+    voltarListagem();
   }
 }
 

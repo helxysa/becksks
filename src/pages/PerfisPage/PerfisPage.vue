@@ -46,7 +46,7 @@
                 <span
                   v-for="(isActive, actionName) in permissao.actions"
                   :key="actionName"
-                  :title="actionIcons[actionName].title"
+                  :title="actionIcons[actionName]?.title"
                   >
                   <Icon
                   class="transition-transform ease-in-out transform hover:-translate-y-[2px] cursor-pointer"
@@ -261,7 +261,7 @@
     { nome: "Dashboard", chave: "dashboard", actions: ["Visualizar"] },
     { nome: "Registros", chave: "registros", actions: ["Visualizar"] },
     { nome: "Relatório", chave: "relatorios", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
-    { nome: "Prestação de Serviço", chave: "prestacao_servico", actions: ["Criar", "Visualizar", "Editar", "Deletar"] },
+    { nome: "Prestação de Serviço", chave: "prestacao_servico", actions: ["Criar", "Visualizar", "Editar", "Deletar", "Visualizar Contrato"] },
   ];
 
   // Mapeamento de chaves para nomes
@@ -300,6 +300,12 @@
       class: 'text-green-600',
       height: 20,
       title: 'Visualizar Finanças',
+    },
+    'Visualizar Contrato': {
+      icon: 'ph:eye',
+      class: 'text-green-600',
+      height: 20,
+      title: 'Visualizar Contrato',
     },
     Notificar: {
       icon: 'carbon:notification',

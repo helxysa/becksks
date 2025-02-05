@@ -57,12 +57,14 @@
                 placeholder="Novo nome do arquivo"
               />
               <button
+                type="button"
                 @click="updateFileName(anexo)"
                 class="text-green-500 hover:text-green-700 transition duration-200 ease-in-out transform hover:scale-110 text-[1.25rem]"
               >
                 ✔️
               </button>
               <button
+                type="button"
                 @click="cancelEditing(anexo)"
                 class="text-red-500 hover:text-red-700 transition duration-200 ease-in-out transform hover:scale-110 text-base"
               >
@@ -359,6 +361,8 @@ const getVariantUrl = () => {
       return 'medicao';
     case 'faturamento':
       return 'faturamento';
+    case 'pj':
+      return 'pj'
     default:
       return '';
   }

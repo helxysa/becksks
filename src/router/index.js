@@ -64,7 +64,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/contratos/pj/:id",
+    path: "/contratos/pj/:id/editar",
     name: "contrato-editar",
     component: FormContratoPJPage,
     meta: { requiresAuth: true },
@@ -160,13 +160,41 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // console.log('Navegando para:', to.fullPath)
   const token = localStorage.getItem("token");
-  if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
+  const user = JSON.parse(localStorage.getItem("profileUser") || "{}");
+
+  // Rotas públicas que não devem ser redirecionadas mesmo para usuários prestadores
+  const publicRouteNames = ["Login", "ResetPassword", "ChangePassword"];
+  const publicPaths = ["/login", "/esqueci-minha-senha"]; // ajuste conforme necessário
+
+  // Se a rota requer autenticação e não há token, redireciona para o login.
+  if (to.matched.some(record => record.meta.requiresAuth) && !token) {
     next("/login");
-  } else {
-    next();
+    return;
   }
+
+  // Se a rota for pública, não fazemos o redirecionamento
+  if (publicRouteNames.includes(to.name) || publicPaths.some(path => to.path.startsWith(path))) {
+    next();
+    return;
+  }
+
+  // Se o usuário for um prestador de serviços
+  if (user.prestadorServicos) {
+    // Verifica se o path começa com "/contratos/pj/"
+    if (to.path.startsWith("/contratos/pj/")) {
+      const routeContractId = to.params.id;
+      if (routeContractId !== user.contratoPjId.toString()) {
+        next({ name: "contrato-detalhes", params: { id: user.contratoPjId } });
+        return;
+      }
+    } else {
+      next({ name: "contrato-detalhes", params: { id: user.contratoPjId } });
+      return;
+    }
+  }
+
+  next();
 });
 
 export default router;

@@ -7,7 +7,7 @@
         ref="dropdownWrapper"
         :class="{'bg-blue-100': isDropdownOpen, 'hover:bg-blue-50': !isDropdownOpen }"
       >
-        <div class="relative">
+        <div class="relative" v-if="!hasPermission('prestacao_servico', 'Visualizar Contrato')">
           <Icon
             icon="carbon:notification"
             width="3rem"

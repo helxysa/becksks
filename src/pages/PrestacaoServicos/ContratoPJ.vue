@@ -1,7 +1,7 @@
 <template>
   <!-- Botão de Voltar -->
   <div class="flex items-center gap-2">
-    <span @click="voltarListagem" class="cursor-pointer" title="Voltar">
+    <span @click="voltarListagem" class="cursor-pointer" title="Voltar" v-if="!hasPermission('prestacao_servico', 'Visualizar Contrato')">
       <Icon
         icon="ic:round-arrow-back"
         height="28"
@@ -49,9 +49,9 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <p class="text-gray-600"><strong>Vigência:</strong> {{ formatarVigencia(contrato) }}</p>
-          <p v-if="contrato.valorMensal" class="text-gray-600"><strong>Valor Mensal:</strong> {{ contrato.valorMensal, 'R$ ' }}</p>
-          <p v-if="contrato.valorHora" class="text-gray-600"><strong>Valor Hora:</strong> {{ contrato.valorHora, 'R$ ' }}</p>
+          <p class="text-gray-600"><strong>Vigência:</strong> {{ formatDate(contrato.dataInicio) }} - {{ formatDate(contrato.dataFim) }}</p>
+          <p v-if="contrato.valorMensal" class="text-gray-600"><strong>Valor Mensal:</strong> {{ formatCurrency(contrato.valorMensal) }}</p>
+          <p v-if="contrato.valorHora" class="text-gray-600"><strong>Valor Hora:</strong> {{ formatCurrency(contrato.valorHora) }}</p>
         </div>
         <div>
           <p class="text-gray-600"><strong>Forma de Pagamento:</strong> {{ contrato.formaPagamento }}</p>
@@ -141,7 +141,9 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from "@iconify/vue";
 import { api } from '@/services/api';
+import { usePermissions } from '@/composables/usePermission';
 
+const { hasPermission } = usePermissions();
 const route = useRoute()
 const router = useRouter()
 const contrato = ref(null)
@@ -173,6 +175,14 @@ const formatDate = (dateString) => {
   return isNaN(date)
     ? ""
     : new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" }).format(date);
+};
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+  }).format(value);
 };
 
 function voltarListagem() {
