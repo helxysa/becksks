@@ -46,6 +46,7 @@
       <div class="flex flex-col items-start gap-3 mt-8">
         <label class="font-semibold">CNPJ</label>
         <input
+          :disabled="isEdicao"
           class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
           required
           type="text"
