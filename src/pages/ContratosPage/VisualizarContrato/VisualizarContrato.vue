@@ -1348,6 +1348,7 @@
           </button>
           <button
             type="button"
+            v-if="!hasConversion"
             :disabled="!canConvertItem"
             @click="openConverterItemModal"
             class="text-center p-4 border border-transparent rounded-md font-bold text-xl text-white disabled:opacity-25 transition bg-green-500 hover:bg-green-600 cursor-pointer"
@@ -3123,6 +3124,7 @@ const resetForm = () => {
   // medicaoId.value = null;
   criarMedicaoCurrentTab.value = criarMedicaoTabs[0]
   projetos.value = "";
+  hasConversion.value = false;
   closeModalLancamento();
 };
 
@@ -3914,6 +3916,7 @@ watch(selectedItem, (newItem, oldItem) => {
   }
   // Verifica se havia um item convertido para cancelar a conversão caso o item selecionado seja alterado
   if (hasConversion.value) {
+    itemNovo.value.quantidadeItens = '0.000';
     cancelConversion(); // Remove o item convertido
   }
 });
