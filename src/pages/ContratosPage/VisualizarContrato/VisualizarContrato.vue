@@ -961,7 +961,7 @@
     </template>
   </JetDialogModal>
 
-  <!-- Modal editar faturamento -->
+  <!-- Modal editar e visualizar faturamento -->
   <JetDialogModal
     :show="modalEditFaturamento"
     :withouHeader="false"
@@ -1061,9 +1061,7 @@
         </section>
         <div class="font-bold text-3xl mt-8">Descrição da nota:</div>
         <div class="overflow-y-auto max-h-[42rem] border border-gray-300 rounded-lg mt-8">
-          <table
-            class="table-auto border border-slate-200 rounded-2xl w-full"
-          >
+          <table v-if="editingFaturamento && editingFaturamento.faturamentoItens" class="table-auto border border-slate-200 rounded-2xl w-full">
             <thead class="h-20 bg-slate-100 border-1">
               <tr>
                 <th class="text-xl">#</th>
@@ -1076,57 +1074,46 @@
               </tr>
             </thead>
             <tbody>
-              <template v-for="(lancamento, lIndex) in editingFaturamento.faturamentoItens.map(fi => fi.lancamento)" :key="lancamento.id">
-                <tr
+              <template v-for="(fi, index) in editingFaturamento.faturamentoItens" :key="fi.id">
+                <tr v-if="fi.lancamento && fi.lancamento.lancamentoItens && fi.lancamento.lancamentoItens.length > 0"
                   class="h-24 text-center transition"
-                  @click="toggleExpand(lancamento.id, lancamento.lancamentoItens.length)"
+                  @click="toggleExpand(fi.lancamento.id, fi.lancamento.lancamentoItens.length)"
                 >
-                  <td class="px-4">{{ lancamento.id }}</td>
-                  <td>{{ lancamento.projetos }}</td>
+                  <td class="px-4">{{ fi.lancamento.id }}</td>
+                  <td>{{ fi.lancamento.projetos }}</td>
                   <td class="text-center" v-if="!isFaturamentoViewModal">
                     <input
                       @click.stop
-                      v-model="lancamento.competencia"
+                      v-model="fi.lancamento.competencia"
                       type="month"
                       placeholder="Informe a competência"
                       class="focus:border-[#FF6600] border focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-3/4 border-gray-300 rounded-md h-14 text-center uppercase"
                     />
                   </td>
-                  <td v-else>{{ formataMesAno(lancamento.competencia) }}</td>
-                  <td>{{ lancamento.lancamentoItens[0].titulo }}</td>
-                  <td>{{ lancamento.lancamentoItens[0].unidadeMedida }}</td>
+                  <td v-else>{{ formataMesAno(fi.lancamento.competencia) }}</td>
+                  <td>{{ fi.lancamento.lancamentoItens[0].titulo }}</td>
+                  <td>{{ fi.lancamento.lancamentoItens[0].unidadeMedida }}</td>
                   <td>
-                    {{ parseFloat(lancamento.lancamentoItens[0].quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
+                    {{ parseFloat(fi.lancamento.lancamentoItens[0].quantidadeItens).toLocaleString('pt-BR', { minimumFractionDigits: 3 }) }}
                   </td>
                   <td>
-                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([lancamento.lancamentoItens[0]], lancamento.dias)) }}
+                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([fi.lancamento.lancamentoItens[0]], fi.lancamento.dias)) }}
                   </td>
                 </tr>
-
-                <!-- <tr
-                v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
-                :key="subItem.id"
-                v-show="expandedLancamentos[lancamento.id]"
-                class="h-24 text-center bg-gray-50"
-                > -->
                 <!-- Linhas adicionais se houver subitens -->
-                <tr
-                v-for="(subItem, sIndex) in lancamento.lancamentoItens.slice(1)"
-                :key="subItem.id"
-                class="h-24 text-center transition"
-                :title="`O item ${lancamento.lancamentoItens[0].titulo} excedeu a quantidade disponível e foi convertido para o item ${subItem.titulo}`"
-              >
-                  <!-- <td colspan="3"> -->
-                  <!-- <span>O item {{ lancamento.lancamentoItens[0].titulo }} excedeu a quantidade disponível e foi convertido para o item {{ subItem.titulo }}</span> -->
-                  <!-- </td> -->
-                  <td class="px-4">{{ lancamento.id }}</td>
-                  <td class="text-center">{{ lancamento.projetos }}</td>
-                  <td class="text-center">{{ formataMesAno(lancamento.competencia) }}</td>
+                <tr v-for="(subItem, sIndex) in fi.lancamento?.lancamentoItens?.slice(1) || []"
+                  :key="subItem.id"
+                  class="h-24 text-center transition"
+                  :title="`O item ${fi.lancamento?.lancamentoItens?.[0]?.titulo} excedeu a quantidade disponível e foi convertido para o item ${subItem.titulo}`"
+                >
+                  <td class="px-4">{{ fi.lancamento?.id }}</td>
+                  <td class="text-center">{{ fi.lancamento?.projetos }}</td>
+                  <td class="text-center">{{ formataMesAno(fi.lancamento?.competencia) }}</td>
                   <td>{{ subItem.titulo }}</td>
                   <td>{{ subItem.unidadeMedida }}</td>
                   <td>{{ formatQuantidadeItens(subItem.quantidadeItens) }}</td>
                   <td>
-                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([subItem], lancamento.dias)) }}
+                    {{ formatCurrencySemArrendondar(calcularSaldoLancamentoItens([subItem], fi.lancamento?.dias)) }}
                   </td>
                 </tr>
               </template>
@@ -2717,53 +2704,80 @@ const closeModalPedidoFaturamento = () => {
 
 // Editar faturamento do contrato
 const openEditFaturamentoModal = (faturamento) => {
-  let dataFormatada = ''
-  if (faturamento.dataFaturamento) {
-    dataFormatada = faturamento.dataFaturamento.split('T')[0];
+  if (!faturamento) {
+    toast.error("Não foi possível carregar o faturamento ao abrir a modal de visualização!");
+    return;
   }
-  const competencia = faturamento.competencia || "";
+
+  // Evita erro se dataFaturamento estiver null ou undefined
+  const dataFormatada = faturamento.dataFaturamento
+    ? format(new Date(faturamento.dataFaturamento), "yyyy-MM-dd")
+    : "";
+
+  // Evita erro se competencia estiver null ou undefined
+  const competencia = faturamento.competencia ?? "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
 
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
     competencia: competenciaFormatada,
-    faturamentoItens: faturamento.faturamentoItens.map(item => ({
-      ...item,
-      lancamento: {
-        ...item.lancamento,
-        competencia: item.lancamento.competencia.split("-").slice(0,2).join("-"),
-        originalCompetencia: item.lancamento.competencia
-      }
-    }))
+    // Evita erro se faturamentoItens, item.lancamento, lancamento.competencia estiver null ou undefined
+    faturamentoItens: (faturamento.faturamentoItens ?? []).map(item => {
+      const lancamento = item.lancamento ?? {};
+      const lancamentoCompetencia = lancamento.competencia ?? "";
+
+      return {
+        ...item,
+        lancamento: {
+          ...lancamento,
+          competencia: lancamentoCompetencia.split("-").slice(0,2).join("-"),
+          originalCompetencia: lancamentoCompetencia
+        }
+      };
+    })
   };
   modalEditFaturamento.value = true;
 };
 
-const openViewFaturamentoModal = (faturamento) => {
+function openViewFaturamentoModal(faturamento) {
   isFaturamentoViewModal.value = true;
-  const dataFormatada = format(
-    new Date(faturamento.dataFaturamento),
-    "yyyy-MM-dd"
-  );
-  const competencia = faturamento.competencia || "";
+  if (!faturamento) {
+    toast.error("Não foi possível carregar o faturamento ao abrir a modal de visualização!");
+    return;
+  }
+
+  // Evita erro se dataFaturamento estiver null ou undefined
+  const dataFormatada = faturamento.dataFaturamento
+    ? format(new Date(faturamento.dataFaturamento), "yyyy-MM-dd")
+    : "";
+
+  // Evita erro se competencia estiver null ou undefined
+  const competencia = faturamento.competencia ?? "";
   const competenciaFormatada = competencia.split("-").slice(0, 2).join("-");
 
   editingFaturamento.value = {
     ...faturamento,
     dataFaturamento: dataFormatada,
     competencia: competenciaFormatada,
-    faturamentoItens: faturamento.faturamentoItens.map(item => ({
-      ...item,
-      lancamento: {
-        ...item.lancamento,
-        competencia: item.lancamento.competencia.split("-").slice(0,2).join("-"),
-        originalCompetencia: item.lancamento.competencia
-      }
-    }))
+    // Evita erro se faturamentoItens, item.lancamento, lancamento.competencia estiver null ou undefined
+    faturamentoItens: (faturamento.faturamentoItens ?? []).map(item => {
+      const lancamento = item.lancamento ?? {};
+      const lancamentoCompetencia = lancamento.competencia ?? "";
+
+      return {
+        ...item,
+        lancamento: {
+          ...lancamento,
+          competencia: lancamentoCompetencia.split("-").slice(0,2).join("-"),
+          originalCompetencia: lancamentoCompetencia
+        }
+      };
+    })
   };
+
   modalEditFaturamento.value = true;
-};
+}
 
 const closeEditFaturamentoModal = () => {
   selectNovoFaturamento.value = "";
