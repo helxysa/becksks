@@ -3089,9 +3089,11 @@ const ExibirModalLancamento = () => {
 };
 
 const isSaldoNegativo = computed(() => {
-  return contrato.value.contratoItens.some(
-    (item) => calcularSaldoAtual(item) < 0
-  );
+  if (medicaoData.value.tipo_medicao === 'Estimada' || editingLancamento.value.tipoMedicao === 'Estimada') {
+    return false;
+  }
+
+  return medicaoData.tipo_medicao !== 'Estimada' && contrato.value.contratoItens.some((item) => calcularSaldoAtual(item) < 0);
 });
 
 const closeModalLancamento = () => {
