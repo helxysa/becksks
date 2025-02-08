@@ -36,14 +36,18 @@
       </table>
     </div>
   </div>
-  <div class="flex justify-center">
+  <div class="flex justify-center max-w-[1200px] mx-auto px-4 py-4">
     <vue-awesome-paginate
-      :total-items="totalItems"
-      :max-pages-shown="lastPage"
-      :items-per-page="resultsPerPages"
-      v-model="currentPage"
-      @click="changePage"
-    />
+        :total-items="totalItems"
+        :items-per-page="resultsPerPages"
+        v-model="currentPage"
+        @click="changePage"
+        :max-pages-shown="5"
+        :prev-text="'❮'"
+        :next-text="'❯'"
+        :first-text="'⋘'"
+        :last-text="'⋙'"
+      />
   </div>
 </template>
 
@@ -61,9 +65,11 @@ waveform.register();
 const logs = ref([]);
 const loading = ref(true);
 const totalItems = ref(0);
-const itemsPerPage = ref(5);
+const itemsPerPage = ref(10);
+const resultsPerPages = ref(10);
 const currentPage = ref(1);
 const lastPage = ref(1);
+
 const changePage = (page) => {
   currentPage.value = page;
 };
@@ -80,8 +86,9 @@ const getLogs = async (page = 1) => {
 
     logs.value = response.data.data;
     totalItems.value = response.data.meta.total;
+    resultsPerPages.value = response.data.meta.perPage;
     currentPage.value = response.data.meta.currentPage;
-    lastPage.value = response.data.meta.lastPage
+    lastPage.value = response.data.meta.lastPage;
     loading.value = false;
   } catch (error) {
     console.error('Erro ao buscar logs:', error);
