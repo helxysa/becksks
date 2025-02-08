@@ -1215,6 +1215,62 @@
             </select>
           </div>
           <div class="flex gap-4 items-center">
+            <label class="font-bold text-3xl w-[200px]">Status da medição:</label>
+            <select
+                v-model="medicaoData.status"
+                class="focus:border-[#FF6600] border-2 focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-2 w-[50%] border-gray-300 rounded-md h-14"
+                :disabled="medicaoData.tipo_medicao === null"
+                required
+            >
+                <option disabled hidden value="">Selecione o status da medição</option>
+                <option v-if="medicaoData.tipo_medicao === 'Estimada'" value="Autorizada">Autorizada</option>
+                <option v-if="medicaoData.tipo_medicao === 'Estimada'" value="Não Autorizada">Não Autorizada</option>
+                <option v-if="medicaoData.tipo_medicao === 'Estimada'" value="Cancelada">Cancelada</option>
+                <option
+                    v-if="medicaoData.tipo_medicao === 'Detalhada' ||
+                          medicaoData.tipo_medicao === 'Relatório Mensal' ||
+                          medicaoData.tipo_medicao === 'Não se aplica'"
+                    value="Não Iniciada"
+                >
+                    Não Iniciada
+                </option>
+                <option
+                    v-if="medicaoData.tipo_medicao === 'Detalhada' ||
+                          medicaoData.tipo_medicao === 'Relatório Mensal' ||
+                          medicaoData.tipo_medicao === 'Não se aplica'"
+                    value="Em Andamento"
+                >
+                    Em Andamento
+                </option>
+                <option
+                    v-if="medicaoData.tipo_medicao === 'Detalhada' ||
+                          medicaoData.tipo_medicao === 'Relatório Mensal' ||
+                          medicaoData.tipo_medicao === 'Não se aplica'"
+                    value="Disponível p/ Faturamento"
+                >
+                    Disponível para Faturamento
+                </option>
+                <option
+                    v-if="medicaoData.tipo_medicao === 'Detalhada' ||
+                          medicaoData.tipo_medicao === 'Relatório Mensal' ||
+                          medicaoData.tipo_medicao === 'Não se aplica'"
+                    value="Encaminhada p/ Faturamento"
+                    disabled hidden
+                >
+                    Encaminhada p/ Faturamento
+                </option>
+                <option
+                    v-if="medicaoData.tipo_medicao === 'Detalhada' ||
+                          medicaoData.tipo_medicao === 'Relatório Mensal' ||
+                          medicaoData.tipo_medicao === 'Não se aplica'"
+                    value="Finalizada"
+                    disabled hidden
+                >
+                    Finalizada
+                </option>
+            </select>
+        </div>
+          <div class="flex gap-4 items-center">
             <label class="font-bold text-3xl w-[200px]">Competência:</label>
             <input
               type="month"
@@ -1303,7 +1359,7 @@
                   <money3
                     v-model="item.quantidadeItens"
                     type="number"
-                    class="border-2 text-center max-w-60"
+                    class="border-2 border-black text-center max-w-60"
                     min="0"
                     v-bind="decimalConfig"
                   />
@@ -1317,7 +1373,7 @@
                     type="number"
                     min="1"
                     max="31"
-                    class="border-2 text-center max-w-72"
+                    class="border-2 border-black text-center max-w-72"
                     placeholder="Dias"
                   />
                 </td>
@@ -1532,7 +1588,7 @@
                     type="number"
                     :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
                     :class="{ 'border-none bg-white': isLancamentoViewModal }"
-                    class="border-2 text-center max-w-60"
+                    class="border-2 border-black text-center max-w-60"
                     min="0"
                     v-bind="decimalConfig"
                   />
@@ -1545,7 +1601,7 @@
                     min="0"
                     max="31"
                     :disabled="isLancamentoViewModal || editingLancamento.isFaturado"
-                    class="border-2 text-center max-w-72"
+                    class="border-2 border-black text-center max-w-72"
                     placeholder="Dias"
                   />
                 </td>
@@ -3201,18 +3257,18 @@ const createLancamento = async () => {
     return;
   }
 
-  if (medicaoData.value.tipo_medicao === "Não se aplica") {
-    medicaoData.value.status = "Não Iniciada";
-  }
-  if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
-    medicaoData.value.status = "Não Iniciada";
-  }
-  if (medicaoData.value.tipo_medicao === "Detalhada") {
-    medicaoData.value.status = "Não Iniciada";
-  }
-  if (medicaoData.value.tipo_medicao === "Estimada") {
-    medicaoData.value.status = "Não Autorizada";
-  }
+  // if (medicaoData.value.tipo_medicao === "Não se aplica") {
+  //   medicaoData.value.status = "Não Iniciada";
+  // }
+  // if (medicaoData.value.tipo_medicao === "Relatório Mensal") {
+  //   medicaoData.value.status = "Não Iniciada";
+  // }
+  // if (medicaoData.value.tipo_medicao === "Detalhada") {
+  //   medicaoData.value.status = "Não Iniciada";
+  // }
+  // if (medicaoData.value.tipo_medicao === "Estimada") {
+  //   medicaoData.value.status = "Não Autorizada";
+  // }
   let payload = {
     status: medicaoData.value.status,
     itens: itensQuantidadePreenchida,
