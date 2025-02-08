@@ -3803,12 +3803,15 @@ const canConvertItem = computed(() => {
   }
 
   const item = medicaoData.value.itens.find(i => i.id === selectedItem.value.id);
+
   if (!item) {
     return false; // Item não encontrado - botão desabilitado
   }
 
+  const temItensValidosParaConversao = itensParaConverter.value.some(i => i.id !== item.id && calcularItensRestante(i.id, i.saldoQuantidadeContratada) > 0);
+
   const quantidadeDisponivel = calcularItensRestante(item.id, item.saldoQuantidadeContratada);
-  return parseFloat(item.quantidadeItens) > quantidadeDisponivel; // Apenas habilita se exceder a quantidade disponível
+  return parseFloat(item.quantidadeItens) > quantidadeDisponivel && temItensValidosParaConversao; // Apenas habilita se exceder a quantidade disponível
 });
 
 function truncateToPrecision(value, precision = 3) {
