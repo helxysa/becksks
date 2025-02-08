@@ -3087,9 +3087,11 @@ const ExibirModalLancamento = () => {
 };
 
 const isSaldoNegativo = computed(() => {
-  return contrato.value.contratoItens.some(
-    (item) => calcularSaldoAtual(item) < 0
-  );
+  if (medicaoData.value.tipo_medicao === 'Estimada' || editingLancamento.value.tipoMedicao === 'Estimada') {
+    return false;
+  }
+
+  return medicaoData.tipo_medicao !== 'Estimada' && contrato.value.contratoItens.some((item) => calcularSaldoAtual(item) < 0);
 });
 
 const closeModalLancamento = () => {
@@ -3914,6 +3916,7 @@ watch(selectedItem, (newItem, oldItem) => {
   }
   // Verifica se havia um item convertido para cancelar a conversão caso o item selecionado seja alterado
   if (hasConversion.value) {
+    itemNovo.value.quantidadeItens = '0.000';
     cancelConversion(); // Remove o item convertido
   }
 });
