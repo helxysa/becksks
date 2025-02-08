@@ -2795,19 +2795,18 @@ const calcularTotalLancamento = (lancamentos) => {
 };
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
-  let saldoTotal = 0;
-
-  faturamento.forEach((faturamentoObjeto) => {
-    let lancamentoTemDias = faturamentoObjeto.lancamento.dias
-    faturamentoObjeto.lancamento.lancamentoItens.forEach(lancamentoItem => {
-      if(lancamentoTemDias) {
-        saldoTotal += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamentoTemDias);
-      } else {
-        saldoTotal += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens)
-      }
-    })
-  })
-  return saldoTotal;
+    let saldoTotal = 0;
+    faturamento?.forEach((faturamentoObjeto) => {
+        const lancamentoTemDias = faturamentoObjeto?.lancamento?.dias ?? 0;
+        faturamentoObjeto?.lancamento?.lancamentoItens?.forEach(lancamentoItem => {
+            if(lancamentoTemDias > 0) {
+                saldoTotal += (parseFloat(lancamentoItem.valorUnitario) / 30) * parseFloat(lancamentoTemDias);
+            } else {
+                saldoTotal += parseFloat(lancamentoItem.valorUnitario) * parseFloat(lancamentoItem.quantidadeItens);
+            }
+        });
+    });
+    return saldoTotal;
 };
 
 const formatDatePTBR = (isoString) => {
@@ -3520,10 +3519,10 @@ const calcularSaldoDisponivel = (faturamento) => {
   let valorPago = 0;
 
   faturamento?.forEach((item) => {
-    item.faturamentoItens.forEach((subItem) => {
+    item.faturamentoItens?.forEach((subItem) => {
       const lancamento = subItem.lancamento;
 
-      lancamento.lancamentoItens.forEach((itemLancamento) => {
+      lancamento?.lancamentoItens?.forEach((itemLancamento) => {
         const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
         const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
 

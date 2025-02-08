@@ -146,56 +146,64 @@ const resetFilters = () => {
 };
 
 const calcularSaldoFaturamentoItens = (faturamento) => {
-  let saldoTotal = 0;
-  let valorAguardandoFaturamento = 0;
-  let valorAguardandoPagamento = 0;
-  let valorPago = 0;
+    let saldoTotal = 0;
+    let valorAguardandoFaturamento = 0;
+    let valorAguardandoPagamento = 0;
+    let valorPago = 0;
 
-  faturamento?.forEach((item) => {
-    if (item.status === "Aguardando Faturamento") {
-      item.faturamentoItens.forEach((subItem) => {
-        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-          const quantidadeItens =
-            parseFloat(itemLancamento.quantidadeItens) || 0;
-          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-          const valorTotalItem = quantidadeItens * valorUnitario;
-          valorAguardandoFaturamento += valorTotalItem;
-          saldoTotal += valorTotalItem;
-        });
-      });
-    } else if (item.status === "Aguardando Pagamento") {
-      item.faturamentoItens.forEach((subItem) => {
-        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-          const quantidadeItens =
-            parseFloat(itemLancamento.quantidadeItens) || 0;
-          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-          const valorTotalItem = quantidadeItens * valorUnitario;
-          valorAguardandoPagamento += valorTotalItem;
-          saldoTotal += valorTotalItem;
-        });
-      });
-    } else if (item.status === "Pago") {
-      item.faturamentoItens.forEach((subItem) => {
-        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-          const quantidadeItens =
-            parseFloat(itemLancamento.quantidadeItens) || 0;
-          const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-          const valorTotalItem = quantidadeItens * valorUnitario;
-          valorPago += valorTotalItem;
-          saldoTotal += valorTotalItem;
-        });
-      });
-    }
-  });
+    faturamento?.forEach((item) => {
+        if (item.status === "Aguardando Faturamento") {
+            if (item.faturamentoItens) {
+                item.faturamentoItens.forEach((subItem) => {
+                    if (subItem.lancamento && subItem.lancamento.lancamentoItens) {
+                        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+                            const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
+                            const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+                            const valorTotalItem = quantidadeItens * valorUnitario;
+                            valorAguardandoFaturamento += valorTotalItem;
+                            saldoTotal += valorTotalItem;
+                        });
+                    }
+                });
+            }
+        } else if (item.status === "Aguardando Pagamento") {
+            if (item.faturamentoItens) {
+                item.faturamentoItens.forEach((subItem) => {
+                    if (subItem.lancamento && subItem.lancamento.lancamentoItens) {
+                        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+                            const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
+                            const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+                            const valorTotalItem = quantidadeItens * valorUnitario;
+                            valorAguardandoPagamento += valorTotalItem;
+                            saldoTotal += valorTotalItem;
+                        });
+                    }
+                });
+            }
+        } else if (item.status === "Pago") {
+            if (item.faturamentoItens) {
+                item.faturamentoItens.forEach((subItem) => {
+                    if (subItem.lancamento && subItem.lancamento.lancamentoItens) {
+                        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
+                            const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
+                            const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+                            const valorTotalItem = quantidadeItens * valorUnitario;
+                            valorPago += valorTotalItem;
+                            saldoTotal += valorTotalItem;
+                        });
+                    }
+                });
+            }
+        }
+    });
 
-  return {
-    aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
-    aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
-    totalUtilizado: parseFloat(saldoTotal.toFixed(2)),
-    valorPago: parseFloat(valorPago.toFixed(2)),
-  };
+    return {
+        aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
+        aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
+        totalUtilizado: parseFloat(saldoTotal.toFixed(2)),
+        valorPago: parseFloat(valorPago.toFixed(2)),
+    };
 };
-
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
