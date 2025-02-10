@@ -1413,7 +1413,6 @@
           </button>
           <button
             type="submit"
-            :disabled="isSaldoNegativo"
             class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-lancamento w-40"
           >
             Salvar
@@ -1623,7 +1622,6 @@
           <button
             v-if="!isLancamentoViewModal"
             type="submit"
-            :disabled="isSaldoNegativo"
             class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-lancamento w-40"
           >
             Salvar
@@ -3247,14 +3245,21 @@ const createLancamento = async () => {
     return;
   }
 
+
   let novoSaldoContrato = calcularSaldoAtualContrato() - calcularSaldoLancamentoItens(itensQuantidadePreenchida);
 
   if (novoSaldoContrato < 0) {
-    toast("O saldo contratado não pode ser excedido.", {
-      theme: "colored",
-      type: "error",
-    });
-    return;
+      const saldoDisponivel = calcularSaldoAtualContrato();
+      const valorExcedente = Math.abs(novoSaldoContrato);
+
+      toast(`A medição excede o saldo disponível em R$ ${valorExcedente.toFixed(2)}.
+              Saldo atual: R$ ${saldoDisponivel.toFixed(2)}
+              Novo saldo seria: R$ ${novoSaldoContrato.toFixed(2)}`, {
+          theme: "colored",
+          type: "error",
+          duration: 5000
+      });
+      return;
   }
 
   // if (medicaoData.value.tipo_medicao === "Não se aplica") {
