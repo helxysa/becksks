@@ -89,7 +89,6 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Nome do Fiscal</label>
           <input
-            required
             type="text"
             placeholder="Informe o nome do fiscal do contrato"
             class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -100,7 +99,6 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Telefone do fiscal</label>
           <input
-            required
             type="tel"
             placeholder="Informe o telefone do fiscal"
             class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -112,7 +110,6 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">E-mail do fiscal</label>
           <input
-            required
             type="email"
             placeholder="Informe o email do fiscal"
             class="focus:border-blue-400 font-sans transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -433,13 +430,13 @@ const fetchContrato = async (id) => {
 };
 
 async function saveContrato() {
-  if (contratoForm.value.fiscal.telefone.length < 15) {
-    toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
-      theme: "colored",
-      type: "error",
-    });
-    return;
-  }
+  // if (contratoForm.value.fiscal.telefone.length < 15) {
+  //   toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
+  //     theme: "colored",
+  //     type: "error",
+  //   });
+  //   return;
+  // }
 
   const formData = new FormData();
   formData.append("nome_contrato", contratoForm.value.nomeContrato);
