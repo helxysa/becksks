@@ -3245,21 +3245,27 @@ const createLancamento = async () => {
     return;
   }
 
+  const calcularValorTotalMedicao = () => {
+    let valorTotal = 0;
+    medicaoData.value.itens.forEach(item => {
+      const valorUnitario = item.valorUnitario;
+      const quantidade = item.quantidadeItens || 0;
+      valorTotal += valorUnitario * quantidade;
+    });
+    return valorTotal;
+  };
 
-  let novoSaldoContrato = calcularSaldoAtualContrato() - calcularSaldoLancamentoItens(itensQuantidadePreenchida);
+  const verificarSaldoExcedido = () => {
+    const saldoAtual = contrato.value.saldoContrato - calcularSaldoDisponivel(faturamentoItemData.value).totalUtilizado
+    const valorTotalMedicao = calcularValorTotalMedicao();
 
-  if (novoSaldoContrato < 0) {
-      const saldoDisponivel = calcularSaldoAtualContrato();
-      const valorExcedente = Math.abs(novoSaldoContrato);
+    return saldoAtual - valorTotalMedicao;
+  };
 
-      toast(`A medição excede o saldo disponível em R$ ${valorExcedente.toFixed(2)}.
-              Saldo atual: R$ ${saldoDisponivel.toFixed(2)}
-              Novo saldo seria: R$ ${novoSaldoContrato.toFixed(2)}`, {
-          theme: "colored",
-          type: "error",
-          duration: 5000
-      });
-      return;
+  const saldoExcedido = verificarSaldoExcedido();
+  if (saldoExcedido < 0) {
+    toast.error(`O valor excede o saldo disponível do contrato em ${formatCurrencySemArrendondar(saldoExcedido)}`);
+    return;
   }
 
   // if (medicaoData.value.tipo_medicao === "Não se aplica") {
@@ -3573,6 +3579,7 @@ const calcularSaldoItem = (item) => {
 
 const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
   let saldoTotal = 0;
+
   lancamento.forEach((item) => {
     const quantidadeItens = parseFloat(parseFloat(item.quantidadeItens).toFixed(6)) || 0;
     const valorUnitario = parseFloat(parseFloat(item.valorUnitario).toFixed(6)) || 0;
