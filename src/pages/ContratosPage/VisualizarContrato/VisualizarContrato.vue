@@ -2314,6 +2314,7 @@ const criarFaturamentoCurrentTab = ref(criarFaturamentoTabs[0])
 const faturamentoLocalAnexos = ref([])
 const faturamentoId = ref(null)
 let contratoId = null
+let financialSummaryValues = ref(null)
 const financialSummary = computed(() => [
   {
     title: "Valor Contratado",
@@ -2324,7 +2325,7 @@ const financialSummary = computed(() => [
   {
     title: "Aguardando Faturamento",
     value: formatCurrencySemArrendondar(
-      calcularSaldoDisponivel(faturamentoItemData.value).aguardandoFaturamento
+      calcularSaldoDisponivel(financialSummaryValues.value).aguardandoFaturamento
     ),
     icon: "ph:clock-fill",
     bgColor: "from-orange-400 to-orange-600",
@@ -2332,7 +2333,7 @@ const financialSummary = computed(() => [
   {
     title: "Aguardando Pagamento",
     value: formatCurrencySemArrendondar(
-      calcularSaldoDisponivel(faturamentoItemData.value).aguardandoPagamento
+      calcularSaldoDisponivel(financialSummaryValues.value).aguardandoPagamento
     ),
     icon: "fa-solid:hand-holding-usd",
     bgColor: "from-indigo-400 to-indigo-600",
@@ -2340,14 +2341,14 @@ const financialSummary = computed(() => [
   {
     title: "Pago",
     value: formatCurrencySemArrendondar(
-      calcularSaldoDisponivel(faturamentoItemData.value).valorPago
+      calcularSaldoDisponivel(financialSummaryValues.value).valorPago
     ),
     icon: "fa-check-circle",
     bgColor: "from-green-400 to-green-600",
   },
   {
     title: "Saldo Disponível",
-    value: formatCurrencySemArrendondar(contrato.value.saldoContrato - calcularSaldoDisponivel(faturamentoItemData.value).totalUtilizado),
+    value: formatCurrencySemArrendondar(contrato.value.saldoContrato - calcularSaldoDisponivel(financialSummaryValues.value).totalUtilizado),
     icon: "ph-wallet-fill",
     bgColor: "from-purple-400 to-purple-600",
   },
@@ -2697,6 +2698,16 @@ const fetchContratoFaturamentos = async (id, page, search = '') => {
     faturamentoItemMeta.value = [];
     currentPageFaturamento.value = 1;
     totalFaturamentos.value = 0;
+  }
+};
+
+const fetchResumoFinanceiroContrato = async (id) => {
+  try {
+    const response = await api.get(`contratos/${id}/resumo`);
+    console.log('resp', response.data)
+    financialSummaryValues.value = response.data;
+  } catch (error) {
+    faturamentoItemData.value = [];
   }
 };
 
@@ -3338,6 +3349,8 @@ onMounted(async () => {
   } else {
     contratoSelecionadoId.value = contratoOriginal.value.id;
   }
+
+  await fetchResumoFinanceiroContrato(contratoId);
 
   isLoading.value = false;
   window.scroll({
@@ -4301,7 +4314,8 @@ const financialCardsData = ref([])
 const selectedCardTitle = ref('')
 
 const openFinancialCardsModal = (title) => {
-  financialCardsData.value = faturamentoItemData.value.filter(fat => fat.status === title)
+  // financialCardsData.value = faturamentoItemData.value.filter(fat => fat.status === title)
+  financialCardsData.value = financialSummaryValues.value.filter(fat => fat.status === title)
   selectedCardTitle.value = title
   modalFinancialCards.value = true
 }
