@@ -52,14 +52,12 @@
                 <div class="flex justify-between text-xl mb-1">
                   <span class="text-gray-600">Progresso:</span>
                   <span class="font-semibold text-msb-blue">
-                    {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}%
+                    <!-- {{ (calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0) }}% -->
+                      {{calcularProgresso(contrato) }}%
                   </span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    class="bg-[#0066cc] h-2.5 rounded-full"
-                    :style="{ width: `${(calcularSaldoFaturamentoItens(contrato.faturamentos).totalUtilizado / parseFloat(contrato.saldoContrato).toFixed(2) * 100).toFixed(0)}%` }"
-                  >
+                  <div class="bg-[#0066cc] h-2.5 rounded-full" :style="{ width: `${calcularProgresso(contrato)}%` }">
                   </div>
                 </div>
               </div>
@@ -238,6 +236,19 @@ const fetchContratos = async () => {
     console.error("Erro ao buscar contratos:", error);
   }
 };
+
+const calcularProgresso = (contrato) => {
+  const valorTotalUtilizado = faturamentos.aguardandoFaturamento + faturamentos.aguardandoPagamento + faturamentos.valorPago;
+  const saldoContrato = parseFloat(contrato.saldoContrato);
+  const saldoDisponivel = saldoContrato - valorTotalUtilizado;
+  
+  if (saldoDisponivel <= 1) {
+    return 100;
+  }
+
+  return Number(((valorTotalUtilizado / saldoContrato) * 100).toFixed(2));
+};
+
 
 watch([filterName, filterType, dataInicio, dataFim], () => {
   fetchContratos();

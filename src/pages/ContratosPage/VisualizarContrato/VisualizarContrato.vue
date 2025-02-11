@@ -2704,7 +2704,6 @@ const fetchContratoFaturamentos = async (id, page, search = '') => {
 const fetchResumoFinanceiroContrato = async (id) => {
   try {
     const response = await api.get(`contratos/${id}/resumo`);
-    console.log('resp', response.data)
     financialSummaryValues.value = response.data;
   } catch (error) {
     faturamentoItemData.value = [];
