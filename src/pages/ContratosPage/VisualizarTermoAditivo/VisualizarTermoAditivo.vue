@@ -2758,17 +2758,6 @@
       }
     };
 
-    // const fetchTermoAditivo =  async (id) => {
-    //   try {
-    //     const response = await api.get(`/contratos/${id}/termo-aditivo`);
-    //     console.log(response.data, 'termo aditivos')
-    //     termosAditivos.value = response.data;
-    //     // contratoForm.value = response.data;
-
-    //   } catch (error) {
-    //     console.error("Erro ao buscar contrato:", error);
-    //   }
-    // }
     const verificaIsFaturado = async (lancamentos, faturamentos) => {
       lancamentos.forEach((lancamento) => {
         lancamento.isFaturado = false;
