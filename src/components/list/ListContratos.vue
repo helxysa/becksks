@@ -152,56 +152,42 @@ const calcularSaldoFaturamentoItens = (faturamento) => {
     let valorPago = 0;
 
     faturamento?.forEach((item) => {
-        if (item.status === "Aguardando Faturamento") {
-            if (item.faturamentoItens) {
-                item.faturamentoItens.forEach((subItem) => {
-                    if (subItem.lancamento && subItem.lancamento.lancamentoItens) {
-                        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-                            const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
-                            const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-                            const valorTotalItem = quantidadeItens * valorUnitario;
-                            valorAguardandoFaturamento += valorTotalItem;
-                            saldoTotal += valorTotalItem;
-                        });
-                    }
-                });
-            }
-        } else if (item.status === "Aguardando Pagamento") {
-            if (item.faturamentoItens) {
-                item.faturamentoItens.forEach((subItem) => {
-                    if (subItem.lancamento && subItem.lancamento.lancamentoItens) {
-                        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-                            const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
-                            const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-                            const valorTotalItem = quantidadeItens * valorUnitario;
-                            valorAguardandoPagamento += valorTotalItem;
-                            saldoTotal += valorTotalItem;
-                        });
-                    }
-                });
-            }
-        } else if (item.status === "Pago") {
-            if (item.faturamentoItens) {
-                item.faturamentoItens.forEach((subItem) => {
-                    if (subItem.lancamento && subItem.lancamento.lancamentoItens) {
-                        subItem.lancamento.lancamentoItens.forEach((itemLancamento) => {
-                            const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
-                            const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
-                            const valorTotalItem = quantidadeItens * valorUnitario;
-                            valorPago += valorTotalItem;
-                            saldoTotal += valorTotalItem;
-                        });
-                    }
-                });
-            }
-        }
+        item.faturamentoItens?.forEach((subItem) => {
+            const lancamento = subItem.lancamento;
+
+            lancamento?.lancamentoItens?.forEach((itemLancamento) => {
+                const quantidadeItens = parseFloat(itemLancamento.quantidadeItens) || 0;
+                const valorUnitario = parseFloat(itemLancamento.valorUnitario) || 0;
+
+                let valorTotalItem;
+
+                // Lógica idêntica à função calcularSaldoDisponível
+                if (lancamento.dias) {
+                    valorTotalItem = parseFloat(((valorUnitario / 30) * lancamento.dias).toFixed(2));
+                } else {
+                    valorTotalItem = parseFloat((quantidadeItens * valorUnitario).toFixed(2));
+                }
+
+                // Atualização dos valores baseada no status do item original
+                if (item.status === "Aguardando Faturamento") {
+                    valorAguardandoFaturamento = parseFloat((valorAguardandoFaturamento + valorTotalItem).toFixed(2));
+                    saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(2));
+                } else if (item.status === "Aguardando Pagamento") {
+                    valorAguardandoPagamento = parseFloat((valorAguardandoPagamento + valorTotalItem).toFixed(2));
+                    saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(2));
+                } else if (item.status === "Pago") {
+                    valorPago = parseFloat((valorPago + valorTotalItem).toFixed(2));
+                    saldoTotal = parseFloat((saldoTotal + valorTotalItem).toFixed(2));
+                }
+            });
+        });
     });
 
     return {
         aguardandoFaturamento: parseFloat(valorAguardandoFaturamento.toFixed(2)),
         aguardandoPagamento: parseFloat(valorAguardandoPagamento.toFixed(2)),
         totalUtilizado: parseFloat(saldoTotal.toFixed(2)),
-        valorPago: parseFloat(valorPago.toFixed(2)),
+        valorPago: parseFloat(valorPago.toFixed(2))
     };
 };
 const formatCurrency = (value) => {
