@@ -84,7 +84,6 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Fiscal do contrato</label>
           <input
-            required
             type="text"
             placeholder="Informe o fiscal do contrato"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -95,7 +94,6 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">Telefone do fiscal</label>
           <input
-            required
             type="tel"
             placeholder="Informe o telefone do fiscal"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -107,7 +105,6 @@
         <div class="flex flex-col items-start gap-3 mt-8">
           <label class="font-semibold">E-mail do fiscal</label>
           <input
-            required
             type="email"
             placeholder="Informe o email do fiscal"
             class="font-sans focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
@@ -981,13 +978,13 @@ const removeItem = (index) => {
 };
 
 const createContrato = async () => {
-  if (contratoForm.fiscal.telefone.length < 15) {
+  /* if (contratoForm.fiscal.telefone.length < 15) {
     toast("Telefone incompleto! Por favor, preencha o telefone corretamente.", {
       theme: "colored",
       type: "error",
     });
     return;
-  }
+  } */
 
   try {
     const formData = new FormData();
@@ -1002,9 +999,11 @@ const createContrato = async () => {
     formData.append("objeto_contrato", contratoForm.objeto_contrato);
     formData.append("observacoes", contratoForm.observacoes);
     formData.append("lembrete_vencimento", contratoForm.lembrete_vencimento);
-    formData.append("fiscal[nome]", contratoForm.fiscal.nome);
-    formData.append("fiscal[telefone]", contratoForm.fiscal.telefone);
-    formData.append("fiscal[email]", contratoForm.fiscal.email);
+
+    // Campos do fiscal (não obrigatórios)
+    if (contratoForm.fiscal.nome) formData.append("fiscal[nome]", contratoForm.fiscal.nome);
+    if (contratoForm.fiscal.telefone) formData.append("fiscal[telefone]", contratoForm.fiscal.telefone);
+    if (contratoForm.fiscal.email) formData.append("fiscal[email]", contratoForm.fiscal.email);
 
     if (contratoForm.foto) {
       formData.append("foto", contratoForm.foto);

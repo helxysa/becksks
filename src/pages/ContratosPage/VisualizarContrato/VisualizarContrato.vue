@@ -1411,7 +1411,6 @@
           </button>
           <button
             type="submit"
-            :disabled="isSaldoNegativo"
             class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-lancamento w-40"
           >
             Salvar
@@ -1621,7 +1620,6 @@
           <button
             v-if="!isLancamentoViewModal"
             type="submit"
-            :disabled="isSaldoNegativo"
             class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest disabled:opacity-25 transition h-14 btn-save-lancamento w-40"
           >
             Salvar
@@ -2314,6 +2312,7 @@ const criarFaturamentoCurrentTab = ref(criarFaturamentoTabs[0])
 const faturamentoLocalAnexos = ref([])
 const faturamentoId = ref(null)
 let contratoId = null
+let financialSummaryValues = ref(null)
 const financialSummary = computed(() => [
   {
     title: "Valor Contratado",
@@ -2324,7 +2323,7 @@ const financialSummary = computed(() => [
   {
     title: "Aguardando Faturamento",
     value: formatCurrencySemArrendondar(
-      calcularSaldoDisponivel(faturamentoItemData.value).aguardandoFaturamento
+      calcularSaldoDisponivel(financialSummaryValues.value).aguardandoFaturamento
     ),
     icon: "ph:clock-fill",
     bgColor: "from-orange-400 to-orange-600",
@@ -2332,7 +2331,7 @@ const financialSummary = computed(() => [
   {
     title: "Aguardando Pagamento",
     value: formatCurrencySemArrendondar(
-      calcularSaldoDisponivel(faturamentoItemData.value).aguardandoPagamento
+      calcularSaldoDisponivel(financialSummaryValues.value).aguardandoPagamento
     ),
     icon: "fa-solid:hand-holding-usd",
     bgColor: "from-indigo-400 to-indigo-600",
@@ -2340,14 +2339,14 @@ const financialSummary = computed(() => [
   {
     title: "Pago",
     value: formatCurrencySemArrendondar(
-      calcularSaldoDisponivel(faturamentoItemData.value).valorPago
+      calcularSaldoDisponivel(financialSummaryValues.value).valorPago
     ),
     icon: "fa-check-circle",
     bgColor: "from-green-400 to-green-600",
   },
   {
     title: "Saldo Disponível",
-    value: formatCurrencySemArrendondar(contrato.value.saldoContrato - calcularSaldoDisponivel(faturamentoItemData.value).totalUtilizado),
+    value: formatCurrencySemArrendondar(contrato.value.saldoContrato - calcularSaldoDisponivel(financialSummaryValues.value).totalUtilizado),
     icon: "ph-wallet-fill",
     bgColor: "from-purple-400 to-purple-600",
   },
@@ -2697,6 +2696,15 @@ const fetchContratoFaturamentos = async (id, page, search = '') => {
     faturamentoItemMeta.value = [];
     currentPageFaturamento.value = 1;
     totalFaturamentos.value = 0;
+  }
+};
+
+const fetchResumoFinanceiroContrato = async (id) => {
+  try {
+    const response = await api.get(`contratos/${id}/resumo`);
+    financialSummaryValues.value = response.data;
+  } catch (error) {
+    faturamentoItemData.value = [];
   }
 };
 
@@ -3245,13 +3253,26 @@ const createLancamento = async () => {
     return;
   }
 
-  let novoSaldoContrato = calcularSaldoAtualContrato() - calcularSaldoLancamentoItens(itensQuantidadePreenchida);
-
-  if (novoSaldoContrato < 0) {
-    toast("O saldo contratado não pode ser excedido.", {
-      theme: "colored",
-      type: "error",
+  const calcularValorTotalMedicao = () => {
+    let valorTotal = 0;
+    medicaoData.value.itens.forEach(item => {
+      const valorUnitario = item.valorUnitario;
+      const quantidade = item.quantidadeItens || 0;
+      valorTotal += valorUnitario * quantidade;
     });
+    return valorTotal;
+  };
+
+  const verificarSaldoExcedido = () => {
+    const saldoAtual = contrato.value.saldoContrato - calcularSaldoDisponivel(faturamentoItemData.value).totalUtilizado
+    const valorTotalMedicao = calcularValorTotalMedicao();
+
+    return saldoAtual - valorTotalMedicao;
+  };
+
+  const saldoExcedido = verificarSaldoExcedido();
+  if (saldoExcedido < 0) {
+    toast.error(`O valor excede o saldo disponível do contrato em ${formatCurrencySemArrendondar(saldoExcedido)}`);
     return;
   }
 
@@ -3325,6 +3346,8 @@ onMounted(async () => {
   } else {
     contratoSelecionadoId.value = contratoOriginal.value.id;
   }
+
+  await fetchResumoFinanceiroContrato(contratoId);
 
   isLoading.value = false;
   window.scroll({
@@ -3566,6 +3589,7 @@ const calcularSaldoItem = (item) => {
 
 const calcularSaldoLancamentoItens = (lancamento, dias = null) => {
   let saldoTotal = 0;
+
   lancamento.forEach((item) => {
     const quantidadeItens = parseFloat(parseFloat(item.quantidadeItens).toFixed(6)) || 0;
     const valorUnitario = parseFloat(parseFloat(item.valorUnitario).toFixed(6)) || 0;
@@ -4287,7 +4311,8 @@ const financialCardsData = ref([])
 const selectedCardTitle = ref('')
 
 const openFinancialCardsModal = (title) => {
-  financialCardsData.value = faturamentoItemData.value.filter(fat => fat.status === title)
+  // financialCardsData.value = faturamentoItemData.value.filter(fat => fat.status === title)
+  financialCardsData.value = financialSummaryValues.value.filter(fat => fat.status === title)
   selectedCardTitle.value = title
   modalFinancialCards.value = true
 }
