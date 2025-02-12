@@ -201,7 +201,7 @@
           <button
             class="flex items-center justify-center px-5 py-3 rounded-md text-xl font-normal text-white bg-green-600 hover:bg-green-700 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
-            @click="openModalProjeto()"
+            @click="abrirModalProjetos"
           >
             <span class="mr-2">
               <Icon
@@ -212,6 +212,59 @@
             </span>
             Adicionar Projeto
           </button>
+        </div>
+        <div class="mt-8">
+          <table class="mt-8 table-auto border border-slate-200 rounded-2xl w-full">
+            <thead class="h-24 bg-slate-100 border-1">
+              <tr>
+                <th class="text-2xl">Projeto</th>
+                <th class="text-2xl">Situação</th>
+                <th class="text-2xl">Data de Início</th>
+                <th class="text-2xl">Data Prevista</th>
+                <th class="text-2xl">Gestor</th>
+                <th class="text-2xl">Analista Responsável</th>
+                <th class="text-2xl">Opções</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(projeto, index) in projetos"
+                :key="index"
+                class="text-center"
+              >
+                <td class="text-xl p-4">{{ projeto.projeto }}</td>
+                <td class="text-xl p-4">{{ projeto.situacao }}</td>
+                <td class="text-xl p-4">{{ formatarData(projeto.dataInicio) }}</td>
+                <td class="text-xl p-4">{{ formatarData(projeto.dataPrevista) }}</td>
+                <td class="text-xl p-4">{{ projeto.nomeGestor }}</td>
+                <td class="text-xl p-4">{{ projeto.analistaResponsavel }}</td>
+                <td>
+                  <button
+                    type="button"
+                    @click="editarProjeto(index)"
+                    v-if="hasPermission('projetos', 'Editar')"
+                  >
+                    <Icon
+                      icon="ph:pencil"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    @click="removerProjeto(index)"
+                    v-if="hasPermission('projetos', 'Deletar')"
+                  >
+                    <Icon
+                      icon="ph:trash"
+                      height="20"
+                      class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                    />
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div class="mt-8 flex gap-8 justify-end">
           <span @click="voltarListagem" class="cursor-pointer">
@@ -232,107 +285,112 @@
       </form>
     </section>
     <JetDialogModal
-      :show="isModalProjetoOpen"
+      :show="exibirModalProjetos"
       :withouHeader="false"
-      @close="closeModalProjeto"
-      :modalTitle="modalTitleProjeto"
+      @close="fecharModalProjetos"
+      :modalTitle="isEdicaoProjeto ? 'Editar Projeto' : 'Adicionar Projeto'"
       maxWidth="6xl"
     >
       <template #content>
-        <form
-          class="flex gap-8 px-6 h-[4.40rem]"
-        >
-          <input
-            type="text"
-            id="nome"
-            v-model="newProjeto"
-            required
-            class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md disabled:cursor-not-allowed"
-            placeholder="Criar novo projeto"
-            :disabled="isEditingProjeto"
-          />
-          <button
-            type="button"
-            @click="criarProjeto()"
-            v-if="hasPermission('projetos', 'Criar') || hasPermission('projetos', 'Editar')"
-            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px] disabled:bg-gray-500 disabled:text-gray-200 disabled:cursor-not-allowed"
-            :disabled="isEditingProjeto"
-          >
-          Adicionar
-        </button>
-        </form>
-        <div class="mt-6 px-6 flex flex-col gap-4 max-h-[32vh] overflow-y-auto">
-          <div
-            v-for="item in projetos"
-            :key="item.id"
-            class="flex items-center gap-2 border-[1px] rounded-md"
-          >
-            <div
-              v-if="!item.isEditing"
-              class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500"
-            >
-              <span class="ml-6 font-sans text-nowrap truncate max-w-[500px]" :title="item.projeto">
-                {{ item.projeto }}
-              </span>
-              <div class="flex items-center mx-4">
-                <button
-                  @click="editProjeto(item)"
-                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                  v-if="hasPermission('projetos', 'Editar')"
-                >
-                  <Icon
-                    icon="heroicons-solid:pencil"
-                    height="18"
-                    class="text-blue-600 rounded-full"
-                  />
-                </button>
-                <button
-                  @click="deletarProjeto(item.id, item)"
-                  class="hover:bg-gray-200 hover:rounded-full rounded-full p-4"
-                  v-if="hasPermission('projetos', 'Deletar')"
-                >
-                  <Icon icon="ph:trash-fill" height="20" class="text-red-500" />
-                </button>
-              </div>
+        <form @submit.prevent="salvarProjeto">
+          <section class="flex flex-col gap-6">
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Projeto:</label>
+              <input
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                type="text"
+                v-model="projetoAtual.projeto"
+                required
+                placeholder="Nome do projeto"
+              />
             </div>
-            <div
-            v-else
-            class="flex justify-between items-center w-full hover:bg-gray-100 p-4 transition-colors ease-in-out duration-500 gap-6"
-          >
-            <input
-              type="text"
-              v-model="item.projeto"
-              class="text-2xl font-sans pl-6 focus:border-blue-400 transition-colors ease-in-out duration-600 border-[1px] focus:border-2 focus:outline-none focus:ring-0 focus:ring-offset-0 px-4 py-[9px] w-full border-gray-300 rounded-md"
-              placeholder="Digite o nome do projeto"
-            />
-            <div class="ml-auto text-nowrap flex gap-4">
-              <button
-                @click="salvarProjeto(item)"
-                class="bg-blue-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-              >
-                Salvar
-              </button>
-              <button
-                @click="cancelEdit(item)"
-                class="bg-red-500 p-2 text-xl font-sans font-medium text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-          </div>
-        </div>
 
-        <hr class="my-8" />
-        <footer class="flex justify-end h-16 mb-2">
-          <button
-            type="button"
-            @click="closeModalProjeto"
-            class="px-6 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-          >
-            Salvar Projetos
-          </button>
-        </footer>
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Situação:</label>
+              <select
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                v-model="projetoAtual.situacao"
+                required
+              >
+                <option disabled hidden value="">Selecione a situação</option>
+                <option>Aguardando Autorização</option>
+                <option>Em Desenvolvimento</option>
+                <option>Em Sustentação</option>
+                <option>Parado</option>
+                <option>Finalizado</option>
+              </select>
+            </div>
+
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Data de Início:</label>
+              <input
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                type="date"
+                v-model="projetoAtual.data_inicio"
+                required
+              />
+            </div>
+
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Data Prevista:</label>
+              <input
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                type="date"
+                v-model="projetoAtual.data_prevista"
+                required
+              />
+            </div>
+
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Dono da Regra:</label>
+              <input
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                type="text"
+                v-model="projetoAtual.nome_dono_regra"
+                required
+                placeholder="Nome do dono da regra"
+              />
+            </div>
+
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Gestor:</label>
+              <input
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                type="text"
+                v-model="projetoAtual.nome_gestor"
+                required
+                placeholder="Nome do gestor"
+              />
+            </div>
+
+            <div class="flex gap-4 items-center">
+              <label class="font-bold text-2xl w-48">Analista Responsável:</label>
+              <input
+                class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
+                type="text"
+                v-model="projetoAtual.analista_responsavel"
+                required
+                placeholder="Nome do analista"
+              />
+            </div>
+          </section>
+
+          <div class="mt-9 flex justify-end gap-4">
+            <button
+              type="button"
+              @click="fecharModalProjetos"
+              class="ml-3 inline-flex justify-center items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-bold text-xl text-gray-700 tracking-widest shadow-sm hover:text-gray-500 hover:bg-gray-100 transition h-14 w-40"
+            >
+              Fechar
+            </button>
+            <button
+              type="submit"
+              class="inline-flex ml-3 items-center justify-center px-4 py-2 border border-transparent rounded-md font-bold text-xl text-white tracking-widest transition h-14 bg-blue-500 hover:bg-blue-600 w-40"
+            >
+              Salvar
+            </button>
+          </div>
+        </form>
       </template>
     </JetDialogModal>
   </div>
@@ -509,11 +567,20 @@ const phoneMask = (value) => {
 };
 
 // LÓGICA DE PROJETO
-const isModalProjetoOpen = ref(false);
-const isEditingProjeto = ref(false);
-const modalTitleProjeto = computed(() => isEditingProjeto.value ? "Editar Projeto" : "Adicionar Projeto");
+const exibirModalProjetos = ref(false);
+const isEdicaoProjeto = ref(false);
+const projetoIndexEdicao = ref(-1);
 const projetos = ref([]);
-const newProjeto = ref("");
+
+const projetoAtual = reactive({
+  projeto: "",
+  situacao: "",
+  data_inicio: "",
+  data_prevista: "",
+  nome_dono_regra: "",
+  nome_gestor: "",
+  analista_responsavel: "",
+});
 
 const fetchProjetos = async (id) => {
   try {
@@ -525,108 +592,77 @@ const fetchProjetos = async (id) => {
   }
 };
 
-const salvarProjeto = async (item) => {
-  if (!item.projeto.trim()) {
-    toast.error("O nome do projeto não pode estar vazio.");
-    return;
-  }
+function abrirModalProjetos() {
+  resetFormProjeto();
+  exibirModalProjetos.value = true;
+}
 
-  if (isDuplicateProjeto(item.projeto, item.id)) {
-    toast.error("Já existe um projeto com esse nome.");
-    return;
-  }
+function fecharModalProjetos() {
+  exibirModalProjetos.value = false;
+  resetFormProjeto();
+}
 
+function resetFormProjeto() {
+  projetoAtual.projeto = "";
+  projetoAtual.situacao = "";
+  projetoAtual.data_inicio = "";
+  projetoAtual.data_prevista = "";
+  projetoAtual.nome_dono_regra = "";
+  projetoAtual.nome_gestor = "";
+  projetoAtual.analista_responsavel = "";
+  isEdicaoProjeto.value = false;
+  projetoIndexEdicao.value = -1;
+}
+
+async function salvarProjeto() {
   try {
-    await api.put(`/projetos/${item.id}`, {
-      projeto: item.projeto,
-      contrato_id: route.params.id,
-    });
-    await fetchProjetos(route.params.id);
-    toast.success("Projeto editado com sucesso!");
-    isEditingProjeto.value = false;
-  } catch (error) {
-    console.error("Erro ao editar projeto:", error.response?.data?.message || error.message);
-    toast.error("Não foi possível editar o projeto.");
-  }
-};
-
-const criarProjeto = async () => {
-  if(!newProjeto.value) {
-    toast.error("Adicione um nome ao projeto antes de cria-lo.");
-     return
-  }
-  try {
-    const response = await api.post(`/contratos/${route.params.id}/projetos`, {
-      projeto: newProjeto.value,
-    });
-    await fetchProjetos(route.params.id);
-    toast.success("Projeto criado com sucesso!");
-    newProjeto.value = "";
-  } catch (error) {
-    console.error("Erro ao criar novo projeto:", error.response?.data?.message || error.message);
-    if (error.response?.data?.message === "Já existe um projeto com esse nome para este contrato.") {
-      toast.error(error.response.data.message);
+    if (isEdicaoProjeto.value) {
+      await api.put(`/projetos/${projetos.value[projetoIndexEdicao.value].id}`, projetoAtual);
+      toast.success("Projeto atualizado com sucesso!");
     } else {
-      toast.error("Não foi possível criar o projeto.");
+      await api.post(`/contratos/${route.params.id}/projetos`, projetoAtual);
+      toast.success("Projeto adicionado com sucesso!");
     }
+    await fetchProjetos(route.params.id);
+    fecharModalProjetos();
+  } catch (error) {
+    console.error("Erro ao salvar projeto:", error);
+    toast.error("Erro ao salvar projeto.");
   }
-};
+}
 
-const deletarProjeto = (id, projeto) => {
+function editarProjeto(index) {
+  const projeto = projetos.value[index];
+  Object.assign(projetoAtual, projeto);
+  projetoIndexEdicao.value = index;
+  isEdicaoProjeto.value = true;
+  exibirModalProjetos.value = true;
+}
+
+function removerProjeto(index) {
+  const projeto = projetos.value[index];
   Swal.fire({
-    title: "Você tem certeza?",
-    text: `Deseja remover o projeto "${projeto.projeto}"?`,
+    title: "Confirmar exclusão",
+    text: "Tem certeza que deseja remover este projeto?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Sim, remover!",
+    confirmButtonText: "Excluir",
     cancelButtonText: "Cancelar",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        await api.delete(`/projetos/${id}`);
+        await api.delete(`/projetos/${projeto.id}`);
         await fetchProjetos(route.params.id);
         toast.success("Projeto removido com sucesso!");
       } catch (error) {
         console.error("Erro ao remover projeto:", error);
-        toast.error("Erro ao remover projeto.");
+        toast.error(error.response.data.message);
       }
     }
   });
-};
-
-const openModalProjeto = () => {
-  isModalProjetoOpen.value = true;
-  fetchProjetos(route.params.id);
-};
-
-const closeModalProjeto = () => {
-  isModalProjetoOpen.value = false;
-  resetFormProjeto();
-};
-
-const resetFormProjeto = () => {
-  newProjeto.value = "";
-  isEditingProjeto.value = false;
-};
-
-const editProjeto = (item) => {
-  item.isEditing = true;
-  isEditingProjeto.value = true;
-};
-
-const cancelEdit = (item) => {
-  item.isEditing = false;
-  resetFormProjeto();
-};
-
-const isDuplicateProjeto = (nome, excludeId = null) => {
-  return projetos.value.some(
-    (p) => p.projeto.toLowerCase() === nome.toLowerCase() && p.id !== excludeId
-  );
-};
-
+}
 
 const deleteContrato = async (id) => {
   Swal.fire({
@@ -657,6 +693,11 @@ const deleteContrato = async (id) => {
         });
     }
   });
+};
+
+const formatarData = (data) => {
+  if (!data) return '';
+  return format(new Date(data), 'dd/MM/yyyy');
 };
 
 </script>
