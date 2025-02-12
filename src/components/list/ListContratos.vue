@@ -238,10 +238,11 @@ const fetchContratos = async () => {
 };
 
 const calcularProgresso = (contrato) => {
-  const valorTotalUtilizado = faturamentos.aguardandoFaturamento + faturamentos.aguardandoPagamento + faturamentos.valorPago;
+  const faturamentosCalculados = calcularSaldoFaturamentoItens(contrato.faturamentos);
+  const valorTotalUtilizado = faturamentosCalculados.aguardandoFaturamento + faturamentosCalculados.aguardandoPagamento + faturamentosCalculados.valorPago; 
   const saldoContrato = parseFloat(contrato.saldoContrato);
   const saldoDisponivel = saldoContrato - valorTotalUtilizado;
-  
+
   if (saldoDisponivel <= 1) {
     return 100;
   }
