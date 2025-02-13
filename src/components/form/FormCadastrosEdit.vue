@@ -323,7 +323,7 @@
               <input
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="date"
-                v-model="projetoAtual.data_inicio"
+                v-model="projetoAtual.dataInicio"
                 required
               />
             </div>
@@ -333,7 +333,7 @@
               <input
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="date"
-                v-model="projetoAtual.data_prevista"
+                v-model="projetoAtual.dataPrevista"
                 required
               />
             </div>
@@ -343,7 +343,7 @@
               <input
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="text"
-                v-model="projetoAtual.nome_dono_regra"
+                v-model="projetoAtual.nomeDonoRegra"
                 required
                 placeholder="Nome do dono da regra"
               />
@@ -354,7 +354,7 @@
               <input
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="text"
-                v-model="projetoAtual.nome_gestor"
+                v-model="projetoAtual.nomeGestor"
                 required
                 placeholder="Nome do gestor"
               />
@@ -365,7 +365,7 @@
               <input
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="text"
-                v-model="projetoAtual.analista_responsavel"
+                v-model="projetoAtual.analistaResponsavel"
                 required
                 placeholder="Nome do analista"
               />
@@ -470,7 +470,7 @@ const fetchContrato = async (id) => {
   try {
     const response = await api.get(`/contratos/${id}`);
     const contratoData = response.data;
-
+    console.log('contratoData', contratoData)
     if (contratoData.fiscal === null) {
       contratoData.fiscal = {
         nome: "",
@@ -572,11 +572,11 @@ const projetos = ref([]);
 const projetoAtual = reactive({
   projeto: "",
   situacao: "",
-  data_inicio: "",
-  data_prevista: "",
-  nome_dono_regra: "",
-  nome_gestor: "",
-  analista_responsavel: "",
+  dataInicio: "",
+  dataPrevista: "",
+  nomeDonoRegra: "",
+  nomeGestor: "",
+  analistaResponsavel: "",
 });
 
 const fetchProjetos = async (id) => {
@@ -602,35 +602,54 @@ function fecharModalProjetos() {
 function resetFormProjeto() {
   projetoAtual.projeto = "";
   projetoAtual.situacao = "";
-  projetoAtual.data_inicio = "";
-  projetoAtual.data_prevista = "";
-  projetoAtual.nome_dono_regra = "";
-  projetoAtual.nome_gestor = "";
-  projetoAtual.analista_responsavel = "";
+  projetoAtual.dataInicio = "";
+  projetoAtual.dataPrevista = "";
+  projetoAtual.nomeDonoRegra = "";
+  projetoAtual.nomeGestor = "";
+  projetoAtual.analistaResponsavel = "";
   isEdicaoProjeto.value = false;
   projetoIndexEdicao.value = -1;
 }
 
 async function salvarProjeto() {
   try {
+    // Convertendo o payload para o formato esperado pelo backend
+    const payload = {
+      projeto: projetoAtual.projeto,
+      situacao: projetoAtual.situacao,
+      data_inicio: projetoAtual.dataInicio,
+      data_prevista: projetoAtual.dataPrevista,
+      nome_dono_regra: projetoAtual.nomeDonoRegra,
+      nome_gestor: projetoAtual.nomeGestor,
+      analista_responsavel: projetoAtual.analistaResponsavel
+    };
+
     if (isEdicaoProjeto.value) {
-      await api.put(`/projetos/${projetos.value[projetoIndexEdicao.value].id}`, projetoAtual);
+      await api.put(`/projetos/${projetos.value[projetoIndexEdicao.value].id}`, payload);
       toast.success("Projeto atualizado com sucesso!");
     } else {
-      await api.post(`/contratos/${route.params.id}/projetos`, projetoAtual);
+      await api.post(`/contratos/${route.params.id}/projetos`, payload);
       toast.success("Projeto adicionado com sucesso!");
     }
     await fetchProjetos(route.params.id);
     fecharModalProjetos();
   } catch (error) {
     console.error("Erro ao salvar projeto:", error);
-    toast.error("Erro ao salvar projeto.");
+    toast.error(error.response?.data?.message || "Erro ao salvar projeto.");
   }
 }
 
 function editarProjeto(index) {
   const projeto = projetos.value[index];
-  Object.assign(projetoAtual, projeto);
+
+  projetoAtual.projeto = projeto.projeto;
+  projetoAtual.situacao = projeto.situacao;
+  projetoAtual.dataInicio = projeto.dataInicio;
+  projetoAtual.dataPrevista = projeto.dataPrevista;
+  projetoAtual.nomeDonoRegra = projeto.nomeDonoRegra;
+  projetoAtual.nomeGestor = projeto.nomeGestor;
+  projetoAtual.analistaResponsavel = projeto.analistaResponsavel;
+
   projetoIndexEdicao.value = index;
   isEdicaoProjeto.value = true;
   exibirModalProjetos.value = true;
