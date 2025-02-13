@@ -1,6 +1,6 @@
 <template>
-  <span :class="badgeClass" class="px-3 py-1 rounded-full text-sm font-medium">
-    {{ statusText }}
+  <span :class="statusClass" class="px-2 py-1 text-xs font-medium rounded-full">
+    {{ status }}
   </span>
 </template>
 
@@ -14,19 +14,14 @@ const props = defineProps({
   }
 })
 
-const badgeClass = computed(() => {
+const statusClass = computed(() => {
   const classes = {
-    'pendente': 'bg-yellow-100 text-yellow-800',
-    'disponivel_pagamento': 'bg-green-100 text-green-800'
+    'Aguardando Autorização': 'bg-yellow-100 text-yellow-800',
+    'Em Desenvolvimento': 'bg-blue-100 text-blue-800',
+    'Em Sustentação': 'bg-green-100 text-green-800',
+    'Parado': 'bg-red-100 text-red-800',
+    'Finalizado': 'bg-gray-100 text-gray-800'
   }
   return classes[props.status] || 'bg-gray-100 text-gray-800'
-})
-
-const statusText = computed(() => {
-  const texts = {
-    'pendente': 'Pendente',
-    'disponivel_pagamento': 'Disponível para Pagamento'
-  }
-  return texts[props.status] || props.status
 })
 </script>
