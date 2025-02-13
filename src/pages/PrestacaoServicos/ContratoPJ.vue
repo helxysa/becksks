@@ -129,27 +129,142 @@
         </table>
       </div>
     </div>
-  </div>
 
+    <!-- Seção de Relatórios Mensais -->
+    <div class="border bg-white rounded-xl shadow-sm p-6 transition duration-300 ease-in-out hover:shadow-md mt-8">
+      <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-2">
+          <div class="bg-purple-100 text-purple-500 rounded-full p-3 mr-3">
+            <Icon icon="mdi:file-document-multiple" class="text-2xl text-purple-800" />
+          </div>
+          <h2 class="text-3xl font-semibold text-gray-800">Relatórios Mensais</h2>
+        </div>
+
+        <button
+          v-if="hasPermission('prestacao_servico', 'Criar')"
+          @click="abrirNovoRelatorio"
+          class="flex items-center gap-2 px-6 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-all"
+        >
+          <Icon icon="mdi:plus" height="20" />
+          Novo Relatório
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="px-4 py-3 text-left text-gray-800">Data Inserção</th>
+              <th class="px-4 py-3 text-left text-gray-800">Competência</th>
+              <th class="px-4 py-3 text-left text-gray-800">Tipo Execução</th>
+              <th class="px-4 py-3 text-left text-gray-800">Horas Executadas</th>
+              <th class="px-4 py-3 text-left text-gray-800">Status</th>
+              <th class="px-4 py-3 text-center text-gray-800">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="relatorio in relatorios" :key="relatorio.id" class="border-t hover:bg-gray-50">
+              <td class="px-4 py-3">{{ formatDate(relatorio.createdAt) }}</td>
+              <td class="px-4 py-3">{{ formatDate(relatorio.periodoPrestacao) }}</td>
+              <td class="px-4 py-3">{{ relatorio.tipoExecucao }}</td>
+              <td class="px-4 py-3">{{ relatorio.horasExecutadas }}</td>
+              <td class="px-4 py-3">
+                <StatusBadge :status="relatorio.status" />
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex justify-center gap-2">
+                  <button
+                    @click="visualizarRelatorio(relatorio)"
+                    class="text-blue-600 hover:text-blue-800"
+                    title="Visualizar"
+                  >
+                    <Icon icon="mdi:eye" height="20" />
+                  </button>
+                  <button
+                    v-if="hasPermission('prestacao_servico', 'Editar')"
+                    @click="editarRelatorio(relatorio)"
+                    class="text-yellow-600 hover:text-yellow-800"
+                    title="Editar"
+                  >
+                    <Icon icon="mdi:pencil" height="20" />
+                  </button>
+                  <button
+                    v-if="hasPermission('prestacao_servico', 'Deletar')"
+                    @click="confirmarExclusao(relatorio)"
+                    class="text-red-600 hover:text-red-800"
+                    title="Excluir"
+                  >
+                    <Icon icon="mdi:delete" height="20" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   <div v-else class="text-center py-6">
     <p class="text-gray-600">Carregando contrato...</p>
   </div>
+  <!-- Modal de Formulário -->
+  <JetDialogModal
+    :show="showFormModal"
+    :withouHeader="false"
+    @close="closeFormModal"
+    maxWidth="6xl"
+    :modalTitle="modalTitle"
+  >
+    <template #content>
+      <FormRelatorioMensal
+        :contrato-id="route.params.id"
+        :relatorio="relatorioSelecionado"
+        @saved="onRelatorioSaved"
+      />
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal de Visualização -->
+  <JetDialogModal
+    :show="showViewModal"
+    :withouHeader="false"
+    @close="closeViewModal"
+    maxWidth="6xl"
+    :modalTitle="'Detalhes do Relatório'"
+  >
+    <template #content>
+      <ViewRelatorioMensal
+        :relatorio="relatorioSelecionado"
+      />
+    </template>
+  </JetDialogModal>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from "@iconify/vue";
 import { api } from '@/services/api';
 import { usePermissions } from '@/composables/usePermission';
+import StatusBadge from '@/components/StatusBadge.vue'
+import JetDialogModal from "@/components/modals/DialogModal.vue";
+import FormRelatorioMensal from './RelatorioMensal/FormRelatorioMensal.vue'
+import ViewRelatorioMensal from './RelatorioMensal/ViewRelatorioMensal.vue'
+import { toast } from 'vue3-toastify'
 
 const { hasPermission } = usePermissions();
 const route = useRoute()
 const router = useRouter()
 const contrato = ref(null)
+const relatorios = ref([])
+const showFormModal = ref(false)
+const showViewModal = ref(false)
+const relatorioSelecionado = ref(null)
+const modalTitle = ref('')
 
 onMounted(() => {
   fetchContrato()
+  carregarRelatorios()
 })
 
 async function fetchContrato() {
@@ -157,6 +272,7 @@ async function fetchContrato() {
     const contratoId = route.params.id
     const { data } = await api.get(`/contrato/pj/${contratoId}`)
     contrato.value = data
+    console.log('data', contrato.value)
   } catch (error) {
     console.error('Erro ao buscar detalhes do contrato:', error)
   }
@@ -187,5 +303,63 @@ const formatCurrency = (value) => {
 
 function voltarListagem() {
   router.push({ name: 'listagem-contratos-pj' })
+}
+
+async function carregarRelatorios() {
+  try {
+    const { data } = await api.get('/relatorios-mensais', {
+      params: { contratoPjId: route.params.id }
+    })
+    relatorios.value = data
+  } catch (error) {
+    console.error('Erro ao carregar relatórios:', error)
+    // toast.error('Erro ao carregar relatórios')
+  }
+}
+
+function closeFormModal() {
+  showFormModal.value = false
+  relatorioSelecionado.value = null
+}
+
+function closeViewModal() {
+  showViewModal.value = false
+  relatorioSelecionado.value = null
+}
+
+function abrirNovoRelatorio() {
+  modalTitle.value = 'Novo Relatório'
+  relatorioSelecionado.value = null
+  showFormModal.value = true
+}
+
+function editarRelatorio(relatorio) {
+  modalTitle.value = 'Editar Relatório'
+  relatorioSelecionado.value = relatorio
+  showFormModal.value = true
+}
+
+function visualizarRelatorio(relatorio) {
+  relatorioSelecionado.value = relatorio
+  showViewModal.value = true
+}
+
+async function confirmarExclusao(relatorio) {
+  if (confirm('Tem certeza que deseja excluir este relatório?')) {
+    try {
+      await api.delete(`/relatorios-mensais/${relatorio.id}`)
+      await carregarRelatorios()
+      toast.success('Relatório excluído com sucesso!')
+    } catch (error) {
+      console.error('Erro ao excluir relatório:', error)
+      toast.error('Erro ao excluir relatório')
+    }
+  }
+}
+
+function onRelatorioSaved() {
+  closeFormModal()
+  carregarRelatorios()
+  toast.success('Relatório salvo com sucesso!')
 }
 </script>
