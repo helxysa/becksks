@@ -373,11 +373,16 @@ async function salvarRelatorio() {
     const periodoPrestacaoCompleto = `${formData.value.periodoPrestacao}-01`
     formDataObj.append('periodoPrestacao', periodoPrestacaoCompleto)
 
-    // Adicionar campos básicos
+    // Adicionar campos básicos exceto anexos
     Object.keys(formData.value).forEach(key => {
-      if (key !== 'anexos' && key !== 'periodoPrestacao') {
+      if (key !== 'anexos' && key !== 'periodoPrestacao' && key !== 'projetos') {
         formDataObj.append(key, formData.value[key])
       }
+    })
+
+    // Adicionar projetos como array (sem JSON.stringify)
+    formData.value.projetos.forEach(projetoId => {
+      formDataObj.append('projetos[]', projetoId)
     })
 
     // Adicionar anexos para exclusão
