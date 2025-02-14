@@ -8,7 +8,7 @@
           type="month"
           v-model="formData.periodoPrestacao"
           required
-          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
+          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2 uppercase"
         >
       </div>
 

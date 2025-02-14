@@ -163,8 +163,13 @@ defineEmits(['close'])
 
 const formatDate = (dateString) => {
   if (!dateString) return ""
-  const date = new Date(dateString)
-  return new Intl.DateTimeFormat("pt-BR").format(date)
+  const [year, month] = dateString.split('T')[0].split('-')
+  const date = new Date(year, month - 1)
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    year: 'numeric',
+    month: 'long'
+  }).format(date).toUpperCase()
 }
 
 const getAnexosPorTipo = (tipo) => {
