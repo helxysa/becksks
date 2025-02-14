@@ -31,7 +31,7 @@
         <input
           type="month"
           v-model="formData.periodoPrestacao"
-          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2 uppercase"
+          class="mt-1 block w-full h-[39px] rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2 uppercase"
         >
       </div>
 
@@ -39,7 +39,7 @@
         <label class="block text-xl font-bold text-gray-700">Tipo de Execução</label>
         <select
           v-model="formData.tipoExecucao"
-          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
+          class="mt-1 block w-full h-[39px] rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
           <option value="demanda">Demanda</option>
           <option value="mensal">Mensal</option>
@@ -51,7 +51,7 @@
         <input
           type="number"
           v-model="formData.horasExecutadas"
-          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
+          class="mt-1 block w-full h-[39px] rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
       </div>
     </div>

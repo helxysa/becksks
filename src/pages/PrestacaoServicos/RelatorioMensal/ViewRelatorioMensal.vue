@@ -1,23 +1,46 @@
 <template>
   <div class="space-y-8">
+    <!-- Informações da Empresa -->
+    <div class="grid grid-cols-3 gap-6">
+      <div>
+        <label class="block text-xl font-bold text-gray-700">Razão Social</label>
+        <p class="mt-1">
+          {{ relatorio.contratoPj?.razaoSocial }}
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-xl font-bold text-gray-700">Nome Fantasia</label>
+        <p class="mt-1">
+          {{ relatorio.contratoPj?.nomeFantasia }}
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-xl font-bold text-gray-700">CNPJ</label>
+        <p class="mt-1">
+          {{ relatorio.contratoPj?.cnpj }}
+        </p>
+      </div>
+    </div>
     <!-- Informações Básicas -->
     <div class="grid grid-cols-3 gap-6">
       <div>
-        <label class="block text-sm font-medium text-gray-700">Período de Prestação</label>
+        <label class="block text-xl font-bold text-gray-700">Período de Prestação</label>
         <p class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
           {{ formatDate(relatorio.periodoPrestacao) }}
         </p>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Tipo de Execução</label>
+        <label class="block text-xl font-bold text-gray-700">Tipo de Execução</label>
         <p class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
           {{ relatorio.tipoExecucao }}
         </p>
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Horas Executadas</label>
+        <label class="block text-xl font-bold text-gray-700">Horas Executadas</label>
         <p class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
           {{ relatorio.horasExecutadas }}
         </p>
@@ -26,7 +49,7 @@
 
     <!-- Status -->
     <div>
-      <label class="block text-sm font-medium text-gray-700">Status</label>
+      <label class="block text-xl font-bold text-gray-700">Status</label>
       <div class="mt-1">
         <StatusBadge :status="relatorio.status" />
       </div>
@@ -34,7 +57,7 @@
 
     <!-- Projetos Vinculados -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Projetos Vinculados</label>
+      <label class="block text-xl font-bold text-gray-700 mb-2">Projetos Vinculados</label>
       <div class="grid grid-cols-2 gap-3">
         <div
           v-for="projeto in relatorio.projetos"
@@ -51,7 +74,7 @@
 
     <!-- Descrição das Tarefas -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Descrição das Tarefas</label>
+      <label class="block text-xl font-bold text-gray-700 mb-2">Descrição das Tarefas</label>
       <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 whitespace-pre-line">
         {{ relatorio.descricaoTarefas }}
       </div>
@@ -61,7 +84,7 @@
     <div class="grid grid-cols-2 gap-6">
       <!-- Relatório Assinado -->
       <div class="space-y-4">
-        <h3 class="text-sm font-medium text-gray-700">Relatório Assinado</h3>
+        <h3 class="text-xl font-bold text-gray-700">Relatório Assinado</h3>
         <div class="space-y-2">
           <div
             v-for="anexo in getAnexosPorTipo('relatorio_assinado')"
@@ -99,7 +122,7 @@
 
       <!-- Nota Fiscal -->
       <div class="space-y-4">
-        <h3 class="text-sm font-medium text-gray-700">Nota Fiscal</h3>
+        <h3 class="text-xl font-bold text-gray-700">Nota Fiscal</h3>
         <div class="space-y-2">
           <div
             v-for="anexo in getAnexosPorTipo('nota_fiscal')"
