@@ -369,9 +369,13 @@ async function salvarRelatorio() {
   try {
     const formDataObj = new FormData()
 
+    // Adiciona o dia 01 ao período de prestação
+    const periodoPrestacaoCompleto = `${formData.value.periodoPrestacao}-01`
+    formDataObj.append('periodoPrestacao', periodoPrestacaoCompleto)
+
     // Adicionar campos básicos
     Object.keys(formData.value).forEach(key => {
-      if (key !== 'anexos') {
+      if (key !== 'anexos' && key !== 'periodoPrestacao') {
         formDataObj.append(key, formData.value[key])
       }
     })
