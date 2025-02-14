@@ -1,13 +1,14 @@
 <template>
-  <form @submit.prevent="salvarRelatorio" class="space-y-6">
-    <div class="grid grid-cols-2 gap-4">
+  <form @submit.prevent="salvarRelatorio" class="space-y-8">
+    <!-- Informações Básicas -->
+    <div class="grid grid-cols-3 gap-6">
       <div>
         <label class="block text-sm font-medium text-gray-700">Período de Prestação</label>
         <input
           type="month"
           v-model="formData.periodoPrestacao"
           required
-          class="mt-1 block w-full rounded-md border border-gray-300"
+          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
       </div>
 
@@ -16,7 +17,7 @@
         <select
           v-model="formData.tipoExecucao"
           required
-          class="mt-1 block w-full rounded-md border border-gray-300"
+          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
           <option value="demanda">Demanda</option>
           <option value="mensal">Mensal</option>
@@ -29,163 +30,298 @@
           type="number"
           v-model="formData.horasExecutadas"
           required
-          class="mt-1 block w-full rounded-md border border-gray-300"
+          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
       </div>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Projetos</label>
-        <div class="mt-1 flex flex-col gap-2">
-          <button
-            type="button"
-            @click="abrirModalProjetos"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+    <!-- Projetos -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Projetos</label>
+      <div class="space-y-4">
+        <button
+          type="button"
+          @click="abrirModalProjetos"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <Icon icon="heroicons-outline:plus" class="mr-2 h-5 w-5 text-gray-500" />
+          Selecionar Projetos
+        </button>
+
+        <!-- Lista de projetos selecionados -->
+        <div v-if="formData.projetos.length > 0" class="grid grid-cols-2 gap-3">
+          <div
+            v-for="projetoId in formData.projetos"
+            :key="projetoId"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
           >
-            <Icon icon="heroicons-outline:plus" class="mr-2 h-5 w-5" />
-            Selecionar Projetos
-          </button>
-
-          <!-- Lista de projetos selecionados -->
-          <div v-if="formData.projetos.length > 0" class="space-y-2">
-            <div
-              v-for="projetoId in formData.projetos"
-              :key="projetoId"
-              class="flex items-center justify-between p-2 bg-gray-50 rounded-md"
+            <span class="text-sm text-gray-900">{{ getProjeto(projetoId)?.projeto }}</span>
+            <button
+              type="button"
+              @click="removerProjeto(projetoId)"
+              class="text-gray-400 hover:text-red-500"
             >
-              <span>{{ getProjeto(projetoId)?.projeto }}</span>
-              <button
-                type="button"
-                @click="removerProjeto(projetoId)"
-                class="text-red-600 hover:text-red-800"
-              >
-                <Icon icon="heroicons-outline:x" class="h-5 w-5" />
-              </button>
-            </div>
+              <Icon icon="heroicons-outline:x" class="h-5 w-5" />
+            </button>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Anexos Existentes -->
-      <div class="col-span-2" v-if="formData.anexos?.length">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Anexos Existentes</label>
-        <div class="space-y-2">
+    <!-- Descrição das Tarefas -->
+    <div class="col-span-full">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Descrição das Tarefas</label>
+      <textarea
+        v-model="formData.descricaoTarefas"
+        rows="4"
+        required
+        class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
+      ></textarea>
+    </div>
+
+    <!-- Anexos -->
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Relatório Assinado -->
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Relatório Assinado</label>
+          <div class="flex items-center space-x-3">
+            <input
+              type="file"
+              @change="handleFileUpload($event, 'relatoriosAssinados')"
+              class="hidden"
+              accept=".pdf,.doc,.docx"
+              id="relatorio-assinado"
+            >
+            <label
+              for="relatorio-assinado"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <Icon icon="heroicons-outline:upload" class="mr-2 h-5 w-5 text-gray-500" />
+              Adicionar Relatório
+            </label>
+          </div>
+        </div>
+
+        <!-- Lista de anexos existentes para Relatório Assinado -->
+        <div v-if="formData.anexos?.length || formData.anexosTemp?.relatoriosAssinados" class="space-y-2">
+          <!-- Anexos existentes -->
           <div
-            v-for="anexo in formData.anexos"
+            v-for="anexo in formData.anexos?.filter(a => a.tipoAnexo === 'relatorio_assinado')"
             :key="anexo.id"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded-md"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
           >
-            <div class="flex items-center space-x-3">
-              <Icon
-                :icon="anexo.tipoAnexo === 'relatorio_assinado' ? 'mdi:file-document' : 'mdi:file-invoice'"
-                class="text-gray-500"
-                height="24"
-              />
-              <div class="flex items-center gap-2">
+            <div class="flex items-center space-x-3 flex-1 min-w-0">
+              <Icon icon="mdi:file-document" class="text-blue-500 flex-shrink-0" height="20" />
+              <div class="flex-1 min-w-0">
                 <input
                   v-if="anexo.editando"
                   type="text"
                   v-model="anexo.novoNome"
-                  class="text-sm border rounded px-2 py-1"
+                  class="w-full text-sm border rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   @keyup.enter="salvarNovoNome(anexo)"
                   @keyup.esc="cancelarEdicao(anexo)"
                 />
-                <span v-else class="text-sm text-gray-900">{{ anexo.fileName }}</span>
+                <span v-else class="text-sm text-gray-900 truncate block">{{ anexo.fileName }}</span>
               </div>
             </div>
-            <div class="flex gap-2">
-              <!-- Botões de ação -->
+            <div class="flex items-center space-x-2">
               <button
                 v-if="!anexo.editando"
                 type="button"
                 @click="iniciarEdicao(anexo)"
-                class="text-blue-600 hover:text-blue-800"
+                class="text-gray-400 hover:text-blue-500"
                 title="Renomear"
               >
-                <Icon icon="mdi:pencil" height="20" />
+                <Icon icon="mdi:pencil" height="18" />
               </button>
               <button
                 v-if="anexo.editando"
                 type="button"
                 @click="salvarNovoNome(anexo)"
-                class="text-green-600 hover:text-green-800"
+                class="text-gray-400 hover:text-green-500"
                 title="Salvar"
               >
-                <Icon icon="mdi:check" height="20" />
+                <Icon icon="mdi:check" height="18" />
               </button>
               <button
                 v-if="anexo.editando"
                 type="button"
                 @click="cancelarEdicao(anexo)"
-                class="text-gray-600 hover:text-gray-800"
+                class="text-gray-400 hover:text-gray-600"
                 title="Cancelar"
               >
-                <Icon icon="mdi:close" height="20" />
+                <Icon icon="mdi:close" height="18" />
               </button>
               <a
                 :href="getAnexoUrl(anexo.filePath)"
                 target="_blank"
-                class="text-blue-600 hover:text-blue-800"
+                class="text-gray-400 hover:text-blue-500"
                 title="Visualizar"
               >
-                <Icon icon="mdi:eye" height="20" />
+                <Icon icon="mdi:eye" height="18" />
               </a>
               <button
                 type="button"
                 @click="excluirAnexo(anexo)"
-                class="text-red-600 hover:text-red-800"
+                class="text-gray-400 hover:text-red-500"
                 title="Excluir"
               >
-                <Icon icon="mdi:delete" height="20" />
+                <Icon icon="mdi:delete" height="18" />
               </button>
             </div>
+          </div>
+
+          <!-- Anexo temporário -->
+          <div
+            v-if="formData.anexosTemp?.relatoriosAssinados"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+          >
+            <div class="flex items-center space-x-3 flex-1 min-w-0">
+              <Icon icon="mdi:file-document" class="text-blue-500 flex-shrink-0" height="20" />
+              <span class="text-sm text-gray-900 truncate block">
+                {{ formData.anexosTemp.relatoriosAssinados.name }}
+              </span>
+            </div>
+            <button
+              type="button"
+              @click="removerAnexoTemp('relatoriosAssinados')"
+              class="text-gray-400 hover:text-red-500"
+              title="Remover"
+            >
+              <Icon icon="mdi:delete" height="18" />
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Upload de Novos Anexos -->
-      <div class="col-span-2 space-y-4">
+      <!-- Nota Fiscal -->
+      <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700">Relatório Assinado</label>
-          <input
-            type="file"
-            @change="handleFileUpload($event, 'relatoriosAssinados')"
-            class="mt-1 block w-full"
-            accept=".pdf,.doc,.docx"
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-2">Nota Fiscal</label>
+          <div class="flex items-center space-x-3">
+            <input
+              type="file"
+              @change="handleFileUpload($event, 'notasFiscais')"
+              class="hidden"
+              accept=".pdf,.jpg,.jpeg,.png"
+              id="nota-fiscal"
+            >
+            <label
+              for="nota-fiscal"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <Icon icon="heroicons-outline:upload" class="mr-2 h-5 w-5 text-gray-500" />
+              Adicionar Nota Fiscal
+            </label>
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Nota Fiscal</label>
-          <input
-            type="file"
-            @change="handleFileUpload($event, 'notasFiscais')"
-            class="mt-1 block w-full"
-            accept=".pdf,.jpg,.jpeg,.png"
+
+        <!-- Lista de anexos existentes para Nota Fiscal -->
+        <div v-if="formData.anexos?.length || formData.anexosTemp?.notasFiscais" class="space-y-2">
+          <!-- Anexos existentes -->
+          <div
+            v-for="anexo in formData.anexos?.filter(a => a.tipoAnexo === 'nota_fiscal')"
+            :key="anexo.id"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
           >
+            <div class="flex items-center space-x-3 flex-1 min-w-0">
+              <Icon icon="mdi:file-invoice" class="text-green-500 flex-shrink-0" height="20" />
+              <div class="flex-1 min-w-0">
+                <input
+                  v-if="anexo.editando"
+                  type="text"
+                  v-model="anexo.novoNome"
+                  class="w-full text-sm border rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  @keyup.enter="salvarNovoNome(anexo)"
+                  @keyup.esc="cancelarEdicao(anexo)"
+                />
+                <span v-else class="text-sm text-gray-900 truncate block">{{ anexo.fileName }}</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button
+                v-if="!anexo.editando"
+                type="button"
+                @click="iniciarEdicao(anexo)"
+                class="text-gray-400 hover:text-blue-500"
+                title="Renomear"
+              >
+                <Icon icon="mdi:pencil" height="18" />
+              </button>
+              <button
+                v-if="anexo.editando"
+                type="button"
+                @click="salvarNovoNome(anexo)"
+                class="text-gray-400 hover:text-green-500"
+                title="Salvar"
+              >
+                <Icon icon="mdi:check" height="18" />
+              </button>
+              <button
+                v-if="anexo.editando"
+                type="button"
+                @click="cancelarEdicao(anexo)"
+                class="text-gray-400 hover:text-gray-600"
+                title="Cancelar"
+              >
+                <Icon icon="mdi:close" height="18" />
+              </button>
+              <a
+                :href="getAnexoUrl(anexo.filePath)"
+                target="_blank"
+                class="text-gray-400 hover:text-blue-500"
+                title="Visualizar"
+              >
+                <Icon icon="mdi:eye" height="18" />
+              </a>
+              <button
+                type="button"
+                @click="excluirAnexo(anexo)"
+                class="text-gray-400 hover:text-red-500"
+                title="Excluir"
+              >
+                <Icon icon="mdi:delete" height="18" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Anexo temporário -->
+          <div
+            v-if="formData.anexosTemp?.notasFiscais"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+          >
+            <div class="flex items-center space-x-3 flex-1 min-w-0">
+              <Icon icon="mdi:file-invoice" class="text-green-500 flex-shrink-0" height="20" />
+              <span class="text-sm text-gray-900 truncate block">
+                {{ formData.anexosTemp.notasFiscais.name }}
+              </span>
+            </div>
+            <button
+              type="button"
+              @click="removerAnexoTemp('notasFiscais')"
+              class="text-gray-400 hover:text-red-500"
+              title="Remover"
+            >
+              <Icon icon="mdi:delete" height="18" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Descrição das Tarefas</label>
-      <textarea
-        v-model="formData.descricaoTarefas"
-        rows="4"
-        required
-        class="mt-1 block w-full rounded-md border border-gray-300"
-      ></textarea>
-    </div>
-
-    <div class="flex justify-end gap-4">
+    <!-- Botões de Ação -->
+    <div class="flex justify-end space-x-4">
       <button
         type="button"
         @click="emit('close')"
-        class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
+        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
       >
         Cancelar
       </button>
       <button
         type="submit"
-        class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
         {{ relatorio ? 'Atualizar' : 'Salvar' }}
       </button>
@@ -302,7 +438,8 @@ const formData = ref({
   horasExecutadas: '',
   projetos: [],
   descricaoTarefas: '',
-  anexos: []
+  anexos: [],
+  anexosTemp: {}
 })
 
 const files = ref({
@@ -341,7 +478,8 @@ watch(() => props.relatorio, (newVal) => {
       horasExecutadas: newVal.horasExecutadas,
       projetos: newVal.projetos?.map(p => p.id) || [],
       descricaoTarefas: newVal.descricaoTarefas,
-      anexos: newVal.anexos || []
+      anexos: newVal.anexos || [],
+      anexosTemp: {}
     }
   }
 }, { immediate: true })
@@ -361,8 +499,40 @@ async function carregarProjetosContrato() {
   }
 }
 
-function handleFileUpload(event, fileType) {
-  files.value[fileType] = event.target.files[0]
+async function handleFileUpload(event, tipo) {
+  const files = event.target.files
+  if (!files.length) return
+
+  try {
+    const formDataObj = new FormData()
+
+    // Adiciona o arquivo ao FormData com o nome correto do campo
+    Array.from(files).forEach(file => {
+      formDataObj.append(tipo, file)
+    })
+
+    // Se estiver editando um relatório existente
+    if (props.relatorio) {
+      const response = await api.put(`/relatorios-mensais/${props.relatorio.id}`, formDataObj)
+
+      // Atualiza a lista de anexos com os novos anexos retornados
+      formData.value.anexos = response.data.anexos
+    } else {
+      // Se for um novo relatório, armazena temporariamente
+      if (!formData.value.anexosTemp) {
+        formData.value.anexosTemp = {}
+      }
+      formData.value.anexosTemp[tipo] = files[0]
+    }
+
+    // Limpa o input de arquivo
+    event.target.value = ''
+
+    toast.success('Arquivo anexado com sucesso!')
+  } catch (error) {
+    console.error('Erro ao fazer upload:', error)
+    toast.error('Erro ao anexar arquivo')
+  }
 }
 
 async function salvarRelatorio() {
@@ -501,6 +671,12 @@ const excluirAnexo = async (anexo) => {
   } catch (error) {
     console.error('Erro ao excluir anexo:', error)
     toast.error('Erro ao excluir anexo')
+  }
+}
+
+function removerAnexoTemp(tipo) {
+  if (formData.value.anexosTemp) {
+    delete formData.value.anexosTemp[tipo]
   }
 }
 </script>
