@@ -82,8 +82,8 @@
         <input
           type="file"
           @change="handleFileUpload($event, 'relatoriosAssinados')"
-          accept=".pdf"
-          class="mt-1 block w-full"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt,.zip,.rar"
+          class="mt-1 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         >
       </div>
 
@@ -92,8 +92,8 @@
         <input
           type="file"
           @change="handleFileUpload($event, 'notasFiscais')"
-          accept=".pdf"
-          class="mt-1 block w-full"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt,.zip,.rar"
+          class="mt-1 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
         >
       </div>
     </div>
@@ -101,7 +101,7 @@
     <div class="flex justify-end gap-4">
       <button
         type="button"
-        @click="$emit('cancel')"
+        @click="emit('close')"
         class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
       >
         Cancelar
@@ -178,10 +178,8 @@
           </table>
         </div>
       </div>
-
-      <div class="mt-4 flex justify-end gap-2">
+      <footer class="flex justify-end mt-12">
         <button
-          type="button"
           @click="fecharModalProjetos"
           class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
         >
@@ -194,7 +192,7 @@
         >
           Confirmar Seleção
         </button>
-      </div>
+      </footer>
     </template>
   </JetDialogModal>
 </template>
@@ -217,7 +215,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['saved', 'cancel'])
+const emit = defineEmits(['saved', 'cancel', 'close'])
 
 const projetosContrato = ref([])
 const formData = ref({
@@ -282,8 +280,14 @@ async function salvarRelatorio() {
     const formDataObj = new FormData()
     formDataObj.append('contratoPjId', props.contratoId)
 
+    // Ajusta o formato da data para incluir o dia 01
+    const periodoPrestacaoCompleto = formData.value.periodoPrestacao + '-01'
+
+    // Envia os dados com o período ajustado
     Object.entries(formData.value).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
+      if (key === 'periodoPrestacao') {
+        formDataObj.append(key, periodoPrestacaoCompleto)
+      } else if (Array.isArray(value)) {
         value.forEach(v => formDataObj.append(`${key}[]`, v))
       } else {
         formDataObj.append(key, value)

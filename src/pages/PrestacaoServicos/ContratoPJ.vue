@@ -220,6 +220,7 @@
         :contrato-id="route.params.id"
         :relatorio="relatorioSelecionado"
         @saved="onRelatorioSaved"
+        @close="closeFormModal"
       />
     </template>
   </JetDialogModal>
@@ -235,6 +236,7 @@
     <template #content>
       <ViewRelatorioMensal
         :relatorio="relatorioSelecionado"
+        @close="closeViewModal"
       />
     </template>
   </JetDialogModal>

@@ -62,8 +62,9 @@
             <span class="text-sm text-gray-900">{{ anexo.fileName }}</span>
           </div>
           <a
-            :href="anexo.filePath"
+            :href="getAnexoUrl(anexo.filePath)"
             target="_blank"
+            download
             class="text-blue-600 hover:text-blue-800"
           >
             <Icon icon="mdi:download" height="20" />
@@ -88,6 +89,8 @@
 import { Icon } from "@iconify/vue"
 import StatusBadge from '@/components/StatusBadge.vue'
 
+const baseURL = import.meta.env.VITE_API_URL
+
 const props = defineProps({
   relatorio: {
     type: Object,
@@ -95,9 +98,16 @@ const props = defineProps({
   }
 })
 
+defineEmits(['close'])
+
 const formatDate = (dateString) => {
   if (!dateString) return ""
   const date = new Date(dateString)
   return new Intl.DateTimeFormat("pt-BR").format(date)
+}
+
+// Função para gerar a URL completa do anexo
+const getAnexoUrl = (filePath) => {
+  return `${baseURL}${filePath}`
 }
 </script>
