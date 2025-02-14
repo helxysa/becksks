@@ -274,7 +274,6 @@ async function fetchContrato() {
     const contratoId = route.params.id
     const { data } = await api.get(`/contrato/pj/${contratoId}`)
     contrato.value = data
-    console.log('data', contrato.value)
   } catch (error) {
     console.error('Erro ao buscar detalhes do contrato:', error)
   }
@@ -350,10 +349,13 @@ const visualizarRelatorio = async (relatorio) => {
   try {
     // Buscar os detalhes completos do relatório, incluindo anexos
     const { data } = await api.get(`/relatorios-mensais/${relatorio.id}`)
+    console.log('data', data)
     relatorioSelecionado.value = {
       ...data.relatorio,
+      projetos: data.relatorio.projetos || [], // Garante que projetos existe
       anexos: data.anexos || []
     }
+    console.log('relatorioSelecionado', relatorioSelecionado.value)
     showViewModal.value = true
   } catch (error) {
     console.error('Erro ao carregar detalhes do relatório:', error)
