@@ -307,15 +307,20 @@ function voltarListagem() {
   router.push({ name: 'listagem-contratos-pj' })
 }
 
-async function carregarRelatorios() {
+const carregarRelatorios = async () => {
   try {
     const { data } = await api.get('/relatorios-mensais', {
       params: { contratoPjId: route.params.id }
     })
-    relatorios.value = data
+
+    // Garantir que cada relatório tenha a propriedade anexos
+    relatorios.value = data.map(relatorio => ({
+      ...relatorio,
+      anexos: relatorio.anexos || []
+    }))
   } catch (error) {
     console.error('Erro ao carregar relatórios:', error)
-    // toast.error('Erro ao carregar relatórios')
+    toast.error('Erro ao carregar relatórios')
   }
 }
 
@@ -341,9 +346,19 @@ function editarRelatorio(relatorio) {
   showFormModal.value = true
 }
 
-function visualizarRelatorio(relatorio) {
-  relatorioSelecionado.value = relatorio
-  showViewModal.value = true
+const visualizarRelatorio = async (relatorio) => {
+  try {
+    // Buscar os detalhes completos do relatório, incluindo anexos
+    const { data } = await api.get(`/relatorios-mensais/${relatorio.id}`)
+    relatorioSelecionado.value = {
+      ...data.relatorio,
+      anexos: data.anexos || []
+    }
+    showViewModal.value = true
+  } catch (error) {
+    console.error('Erro ao carregar detalhes do relatório:', error)
+    toast.error('Erro ao carregar detalhes do relatório')
+  }
 }
 
 async function confirmarExclusao(relatorio) {

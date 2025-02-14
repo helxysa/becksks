@@ -61,14 +61,26 @@
             />
             <span class="text-sm text-gray-900">{{ anexo.fileName }}</span>
           </div>
-          <a
-            :href="getAnexoUrl(anexo.filePath)"
-            target="_blank"
-            download
-            class="text-blue-600 hover:text-blue-800"
-          >
-            <Icon icon="mdi:download" height="20" />
-          </a>
+          <div class="flex gap-2">
+            <!-- Botão para visualizar -->
+            <a
+              :href="getAnexoUrl(anexo.filePath)"
+              target="_blank"
+              class="text-blue-600 hover:text-blue-800"
+              title="Visualizar"
+            >
+              <Icon icon="mdi:eye" height="20" />
+            </a>
+            <!-- Botão para download -->
+            <a
+              :href="getAnexoUrl(anexo.filePath)"
+              download
+              class="text-blue-600 hover:text-blue-800"
+              title="Download"
+            >
+              <Icon icon="mdi:download" height="20" />
+            </a>
+          </div>
         </div>
       </div>
       <p v-else class="text-sm text-gray-500">Nenhum anexo disponível</p>
@@ -89,7 +101,12 @@
 import { Icon } from "@iconify/vue"
 import StatusBadge from '@/components/StatusBadge.vue'
 
-const baseURL = import.meta.env.VITE_API_URL
+// Altere a definição do baseURL para incluir o ambiente local
+const baseURL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:3333'  // URL local da API AdonisJS
+  : process.env.NODE_ENV === 'staging'
+    ? 'https://api-boss.msbtec.dev'
+    : 'https://api-boss.msbtec.app'
 
 const props = defineProps({
   relatorio: {
@@ -106,8 +123,11 @@ const formatDate = (dateString) => {
   return new Intl.DateTimeFormat("pt-BR").format(date)
 }
 
-// Função para gerar a URL completa do anexo
+// Função atualizada para gerar a URL completa do anexo
 const getAnexoUrl = (filePath) => {
-  return `${baseURL}${filePath}`
+  if (!filePath) return ''
+  // Remove barras duplicadas e garante o formato correto da URL
+  const cleanPath = filePath.replace(/^\/+/, '')
+  return `${baseURL}/${cleanPath}`
 }
 </script>
