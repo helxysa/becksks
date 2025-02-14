@@ -1,22 +1,44 @@
 <template>
   <form @submit.prevent="salvarRelatorio" class="space-y-8">
+    <!-- Informações da Empresa -->
+    <div class="grid grid-cols-3 gap-6">
+      <div>
+        <label class="block text-xl font-bold text-gray-700">Razão Social</label>
+        <p class="mt-1">
+          {{ contratoPJ?.razaoSocial }}
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-xl font-bold text-gray-700">Nome Fantasia</label>
+        <p class="mt-1">
+          {{ contratoPJ?.nomeFantasia }}
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-xl font-bold text-gray-700">CNPJ</label>
+        <p class="mt-1">
+          {{ contratoPJ?.cnpj }}
+        </p>
+      </div>
+    </div>
+
     <!-- Informações Básicas -->
     <div class="grid grid-cols-3 gap-6">
       <div>
-        <label class="block text-sm font-medium text-gray-700">Período de Prestação</label>
+        <label class="block text-xl font-bold text-gray-700">Período de Prestação</label>
         <input
           type="month"
           v-model="formData.periodoPrestacao"
-          required
           class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2 uppercase"
         >
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Tipo de Execução</label>
+        <label class="block text-xl font-bold text-gray-700">Tipo de Execução</label>
         <select
           v-model="formData.tipoExecucao"
-          required
           class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
           <option value="demanda">Demanda</option>
@@ -25,11 +47,10 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700">Horas Executadas</label>
+        <label class="block text-xl font-bold text-gray-700">Horas Executadas</label>
         <input
           type="number"
           v-model="formData.horasExecutadas"
-          required
           class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
         >
       </div>
@@ -37,12 +58,12 @@
 
     <!-- Projetos -->
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Projetos</label>
+      <label class="block text-xl font-bold text-gray-700 mb-2">Projetos</label>
       <div class="space-y-4">
         <button
           type="button"
           @click="abrirModalProjetos"
-          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-xl font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           <Icon icon="heroicons-outline:plus" class="mr-2 h-5 w-5 text-gray-500" />
           Selecionar Projetos
@@ -70,11 +91,10 @@
 
     <!-- Descrição das Tarefas -->
     <div class="col-span-full">
-      <label class="block text-sm font-medium text-gray-700 mb-2">Descrição das Tarefas</label>
+      <label class="block text-xl font-bold text-gray-700 mb-2">Descrição das Tarefas</label>
       <textarea
         v-model="formData.descricaoTarefas"
         rows="4"
-        required
         class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-2"
       ></textarea>
     </div>
@@ -84,8 +104,8 @@
       <!-- Relatório Assinado -->
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Relatório Assinado</label>
-          <div class="flex items-center space-x-3">
+          <label class="block text-xl font-bold text-gray-700 mb-2">Relatório Assinado</label>
+          <div class="flex items-center">
             <input
               type="file"
               @change="handleFileUpload($event, 'relatoriosAssinados')"
@@ -95,7 +115,7 @@
             >
             <label
               for="relatorio-assinado"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-xl font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
             >
               <Icon icon="heroicons-outline:upload" class="mr-2 h-5 w-5 text-gray-500" />
               Adicionar Relatório
@@ -198,8 +218,8 @@
       <!-- Nota Fiscal -->
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Nota Fiscal</label>
-          <div class="flex items-center space-x-3">
+          <label class="block text-xl font-bold text-gray-700 mb-2">Nota Fiscal</label>
+          <div class="flex items-center">
             <input
               type="file"
               @change="handleFileUpload($event, 'notasFiscais')"
@@ -209,7 +229,7 @@
             >
             <label
               for="nota-fiscal"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-xl font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
             >
               <Icon icon="heroicons-outline:upload" class="mr-2 h-5 w-5 text-gray-500" />
               Adicionar Nota Fiscal
@@ -315,13 +335,13 @@
       <button
         type="button"
         @click="emit('close')"
-        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-xl font-bold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
       >
         Cancelar
       </button>
       <button
         type="submit"
-        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-xl font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
       >
         {{ relatorio ? 'Atualizar' : 'Salvar' }}
       </button>
@@ -468,6 +488,8 @@ const projetosFiltrados = computed(() => {
   )
 })
 
+const contratoPJ = ref(null)
+
 watch(() => props.relatorio, (newVal) => {
   if (newVal) {
     const dataFormatada = newVal.periodoPrestacao ? new Date(newVal.periodoPrestacao).toISOString().slice(0, 7) : ''
@@ -485,6 +507,13 @@ watch(() => props.relatorio, (newVal) => {
 }, { immediate: true })
 
 onMounted(async () => {
+  try {
+    const { data } = await api.get(`/contrato/pj/${props.contratoId}`)
+    contratoPJ.value = data
+  } catch (error) {
+    console.error('Erro ao carregar dados do contrato:', error)
+  }
+
   await carregarProjetosContrato()
 })
 
