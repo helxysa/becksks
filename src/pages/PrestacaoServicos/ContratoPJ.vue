@@ -28,28 +28,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="space-y-4">
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Razão Social</label>
+              <label class="text-2xl font-bold text-gray-500">Razão Social</label>
               <p class="text-gray-900">{{ contrato.razaoSocial }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Nome Fantasia</label>
+              <label class="text-2xl font-bold text-gray-500">Nome Fantasia</label>
               <p class="text-gray-900">{{ contrato.nomeFantasia }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">CNPJ</label>
+              <label class="text-2xl font-bold text-gray-500">CNPJ</label>
               <p class="text-gray-900">{{ contrato.cnpj }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Endereço</label>
+              <label class="text-2xl font-bold text-gray-500">Endereço</label>
               <p class="text-gray-900">{{ contrato.enderecoCompleto }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1">
-                <label class="text-sm font-medium text-gray-500">Cidade</label>
+                <label class="text-2xl font-bold text-gray-500">Cidade</label>
                 <p class="text-gray-900">{{ contrato.cidade }}</p>
               </div>
               <div class="space-y-1">
-                <label class="text-sm font-medium text-gray-500">Estado</label>
+                <label class="text-2xl font-bold text-gray-500">Estado</label>
                 <p class="text-gray-900">{{ contrato.estado }}</p>
               </div>
             </div>
@@ -57,23 +57,23 @@
 
           <div class="space-y-4">
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Telefone da Empresa</label>
+              <label class="text-2xl font-bold text-gray-500">Telefone da Empresa</label>
               <p class="text-gray-900">{{ contrato.telefoneEmpresa }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Email da Empresa</label>
+              <label class="text-2xl font-bold text-gray-500">Email da Empresa</label>
               <p class="text-gray-900">{{ contrato.emailEmpresa }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Representante Legal</label>
+              <label class="text-2xl font-bold text-gray-500">Representante Legal</label>
               <p class="text-gray-900">{{ contrato.representanteLegal }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Telefone do Representante</label>
+              <label class="text-2xl font-bold text-gray-500">Telefone do Representante</label>
               <p class="text-gray-900">{{ contrato.telefoneRepresentante }}</p>
             </div>
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Email do Representante</label>
+              <label class="text-2xl font-bold text-gray-500">Email do Representante</label>
               <p class="text-gray-900">{{ contrato.emailRepresentante }}</p>
             </div>
           </div>
@@ -96,28 +96,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="space-y-4">
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Vigência</label>
+              <label class="text-2xl font-bold text-gray-500">Vigência</label>
               <p class="text-gray-900">{{ formatDate(contrato.dataInicio) }} - {{ formatDate(contrato.dataFim) }}</p>
             </div>
             <div v-if="contrato.valorMensal" class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Valor Mensal</label>
+              <label class="text-2xl font-bold text-gray-500">Valor Mensal</label>
               <p class="text-gray-900">{{ formatCurrency(contrato.valorMensal) }}</p>
             </div>
             <div v-if="contrato.valorHora" class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Valor Hora</label>
+              <label class="text-2xl font-bold text-gray-500">Valor Hora</label>
               <p class="text-gray-900">{{ formatCurrency(contrato.valorHora) }}</p>
             </div>
           </div>
 
           <div class="space-y-4">
             <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-500">Forma de Pagamento</label>
+              <label class="text-2xl font-bold text-gray-500">Forma de Pagamento</label>
               <p class="text-gray-900">{{ contrato.formaPagamento }}</p>
             </div>
 
             <template v-if="contrato.formaPagamento === 'pix'">
               <div class="space-y-1">
-                <label class="text-sm font-medium text-gray-500">Chave PIX</label>
+                <label class="text-2xl font-bold text-gray-500">Chave PIX</label>
                 <p class="text-gray-900">{{ contrato.chavePix }}</p>
               </div>
             </template>
@@ -126,24 +126,24 @@
               <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-500">Banco</label>
+                    <label class="text-2xl font-bold text-gray-500">Banco</label>
                     <p class="text-gray-900">{{ contrato.banco }}</p>
                   </div>
                   <div class="space-y-1">
-                    <label class="text-sm font-medium text-gray-500">Agência</label>
+                    <label class="text-2xl font-bold text-gray-500">Agência</label>
                     <p class="text-gray-900">{{ contrato.agencia }}</p>
                   </div>
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-gray-500">Número da Conta</label>
+                  <label class="text-2xl font-bold text-gray-500">Número da Conta</label>
                   <p class="text-gray-900">{{ contrato.numeroConta }}</p>
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-gray-500">Tipo de Conta</label>
+                  <label class="text-2xl font-bold text-gray-500">Tipo de Conta</label>
                   <p class="text-gray-900">{{ contrato.tipoConta }}</p>
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-gray-500">Nome do Titular</label>
+                  <label class="text-2xl font-bold text-gray-500">Nome do Titular</label>
                   <p class="text-gray-900">{{ contrato.nomeTitular }}</p>
                 </div>
               </div>
@@ -166,19 +166,19 @@
 
       <div class="p-6 space-y-6">
         <div class="space-y-1">
-          <label class="text-sm font-medium text-gray-500">Serviço Prestado</label>
-          <p class="text-gray-900">{{ contrato.servicoPrestado }}</p>
+          <label class="text-2xl font-bold text-gray-500">Serviço Prestado</label>
+          <p class="text-gray-900">{{ formatServicoPrestado(contrato.servicoPrestado) }}</p>
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-500">Escopo do Trabalho</label>
+          <label class="text-2xl font-bold text-gray-500">Escopo do Trabalho</label>
           <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 whitespace-pre-line">
             {{ contrato.escopoTrabalho }}
           </div>
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-gray-500">Observação</label>
+          <label class="text-2xl font-bold text-gray-500">Observação</label>
           <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 whitespace-pre-line">
             {{ contrato.observacao }}
           </div>
@@ -237,7 +237,7 @@
           <button
             v-if="hasPermission('prestacao_servico', 'Criar')"
             @click="abrirNovoRelatorio"
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             <Icon icon="mdi:plus" class="mr-2 h-5 w-5" />
             Novo Relatório
@@ -262,9 +262,7 @@
               <tr v-for="relatorio in relatorios" :key="relatorio.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ formatDate(relatorio.createdAt) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ formatDate(relatorio.periodoPrestacao) }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">
-                  {{ relatorio.tipoExecucao.charAt(0).toUpperCase() + relatorio.tipoExecucao.slice(1) }}
-                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ relatorio.tipoExecucao }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ relatorio.horasExecutadas }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <StatusBadge :status="relatorio.status" />
@@ -483,5 +481,19 @@ function onRelatorioSaved() {
   closeFormModal()
   carregarRelatorios()
   toast.success('Relatório salvo com sucesso!')
+}
+
+const formatServicoPrestado = (servico) => {
+  const servicosMap = {
+    'analista_ui_ux': 'Analista de UI/UX designer',
+    'analista_qualidade': 'Analista de Qualidade',
+    'desenvolvedor': 'Desenvolvedor',
+    'analista': 'Analista',
+    'gestor_projeto': 'Gestor de projeto',
+    'devops': 'DevOps',
+    'devsecops': 'DevSecOps'
+  }
+
+  return servicosMap[servico] || servico
 }
 </script>
