@@ -1,100 +1,146 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-8">
     <!-- Informações Básicas -->
-    <div class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-500">Período de Prestação</label>
-          <p class="mt-1 text-gray-900">{{ formatDate(relatorio.periodoPrestacao) }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-500">Tipo de Execução</label>
-          <p class="mt-1 text-gray-900">{{ relatorio.tipoExecucao }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-500">Horas Executadas</label>
-          <p class="mt-1 text-gray-900">{{ relatorio.horasExecutadas }}</p>
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-500">Status</label>
-          <StatusBadge :status="relatorio.status" class="mt-1" />
-        </div>
-      </div>
-
-      <!-- Projetos Vinculados -->
+    <div class="grid grid-cols-3 gap-6">
       <div>
-        <label class="block text-sm font-medium text-gray-500">Projetos Vinculados</label>
-        <div class="mt-1 flex flex-wrap gap-2">
-          <span
-            v-for="projeto in relatorio.projetos"
-            :key="projeto.id"
-            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
-          >
-            {{ projeto.projeto }}
-          </span>
-        </div>
-        <p v-if="!relatorio.projetos?.length" class="mt-1 text-sm text-gray-500">
-          Nenhum projeto vinculado
+        <label class="block text-sm font-medium text-gray-700">Período de Prestação</label>
+        <p class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
+          {{ formatDate(relatorio.periodoPrestacao) }}
         </p>
       </div>
 
-      <!-- Descrição das Tarefas -->
       <div>
-        <label class="block text-sm font-medium text-gray-500">Descrição das Tarefas</label>
-        <p class="mt-1 text-gray-900 whitespace-pre-line">{{ relatorio.descricaoTarefas }}</p>
+        <label class="block text-sm font-medium text-gray-700">Tipo de Execução</label>
+        <p class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
+          {{ relatorio.tipoExecucao }}
+        </p>
       </div>
 
-      <!-- Anexos -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-medium text-gray-900">Anexos</h3>
-
-        <div v-if="relatorio.anexos?.length" class="space-y-2">
-          <div
-            v-for="anexo in relatorio.anexos"
-            :key="anexo.id"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded-md"
-          >
-            <div class="flex items-center space-x-3">
-              <Icon
-                :icon="anexo.tipoAnexo === 'relatorio_assinado' ? 'mdi:file-document' : 'mdi:file-invoice'"
-                class="text-gray-500"
-                height="24"
-              />
-              <span class="text-sm text-gray-900">{{ anexo.fileName }}</span>
-            </div>
-            <div class="flex gap-2">
-              <!-- Botão para visualizar -->
-              <a
-                :href="getAnexoUrl(anexo.filePath)"
-                target="_blank"
-                class="text-blue-600 hover:text-blue-800"
-                title="Visualizar"
-              >
-                <Icon icon="mdi:eye" height="20" />
-              </a>
-              <!-- Botão para download -->
-              <a
-                :href="getAnexoUrl(anexo.filePath)"
-                download
-                class="text-blue-600 hover:text-blue-800"
-                title="Download"
-              >
-                <Icon icon="mdi:download" height="20" />
-              </a>
-            </div>
-          </div>
-        </div>
-        <p v-else class="text-sm text-gray-500">Nenhum anexo disponível</p>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Horas Executadas</label>
+        <p class="mt-1 p-2 bg-gray-50 rounded-md border border-gray-200">
+          {{ relatorio.horasExecutadas }}
+        </p>
       </div>
     </div>
 
+    <!-- Status -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Status</label>
+      <div class="mt-1">
+        <StatusBadge :status="relatorio.status" />
+      </div>
+    </div>
+
+    <!-- Projetos Vinculados -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Projetos Vinculados</label>
+      <div class="grid grid-cols-2 gap-3">
+        <div
+          v-for="projeto in relatorio.projetos"
+          :key="projeto.id"
+          class="p-3 bg-gray-50 rounded-lg border border-gray-200"
+        >
+          <span class="text-sm text-gray-900">{{ projeto.projeto }}</span>
+        </div>
+        <p v-if="!relatorio.projetos?.length" class="text-sm text-gray-500">
+          Nenhum projeto vinculado
+        </p>
+      </div>
+    </div>
+
+    <!-- Descrição das Tarefas -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Descrição das Tarefas</label>
+      <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 whitespace-pre-line">
+        {{ relatorio.descricaoTarefas }}
+      </div>
+    </div>
+
+    <!-- Anexos -->
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Relatório Assinado -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-medium text-gray-700">Relatório Assinado</h3>
+        <div class="space-y-2">
+          <div
+            v-for="anexo in getAnexosPorTipo('relatorio_assinado')"
+            :key="anexo.id"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+          >
+            <div class="flex items-center space-x-3 flex-1 min-w-0">
+              <Icon icon="mdi:file-document" class="text-blue-500 flex-shrink-0" height="20" />
+              <span class="text-sm text-gray-900 truncate block">{{ anexo.fileName }}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <a
+                :href="getAnexoUrl(anexo.filePath)"
+                target="_blank"
+                class="text-gray-400 hover:text-blue-500"
+                title="Visualizar"
+              >
+                <Icon icon="mdi:eye" height="18" />
+              </a>
+              <a
+                :href="getAnexoUrl(anexo.filePath)"
+                download
+                class="text-gray-400 hover:text-blue-500"
+                title="Download"
+              >
+                <Icon icon="mdi:download" height="18" />
+              </a>
+            </div>
+          </div>
+          <p v-if="!getAnexosPorTipo('relatorio_assinado').length" class="text-sm text-gray-500">
+            Nenhum relatório assinado anexado
+          </p>
+        </div>
+      </div>
+
+      <!-- Nota Fiscal -->
+      <div class="space-y-4">
+        <h3 class="text-sm font-medium text-gray-700">Nota Fiscal</h3>
+        <div class="space-y-2">
+          <div
+            v-for="anexo in getAnexosPorTipo('nota_fiscal')"
+            :key="anexo.id"
+            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+          >
+            <div class="flex items-center space-x-3 flex-1 min-w-0">
+              <Icon icon="mdi:file-invoice" class="text-green-500 flex-shrink-0" height="20" />
+              <span class="text-sm text-gray-900 truncate block">{{ anexo.fileName }}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <a
+                :href="getAnexoUrl(anexo.filePath)"
+                target="_blank"
+                class="text-gray-400 hover:text-blue-500"
+                title="Visualizar"
+              >
+                <Icon icon="mdi:eye" height="18" />
+              </a>
+              <a
+                :href="getAnexoUrl(anexo.filePath)"
+                download
+                class="text-gray-400 hover:text-blue-500"
+                title="Download"
+              >
+                <Icon icon="mdi:download" height="18" />
+              </a>
+            </div>
+          </div>
+          <p v-if="!getAnexosPorTipo('nota_fiscal').length" class="text-sm text-gray-500">
+            Nenhuma nota fiscal anexada
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botão de Fechar -->
     <div class="flex justify-end">
       <button
         @click="$emit('close')"
-        class="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-50"
+        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
       >
         Fechar
       </button>
@@ -105,13 +151,6 @@
 <script setup>
 import { Icon } from "@iconify/vue"
 import StatusBadge from '@/components/StatusBadge.vue'
-
-// Altere a definição do baseURL para incluir o ambiente local
-const baseURL = process.env.NODE_ENV === 'development'
-  ? 'http://localhost:3333'  // URL local da API AdonisJS
-  : process.env.NODE_ENV === 'staging'
-    ? 'https://api-boss.msbtec.dev'
-    : 'https://api-boss.msbtec.app'
 
 const props = defineProps({
   relatorio: {
@@ -128,14 +167,19 @@ const formatDate = (dateString) => {
   return new Intl.DateTimeFormat("pt-BR").format(date)
 }
 
-// Função atualizada para gerar a URL completa do anexo
+const getAnexosPorTipo = (tipo) => {
+  return props.relatorio.anexos?.filter(anexo => anexo.tipoAnexo === tipo) || []
+}
+
 const getAnexoUrl = (filePath) => {
   if (!filePath) return ''
-  // Remove barras duplicadas e garante o formato correto da URL
+  const baseURL = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3333'
+    : process.env.NODE_ENV === 'staging'
+      ? 'https://api-boss.msbtec.dev'
+      : 'https://api-boss.msbtec.app'
+
   const cleanPath = filePath.replace(/^\/+/, '')
   return `${baseURL}/${cleanPath}`
 }
-
-// Adicione um console.log para debug se necessário
-console.log('Relatório recebido:', props.relatorio)
 </script>
