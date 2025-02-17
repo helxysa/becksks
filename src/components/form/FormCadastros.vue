@@ -191,7 +191,7 @@
         </div>
         <section class="mt-8 flex gap-8 flex-wrap justify-end">
           <button
-            class="flex items-center justify-center px-9 py-3 rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            class="flex items-center justify-center px-9 py-2 h-[40px] rounded-md text-xl font-normal text-white bg-blue-500 hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="showExibirModalItems"
             v-if="hasPermission('itens_contrato', 'Criar')"
@@ -199,18 +199,18 @@
             <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50" />
             Adicionar Item
           </button>
-          <div class="flex items-center gap-4 mt-12">
-            <button
-              type="button"
-              class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
-              @click="abrirModalProjetos"
-            >
-              <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50 mr-2" />
-              Adicionar Projeto
-            </button>
-          </div>
+
           <button
-            class="inline-flex items-center justify-between px-4 py-3 rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            type="button"
+            class="flex items-center px-4 py-2 h-[40px] bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
+            @click="abrirModalProjetos"
+          >
+            <Icon icon="ic:baseline-plus" height="20" class="text-zinc-50 mr-2" />
+            Adicionar Projeto
+          </button>
+
+          <button
+            class="inline-flex items-center justify-between px-4 py-2 h-[40px] rounded-md text-xl font-normal text-white bg-gray-500 hover:bg-gray-600 transition-transform ease-in-out transform hover:-translate-y-[2px]"
             type="button"
             @click="openModalUnidade"
           >

@@ -802,7 +802,7 @@ function limparCnpj(cnpj) {
     }
     return response.data.contrato.id;
   } catch (error) {
-    toast.error("Não foi possível salvar o contrato!");
+    toast.error(error.response?.data?.message || "Não foi possível salvar o contrato!");
     console.error(error);
   }
 }
