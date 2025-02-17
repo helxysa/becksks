@@ -3323,7 +3323,7 @@ const createLancamento = async () => {
     fetchContrato(contratoId);
   } catch (error) {
     console.error("Erro ao criar medição:", error);
-    toast.error(error?.response?.data || "Não foi possível criar a medição");
+    toast.error(error?.response?.data.message || "Não foi possível criar a medição");
   }
 };
 
