@@ -435,6 +435,10 @@
     </section>
   </div>
 
+  <div v-if="currentTab === 'Projetos'">
+    <ProjetosManager :contratoId="route.params.id" />
+  </div>
+
   <!-- Tabela Medições-->
   <div v-if="currentTab === 'Medições'">
     <section class="mt-8">
@@ -2271,6 +2275,7 @@ import EditAditivoForm from '@/components/EditAditivoForm.vue';
 import { waveform } from "ldrs";
 import socket from '../../../../websocket.js'
 import StatusFilter from '@/components/StatusFilter.vue';
+import ProjetosManager from '@/components/projetos/ProjetosManager.vue';
 
 const { hasPermission } = usePermissions();
 const store = useProfileStore()
@@ -2280,7 +2285,7 @@ const isLoading = ref(true);
 const isSubmitting = ref(false)
 // Guias das tabelas
 let alterouStatus = ref(false); // Flag para verificar se houve alteração no status
-const tabs = ['Itens', 'Medições', 'Faturamentos', 'Anexos']
+const tabs = ['Itens', 'Projetos', 'Medições', 'Faturamentos', 'Anexos']
 const currentTab = ref(tabs[0])
 // Guias dos modais de edição
 const editMedicaoTabs = ['Formulário']
