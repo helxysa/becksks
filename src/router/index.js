@@ -189,6 +189,7 @@ router.beforeEach((to, from, next) => {
         return;
       }
     } else {
+      // Redireciona para o contrato do prestador de serviços se não estiver na rota correta
       next({ name: "contrato-detalhes", params: { id: user.contratoPjId } });
       return;
     }

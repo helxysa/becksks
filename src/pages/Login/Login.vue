@@ -100,38 +100,63 @@ const handleLogin = async () => {
       email: email.value,
       password: password.value,
     });
-    loading.value = false;
+
     isAuthenticated.value = true;
     localStorage.setItem("token", response.data.token.token);
-    store.$patch(response.data.user)
 
-
+    // Se o usuário não mudou a senha, redireciona para mudança de senha
     if (!response.data.user.passwordChanged) {
       localStorage.setItem("userId", response.data.user.id);
+      loading.value = false;
       router.push({ name: "ChangePassword" });
+      return;
     }
-    else if (response.data.user.prestadorServicos) {
-      // Redirecionar prestador para sua página de contrato
-      router.push({
-        name: "contrato-detalhes",
-        params: { id: response.data.user.contratoPjId }
-      });
-    }
-    else {
+
+    // Se for prestador de serviços, busca o contrato ativo
+    if (response.data.user.prestadorServicos) {
+      try {
+        const contratoResponse = await api.get('/contrato-pj/ativo');
+        const profileUser = {
+          ...response.data.user,
+          contratoPjId: contratoResponse.data.contratoAtivo.id
+        };
+
+        // Atualiza o store e localStorage com os dados do usuário + contrato
+        store.$patch(profileUser);
+        localStorage.setItem("profileUser", JSON.stringify(profileUser));
+
+        loading.value = false;
+        router.push({
+          name: "contrato-detalhes",
+          params: { id: contratoResponse.data.contratoAtivo.id }
+        });
+      } catch (contratoError) {
+        loading.value = false;
+        toast("Erro ao buscar contrato ativo do usuário", {
+          theme: "colored",
+          type: "error",
+        });
+        console.error('Erro ao buscar contrato:', contratoError);
+      }
+    } else {
+      // Usuário normal (não prestador)
+      store.$patch(response.data.user);
+      localStorage.setItem("profileUser", JSON.stringify(response.data.user));
       localStorage.removeItem("userId");
-      isAuthenticated.value = true;
+
+      loading.value = false;
       if(hasPermission('Dashboard', 'Visualizar')) {
         router.push("/");
       } else {
-        router.push('/contratos')
+        router.push('/contratos');
       }
     }
   } catch (error) {
+    loading.value = false;
     toast("Email ou Senha incorretos!", {
       theme: "colored",
       type: "error",
     });
-    loading.value = false;
   }
 };
 
