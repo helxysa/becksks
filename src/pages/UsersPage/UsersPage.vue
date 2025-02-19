@@ -39,7 +39,7 @@
             <td class="text-2xl">{{ user.email }}</td>
             <td class="text-2xl">{{ user?.profile?.name }}</td>
             <td>
-              <div class="flex justify-center items-center">
+              <div class="flex justify-center items-center space-x-2">
                 <span v-if="hasPermission('usuarios', 'Visualizar')">
                   <Icon
                     icon="ph:eye"

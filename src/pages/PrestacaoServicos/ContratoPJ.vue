@@ -268,10 +268,10 @@
                   <StatusBadge :status="relatorio.status" />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                  <div class="flex justify-center space-x-3">
+                  <div class="flex justify-center space-x-2">
                     <button
                       @click="visualizarRelatorio(relatorio)"
-                      class="text-blue-600 hover:text-blue-900 p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Visualizar"
                     >
                       <Icon icon="ph:eye" height="20" />
@@ -279,7 +279,7 @@
                     <button
                       v-if="isPrestadorServico"
                       @click="editarRelatorio(relatorio)"
-                      class="text-yellow-600 hover:text-yellow-900 p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Editar"
                     >
                       <Icon icon="bx:edit" height="20" />
@@ -287,7 +287,7 @@
                     <button
                       v-if="hasPermission('prestacao_servico', 'Deletar')"
                       @click="confirmarExclusao(relatorio)"
-                      class="text-red-600 hover:text-red-900 p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Excluir"
                     >
                       <Icon icon="ph:trash" height="20" />
