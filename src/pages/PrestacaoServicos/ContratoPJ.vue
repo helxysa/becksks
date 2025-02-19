@@ -271,26 +271,26 @@
                   <div class="flex justify-center space-x-3">
                     <button
                       @click="visualizarRelatorio(relatorio)"
-                      class="text-blue-600 hover:text-blue-900"
+                      class="text-blue-600 hover:text-blue-900 p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Visualizar"
                     >
-                      <Icon icon="mdi:eye" height="20" />
+                      <Icon icon="ph:eye" height="20" />
                     </button>
                     <button
                       v-if="isPrestadorServico"
                       @click="editarRelatorio(relatorio)"
-                      class="text-yellow-600 hover:text-yellow-900"
+                      class="text-yellow-600 hover:text-yellow-900 p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Editar"
                     >
-                      <Icon icon="mdi:pencil" height="20" />
+                      <Icon icon="bx:edit" height="20" />
                     </button>
                     <button
                       v-if="hasPermission('prestacao_servico', 'Deletar')"
                       @click="confirmarExclusao(relatorio)"
-                      class="text-red-600 hover:text-red-900"
+                      class="text-red-600 hover:text-red-900 p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Excluir"
                     >
-                      <Icon icon="mdi:delete" height="20" />
+                      <Icon icon="ph:trash" height="20" />
                     </button>
                   </div>
                 </td>
