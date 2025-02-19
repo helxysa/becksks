@@ -1,5 +1,5 @@
 <template>
-  <span :class="statusClass" class="px-2 py-1 text-2xl font-medium rounded-full">
+  <span :class="statusClass" class="p-2 text-2xl font-medium rounded-full">
     {{ formatStatus(status) }}
   </span>
 </template>
