@@ -277,7 +277,7 @@
                       <Icon icon="mdi:eye" height="20" />
                     </button>
                     <button
-                      v-if="hasPermission('prestacao_servico', 'Editar')"
+                      v-if="isPrestadorServico"
                       @click="editarRelatorio(relatorio)"
                       class="text-yellow-600 hover:text-yellow-900"
                       title="Editar"
@@ -364,6 +364,11 @@ const showFormModal = ref(false)
 const showViewModal = ref(false)
 const relatorioSelecionado = ref(null)
 const modalTitle = ref('')
+
+const isPrestadorServico = computed(() => {
+  const user = JSON.parse(localStorage.getItem("profileUser") || "{}");
+  return user.prestadorServicos && user.contratoPjId === Number(route.params.id);
+});
 
 onMounted(() => {
   fetchContrato()
