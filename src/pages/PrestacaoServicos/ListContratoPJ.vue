@@ -46,6 +46,7 @@
           <th class="py-3 px-4 text-left text-2xl font-semibold text-gray-700">Representante</th>
           <th class="py-3 px-4 text-left text-2xl font-semibold text-gray-700">Serviço Prestado</th>
           <th class="py-3 px-4 text-left text-2xl font-semibold text-gray-700">Vigência</th>
+          <th class="py-3 px-4 text-left text-2xl font-semibold text-gray-700">Situação</th>
           <th class="py-3 px-4 text-center text-2xl font-semibold text-gray-700">Ações</th>
         </tr>
       </thead>
@@ -67,6 +68,17 @@
           <td class="py-3 px-4 text-2xl text-gray-700">
             {{ formatarVigencia(contrato) }}
           </td>
+          <td class="py-3 px-4 text-2xl">
+            <span
+              class="px-4 py-1 rounded-full text-lg font-semibold"
+              :class="{
+                'bg-green-100 text-green-800': contrato.status === 'ativo',
+                'bg-red-100 text-red-800': contrato.status === 'inativo'
+              }"
+            >
+              {{ contrato.status.charAt(0).toUpperCase() + contrato.status.slice(1) }}
+            </span>
+          </td>
           <td class="py-3 px-4 text-2xl text-center text-gray-700">
             <button
               class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
@@ -81,10 +93,16 @@
               <Icon icon="bx:edit" width="2rem" class="text-slate-800" />
             </button>
             <button
+              v-if="contrato.status === 'ativo'"
               class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
-              @click="excluirContrato(contrato.id)"
+              @click="alterarStatusContrato(contrato)"
+              title="Encerrar Contrato"
             >
-              <Icon icon="ph:trash" width="2rem" class="text-slate-800" />
+              <Icon
+                icon="ph:x-circle-bold"
+                width="2rem"
+                class="text-red-600 hover:text-red-700"
+              />
             </button>
           </td>
         </tr>
@@ -160,26 +178,26 @@ function editarContrato(contratoId) {
   router.push({ name: 'contrato-editar', params: { id: contratoId } })
 }
 
-// Excluir contrato
-async function excluirContrato(contratoId) {
+// Alterar status do contrato
+async function alterarStatusContrato(contrato) {
   Swal.fire({
-    title: "Confirmar exclusão",
-    text: "Tem certeza que deseja excluir este contrato?",
+    title: "Confirmar encerramento",
+    text: "Tem certeza que deseja encerrar este contrato? Esta ação não poderá ser desfeita.",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Excluir",
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Encerrar",
     cancelButtonText: "Cancelar",
   }).then(async (result) => {
     if (result.isConfirmed) {
       try {
-        await api.delete(`/contrato/pj/${contratoId}`);
+        await api.delete(`/contrato/pj/${contrato.id}`);
         await fetchContratos();
-        Swal.fire("Excluído!", "Contrato excluído com sucesso!", "success");
+        toast.success("Contrato encerrado com sucesso!");
       } catch (error) {
-        console.error("Erro ao excluir contrato:", error);
-        Swal.fire("Erro", "Não foi possível excluir o contrato.", "error");
+        console.error("Erro ao encerrar contrato:", error);
+        toast.error(error.response?.data?.message || "Erro ao encerrar contrato");
       }
     }
   });

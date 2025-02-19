@@ -235,7 +235,7 @@
           </div>
 
           <button
-            v-if="hasPermission('prestacao_servico', 'Criar')"
+            v-if="hasPermission('prestacao_servico', 'Criar Relatório Mensal')"
             @click="abrirNovoRelatorio"
             class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
@@ -254,7 +254,7 @@
                 <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Competência</th>
                 <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Tipo Execução</th>
                 <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Horas Executadas</th>
-                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Situação</th>
                 <th class="px-6 py-3 text-center text-2xl font-medium text-gray-500 uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
