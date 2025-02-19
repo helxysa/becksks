@@ -22,8 +22,9 @@
             <th class="text-2xl">Data de Início</th>
             <th class="text-2xl">Data Prevista</th>
             <th class="text-2xl">Gestor</th>
+            <th class="text-2xl">Dono da Regra</th>
             <th class="text-2xl">Analista Responsável</th>
-            <th class="text-2xl">Opções</th>
+            <th class="text-2xl">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -33,6 +34,7 @@
             <td class="text-xl p-4">{{ formatarData(projeto.dataInicio) }}</td>
             <td class="text-xl p-4">{{ formatarData(projeto.dataPrevista) }}</td>
             <td class="text-xl p-4">{{ projeto.nomeGestor }}</td>
+            <td class="text-xl p-4">{{ projeto.nomeDonoRegra }}</td>
             <td class="text-xl p-4">{{ projeto.analistaResponsavel }}</td>
             <td>
               <button
@@ -41,9 +43,9 @@
                 v-if="hasPermission('projetos', 'Editar')"
               >
                 <Icon
-                  icon="ph:pencil"
+                  icon="bx:edit"
                   height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  class="hover:text-yellow-900 hover:rounded-md cursor-pointer rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                 />
               </button>
               <button
@@ -54,7 +56,7 @@
                 <Icon
                   icon="ph:trash"
                   height="20"
-                  class="hover:text-red-500 hover:rounded-md cursor-pointer"
+                  class="hover:text-red-500 hover:rounded-md cursor-pointer rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                 />
               </button>
             </td>

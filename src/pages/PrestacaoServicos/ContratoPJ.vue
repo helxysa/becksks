@@ -235,7 +235,7 @@
           </div>
 
           <button
-            v-if="hasPermission('prestacao_servico', 'Criar')"
+            v-if="hasPermission('prestacao_servico', 'Criar Relatório Mensal')"
             @click="abrirNovoRelatorio"
             class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
@@ -254,7 +254,7 @@
                 <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Competência</th>
                 <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Tipo Execução</th>
                 <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Horas Executadas</th>
-                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Situação</th>
                 <th class="px-6 py-3 text-center text-2xl font-medium text-gray-500 uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
@@ -268,29 +268,29 @@
                   <StatusBadge :status="relatorio.status" />
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                  <div class="flex justify-center space-x-3">
+                  <div class="flex justify-center space-x-2">
                     <button
                       @click="visualizarRelatorio(relatorio)"
-                      class="text-blue-600 hover:text-blue-900"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Visualizar"
                     >
-                      <Icon icon="mdi:eye" height="20" />
+                      <Icon icon="ph:eye" height="20" />
                     </button>
                     <button
-                      v-if="hasPermission('prestacao_servico', 'Editar')"
+                      v-if="isPrestadorServico"
                       @click="editarRelatorio(relatorio)"
-                      class="text-yellow-600 hover:text-yellow-900"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Editar"
                     >
-                      <Icon icon="mdi:pencil" height="20" />
+                      <Icon icon="bx:edit" height="20" />
                     </button>
                     <button
                       v-if="hasPermission('prestacao_servico', 'Deletar')"
                       @click="confirmarExclusao(relatorio)"
-                      class="text-red-600 hover:text-red-900"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Excluir"
                     >
-                      <Icon icon="mdi:delete" height="20" />
+                      <Icon icon="ph:trash" height="20" />
                     </button>
                   </div>
                 </td>
@@ -364,6 +364,11 @@ const showFormModal = ref(false)
 const showViewModal = ref(false)
 const relatorioSelecionado = ref(null)
 const modalTitle = ref('')
+
+const isPrestadorServico = computed(() => {
+  const user = JSON.parse(localStorage.getItem("profileUser") || "{}");
+  return user.prestadorServicos && user.contratoPjId === Number(route.params.id);
+});
 
 onMounted(() => {
   fetchContrato()
