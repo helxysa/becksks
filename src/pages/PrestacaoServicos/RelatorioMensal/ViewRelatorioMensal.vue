@@ -69,7 +69,7 @@
     <!-- Descrição das Tarefas -->
     <div class="bg-white rounded-lg  space-y-4">
       <h3 class="text-3xl font-semibold text-gray-800 mb-4">Descrição das Tarefas</h3>
-      <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div class="p-4 rounded-lg border border-gray-200">
         <p class="text-2xl text-gray-900 whitespace-pre-line">{{ relatorio.descricaoTarefas }}</p>
       </div>
     </div>
