@@ -126,7 +126,7 @@
               class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
             >
               <div class="flex items-center space-x-3 flex-1 min-w-0">
-                <Icon icon="mdi:file-invoice" class="text-green-500 flex-shrink-0" height="24" />
+                <Icon icon="mdi:file-document" class="text-green-500 flex-shrink-0" height="24" />
                 <span class="text-2xl text-gray-900 truncate">{{ anexo.fileName }}</span>
               </div>
               <div class="flex items-center space-x-3">
