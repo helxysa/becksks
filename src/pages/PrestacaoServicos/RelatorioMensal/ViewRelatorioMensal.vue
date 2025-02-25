@@ -156,8 +156,15 @@
       </div>
     </div>
 
-    <!-- Botão de Fechar -->
-    <div class="flex justify-end">
+    <!-- Botões de Ação -->
+    <div class="flex justify-end space-x-4">
+      <button
+        v-if="hasPermission('prestacao_servico', 'Realizar Pagamento') && relatorio.status === 'disponivel_pagamento'"
+        @click="$emit('realizarPagamento', relatorio)"
+        class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-2xl"
+      >
+        Realizar Pagamento
+      </button>
       <button
         @click="$emit('close')"
         class="px-6 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 text-2xl"
@@ -171,6 +178,9 @@
 <script setup>
 import { Icon } from "@iconify/vue"
 import StatusBadge from '@/components/StatusBadge.vue'
+import { usePermissions } from '@/composables/usePermission'
+
+const { hasPermission } = usePermissions()
 
 const props = defineProps({
   relatorio: {
@@ -179,7 +189,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['close'])
+defineEmits(['close', 'realizarPagamento'])
 
 const formatDate = (dateString) => {
   if (!dateString) return ""

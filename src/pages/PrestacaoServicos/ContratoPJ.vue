@@ -300,6 +300,76 @@
         </div>
       </div>
     </div>
+
+    <!-- Pagamentos -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="border-b border-gray-100 p-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="bg-green-50 text-green-500 rounded-full p-3">
+              <Icon icon="mdi:cash-multiple" class="text-2xl" />
+            </div>
+            <h2 class="text-2xl font-semibold text-gray-800">Pagamentos</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <div class="overflow-x-auto">
+          <table v-if="pagamentos.length > 0" class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Data do Pagamento</th>
+                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Competência</th>
+                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                <th class="px-6 py-3 text-left text-2xl font-medium text-gray-500 uppercase tracking-wider">Situação</th>
+                <th class="px-6 py-3 text-center text-2xl font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr v-for="pagamento in pagamentos" :key="pagamento.id" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ formatDate(pagamento.encaminhadoEm) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ formatDate(pagamento.relatorioMensal?.periodoPrestacao) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-2xl text-gray-900">{{ formatCurrency(pagamento.valorPagamento) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <StatusBadge :status="pagamento.statusPagamento" />
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                  <div class="flex justify-center space-x-2">
+                    <button
+                      @click="visualizarPagamento(pagamento)"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                      title="Visualizar"
+                    >
+                      <Icon icon="ph:eye" height="20" />
+                    </button>
+                    <button
+                      v-if="hasPermission('prestacao_servico', 'Realizar Pagamento')"
+                      @click="editarPagamento(pagamento)"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                      title="Editar"
+                    >
+                      <Icon icon="bx:edit" height="20" />
+                    </button>
+                    <button
+                      v-if="hasPermission('prestacao_servico', 'Realizar Pagamento')"
+                      @click="confirmarExclusaoPagamento(pagamento)"
+                      class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                      title="Excluir"
+                    >
+                      <Icon icon="ph:trash" height="20" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-else class="py-8 text-center">
+            <p class="text-gray-500 text-2xl">Nenhum pagamento registrado para este contrato.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div v-else class="flex items-center justify-center h-64">
@@ -338,6 +408,41 @@
       <ViewRelatorioMensal
         :relatorio="relatorioSelecionado"
         @close="closeViewModal"
+        @realizarPagamento="abrirFormPagamento"
+      />
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal para formulário de pagamento -->
+  <JetDialogModal
+    :show="showFormPagamentoModal"
+    :withouHeader="false"
+    @close="closeFormPagamentoModal"
+    maxWidth="6xl"
+    :modalTitle="'Registrar Pagamento'"
+  >
+    <template #content>
+      <FormPagamento
+        :relatorio="relatorioSelecionado"
+        :pagamento="pagamentoSelecionado"
+        @saved="onPagamentoSaved"
+        @close="closeFormPagamentoModal"
+      />
+    </template>
+  </JetDialogModal>
+
+  <!-- Modal para visualização de pagamento -->
+  <JetDialogModal
+    :show="showViewPagamentoModal"
+    :withouHeader="false"
+    @close="closeViewPagamentoModal"
+    maxWidth="6xl"
+    :modalTitle="'Detalhes do Pagamento'"
+  >
+    <template #content>
+      <ViewPagamento
+        :pagamento="pagamentoSelecionado"
+        @close="closeViewPagamentoModal"
       />
     </template>
   </JetDialogModal>
@@ -354,6 +459,8 @@ import JetDialogModal from "@/components/modals/DialogModal.vue";
 import FormRelatorioMensal from './RelatorioMensal/FormRelatorioMensal.vue'
 import ViewRelatorioMensal from './RelatorioMensal/ViewRelatorioMensal.vue'
 import { toast } from 'vue3-toastify'
+import FormPagamento from './Pagamento/FormPagamento.vue'
+import ViewPagamento from './Pagamento/ViewPagamento.vue'
 
 const { hasPermission } = usePermissions();
 const route = useRoute()
@@ -364,6 +471,10 @@ const showFormModal = ref(false)
 const showViewModal = ref(false)
 const relatorioSelecionado = ref(null)
 const modalTitle = ref('')
+const pagamentos = ref([])
+const showFormPagamentoModal = ref(false)
+const showViewPagamentoModal = ref(false)
+const pagamentoSelecionado = ref(null)
 
 const isPrestadorServico = computed(() => {
   const user = JSON.parse(localStorage.getItem("profileUser") || "{}");
@@ -373,6 +484,7 @@ const isPrestadorServico = computed(() => {
 onMounted(() => {
   fetchContrato()
   carregarRelatorios()
+  carregarPagamentos()
 })
 
 async function fetchContrato() {
@@ -455,13 +567,15 @@ const visualizarRelatorio = async (relatorio) => {
   try {
     // Buscar os detalhes completos do relatório, incluindo anexos
     const { data } = await api.get(`/relatorios-mensais/${relatorio.id}`)
-    console.log('data', data)
+
+    // Verificar se o status do relatório foi carregado corretamente
     relatorioSelecionado.value = {
       ...data.relatorio,
       projetos: data.relatorio.projetos || [], // Garante que projetos existe
-      anexos: data.anexos || []
+      anexos: data.anexos || [],
+      status: data.relatorio.status || relatorio.status // Garantir que o status está presente
     }
-    console.log('relatorioSelecionado', relatorioSelecionado.value)
+
     showViewModal.value = true
   } catch (error) {
     console.error('Erro ao carregar detalhes do relatório:', error)
@@ -477,7 +591,7 @@ async function confirmarExclusao(relatorio) {
       toast.success('Relatório excluído com sucesso!')
     } catch (error) {
       console.error('Erro ao excluir relatório:', error)
-      toast.error('Erro ao excluir relatório')
+      toast.error(error.response.data.message)
     }
   }
 }
@@ -500,5 +614,97 @@ const formatServicoPrestado = (servico) => {
   }
 
   return servicosMap[servico] || servico
+}
+
+const carregarPagamentos = async () => {
+  try {
+    const response = await api.get('/pagamentos')
+
+    // Filtrar apenas os pagamentos cujo relatório pertence ao contrato atual
+    const contratoId = Number(route.params.id)
+    pagamentos.value = response.data.filter(
+      pagamento => pagamento.relatorioMensal &&
+      pagamento.relatorioMensal.contratoPjId === contratoId
+    )
+  } catch (error) {
+    console.error('Erro ao carregar pagamentos:', error)
+    toast.error('Erro ao carregar pagamentos')
+  }
+}
+
+function visualizarPagamento(pagamento) {
+  pagamentoSelecionado.value = pagamento
+  showViewPagamentoModal.value = true
+}
+
+async function editarPagamento(pagamento) {
+  try {
+    // Primeiro, carregamos os detalhes completos do relatório
+    const { data } = await api.get(`/relatorios-mensais/${pagamento.relatorioMensalId}`)
+
+    // Atribuímos o relatório completo
+    relatorioSelecionado.value = {
+      ...data.relatorio,
+      projetos: data.relatorio.projetos || [],
+      anexos: data.anexos || [],
+      status: data.relatorio.status || pagamento.relatorioMensal?.status
+    }
+
+    // Atribuímos o pagamento
+    pagamentoSelecionado.value = pagamento
+
+    // Abrimos o modal de edição
+    showFormPagamentoModal.value = true
+  } catch (error) {
+    console.error('Erro ao carregar detalhes do relatório:', error)
+    toast.error('Erro ao carregar detalhes para edição do pagamento')
+  }
+}
+
+async function confirmarExclusaoPagamento(pagamento) {
+  try {
+    if (confirm('Tem certeza que deseja excluir este pagamento?')) {
+      try {
+        await api.delete(`/pagamentos/${pagamento.id}`)
+        await carregarPagamentos()
+        // Garantir que o modal seja fechado após a exclusão
+        closeViewPagamentoModal()
+        toast.success('Pagamento excluído com sucesso!')
+      } catch (error) {
+        console.error('Erro ao excluir pagamento:', error)
+        toast.error('Erro ao excluir pagamento')
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao processar a exclusão:', e)
+    toast.error('Ocorreu um erro ao processar a solicitação')
+  }
+}
+
+function onPagamentoSaved() {
+  closeFormPagamentoModal()
+  carregarPagamentos()
+  toast.success('Pagamento salvo com sucesso!')
+}
+
+function closeFormPagamentoModal() {
+  showFormPagamentoModal.value = false
+  pagamentoSelecionado.value = null
+}
+
+function closeViewPagamentoModal() {
+  try {
+    showViewPagamentoModal.value = false
+    pagamentoSelecionado.value = null
+  } catch (e) {
+    console.error('Erro ao fechar modal:', e)
+  }
+}
+
+function abrirFormPagamento(relatorio) {
+  relatorioSelecionado.value = relatorio
+  pagamentoSelecionado.value = null
+  showViewModal.value = false
+  showFormPagamentoModal.value = true
 }
 </script>
