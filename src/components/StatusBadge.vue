@@ -20,6 +20,10 @@ const formatStatus = (status) => {
       return 'Disponível p/ Pagamento'
     case 'pendente':
       return 'Pendente de Resposta'
+    case 'pago':
+      return 'Pago'
+    case 'aguardando_pagamento':
+      return 'Aguardando Pagamento'
     default:
       return status
   }
@@ -33,7 +37,9 @@ const statusClass = computed(() => {
     'Parado': 'bg-red-100 text-red-800',
     'Finalizado': 'bg-gray-100 text-gray-800',
     'disponivel_pagamento': 'bg-green-100 text-green-800',
-    'pendente': 'bg-yellow-100 text-yellow-800'
+    'pendente': 'bg-yellow-100 text-yellow-800',
+    'pago': 'bg-green-100 text-green-800',
+    'aguardando_pagamento': 'bg-yellow-100 text-yellow-800'
   }
   return classes[props.status] || 'bg-gray-100 text-gray-800'
 })
