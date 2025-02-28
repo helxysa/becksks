@@ -76,9 +76,10 @@
         <div class="relative mt-2">
           <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 text-2xl">R$</span>
           <input
-            type="number"
-            step="0.01"
-            v-model="formData.valorPagamento"
+            type="text"
+            v-model="valorFormatado"
+            @input="formatarValor"
+            placeholder="0,00"
             class="h-12 pl-10 px-3 py-2 w-full rounded-md border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-2xl"
             required
           >
@@ -251,7 +252,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { api } from '@/services/api'
 import { Icon } from '@iconify/vue'
 import { toast } from "vue3-toastify"
@@ -278,6 +279,48 @@ const formData = ref({
   statusPagamento: props.pagamento?.statusPagamento || 'aguardando_pagamento',
   anexosTemp: []
 })
+
+// Valor formatado para exibição
+const valorFormatado = ref('')
+
+// Inicializar o valor formatado na montagem do componente
+onMounted(() => {
+  if (formData.value.valorPagamento) {
+    valorFormatado.value = formatarMoeda(formData.value.valorPagamento)
+  }
+})
+
+// Função para formatar o valor como moeda brasileira
+const formatarMoeda = (valor) => {
+  if (!valor && valor !== 0) return ''
+
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(valor)
+}
+
+// Função para atualizar o valor quando o usuário digita
+const formatarValor = (event) => {
+  // Obter apenas os números do valor digitado
+  let valor = event.target.value.replace(/[^\d]/g, '')
+
+  // Se não tiver valor, zerar
+  if (!valor) {
+    valorFormatado.value = ''
+    formData.value.valorPagamento = ''
+    return
+  }
+
+  // Converter para número com duas casas decimais
+  const numero = parseFloat(valor) / 100
+
+  // Atualizar o valor formatado
+  valorFormatado.value = formatarMoeda(numero)
+
+  // Armazenar o valor numérico para envio à API
+  formData.value.valorPagamento = numero
+}
 
 // Formatação de data
 const formatDate = (dateString) => {

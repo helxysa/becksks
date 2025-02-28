@@ -246,8 +246,8 @@
               v-if="hasPermission('prestacao_servico', 'Realizar Pagamento')"
               @click="abrirFormPagamento(relatorioSelecionadoTabela)"
               class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-600"
-              :disabled="!relatorioSelecionadoTabela || relatorioSelecionadoTabela?.status !== 'disponivel_pagamento'"
-              :title="!relatorioSelecionadoTabela ? 'Selecione um relatório mensal para realizar o pagamento' : relatorioSelecionadoTabela?.status === 'pago' ? 'Este relatório já está pago' : 'Realizar pagamento para o relatório selecionado'"
+              :disabled="!relatorioSelecionadoTabela || (relatorioSelecionadoTabela?.status !== 'disponivel_pagamento' && relatorioSelecionadoTabela?.status !== 'aguardando_pagamento')"
+              :title="!relatorioSelecionadoTabela ? 'Selecione um relatório mensal para realizar o pagamento' : relatorioSelecionadoTabela?.status === 'pago' ? 'Este relatório já está pago' : relatorioSelecionadoTabela?.status === 'aguardando_pagamento' ? 'Este relatório já está aguardando pagamento, você pode editar o status' : 'Realizar pagamento para o relatório selecionado'"
             >
               <Icon icon="mdi:cash" class="mr-1.5 h-5 w-5" />
               Realizar Pagamento
