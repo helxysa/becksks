@@ -159,13 +159,6 @@
     <!-- Botões de Ação -->
     <div class="flex justify-end space-x-4">
       <button
-        v-if="hasPermission('prestacao_servico', 'Realizar Pagamento') && relatorio.status === 'disponivel_pagamento'"
-        @click="$emit('realizarPagamento', relatorio)"
-        class="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-2xl"
-      >
-        Realizar Pagamento
-      </button>
-      <button
         @click="$emit('close')"
         class="px-6 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 text-2xl"
       >
@@ -189,7 +182,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['close', 'realizarPagamento'])
+defineEmits(['close'])
 
 const formatDate = (dateString) => {
   if (!dateString) return ""

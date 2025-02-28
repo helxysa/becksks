@@ -241,14 +241,27 @@
             <h2 class="text-2xl font-semibold text-gray-800">Relatórios Mensais</h2>
           </div>
 
-          <button
-            v-if="hasPermission('prestacao_servico', 'Criar Relatório Mensal')"
-            @click="abrirNovoRelatorio"
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-          >
-            <Icon icon="mdi:plus" class="mr-1.5 h-5 w-5" />
-            Novo Relatório
-          </button>
+          <div class="flex items-center gap-3">
+            <button
+              v-if="hasPermission('prestacao_servico', 'Realizar Pagamento')"
+              @click="abrirFormPagamento(relatorioSelecionadoTabela)"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-600"
+              :disabled="!relatorioSelecionadoTabela || relatorioSelecionadoTabela?.status !== 'disponivel_pagamento'"
+              :title="!relatorioSelecionadoTabela ? 'Selecione um relatório mensal para realizar o pagamento' : relatorioSelecionadoTabela?.status === 'pago' ? 'Este relatório já está pago' : 'Realizar pagamento para o relatório selecionado'"
+            >
+              <Icon icon="mdi:cash" class="mr-1.5 h-5 w-5" />
+              Realizar Pagamento
+            </button>
+
+            <button
+              v-if="hasPermission('prestacao_servico', 'Criar Relatório Mensal')"
+              @click="abrirNovoRelatorio"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-2xl font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              <Icon icon="mdi:plus" class="mr-1.5 h-5 w-5" />
+              Novo Relatório
+            </button>
+          </div>
         </div>
       </div>
 
@@ -266,7 +279,12 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="relatorio in relatorios" :key="relatorio.id" class="hover:bg-purple-50 transition-colors">
+              <tr v-for="relatorio in relatorios"
+                :key="relatorio.id"
+                class="hover:bg-purple-50 transition-colors cursor-pointer"
+                :class="{ 'bg-purple-100': relatorioSelecionadoTabela && relatorioSelecionadoTabela.id === relatorio.id }"
+                @click="selecionarRelatorio(relatorio)"
+              >
                 <td class="px-6 py-3 whitespace-nowrap text-2xl text-gray-900">{{ formatDate(relatorio.createdAt) }}</td>
                 <td class="px-6 py-3 whitespace-nowrap text-2xl text-gray-900">{{ formatDate(relatorio.periodoPrestacao) }}</td>
                 <td class="px-6 py-3 whitespace-nowrap text-2xl text-gray-900">{{ relatorio.tipoExecucao }}</td>
@@ -277,7 +295,7 @@
                 <td class="px-6 py-3 whitespace-nowrap text-center">
                   <div class="flex justify-center">
                     <button
-                      @click="visualizarRelatorio(relatorio)"
+                      @click.stop="visualizarRelatorio(relatorio)"
                       class="text-gray-600 hover:text-blue-600 p-1.5 rounded-full transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Visualizar"
                     >
@@ -285,7 +303,7 @@
                     </button>
                     <button
                       v-if="isPrestadorServico"
-                      @click="editarRelatorio(relatorio)"
+                      @click.stop="editarRelatorio(relatorio)"
                       class="text-gray-600 hover:text-yellow-600 p-1.5 rounded-full transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Editar"
                     >
@@ -293,7 +311,7 @@
                     </button>
                     <button
                       v-if="hasPermission('prestacao_servico', 'Deletar')"
-                      @click="confirmarExclusao(relatorio)"
+                      @click.stop="confirmarExclusao(relatorio)"
                       class="text-gray-600 hover:text-red-600 p-1.5 rounded-full transition-transform ease-in-out transform hover:-translate-y-[2px]"
                       title="Excluir"
                     >
@@ -485,6 +503,7 @@ const relatorios = ref([])
 const showFormModal = ref(false)
 const showViewModal = ref(false)
 const relatorioSelecionado = ref(null)
+const relatorioSelecionadoTabela = ref(null)
 const modalTitle = ref('')
 const pagamentos = ref([])
 const showFormPagamentoModal = ref(false)
@@ -559,6 +578,7 @@ const carregarRelatorios = async () => {
 function closeFormModal() {
   showFormModal.value = false
   relatorioSelecionado.value = null
+  relatorioSelecionadoTabela.value = null
 }
 
 function closeViewModal() {
@@ -578,6 +598,16 @@ function editarRelatorio(relatorio) {
   showFormModal.value = true
 }
 
+function selecionarRelatorio(relatorio) {
+  if (relatorioSelecionadoTabela.value && relatorioSelecionadoTabela.value.id === relatorio.id) {
+    // Se clicar no mesmo relatório novamente, deseleciona
+    relatorioSelecionadoTabela.value = null
+  } else {
+    // Seleciona o relatório
+    relatorioSelecionadoTabela.value = relatorio
+  }
+}
+
 const visualizarRelatorio = async (relatorio) => {
   try {
     // Buscar os detalhes completos do relatório, incluindo anexos
@@ -590,6 +620,9 @@ const visualizarRelatorio = async (relatorio) => {
       anexos: data.anexos || [],
       status: data.relatorio.status || relatorio.status // Garantir que o status está presente
     }
+
+    // Mantém o relatório selecionado na tabela
+    relatorioSelecionadoTabela.value = relatorio
 
     showViewModal.value = true
   } catch (error) {
@@ -710,6 +743,7 @@ function onPagamentoSaved(dadosPagamento) {
 function closeFormPagamentoModal() {
   showFormPagamentoModal.value = false
   pagamentoSelecionado.value = null
+  relatorioSelecionadoTabela.value = null
 }
 
 function closeViewPagamentoModal() {
@@ -726,5 +760,7 @@ function abrirFormPagamento(relatorio) {
   pagamentoSelecionado.value = null
   showViewModal.value = false
   showFormPagamentoModal.value = true
+  // Mantém o relatório selecionado na tabela
+  relatorioSelecionadoTabela.value = relatorio
 }
 </script>
