@@ -401,6 +401,7 @@ const salvarPagamento = async () => {
       toast.success('Pagamento registrado com sucesso!')
     }
 
+    // Passar os dados de resposta para o evento 'saved'
     emit('saved', response.data)
   } catch (error) {
     console.error('Erro ao salvar pagamento:', error)

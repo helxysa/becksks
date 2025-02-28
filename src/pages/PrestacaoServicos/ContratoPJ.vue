@@ -682,6 +682,8 @@ async function confirmarExclusaoPagamento(pagamento) {
       try {
         await api.delete(`/pagamentos/${pagamento.id}`)
         await carregarPagamentos()
+        // Atualizar também a lista de relatórios, pois a exclusão afeta o status do relatório
+        await carregarRelatorios()
         // Garantir que o modal seja fechado após a exclusão
         closeViewPagamentoModal()
         toast.success('Pagamento excluído com sucesso!')
@@ -696,9 +698,12 @@ async function confirmarExclusaoPagamento(pagamento) {
   }
 }
 
-function onPagamentoSaved() {
+function onPagamentoSaved(dadosPagamento) {
   closeFormPagamentoModal()
+  // Sempre atualizar tanto a lista de pagamentos quanto a lista de relatórios
+  // porque uma mudança no status do pagamento afeta o status do relatório
   carregarPagamentos()
+  carregarRelatorios()
   toast.success('Pagamento salvo com sucesso!')
 }
 
