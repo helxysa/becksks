@@ -156,8 +156,8 @@
       </div>
     </div>
 
-    <!-- Botão de Fechar -->
-    <div class="flex justify-end">
+    <!-- Botões de Ação -->
+    <div class="flex justify-end space-x-4">
       <button
         @click="$emit('close')"
         class="px-6 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 text-2xl"
@@ -171,6 +171,9 @@
 <script setup>
 import { Icon } from "@iconify/vue"
 import StatusBadge from '@/components/StatusBadge.vue'
+import { usePermissions } from '@/composables/usePermission'
+
+const { hasPermission } = usePermissions()
 
 const props = defineProps({
   relatorio: {
