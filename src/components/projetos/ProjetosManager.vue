@@ -109,7 +109,6 @@
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="date"
                 v-model="projetoAtual.dataInicio"
-                required
               />
             </div>
 
@@ -119,7 +118,6 @@
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="date"
                 v-model="projetoAtual.dataPrevista"
-                required
               />
             </div>
 
@@ -129,7 +127,6 @@
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="text"
                 v-model="projetoAtual.nomeDonoRegra"
-                required
                 placeholder="Nome do dono da regra"
               />
             </div>
@@ -140,7 +137,6 @@
                 class="flex-1 border-[1px] border-gray-300 rounded-md px-4 py-2 focus:border-blue-400 focus:ring-0 focus:outline-none focus:border-2"
                 type="text"
                 v-model="projetoAtual.nomeGestor"
-                required
                 placeholder="Nome do gestor"
               />
             </div>

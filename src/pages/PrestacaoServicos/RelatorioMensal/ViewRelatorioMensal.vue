@@ -69,7 +69,7 @@
     <!-- Descrição das Tarefas -->
     <div class="bg-white rounded-lg  space-y-4">
       <h3 class="text-3xl font-semibold text-gray-800 mb-4">Descrição das Tarefas</h3>
-      <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div class="p-4 rounded-lg border border-gray-200">
         <p class="text-2xl text-gray-900 whitespace-pre-line">{{ relatorio.descricaoTarefas }}</p>
       </div>
     </div>
@@ -126,7 +126,7 @@
               class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
             >
               <div class="flex items-center space-x-3 flex-1 min-w-0">
-                <Icon icon="mdi:file-invoice" class="text-green-500 flex-shrink-0" height="24" />
+                <Icon icon="mdi:file-document" class="text-green-500 flex-shrink-0" height="24" />
                 <span class="text-2xl text-gray-900 truncate">{{ anexo.fileName }}</span>
               </div>
               <div class="flex items-center space-x-3">
@@ -156,8 +156,8 @@
       </div>
     </div>
 
-    <!-- Botão de Fechar -->
-    <div class="flex justify-end">
+    <!-- Botões de Ação -->
+    <div class="flex justify-end space-x-4">
       <button
         @click="$emit('close')"
         class="px-6 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 text-2xl"
@@ -171,6 +171,9 @@
 <script setup>
 import { Icon } from "@iconify/vue"
 import StatusBadge from '@/components/StatusBadge.vue'
+import { usePermissions } from '@/composables/usePermission'
+
+const { hasPermission } = usePermissions()
 
 const props = defineProps({
   relatorio: {

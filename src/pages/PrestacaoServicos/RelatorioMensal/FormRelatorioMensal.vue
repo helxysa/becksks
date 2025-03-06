@@ -529,38 +529,38 @@ async function carregarProjetosContrato() {
 }
 
 async function handleFileUpload(event, tipo) {
-  const files = event.target.files
-  if (!files.length) return
+  const files = event.target.files;
+  if (!files.length) return;
 
   try {
-    const formDataObj = new FormData()
+    const formDataObj = new FormData();
 
     // Adiciona o arquivo ao FormData com o nome correto do campo
     Array.from(files).forEach(file => {
-      formDataObj.append(tipo, file)
-    })
+      formDataObj.append(tipo, file);
+    });
 
     // Se estiver editando um relatório existente
     if (props.relatorio) {
-      const response = await api.put(`/relatorios-mensais/${props.relatorio.id}`, formDataObj)
+      const response = await api.put(`/relatorios-mensais/${props.relatorio.id}`, formDataObj);
 
       // Atualiza a lista de anexos com os novos anexos retornados
-      formData.value.anexos = response.data.anexos
+      formData.value.anexos = response.data.anexos;
     } else {
       // Se for um novo relatório, armazena temporariamente
       if (!formData.value.anexosTemp) {
-        formData.value.anexosTemp = {}
+        formData.value.anexosTemp = {};
       }
-      formData.value.anexosTemp[tipo] = files[0]
+      formData.value.anexosTemp[tipo] = files[0];
     }
 
     // Limpa o input de arquivo
-    event.target.value = ''
+    event.target.value = '';
 
-    toast.success('Arquivo anexado com sucesso!')
+    toast.success('Arquivo anexado com sucesso!');
   } catch (error) {
-    console.error('Erro ao fazer upload:', error)
-    toast.error('Erro ao anexar arquivo')
+    console.error('Erro ao fazer upload:', error);
+    toast.error('Erro ao anexar arquivo');
   }
 }
 
@@ -574,8 +574,11 @@ async function salvarRelatorio() {
 
     // Adicionar campos básicos exceto anexos
     Object.keys(formData.value).forEach(key => {
+      const value = formData.value[key];
       if (key !== 'anexos' && key !== 'periodoPrestacao' && key !== 'projetos') {
-        formDataObj.append(key, formData.value[key])
+        if (value !== null && value !== undefined) {
+          formDataObj.append(key, value);
+        }
       }
     })
 
@@ -596,6 +599,13 @@ async function salvarRelatorio() {
     if (files.value.notasFiscais) {
       formDataObj.append('notasFiscais', files.value.notasFiscais)
     }
+
+    // Adicionar anexos temporários
+    Object.keys(formData.value.anexosTemp).forEach(tipo => {
+      if (formData.value.anexosTemp[tipo]) {
+        formDataObj.append(tipo, formData.value.anexosTemp[tipo])
+      }
+    })
 
     if (props.relatorio) {
       await api.put(`/relatorios-mensais/${props.relatorio.id}`, formDataObj)
