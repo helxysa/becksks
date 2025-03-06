@@ -6,14 +6,25 @@ const DashboardPage = () => import("../pages/DashboardPage/DashboardPage.vue");
 const ContratosPage = () => import("../pages/ContratosPage/ContratosPage.vue");
 const RelatorioPage = () => import("../pages/Relatorio/RelatoriosPage.vue");
 const FormContratosPage = () => import("../components/form/FormCadastros.vue");
-const FormContratosEdit = () => import("../components/form/FormCadastrosEdit.vue");
-const ViewContratoTabs = () => import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
-const ViewTermoAditivoPage = () => import("../pages/ContratosPage/VisualizarTermoAditivo/VisualizarTermoAditivo.vue")
+const FormContratosEdit = () =>
+  import("../components/form/FormCadastrosEdit.vue");
+const ViewContratoTabs = () =>
+  import("../pages/ContratosPage/VisualizarContrato/ContratoTabs.vue");
+const ViewTermoAditivoPage = () =>
+  import(
+    "../pages/ContratosPage/VisualizarTermoAditivo/VisualizarTermoAditivo.vue"
+  );
 const PerfisPage = () => import("../pages/PerfisPage/PerfisPage.vue");
 const FormAditive = () => import("../components/form/FormAditive.vue");
-const PrestacaoServicos = () => import("../pages/PrestacaoServicos/PrestacaoPage.vue")
-const FormContratoPJPage = () => import("../pages/PrestacaoServicos/FormContratoPJPage.vue")
-const ContratoPJ = () => import("../pages/PrestacaoServicos/ContratoPJ.vue")
+const PrestacaoServicos = () =>
+  import("../pages/PrestacaoServicos/PrestacaoPage.vue");
+const FormContratoPJPage = () =>
+  import("../pages/PrestacaoServicos/FormContratoPJPage.vue");
+const ContratoPJ = () => import("../pages/PrestacaoServicos/ContratoPJ.vue");
+const ContratoCLTPage = () =>
+  import("../pages/ContratosCLTPage/ContratoCLTPage.vue");
+const FormContratoCLTPage = () =>
+  import("../pages/ContratosCLTPage/FormContratoCLTPage.vue");
 
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
@@ -61,6 +72,24 @@ const routes = [
     path: "/contratos/pj/:id",
     name: "contrato-detalhes",
     component: ContratoPJ,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contratos/clt",
+    name: "contratos-clt",
+    component: ContratoCLTPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contratos/clt/novo",
+    name: "novo-contrato-clt",
+    component: FormContratoCLTPage,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contratos/clt/editar/:id",
+    name: "EditarContratoCLT",
+    component: () => import("@/pages/ContratosCLTPage/FormContratoCLTPage.vue"),
     meta: { requiresAuth: true },
   },
   {
@@ -168,13 +197,16 @@ router.beforeEach((to, from, next) => {
   const publicPaths = ["/login", "/esqueci-minha-senha"]; // ajuste conforme necessário
 
   // Se a rota requer autenticação e não há token, redireciona para o login.
-  if (to.matched.some(record => record.meta.requiresAuth) && !token) {
+  if (to.matched.some((record) => record.meta.requiresAuth) && !token) {
     next("/login");
     return;
   }
 
   // Se a rota for pública, não fazemos o redirecionamento
-  if (publicRouteNames.includes(to.name) || publicPaths.some(path => to.path.startsWith(path))) {
+  if (
+    publicRouteNames.includes(to.name) ||
+    publicPaths.some((path) => to.path.startsWith(path))
+  ) {
     next();
     return;
   }

@@ -54,11 +54,13 @@ const routes = [
     permission: { name: "prestacao_servico", action: "Visualizar" },
   },
   {
-    path: "/relatorio",
-    label: "Relatório",
+    path: "/contratos/clt",
+    label: "Colaboradores (CLT)",
     icon: "eos-icons:project",
-    permission: { name: "relatorios", action: "Visualizar" },
+    permission: { name: "contratos", action: "Visualizar" },
   },
+  
+ 
   {
     path: "/perfis",
     label: "Perfis",
@@ -67,6 +69,7 @@ const routes = [
       name: "perfil",
       actions: ["Visualizar", "Editar", "Criar", "Deletar"],
     },
+
   },
   {
     path: "/usuarios",
@@ -86,7 +89,13 @@ const routes = [
       actions: ["Visualizar"],
     },
   },
-];
+  {
+    path: "/relatorio",
+    label: "Relatório",
+    icon: "eos-icons:project",
+    permission: { name: "relatorios", action: "Visualizar" },
+  },
+];  
 
 function hasPermission(permission) {
   if (!permission) return true;

@@ -1,0 +1,1362 @@
+<template>
+  <div class="container mx-auto px-6 py-8">
+    <div class="flex items-center mb-8">
+      <router-link
+        to="/contratos/clt"
+        class="flex items-center text-blue-600 hover:text-blue-800"
+      >
+        <Icon icon="mdi:arrow-left" height="24" />
+        <span class="ml-2">Voltar</span>
+      </router-link>
+      <h1 class="text-4xl font-medium ml-8">
+        {{ isEdicao ? "Editar" : "Novo" }} Contrato CLT
+      </h1>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="mb-8">
+        <div class="flex justify-between items-center">
+          <div
+            v-for="(step, index) in steps"
+            :key="index"
+            class="flex items-center"
+          >
+            <div
+              :class="[
+                'w-10 h-10 rounded-full flex items-center justify-center text-lg font-medium',
+                currentStep > index
+                  ? 'bg-green-500 text-white'
+                  : currentStep === index
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-600',
+              ]"
+            >
+              {{ index + 1 }}
+            </div>
+            <span
+              class="ml-2 text-lg"
+              :class="{
+                'text-green-500 font-medium': currentStep > index,
+                'text-blue-500 font-medium': currentStep === index,
+                'text-gray-600': currentStep < index,
+              }"
+            >
+              {{ step }}
+            </span>
+            <div
+              v-if="index < steps.length - 1"
+              class="w-32 h-1 mx-4"
+              :class="{
+                'bg-green-500': currentStep > index,
+                'bg-gray-200': currentStep <= index,
+              }"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <form @submit.prevent="handleSubmit">
+        <!-- Etapa 1: Dados Pessoais -->
+        <div v-if="currentStep === 0">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">Matrícula*</label>
+              <input
+                v-model="formData.matricula"
+                type="text"
+                placeholder="Digite o número da matricula"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('matricula') ? 'border-red-500 bg-red-50' : '',
+                ]"
+                @input="clearInvalidState('matricula')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Nome Completo*</label
+              >
+              <input
+                v-model="formData.nomeCompleto"
+                type="text"
+                placeholder="Digite o nome completo"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('nomeCompleto')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('nomeCompleto')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">CPF*</label>
+              <input
+                v-model="formData.cpf"
+                type="text"
+                placeholder="Digite o número do CPF"
+                v-mask="'###.###.###-##'"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('cpf') ? 'border-red-500 bg-red-50' : '',
+                ]"
+                @input="clearInvalidState('cpf')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">RG*</label>
+              <input
+                v-model="formData.rg"
+                placeholder="Digite o número do RG"
+                type="text"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('rg') ? 'border-red-500 bg-red-50' : '',
+                ]"
+                @input="clearInvalidState('rg')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">PIS*</label>
+              <input
+                v-model="formData.pis"
+                type="text"
+                placeholder="Digite o número do PIS"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('pis') ? 'border-red-500 bg-red-50' : '',
+                ]"
+                @input="clearInvalidState('pis')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Data de Nascimento*</label
+              >
+              <input
+                v-model="formData.dataNascimento"
+                type="date"
+
+                :class="[
+                  'input-field',
+                  isFieldInvalid('dataNascimento')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('dataNascimento')"
+                required
+              />
+            </div>
+            <div class="col-span-2">
+              <label class="block text-lg font-medium mb-2"
+                >Endereço Completo*</label
+              >
+              <input
+                v-model="formData.enderecoCompleto"
+                type="text"
+
+                :class="[
+                  'input-field',
+                  isFieldInvalid('enderecoCompleto')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('enderecoCompleto')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">Telefone*</label>
+              <input
+                v-model="formData.telefone"
+                type="text"
+                v-mask="'(##) #####-####'"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('telefone') ? 'border-red-500 bg-red-50' : '',
+                ]"
+                @input="clearInvalidState('telefone')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Email Pessoal*</label
+              >
+              <input
+                v-model="formData.emailPessoal"
+                type="email"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('emailPessoal')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('emailPessoal')"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 2: Dados Profissionais -->
+        <div v-if="currentStep === 1">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Data de Admissão*</label
+              >
+              <input
+                v-model="formData.dataAdmissao"
+                type="date"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('dataAdmissao')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('dataAdmissao')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">Cargo*</label>
+              <input
+                v-model="formData.cargo"
+                type="text"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('cargo') ? 'border-red-500 bg-red-50' : '',
+                ]"
+                @input="clearInvalidState('cargo')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Nível Profissional*</label
+              >
+              <div class="space-y-3">
+                <select
+                  v-if="!isOutroNivelProfissional"
+                  v-model="formData.nivelProfissional"
+                  class="input-field"
+                  :class="[
+                    isFieldInvalid('nivelProfissional')
+                      ? 'border-red-500 bg-red-50'
+                      : '',
+                  ]"
+                  @change="handleNivelProfissionalChange"
+                  @input="clearInvalidState('nivelProfissional')"
+                  required
+                >
+                  <option value="">Selecione um nível</option>
+                  <option value="Junior">Júnior</option>
+                  <option value="Pleno">Pleno</option>
+                  <option value="Senior">Sênior</option>
+                  <option value="Estagiário">Estagiário</option>
+                  <option value="outro">Outro</option>
+                </select>
+                <div v-else class="space-y-2">
+                  <input
+                    v-model="formData.nivelProfissional"
+                    type="text"
+                    class="input-field"
+                    placeholder="Digite o nível profissional"
+                    :class="[
+                      isFieldInvalid('nivelProfissional')
+                        ? 'border-red-500 bg-red-50'
+                        : '',
+                    ]"
+                    @input="clearInvalidState('nivelProfissional')"
+                    required
+                  />
+                  <button
+                    @click="voltarSelectNivelProfissional"
+                    type="button"
+                    class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                  >
+                    <Icon icon="mdi:arrow-left" height="16" />
+                    Voltar para a lista
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Departamento*</label
+              >
+              <input
+                v-model="formData.departamento"
+                type="text"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('departamento')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('departamento')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2 required"
+                >Projeto Atual</label
+              >
+              <input
+                v-model="formData.projetoAtual"
+                type="text"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('projetoAtual')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('projetoAtual')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2 required"
+                >Gestor Projeto</label
+              >
+              <input
+                v-model="formData.gestorProjeto"
+                type="text"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('gestorProjeto')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('gestorProjeto')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2 required"
+                >Regime de Trabalho*</label
+              >
+              <div class="space-y-3">
+                <select
+                  v-if="!isOutroRegimeTrabalho"
+                  v-model="formData.regimeTrabalho"
+                  :class="[
+                    'input-field',
+                    isFieldInvalid('regimeTrabalho')
+                      ? 'border-red-500 bg-red-50'
+                      : '',
+                  ]"
+                  @change="handleRegimeTrabalhoChange"
+                  @input="clearInvalidState('regimeTrabalho')"
+                  required
+                >
+                  <option value="">Selecione um regime</option>
+                  <option value="Presencial">Presencial</option>
+                  <option value="Hibrido">Híbrido</option>
+                  <option value="Remoto">Remoto</option>
+                  <option value="outro">Outro</option>
+                </select>
+                <div v-else class="space-y-2">
+                  <input
+                    v-model="formData.regimeTrabalho"
+                    type="text"
+                    class="input-field"
+                    placeholder="Digite o regime de trabalho"
+                    :class="[
+                      isFieldInvalid('regimeTrabalho')
+                        ? 'border-red-500 bg-red-50'
+                        : '',
+                    ]"
+                    @input="clearInvalidState('regimeTrabalho')"
+                    required
+                  />
+                  <button
+                    @click="voltarSelectRegimeTrabalho"
+                    type="button"
+                    class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                  >
+                    <Icon icon="mdi:arrow-left" height="16" />
+                    Voltar para a lista
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2 required"
+                >Horário de Trabalho</label
+              >
+              <input
+                v-model="formData.horarioTrabalho"
+                type="text"
+                placeholder="Ex: 13h as 18h"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('horarioTrabalho')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('horarioTrabalho')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2 required"
+                >Jornada Semanal (h)*</label
+              >
+              <input
+                v-model="formData.jornadaSemanal"
+                type="number"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('jornadaSemanal')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('jornadaSemanal')"
+                required
+                min="0"
+                step="1"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 3: Remuneração e Benefícios -->
+        <div v-if="currentStep === 2">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">Remuneração*</label>
+              <input
+                v-model="formData.remuneracao"
+                type="text"
+                v-money="money"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('remuneracao')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('remuneracao')"
+                required
+              />
+            </div>
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Forma de Pagamento*</label
+              >
+              <select
+                v-model="formData.formaPagamento"
+                required
+                :class="[
+                  'input-field',
+                  isFieldInvalid('remuneracao')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('remuneracao')"
+              >
+                <option value="Transferência">Transferência</option>
+                <option value="PIX">PIX</option>
+              </select>
+            </div>
+
+            <div class="col-span-2">
+              <div class="grid grid-cols-2 gap-6">
+                <div
+                  v-if="formData.formaPagamento === 'PIX'"
+                  class="col-span-2"
+                >
+                  <label class="block text-lg font-medium mb-2"
+                    >Chave PIX</label
+                  >
+                  <input
+                    v-model="formData.chavePix"
+                    type="text"
+                    :class="[
+                      'input-field',
+                      isFieldInvalid('chavePix')
+                        ? 'border-red-500 bg-red-50'
+                        : '',
+                    ]"
+                    @input="clearInvalidState('chavePix')"
+                  />
+                </div>
+
+                <template v-if="formData.formaPagamento === 'Transferência'">
+                  <div class="col-span-1">
+                    <label class="block text-lg font-medium mb-2">Banco</label>
+                    <input
+                      v-model="formData.banco"
+                      type="text"
+                      :class="[
+                        'input-field',
+                        isFieldInvalid('banco')
+                          ? 'border-red-500 bg-red-50'
+                          : '',
+                      ]"
+                      @input="clearInvalidState('banco')"
+                    />
+                  </div>
+                  <div class="col-span-1">
+                    <label class="block text-lg font-medium mb-2"
+                      >Agência</label
+                    >
+                    <input
+                      v-model="formData.agencia"
+                      type="text"
+                      :class="[
+                        'input-field',
+                        isFieldInvalid('agencia')
+                          ? 'border-red-500 bg-red-50'
+                          : '',
+                      ]"
+                      @input="clearInvalidState('agencia')"
+                    />
+                  </div>
+                  <div class="col-span-1">
+                    <label class="block text-lg font-medium mb-2"
+                      >Número da Conta</label
+                    >
+                    <input
+                      v-model="formData.numeroConta"
+                      type="text"
+                      :class="[
+                        'input-field',
+                        isFieldInvalid('numeroConta')
+                          ? 'border-red-500 bg-red-50'
+                          : '',
+                      ]"
+                      @input="clearInvalidState('numeroConta')"
+                    />
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Plano de Saúde</label
+              >
+              <div class="flex items-center gap-4">
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    v-model="formData.planoSaude"
+                    :value="true"
+                    class="mr-2"
+                  />
+                  Sim
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    v-model="formData.planoSaude"
+                    :value="false"
+                    class="mr-2"
+                  />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <div class="col-span-1" v-if="formData.planoSaude">
+              <label class="block text-lg font-medium mb-2"
+                >Empresa Plano de Saúde</label
+              >
+              <input
+                v-model="formData.empresaPlanoSaude"
+                type="text"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('empresaPlanoSaude')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('empresaPlanoSaude')"
+              />
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Vale Transporte</label
+              >
+              <div class="flex items-center gap-4">
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    v-model="formData.valeTransporte"
+                    :value="true"
+                    class="mr-2"
+                  />
+                  Sim
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    v-model="formData.valeTransporte"
+                    :value="false"
+                    class="mr-2"
+                  />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <div class="col-span-1" v-if="formData.valeTransporte">
+              <label class="block text-lg font-medium mb-2"
+                >Valor Vale Transporte</label
+              >
+              <input
+                v-model="formData.valorValeTransporte"
+                type="text"
+                v-money="money"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('valorValeTransporte')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('valorValeTransporte')"
+              />
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Vale Alimentação</label
+              >
+              <div class="flex items-center gap-4">
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    v-model="formData.valeAlimentacao"
+                    :value="true"
+                    class="mr-2"
+                  />
+                  Sim
+                </label>
+                <label class="flex items-center">
+                  <input
+                    type="radio"
+                    v-model="formData.valeAlimentacao"
+                    :value="false"
+                    class="mr-2"
+                  />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <div class="col-span-1" v-if="formData.valeAlimentacao">
+              <label class="block text-lg font-medium mb-2"
+                >Valor Vale Alimentação</label
+              >
+              <input
+                v-model="formData.valorValeAlimentacao"
+                type="text"
+                v-money="money"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('valorValeAlimentacao')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('valorValeAlimentacao')"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Etapa 4: Documentos e Observações -->
+        <div v-if="currentStep === 3">
+          <div class="grid grid-cols-1 gap-6">
+            <div class="col-span-1">
+              <div class="w-full">
+                <h2 class="font-bold text-3xl mb-6">Documentos</h2>
+
+                <div class="col-span-2">
+                  <label class="block text-2xl font-semibold text-gray-700 mb-4"
+                    >Documentos</label
+                  >
+                  <div class="flex items-center justify-center w-full">
+                    <label
+                      class="flex flex-col items-center justify-center w-full h-64 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors duration-300"
+                    >
+                      <div
+                        class="flex flex-col items-center justify-center pt-5 pb-6"
+                      >
+                        <Icon
+                          icon="mdi:cloud-upload"
+                          height="48"
+                          class="text-blue-500 mb-4"
+                        />
+                        <p class="mb-2 text-xl text-blue-500">
+                          <span class="font-semibold"
+                            >Clique para fazer upload</span
+                          >
+                          ou arraste e solte
+                        </p>
+                        <p class="text-sm text-blue-400">
+                          PDF, DOCX, DOC, XLSX, CSV, JPG, PNG, RAR, ZIP (Máx.
+                          20MB)
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        multiple
+                        class="hidden"
+                        @change="handleFileUpload"
+                        accept=".pdf,.docx,.doc,.xlsx,.csv,.jpg,.png,.rar,.zip"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div
+                  v-if="formData.documentos && formData.documentos.length > 0"
+                  class="mt-6"
+                >
+                  <h4 class="text-xl font-medium mb-4 text-gray-700">
+                    Documentos Selecionados:
+                  </h4>
+                  <div class="space-y-3">
+                    <div
+                      v-for="(file, index) in formData.documentos"
+                      :key="index"
+                      class="flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-200"
+                    >
+                      <div class="flex items-center gap-3 flex-grow">
+                        <Icon
+                          icon="mdi:file-document-outline"
+                          class="text-blue-500 text-xl"
+                        />
+                        <input
+                          v-if="editingIndex === index"
+                          type="text"
+                          v-model="editingName"
+                          @blur="saveFileName(index)"
+                          @keyup.enter="saveFileName(index)"
+                          class="border border-blue-300 rounded px-3 py-2 flex-grow bg-white focus:outline-none focus:border-blue-500"
+                          ref="editInput"
+                        />
+                        <span v-else class="text-gray-700 text-lg">{{
+                          file.name
+                        }}</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <button
+                          @click="startEditing(index, file.name)"
+                          type="button"
+                          class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-100 rounded-full transition-colors"
+                          title="Editar nome"
+                        >
+                          <Icon icon="mdi:pencil" height="20" />
+                        </button>
+                        <button
+                          @click="removeFile(index)"
+                          type="button"
+                          class="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-full transition-colors"
+                          title="Remover"
+                        >
+                          <Icon icon="mdi:delete" height="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="isEdicao && documentosAtuais.length > 0"
+                  class="mt-8"
+                >
+                  <h3 class="text-2xl font-semibold mb-4 text-gray-700">
+                    Documentos Anexados
+                  </h3>
+                  <div class="flex flex-col gap-3">
+                    <div
+                      v-for="(doc, index) in documentosAtuais"
+                      :key="doc.path"
+                      class="bg-blue-50 rounded-lg p-4 flex justify-between items-center border border-blue-200"
+                    >
+                      <div class="flex items-center gap-3 flex-grow">
+                        <Icon
+                          icon="mdi:file-document-outline"
+                          class="text-blue-500 text-xl"
+                        />
+                        <input
+                          v-if="editingExistingIndex === index"
+                          type="text"
+                          v-model="editingExistingName"
+                          @blur="saveExistingFileName(index)"
+                          @keyup.enter="saveExistingFileName(index)"
+                          class="border border-blue-300 rounded px-3 py-2 flex-grow bg-white focus:outline-none focus:border-blue-500"
+                          ref="editExistingInput"
+                        />
+                        <span v-else class="text-gray-700 text-lg">{{
+                          doc.nome
+                        }}</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <button
+                          @click="startEditingExisting(index, doc.nome)"
+                          type="button"
+                          class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-100 rounded-full transition-colors"
+                          title="Editar nome"
+                        >
+                          <Icon icon="mdi:pencil" height="20" />
+                        </button>
+                        <a
+                          :href="doc.url"
+                          target="_blank"
+                          download
+                          class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-100 rounded-full transition-colors"
+                          title="Baixar"
+                        >
+                          <Icon icon="mdi:download" height="20" />
+                        </a>
+                        <button
+                          @click="deleteExistingDocument(doc)"
+                          type="button"
+                          class="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-full transition-colors"
+                          title="Excluir"
+                        >
+                          <Icon icon="mdi:delete" height="20" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2"
+                >Outros Benefícios</label
+              >
+              <textarea
+                v-model="formData.outrosBeneficios"
+                class="input-field"
+                rows="3"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('outrosBeneficios')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('outrosBeneficios')"
+              ></textarea>
+            </div>
+
+            <div class="col-span-1">
+              <label class="block text-lg font-medium mb-2">Observações</label>
+              <textarea
+                v-model="formData.observacao"
+                class="input-field"
+                rows="3"
+                :class="[
+                  'input-field',
+                  isFieldInvalid('observacao')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
+                @input="clearInvalidState('observacao')"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-8">
+          <button
+            type="button"
+            v-if="currentStep > 0"
+            @click="currentStep--"
+            class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Anterior
+          </button>
+          <button
+            type="button"
+            v-if="currentStep < steps.length - 1"
+            @click="nextStep"
+            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          >
+            Próximo
+          </button>
+          <button
+            type="submit"
+            v-if="currentStep === steps.length - 1"
+            class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          >
+            Salvar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { Icon } from "@iconify/vue";
+import { toast } from "vue3-toastify";
+import { api } from "../../services/api";
+import { mask } from "vue-the-mask";
+import { Money } from "v-money3";
+
+interface ContratoCLT {
+  id?: number;
+  matricula: string;
+  nomeCompleto: string;
+  cpf: string;
+  rg: string;
+  pis: string;
+  dataNascimento: string;
+  enderecoCompleto: string;
+  telefone: string;
+  emailPessoal: string;
+  dataAdmissao: string;
+  cargo: string;
+  nivelProfissional: string;
+  departamento: string;
+  projetoAtual: string | null;
+  gestorProjeto: string | null;
+  regimeTrabalho: string;
+  horarioTrabalho: string;
+  jornadaSemanal: number;
+  remuneracao: number;
+  formaPagamento: string;
+  chavePix: string | null;
+  banco: string | null;
+  agencia: string | null;
+  numeroConta: string | null;
+  planoSaude: boolean;
+  empresaPlanoSaude: string;
+  valeTransporte: boolean;
+  valorValeTransporte: number;
+  valeAlimentacao: boolean;
+  valorValeAlimentacao: number;
+  outrosBeneficios: string | null;
+  observacao: string | null;
+  documentos?: File[];
+}
+
+interface Documento {
+  path: string;
+  nome: string;
+  url: string;
+}
+
+const route = useRoute();
+const router = useRouter();
+const isEdicao = route.params.id !== undefined;
+const currentStep = ref(0);
+const steps = [
+  "Dados Pessoais",
+  "Dados Profissionais",
+  "Remuneração",
+  "Documentos",
+];
+
+const formData = ref<ContratoCLT>({
+  matricula: "",
+  nomeCompleto: "",
+  cpf: "",
+  rg: "",
+  pis: "",
+  dataNascimento: "",
+  enderecoCompleto: "",
+  telefone: "",
+  emailPessoal: "",
+  dataAdmissao: "",
+  cargo: "",
+  nivelProfissional: "",
+  departamento: "",
+  projetoAtual: null,
+  gestorProjeto: null,
+  regimeTrabalho: "Presencial",
+  horarioTrabalho: "",
+  jornadaSemanal: 40,
+  remuneracao: 0,
+  formaPagamento: "Transferência",
+  chavePix: null,
+  banco: null,
+  agencia: null,
+  numeroConta: null,
+  planoSaude: false,
+  empresaPlanoSaude: "",
+  valeTransporte: false,
+  valorValeTransporte: 0,
+  valeAlimentacao: false,
+  valorValeAlimentacao: 0,
+  outrosBeneficios: null,
+  observacao: null,
+});
+
+const money = {
+  decimal: ",",
+  thousands: ".",
+  prefix: "R$ ",
+  precision: 2,
+  masked: false,
+};
+
+const documentosAtuais = ref<Documento[]>([]);
+
+const editingIndex = ref<number | null>(null);
+const editingName = ref("");
+const editingExistingIndex = ref<number | null>(null);
+const editingExistingName = ref("");
+const editInput = ref<HTMLInputElement | null>(null);
+const editExistingInput = ref<HTMLInputElement | null>(null);
+
+const isOutroNivelProfissional = ref(false);
+const isOutroRegimeTrabalho = ref(false);
+
+const invalidFields = ref<Set<string>>(new Set());
+
+const handleFileUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files) {
+    const newFiles = Array.from(input.files);
+    formData.value.documentos = formData.value.documentos
+      ? [...formData.value.documentos, ...newFiles]
+      : newFiles;
+  }
+};
+
+const removeFile = (index: number) => {
+  formData.value.documentos?.splice(index, 1);
+};
+
+const nextStep = () => {
+  if (validateCurrentStep()) {
+    currentStep.value++;
+  }
+};
+
+const validateCurrentStep = (): boolean => {
+  const requiredFields: { [key: number]: string[] } = {
+    0: [
+      "matricula",
+      "nomeCompleto",
+      "cpf",
+      "rg",
+      "pis",
+      "dataNascimento",
+      "enderecoCompleto",
+      "telefone",
+      "emailPessoal",
+    ],
+    1: [
+      "dataAdmissao",
+      "cargo",
+      "nivelProfissional",
+      "departamento",
+      "regimeTrabalho",
+      "jornadaSemanal",
+      "projetoAtual",
+      "gestorProjeto",
+      "horarioTrabalho",
+    ],
+    2: ["remuneracao", "formaPagamento"],
+  };
+
+  const currentFields = requiredFields[currentStep.value] || [];
+  const missingFields = currentFields.filter(
+    (field) => !formData.value[field as keyof ContratoCLT]
+  );
+
+  invalidFields.value.clear();
+
+  missingFields.forEach((field) => invalidFields.value.add(field));
+
+  if (missingFields.length > 0) {
+    toast.error(`Por favor, preencha todos os campos obrigatórios`);
+    return false;
+  }
+
+  return true;
+};
+
+const isFieldInvalid = (fieldName: string): boolean => {
+  return invalidFields.value.has(fieldName);
+};
+
+const clearInvalidState = (fieldName: string) => {
+  invalidFields.value.delete(fieldName);
+};
+
+const handleSubmit = async () => {
+  try {
+    const formDataObj = new FormData();
+
+    Object.entries(formData.value).forEach(([key, value]) => {
+      if (key !== "documentos") {
+        formDataObj.append(key, value?.toString() || "");
+      }
+    });
+
+    if (formData.value.documentos) {
+      formData.value.documentos.forEach((file) => {
+        formDataObj.append("documentos", file);
+      });
+    }
+
+    const response = isEdicao
+      ? await api.put(`/contrato-clt/${route.params.id}`, formDataObj)
+      : await api.post("/contrato-clt", formDataObj);
+
+    toast.success(
+      isEdicao
+        ? "Contrato atualizado com sucesso!"
+        : "Contrato cadastrado com sucesso!"
+    );
+    router.push("/contratos/clt");
+  } catch (error) {
+    console.error("Erro ao salvar contrato:", error);
+    toast.error("Erro ao salvar contrato");
+  }
+};
+
+const carregarDocumentos = async (contratoId: number) => {
+  try {
+    const response = await api.get(`/contrato-clt/${contratoId}/documentos`);
+    documentosAtuais.value = response.data.documentos;
+  } catch (error) {
+    console.error("Erro ao carregar documentos:", error);
+    toast.error("Erro ao carregar documentos do contrato");
+  }
+};
+
+const startEditing = (index: number, fileName: string) => {
+  editingIndex.value = index;
+  editingName.value = fileName;
+  nextTick(() => {
+    if (editInput.value) {
+      editInput.value.focus();
+    }
+  });
+};
+
+const saveFileName = (index: number) => {
+  if (formData.value.documentos && editingName.value.trim()) {
+    const file = formData.value.documentos[index];
+    const newFile = new File([file], editingName.value, { type: file.type });
+    formData.value.documentos[index] = newFile;
+  }
+  editingIndex.value = null;
+};
+
+const startEditingExisting = (index: number, fileName: string) => {
+  editingExistingIndex.value = index;
+  editingExistingName.value = fileName;
+  nextTick(() => {
+    if (editExistingInput.value) {
+      editExistingInput.value.focus();
+    }
+  });
+};
+
+const saveExistingFileName = async (index: number) => {
+  if (!editingExistingName.value.trim()) {
+    editingExistingIndex.value = null;
+    return;
+  }
+
+  try {
+    const doc = documentosAtuais.value[index];
+    const fileName = doc.path.split("/").pop();
+
+    await api.put(`/contrato-clt/${route.params.id}/documentos/${fileName}`, {
+      novoNome: editingExistingName.value,
+    });
+
+    documentosAtuais.value[index] = {
+      ...doc,
+      nome: editingExistingName.value,
+      path: `/uploads/contrato_clt/${editingExistingName.value}`,
+    };
+
+    toast.success("Nome do documento atualizado com sucesso!");
+  } catch (error) {
+    console.error("Erro ao atualizar nome do documento:", error);
+    toast.error("Erro ao atualizar nome do documento");
+  }
+
+  editingExistingIndex.value = null;
+};
+
+const deleteExistingDocument = async (doc: Documento) => {
+  if (!confirm("Tem certeza que deseja excluir este documento?")) {
+    return;
+  }
+
+  try {
+    const fileName = doc.path.split("/").pop();
+    await api.delete(`/contrato-clt/${route.params.id}/documentos/${fileName}`);
+    documentosAtuais.value = documentosAtuais.value.filter(
+      (d) => d.path !== doc.path
+    );
+    toast.success("Documento excluído com sucesso!");
+  } catch (error) {
+    console.error("Erro ao excluir documento:", error);
+    toast.error("Erro ao excluir documento");
+  }
+};
+
+const handleNivelProfissionalChange = (event: Event) => {
+  const select = event.target as HTMLSelectElement;
+  if (select.value === "outro") {
+    isOutroNivelProfissional.value = true;
+    formData.value.nivelProfissional = "";
+  }
+};
+
+const handleRegimeTrabalhoChange = (event: Event) => {
+  const select = event.target as HTMLSelectElement;
+  if (select.value === "outro") {
+    isOutroRegimeTrabalho.value = true;
+    formData.value.regimeTrabalho = "";
+  }
+};
+
+const voltarSelectNivelProfissional = () => {
+  isOutroNivelProfissional.value = false;
+  formData.value.nivelProfissional = "";
+};
+
+const voltarSelectRegimeTrabalho = () => {
+  isOutroRegimeTrabalho.value = false;
+  formData.value.regimeTrabalho = "";
+};
+
+onMounted(async () => {
+  if (isEdicao) {
+    try {
+      const response = await api.get(`/contrato-clt/${route.params.id}`);
+      formData.value = {
+        ...response.data,
+        documentos: [],
+      };
+
+      const niveisDefault = ["Junior", "Pleno", "Senior", "Estágiario"];
+      const regimesDefault = ["Presencial", "Hibrido", "Remoto"];
+
+      if (!niveisDefault.includes(formData.value.nivelProfissional)) {
+        isOutroNivelProfissional.value = true;
+      }
+
+      if (!regimesDefault.includes(formData.value.regimeTrabalho)) {
+        isOutroRegimeTrabalho.value = true;
+      }
+
+      await carregarDocumentos(Number(route.params.id));
+    } catch (error) {
+      console.error("Erro ao carregar contrato:", error);
+      toast.error("Erro ao carregar contrato");
+      router.push("/contratos/clt");
+    }
+  }
+});
+</script>
+
+<style scoped>
+.input-field {
+  @apply focus:border-blue-400 
+         border-2 
+         transition-colors 
+         ease-in-out 
+         duration-300 
+         focus:border-2 
+         focus:outline-none 
+         focus:ring-0 
+         focus:ring-offset-0 
+         px-6 
+         py-3 
+         w-full 
+         border-gray-300 
+         rounded-md 
+         text-xl;
+  min-height: 3.5rem;
+}
+
+label {
+  @apply text-2xl font-semibold text-gray-700;
+}
+
+.section-title {
+  @apply text-4xl font-medium mb-6;
+}
+
+select {
+  @apply text-xl h-14;
+}
+
+textarea {
+  @apply text-xl;
+  min-height: 8rem;
+}
+
+button {
+  @apply text-xl py-4 px-8;
+  min-height: 3.5rem;
+}
+
+th {
+  @apply text-2xl font-semibold p-6;
+}
+
+td {
+  @apply text-xl p-6;
+}
+
+.step-number {
+  @apply w-12 h-12 text-2xl;
+}
+
+.step-text {
+  @apply text-2xl;
+}
+
+input[type="file"] {
+  @apply hidden;
+}
+
+label:hover .text-blue-500 {
+  @apply text-blue-600;
+}
+
+.drag-active {
+  @apply border-blue-500 bg-blue-100;
+}
+
+select.input-field {
+  @apply appearance-none bg-white;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.input-field.border-red-500 {
+  border-color: rgb(239 68 68);
+  background-color: rgb(254 242 242);
+}
+
+.input-field.border-red-500:focus {
+  border-color: rgb(239 68 68);
+  box-shadow: 0 0 0 1px rgb(254 202 202);
+}
+
+label.required::after {
+  content: "*";
+  @apply text-red-500 ml-1;
+}
+</style>

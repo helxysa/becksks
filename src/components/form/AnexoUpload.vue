@@ -25,7 +25,7 @@
     </div>
 
     <div v-if="successMessage" class="mt-4 text-[#2ecc71] font-medium animate-fadeInOut">
-      {{ successMessage }}
+      {{ successMessage }}  
     </div>
     <div v-if="errorMessage" class="mt-4 text-red-500 font-medium">
       {{ errorMessage }}
