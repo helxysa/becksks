@@ -1,20 +1,19 @@
 <template>
-  <div class="container mx-auto px-6 py-8">
+  <div class="w-full px-6 py-8">
     <div class="flex items-center mb-8">
       <router-link
         to="/contratos/clt"
         class="flex items-center text-blue-600 hover:text-blue-800"
       >
-        <Icon icon="mdi:arrow-left" height="24" />
-        <span class="ml-2">Voltar</span>
+        <Icon icon="mdi:arrow-left" height="35" />
       </router-link>
       <h1 class="text-4xl font-medium ml-8">
         {{ isEdicao ? "Editar" : "Novo" }} Contrato CLT
       </h1>
     </div>
 
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="mb-8">
+    <div class="bg-white rounded-lg shadow-lg p-8 w-full">
+      <div class="mb-12">
         <div class="flex justify-between items-center">
           <div
             v-for="(step, index) in steps"
@@ -23,7 +22,7 @@
           >
             <div
               :class="[
-                'w-10 h-10 rounded-full flex items-center justify-center text-lg font-medium',
+                'w-14 h-14 rounded-full flex items-center justify-center text-2xl font-medium',
                 currentStep > index
                   ? 'bg-green-500 text-white'
                   : currentStep === index
@@ -34,7 +33,7 @@
               {{ index + 1 }}
             </div>
             <span
-              class="ml-2 text-lg"
+              class="ml-3 text-2xl"
               :class="{
                 'text-green-500 font-medium': currentStep > index,
                 'text-blue-500 font-medium': currentStep === index,
@@ -45,7 +44,7 @@
             </span>
             <div
               v-if="index < steps.length - 1"
-              class="w-32 h-1 mx-4"
+              class="w-40 h-1 mx-4"
               :class="{
                 'bg-green-500': currentStep > index,
                 'bg-gray-200': currentStep <= index,
@@ -55,18 +54,18 @@
         </div>
       </div>
 
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleSubmit" class="w-full">
         <!-- Etapa 1: Dados Pessoais -->
         <div v-if="currentStep === 0">
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-2 gap-8 w-full">
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">Matrícula*</label>
+              <label class="block text-2xl font-medium mb-3">Matrícula*</label>
               <input
                 v-model="formData.matricula"
                 type="text"
                 placeholder="Digite o número da matricula"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('matricula') ? 'border-red-500 bg-red-50' : '',
                 ]"
                 @input="clearInvalidState('matricula')"
@@ -74,7 +73,7 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Nome Completo*</label
               >
               <input
@@ -82,7 +81,7 @@
                 type="text"
                 placeholder="Digite o nome completo"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('nomeCompleto')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -92,28 +91,28 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">CPF*</label>
+              <label class="block text-2xl font-medium mb-3">CPF*</label>
               <input
-                v-model="formData.cpf"
                 type="text"
-                placeholder="Digite o número do CPF"
-                v-mask="'###.###.###-##'"
+                :value="formatarCPF(formData.cpf)"
+                @input="handleCPFInput"
+                placeholder="000.000.000-00"
+                maxlength="14"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('cpf') ? 'border-red-500 bg-red-50' : '',
                 ]"
-                @input="clearInvalidState('cpf')"
                 required
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">RG*</label>
+              <label class="block text-2xl font-medium mb-3">RG*</label>
               <input
                 v-model="formData.rg"
                 placeholder="Digite o número do RG"
                 type="text"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('rg') ? 'border-red-500 bg-red-50' : '',
                 ]"
                 @input="clearInvalidState('rg')"
@@ -121,13 +120,13 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">PIS*</label>
+              <label class="block text-2xl font-medium mb-3">PIS*</label>
               <input
                 v-model="formData.pis"
                 type="text"
                 placeholder="Digite o número do PIS"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('pis') ? 'border-red-500 bg-red-50' : '',
                 ]"
                 @input="clearInvalidState('pis')"
@@ -135,15 +134,14 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Data de Nascimento*</label
               >
               <input
                 v-model="formData.dataNascimento"
                 type="date"
-
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('dataNascimento')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -153,15 +151,14 @@
               />
             </div>
             <div class="col-span-2">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Endereço Completo*</label
               >
               <input
                 v-model="formData.enderecoCompleto"
                 type="text"
-
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('enderecoCompleto')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -171,13 +168,13 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">Telefone*</label>
+              <label class="block text-2xl font-medium mb-3">Telefone*</label>
               <input
                 v-model="formData.telefone"
                 type="text"
                 v-mask="'(##) #####-####'"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('telefone') ? 'border-red-500 bg-red-50' : '',
                 ]"
                 @input="clearInvalidState('telefone')"
@@ -185,14 +182,14 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Email Pessoal*</label
               >
               <input
                 v-model="formData.emailPessoal"
                 type="email"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('emailPessoal')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -206,16 +203,16 @@
 
         <!-- Etapa 2: Dados Profissionais -->
         <div v-if="currentStep === 1">
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-2 gap-8 w-full">
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Data de Admissão*</label
               >
               <input
                 v-model="formData.dataAdmissao"
                 type="date"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('dataAdmissao')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -225,12 +222,12 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">Cargo*</label>
+              <label class="block text-2xl font-medium mb-3">Cargo*</label>
               <input
                 v-model="formData.cargo"
                 type="text"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('cargo') ? 'border-red-500 bg-red-50' : '',
                 ]"
                 @input="clearInvalidState('cargo')"
@@ -238,14 +235,14 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Nível Profissional*</label
               >
               <div class="space-y-3">
                 <select
                   v-if="!isOutroNivelProfissional"
                   v-model="formData.nivelProfissional"
-                  class="input-field"
+                  class="input-field text-xl"
                   :class="[
                     isFieldInvalid('nivelProfissional')
                       ? 'border-red-500 bg-red-50'
@@ -266,7 +263,7 @@
                   <input
                     v-model="formData.nivelProfissional"
                     type="text"
-                    class="input-field"
+                    class="input-field text-xl"
                     placeholder="Digite o nível profissional"
                     :class="[
                       isFieldInvalid('nivelProfissional')
@@ -288,14 +285,14 @@
               </div>
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Departamento*</label
               >
               <input
                 v-model="formData.departamento"
                 type="text"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('departamento')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -305,31 +302,28 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2 required"
-                >Projeto Atual</label
-              >
-              <input
+              <label class="block text-2xl font-medium mb-3">Projeto Atual*</label>
+              <select
                 v-model="formData.projetoAtual"
-                type="text"
-                :class="[
-                  'input-field',
-                  isFieldInvalid('projetoAtual')
-                    ? 'border-red-500 bg-red-50'
-                    : '',
-                ]"
-                @input="clearInvalidState('projetoAtual')"
+                class="input-field text-xl"
+                :class="[isFieldInvalid('projetoAtual') ? 'border-red-500 bg-red-50' : '']"
                 required
-              />
+              >
+                <option value="" disabled selected>Selecione um projeto</option>
+                <option v-for="projeto in projetos" :key="projeto.id" :value="projeto.projeto">
+                  {{ projeto.projeto }}
+                </option>
+              </select>
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2 required"
+              <label class="block text-2xl font-medium mb-3 required"
                 >Gestor Projeto</label
               >
               <input
                 v-model="formData.gestorProjeto"
                 type="text"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('gestorProjeto')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -339,7 +333,7 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2 required"
+              <label class="block text-2xl font-medium mb-3 required"
                 >Regime de Trabalho*</label
               >
               <div class="space-y-3">
@@ -347,7 +341,7 @@
                   v-if="!isOutroRegimeTrabalho"
                   v-model="formData.regimeTrabalho"
                   :class="[
-                    'input-field',
+                    'input-field text-xl',
                     isFieldInvalid('regimeTrabalho')
                       ? 'border-red-500 bg-red-50'
                       : '',
@@ -366,7 +360,7 @@
                   <input
                     v-model="formData.regimeTrabalho"
                     type="text"
-                    class="input-field"
+                    class="input-field text-xl"
                     placeholder="Digite o regime de trabalho"
                     :class="[
                       isFieldInvalid('regimeTrabalho')
@@ -388,7 +382,7 @@
               </div>
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2 required"
+              <label class="block text-2xl font-medium mb-3 required"
                 >Horário de Trabalho</label
               >
               <input
@@ -396,7 +390,7 @@
                 type="text"
                 placeholder="Ex: 13h as 18h"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('horarioTrabalho')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -406,14 +400,14 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2 required"
+              <label class="block text-2xl font-medium mb-3 required"
                 >Jornada Semanal (h)*</label
               >
               <input
                 v-model="formData.jornadaSemanal"
                 type="number"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('jornadaSemanal')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -429,32 +423,34 @@
 
         <!-- Etapa 3: Remuneração e Benefícios -->
         <div v-if="currentStep === 2">
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-2 gap-8 w-full">
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">Remuneração*</label>
+              <label class="block text-2xl font-medium mb-3"
+                >Remuneração*</label
+              >
               <input
-                v-model="formData.remuneracao"
+                :value="remuneracaoFormatada"
                 type="text"
-                v-money="money"
+                placeholder="R$ 0,00"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('remuneracao')
                     ? 'border-red-500 bg-red-50'
                     : '',
                 ]"
-                @input="clearInvalidState('remuneracao')"
+                @input="handleRemuneracaoInput"
                 required
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Forma de Pagamento*</label
               >
               <select
                 v-model="formData.formaPagamento"
                 required
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('remuneracao')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -467,19 +463,19 @@
             </div>
 
             <div class="col-span-2">
-              <div class="grid grid-cols-2 gap-6">
+              <div class="grid grid-cols-2 gap-8">
                 <div
                   v-if="formData.formaPagamento === 'PIX'"
                   class="col-span-2"
                 >
-                  <label class="block text-lg font-medium mb-2"
+                  <label class="block text-2xl font-medium mb-3"
                     >Chave PIX</label
                   >
                   <input
                     v-model="formData.chavePix"
                     type="text"
                     :class="[
-                      'input-field',
+                      'input-field text-xl',
                       isFieldInvalid('chavePix')
                         ? 'border-red-500 bg-red-50'
                         : '',
@@ -490,12 +486,12 @@
 
                 <template v-if="formData.formaPagamento === 'Transferência'">
                   <div class="col-span-1">
-                    <label class="block text-lg font-medium mb-2">Banco</label>
+                    <label class="block text-2xl font-medium mb-3">Banco</label>
                     <input
                       v-model="formData.banco"
                       type="text"
                       :class="[
-                        'input-field',
+                        'input-field text-xl',
                         isFieldInvalid('banco')
                           ? 'border-red-500 bg-red-50'
                           : '',
@@ -504,14 +500,14 @@
                     />
                   </div>
                   <div class="col-span-1">
-                    <label class="block text-lg font-medium mb-2"
+                    <label class="block text-2xl font-medium mb-3"
                       >Agência</label
                     >
                     <input
                       v-model="formData.agencia"
                       type="text"
                       :class="[
-                        'input-field',
+                        'input-field text-xl',
                         isFieldInvalid('agencia')
                           ? 'border-red-500 bg-red-50'
                           : '',
@@ -520,14 +516,14 @@
                     />
                   </div>
                   <div class="col-span-1">
-                    <label class="block text-lg font-medium mb-2"
+                    <label class="block text-2xl font-medium mb-3"
                       >Número da Conta</label
                     >
                     <input
                       v-model="formData.numeroConta"
                       type="text"
                       :class="[
-                        'input-field',
+                        'input-field text-xl',
                         isFieldInvalid('numeroConta')
                           ? 'border-red-500 bg-red-50'
                           : '',
@@ -540,7 +536,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Plano de Saúde</label
               >
               <div class="flex items-center gap-4">
@@ -566,14 +562,14 @@
             </div>
 
             <div class="col-span-1" v-if="formData.planoSaude">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Empresa Plano de Saúde</label
               >
               <input
                 v-model="formData.empresaPlanoSaude"
                 type="text"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('empresaPlanoSaude')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -583,7 +579,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Vale Transporte</label
               >
               <div class="flex items-center gap-4">
@@ -609,7 +605,7 @@
             </div>
 
             <div class="col-span-1" v-if="formData.valeTransporte">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Valor Vale Transporte</label
               >
               <input
@@ -617,7 +613,7 @@
                 type="text"
                 v-money="money"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('valorValeTransporte')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -627,7 +623,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Vale Alimentação</label
               >
               <div class="flex items-center gap-4">
@@ -653,7 +649,7 @@
             </div>
 
             <div class="col-span-1" v-if="formData.valeAlimentacao">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Valor Vale Alimentação</label
               >
               <input
@@ -661,7 +657,7 @@
                 type="text"
                 v-money="money"
                 :class="[
-                  'input-field',
+                  'input-field text-xl',
                   isFieldInvalid('valorValeAlimentacao')
                     ? 'border-red-500 bg-red-50'
                     : '',
@@ -674,7 +670,7 @@
 
         <!-- Etapa 4: Documentos e Observações -->
         <div v-if="currentStep === 3">
-          <div class="grid grid-cols-1 gap-6">
+          <div class="grid grid-cols-1 gap-8">
             <div class="col-span-1">
               <div class="w-full">
                 <h2 class="font-bold text-3xl mb-6">Documentos</h2>
@@ -744,7 +740,7 @@
                           class="border border-blue-300 rounded px-3 py-2 flex-grow bg-white focus:outline-none focus:border-blue-500"
                           ref="editInput"
                         />
-                        <span v-else class="text-gray-700 text-lg">{{
+                        <span v-else class="text-gray-700 text-xl">{{
                           file.name
                         }}</span>
                       </div>
@@ -797,7 +793,7 @@
                           class="border border-blue-300 rounded px-3 py-2 flex-grow bg-white focus:outline-none focus:border-blue-500"
                           ref="editExistingInput"
                         />
-                        <span v-else class="text-gray-700 text-lg">{{
+                        <span v-else class="text-gray-700 text-xl">{{
                           doc.nome
                         }}</span>
                       </div>
@@ -835,12 +831,12 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2"
+              <label class="block text-2xl font-medium mb-3"
                 >Outros Benefícios</label
               >
               <textarea
                 v-model="formData.outrosBeneficios"
-                class="input-field"
+                class="input-field text-xl"
                 rows="3"
                 :class="[
                   'input-field',
@@ -853,10 +849,10 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-lg font-medium mb-2">Observações</label>
+              <label class="block text-2xl font-medium mb-3">Observações</label>
               <textarea
                 v-model="formData.observacao"
-                class="input-field"
+                class="input-field text-xl"
                 rows="3"
                 :class="[
                   'input-field',
@@ -901,13 +897,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { toast } from "vue3-toastify";
 import { api } from "../../services/api";
 import { mask } from "vue-the-mask";
-import { Money } from "v-money3";
 
 interface ContratoCLT {
   id?: number;
@@ -950,6 +945,12 @@ interface Documento {
   path: string;
   nome: string;
   url: string;
+}
+
+interface Projeto {
+  id: number
+  projeto: string
+  // ... outros campos não são necessários para o select
 }
 
 const route = useRoute();
@@ -1019,6 +1020,17 @@ const isOutroNivelProfissional = ref(false);
 const isOutroRegimeTrabalho = ref(false);
 
 const invalidFields = ref<Set<string>>(new Set());
+
+const projetos = ref<Projeto[]>([])
+
+const fetchProjetos = async () => {
+  try {
+    const response = await api.get('/projetos')
+    projetos.value = response.data.data // acessando o array dentro de data
+  } catch (error) {
+    console.error('Erro ao buscar projetos:', error)
+  }
+}
 
 const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -1236,6 +1248,74 @@ const voltarSelectRegimeTrabalho = () => {
   formData.value.regimeTrabalho = "";
 };
 
+// Função para formatar o valor para exibição (R$)
+const formatarMoeda = (valor: string | number) => {
+  const numero =
+    typeof valor === "string"
+      ? parseFloat(valor.replace(/\D/g, "")) / 100
+      : valor;
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(numero);
+};
+
+// Função para limpar a formatação e retornar apenas o número com ponto
+const limparFormatacaoMoeda = (valor: string) => {
+  return valor
+    .replace(/\D/g, "")
+    .replace(/(\d{1,2})$/, ".$1")
+    .replace(/(?=(\d{3})+(\D))\B/g, "");
+};
+
+// Ref para controlar o valor formatado exibido no input
+const remuneracaoFormatada = ref("");
+
+// Watch para atualizar o valor formatado quando o valor real mudar
+watch(
+  () => formData.value.remuneracao,
+  (newValue) => {
+    if (newValue) {
+      remuneracaoFormatada.value = formatarMoeda(newValue);
+    }
+  },
+  { immediate: true }
+);
+
+// Função para atualizar o valor quando o usuário digitar
+const handleRemuneracaoInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const valorLimpo = limparFormatacaoMoeda(input.value);
+  formData.value.remuneracao = parseFloat(valorLimpo) || 0;
+  remuneracaoFormatada.value = formatarMoeda(valorLimpo);
+  clearInvalidState("remuneracao");
+};
+
+const formatarCPF = (cpf: string) => {
+  // Remove tudo que não é número
+  const numeros = cpf.replace(/\D/g, "");
+
+  // Aplica a máscara XXX.XXX.XXX-XX
+  return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+};
+
+const limparFormatacaoCPF = (cpf: string) => {
+  // Remove tudo que não é número
+  return cpf.replace(/\D/g, "");
+};
+
+const handleCPFInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const cpfLimpo = limparFormatacaoCPF(input.value);
+
+  // Salva no formData sem formatação
+  formData.value.cpf = cpfLimpo;
+
+  // Atualiza input com formatação
+  input.value = formatarCPF(cpfLimpo);
+  clearInvalidState("cpf");
+};
+
 onMounted(async () => {
   if (isEdicao) {
     try {
@@ -1263,6 +1343,8 @@ onMounted(async () => {
       router.push("/contratos/clt");
     }
   }
+
+  fetchProjetos()
 });
 </script>
 
@@ -1278,16 +1360,15 @@ onMounted(async () => {
          focus:ring-0 
          focus:ring-offset-0 
          px-6 
-         py-3 
+         py-4 
          w-full 
          border-gray-300 
-         rounded-md 
-         text-xl;
-  min-height: 3.5rem;
+         rounded-md;
+  min-height: 4rem;
 }
 
 label {
-  @apply text-2xl font-semibold text-gray-700;
+  @apply text-2xl font-medium text-gray-700;
 }
 
 .section-title {
@@ -1295,7 +1376,7 @@ label {
 }
 
 select {
-  @apply text-xl h-14;
+  @apply text-xl h-16;
 }
 
 textarea {
@@ -1305,7 +1386,7 @@ textarea {
 
 button {
   @apply text-xl py-4 px-8;
-  min-height: 3.5rem;
+  min-height: 4rem;
 }
 
 th {
@@ -1358,5 +1439,10 @@ select.input-field {
 label.required::after {
   content: "*";
   @apply text-red-500 ml-1;
+}
+
+select option[value=""][disabled] {
+  display: block;
+  color: #6B7280;
 }
 </style>

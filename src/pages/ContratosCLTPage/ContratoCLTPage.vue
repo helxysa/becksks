@@ -13,41 +13,41 @@
     </div>
 
     <div class="mt-8 px-6">
-      <table class="min-w-full bg-white rounded-lg overflow-hidden shadow-lg">
-        <thead class="bg-gray-100 h-20">
-          <tr>
+      <table class="w-full border-collapse mt-16">
+        <thead>
+          <tr class="bg-gray-100 border-b">
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-left text-2xl font-semibold text-gray-700"
             >
               Matrícula
             </th>
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-left text-2xl font-semibold text-gray-700"
             >
               Nome
             </th>
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-left text-2xl font-semibold text-gray-700"
             >
               CPF
             </th>
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-left text-2xl font-semibold text-gray-700"
             >
               Cargo
             </th>
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-left text-2xl font-semibold text-gray-700"
             >
               Departamento
             </th>
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-left text-2xl font-semibold text-gray-700"
             >
               Remuneração
             </th>
             <th
-              class="px-8 py-4 text-left text-2xl font-semibold text-gray-700"
+              class="py-3 px-4 text-center text-2xl font-semibold text-gray-700"
             >
               Ações
             </th>
@@ -57,46 +57,50 @@
           <tr
             v-for="contrato in contratos"
             :key="contrato.id"
-            class="hover:bg-gray-50"
+            class="border-b hover:bg-gray-50"
           >
-            <td class="px-8 py-6 text-xl text-gray-900">
+            <td class="py-3 px-4 text-2xl text-gray-700">
               {{ contrato.matricula }}
             </td>
-            <td class="px-8 py-6 text-xl text-gray-900">
+            <td class="py-3 px-4 text-2xl text-gray-700">
               {{ contrato.nomeCompleto }}
             </td>
-            <td class="px-8 py-6 text-xl text-gray-900">
+            <td class="py-3 px-4 text-2xl text-gray-700">
               {{ contrato.cpf }}
             </td>
-            <td class="px-8 py-6 text-xl text-gray-900">
+            <td class="py-3 px-4 text-2xl text-gray-700">
               {{ contrato.cargo }}
             </td>
-            <td class="px-8 py-6 text-xl text-gray-900">
+            <td class="py-3 px-4 text-2xl text-gray-700">
               {{ contrato.departamento }}
             </td>
-            <td class="px-8 py-6 text-xl text-gray-900">
+            <td class="py-3 px-4 text-2xl text-gray-700">
               {{ formatCurrency(contrato.remuneracao) }}
             </td>
-            <td class="px-8 py-6 text-xl text-gray-900">
-              <div class="flex gap-4">
+            <td class="py-3 px-4 text-2xl text-center text-gray-700">
+              <div class="flex items-center justify-center gap-2">
                 <button
                   @click="openInfoModal(contrato)"
-                  class="text-blue-600 hover:text-blue-800"
+                  class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                   title="Ver detalhes"
                 >
-                  <Icon icon="mdi:information-outline" height="28" />
+                  <Icon icon="ph:eye" width="2rem" class="text-slate-800" />
                 </button>
                 <router-link
                   :to="`/contratos/clt/editar/${contrato.id}`"
-                  class="text-blue-600 hover:text-blue-800"
+                  class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                 >
-                  <Icon icon="mdi:pencil" height="28" />
+                  <Icon icon="bx:edit" width="2rem" class="text-slate-800" />
                 </router-link>
                 <button
                   @click="excluirContrato(contrato.id)"
-                  class="text-red-600 hover:text-red-800"
+                  class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                 >
-                  <Icon icon="mdi:delete" height="28" />
+                  <Icon
+                    icon="ph:x-circle-bold"
+                    width="2rem"
+                    class="text-red-600 hover:text-red-700"
+                  />
                 </button>
               </div>
             </td>
