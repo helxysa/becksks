@@ -10,76 +10,80 @@
       <h1 class="text-4xl font-medium ml-8">Relatório de Férias</h1>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <!-- Card Período Aquisitivo -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Período Aquisitivo -->
+      <div class="bg-white rounded-lg shadow-lg p-6 space-y-4">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">
           Período Aquisitivo
         </h2>
         <div v-if="periodoAquisitivo">
           <div class="space-y-2">
-            <p class="text-lg text-gray-600">
-              Início: {{ formatarData(periodoAquisitivo.inicio) }}
+            <span class="text-lg font-medium text-gray-600">Início:</span>
+            <p class="text-xl text-gray-900">
+              {{ formatDate(periodoAquisitivo.inicio) }}
             </p>
-            <p class="text-lg text-gray-600">
-              Fim: {{ formatarData(periodoAquisitivo.fim) }}
+          </div>
+          <div class="space-y-2 mt-4">
+            <span class="text-lg font-medium text-gray-600">Fim:</span>
+            <p class="text-xl text-gray-900">
+              {{ formatDate(periodoAquisitivo.fim) }}
             </p>
-            <p class="text-lg text-gray-600">
-              Dias decorridos: {{ diasDecorridos }} dias
+          </div>
+          <div class="space-y-2 mt-4">
+            <span class="text-lg font-medium text-gray-600">Dias decorridos:</span>
+            <p class="text-xl text-gray-900">
+              {{ diasDecorridos }} dias
             </p>
-            <div
-              :class="[
-                'px-3 py-1 rounded-full text-sm font-medium inline-block',
-                {
-                  'bg-yellow-100 text-yellow-800':
-                    periodoAquisitivo.status === 'em_andamento',
-                  'bg-green-100 text-green-800':
-                    periodoAquisitivo.status === 'disponivel',
-                  'bg-red-100 text-red-800':
-                    periodoAquisitivo.status === 'vencido',
-                },
-              ]"
-            >
-              {{ getStatusLabel(periodoAquisitivo.status) }}
-            </div>
+          </div>
+          <div
+            class="mt-4 py-2 px-4 rounded-full text-sm font-medium inline-block"
+            :class="{
+              'bg-yellow-100 text-yellow-800': periodoAquisitivo.status === 'em_andamento',
+              'bg-green-100 text-green-800': periodoAquisitivo.status === 'disponivel',
+              'bg-red-100 text-red-800': periodoAquisitivo.status === 'vencido',
+            }"
+          >
+            {{ statusPeriodo(periodoAquisitivo.status) }}
           </div>
         </div>
         <div v-else class="text-gray-500 italic">
-          Nenhum período aquisitivo encontrado
+          Nenhum período aquisitivo disponível
         </div>
       </div>
 
-      <!-- Card Período Concessivo -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+      <!-- Período Concessivo -->
+      <div class="bg-white rounded-lg shadow-lg p-6 space-y-4">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">
           Período Concessivo
         </h2>
         <div v-if="periodoConcessivo">
           <div class="space-y-2">
-            <p class="text-lg text-gray-600">
-              Início: {{ formatarData(periodoConcessivo.inicio) }}
+            <span class="text-lg font-medium text-gray-600">Início:</span>
+            <p class="text-xl text-gray-900">
+              {{ formatDate(periodoConcessivo.inicio) }}
             </p>
-            <p class="text-lg text-gray-600">
-              Fim: {{ formatarData(periodoConcessivo.fim) }}
+          </div>
+          <div class="space-y-2 mt-4">
+            <span class="text-lg font-medium text-gray-600">Fim:</span>
+            <p class="text-xl text-gray-900">
+              {{ formatDate(periodoConcessivo.fim) }}
             </p>
-            <p class="text-lg text-gray-600">
-              Dias restantes: {{ diasRestantesConcessivo }} dias
+          </div>
+          <div class="space-y-2 mt-4">
+            <span class="text-lg font-medium text-gray-600">Dias restantes:</span>
+            <p class="text-xl text-gray-900">
+              {{ diasRestantes }} dias
             </p>
-            <div
-              :class="[
-                'px-3 py-1 rounded-full text-sm font-medium inline-block',
-                {
-                  'bg-yellow-100 text-yellow-800':
-                    periodoConcessivo.status === 'em_andamento',
-                  'bg-green-100 text-green-800':
-                    periodoConcessivo.status === 'disponivel',
-                  'bg-red-100 text-red-800':
-                    periodoConcessivo.status === 'vencido',
-                },
-              ]"
-            >
-              {{ getStatusLabel(periodoConcessivo.status) }}
-            </div>
+          </div>
+          <div
+            class="mt-4 py-2 px-4 rounded-full text-sm font-medium inline-block"
+            :class="{
+              'bg-yellow-100 text-yellow-800': periodoConcessivo.status === 'em_andamento',
+              'bg-green-100 text-green-800': periodoConcessivo.status === 'disponivel',
+              'bg-red-100 text-red-800': periodoConcessivo.status === 'vencido',
+            }"
+          >
+            {{ statusPeriodo(periodoConcessivo.status) }}
           </div>
         </div>
         <div v-else class="text-gray-500 italic">
@@ -87,20 +91,20 @@
         </div>
       </div>
 
-      <!-- Card Saldo de Férias -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+      <!-- Saldo de Férias -->
+      <div class="bg-white rounded-lg shadow-lg p-6 space-y-4">
         <h2 class="text-2xl font-semibold text-gray-800 mb-4">
           Saldo de Férias
         </h2>
         <div class="text-center">
-          <p class="text-4xl font-bold text-gray-800 mb-2">
+          <p class="text-5xl font-bold text-gray-800 mb-4">
             {{ totalDiasDisponiveis }}
           </p>
-          <p class="text-lg text-gray-600">dias disponíveis</p>
-          <div class="mt-4">
-            <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <p class="text-xl text-gray-600">dias disponíveis</p>
+          <div class="mt-6">
+            <div class="w-full bg-gray-200 rounded-full h-3">
               <div
-                class="bg-blue-600 h-2.5 rounded-full"
+                class="bg-blue-600 h-3 rounded-full"
                 :style="{
                   width: `${(totalDiasDisponiveis / 30) * 100}%`,
                 }"
@@ -110,27 +114,30 @@
         </div>
       </div>
 
-      <!-- Card Dias Gozados -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">Dias Gozados</h2>
+      <!-- Dias Gozados -->
+      <div class="bg-white rounded-lg shadow-lg p-6 space-y-4">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+          Dias Gozados
+        </h2>
         <div class="text-center">
-          <p class="text-4xl font-bold text-gray-800 mb-2">
+          <p class="text-5xl font-bold text-gray-800 mb-4">
             {{ diasGozados }}
           </p>
-          <p class="text-lg text-gray-600">dias gozados</p>
-          <p class="text-sm text-gray-500 mt-2">
-            {{ ultimoPeriodoGozado }}
+          <p class="text-xl text-gray-600">dias gozados</p>
+          <p v-if="ultimoPeriodoGozado" class="text-sm text-gray-500 mt-6">
+            Último: {{ formatDate(ultimoPeriodoGozado.periodoGozoInicio) }} a
+            {{ formatDate(ultimoPeriodoGozado.periodoGozoFim) }}
+          </p>
+          <p v-else class="text-sm text-gray-500 mt-6">
+            Nenhum período gozado
           </p>
         </div>
       </div>
     </div>
 
     <!-- Períodos Solicitados -->
-    <div
-      v-if="periodosGozados.length > 0"
-      class="bg-white rounded-lg shadow-lg p-6 mb-8"
-    >
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+    <div v-if="periodosGozados.length > 0" class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-3xl font-semibold text-gray-800 mb-6">
         Períodos Solicitados
       </h2>
       <div class="overflow-x-auto">
@@ -138,49 +145,54 @@
           <thead class="bg-gray-50">
             <tr>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                scope="col"
+                class="px-6 py-4 text-left text-lg font-medium text-gray-700 uppercase tracking-wider"
               >
                 Data Início
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                scope="col"
+                class="px-6 py-4 text-left text-lg font-medium text-gray-700 uppercase tracking-wider"
               >
                 Data Fim
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                scope="col"
+                class="px-6 py-4 text-left text-lg font-medium text-gray-700 uppercase tracking-wider"
               >
                 Dias
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                scope="col"
+                class="px-6 py-4 text-left text-lg font-medium text-gray-700 uppercase tracking-wider"
               >
                 Abono
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                scope="col"
+                class="px-6 py-4 text-left text-lg font-medium text-gray-700 uppercase tracking-wider"
               >
                 Status
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="(periodo, index) in periodosGozados" :key="index">
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ formatarData(new Date(periodo.periodoGozoInicio)) }}
+            <tr v-for="periodo in periodosGozados" :key="periodo.id">
+              <td class="px-6 py-5 whitespace-nowrap text-lg text-gray-800">
+                {{ formatDate(periodo.periodoGozoInicio) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ formatarData(new Date(periodo.periodoGozoFim)) }}
+              <td class="px-6 py-5 whitespace-nowrap text-lg text-gray-800">
+                {{ formatDate(periodo.periodoGozoFim) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-6 py-5 whitespace-nowrap text-lg text-gray-800">
                 {{ periodo.diasGozados }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-6 py-5 whitespace-nowrap text-lg text-gray-800">
                 {{ periodo.abonoPecuniario ? "Sim" : "Não" }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-6 py-5 whitespace-nowrap">
                 <span
-                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                  class="px-4 py-2 inline-flex text-base leading-5 font-semibold rounded-full bg-green-100 text-green-800"
                 >
                   Aprovado
                 </span>
@@ -193,91 +205,101 @@
 
     <!-- Formulário de Solicitação -->
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+      <h2 class="text-3xl font-semibold text-gray-800 mb-6">
         Solicitar Férias
       </h2>
-      <form @submit.prevent="submitForm" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form @submit.prevent="submitForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label class="block text-lg font-medium text-gray-700 mb-2">
+            <label
+              for="dataInicio"
+              class="block text-lg font-medium text-gray-700 mb-2"
+            >
               Data Início
             </label>
             <input
-              v-model="formData.periodoGozoInicio"
               type="date"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              id="dataInicio"
+              v-model="formData.periodoGozoInicio"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg py-3"
               required
               @change="calcularDiasSolicitados"
             />
           </div>
           <div>
-            <label class="block text-lg font-medium text-gray-700 mb-2">
+            <label
+              for="dataFim"
+              class="block text-lg font-medium text-gray-700 mb-2"
+            >
               Data Fim
             </label>
             <input
-              v-model="formData.periodoGozoFim"
               type="date"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              id="dataFim"
+              v-model="formData.periodoGozoFim"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg py-3"
               required
               @change="calcularDiasSolicitados"
             />
           </div>
         </div>
 
-        <div v-if="diasSolicitados > 0" class="bg-blue-50 p-4 rounded-md">
-          <p class="text-blue-800">
-            Você está solicitando <strong>{{ diasSolicitados }}</strong> dias de
-            férias.
-            <span
-              v-if="diasSolicitados > totalDiasDisponiveis"
-              class="text-red-600"
+        <div v-if="diasSolicitados > 0" class="mb-6">
+          <div 
+            class="p-4 rounded-md text-lg" 
+            :class="{
+              'bg-blue-50 text-blue-700': diasSolicitados <= totalDiasDisponiveis,
+              'bg-red-50 text-red-700': diasSolicitados > totalDiasDisponiveis
+            }"
+          >
+            <p>
+              Você está solicitando {{ diasSolicitados }} dias de férias.
+              <span v-if="diasSolicitados > totalDiasDisponiveis" class="font-bold">
+                (Excede o limite disponível de {{ totalDiasDisponiveis }} dias)
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <div class="flex items-center">
+            <input
+              id="abonoPecuniario"
+              type="checkbox"
+              v-model="formData.abonoPecuniario"
+              class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label
+              for="abonoPecuniario"
+              class="ml-2 block text-lg text-gray-700"
             >
-              (Excede o limite disponível de {{ totalDiasDisponiveis }} dias)
-            </span>
-          </p>
+              Abono Pecuniário
+            </label>
+          </div>
         </div>
 
-        <div class="flex items-center">
-          <input
-            v-model="formData.abonoPecuniario"
-            type="checkbox"
-            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label class="ml-2 text-lg text-gray-700">Abono Pecuniário</label>
-        </div>
-
-        <div v-if="formData.abonoPecuniario">
-          <label class="block text-lg font-medium text-gray-700 mb-2">
-            Dias de Abono
-          </label>
-          <input
-            v-model="formData.diasAbono"
-            type="number"
-            max="10"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <div>
-          <label class="block text-lg font-medium text-gray-700 mb-2">
+        <div class="mb-6">
+          <label
+            for="observacoes"
+            class="block text-lg font-medium text-gray-700 mb-2"
+          >
             Observações
           </label>
           <textarea
+            id="observacoes"
             v-model="formData.observacoes"
-            rows="3"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            rows="4"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
           ></textarea>
         </div>
 
         <div class="flex justify-end">
           <button
             type="submit"
-            :disabled="
-              !formValido || loading || diasSolicitados > totalDiasDisponiveis
-            "
-            class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            :disabled="loading || diasSolicitados > totalDiasDisponiveis || diasSolicitados <= 0"
           >
-            {{ loading ? "Enviando..." : "Solicitar Férias" }}
+            Solicitar Férias
           </button>
         </div>
       </form>
@@ -286,10 +308,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { toast } from "vue3-toastify";
 import { api } from "../../services/api";
 import { Icon } from "@iconify/vue";
+import { format, differenceInDays, addDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface Periodo {
   inicio: Date;
@@ -322,10 +346,10 @@ const props = defineProps<{
 }>();
 
 const loading = ref(false);
-const formValido = ref(true);
 const periodos = ref<Periodo[]>([]);
 const periodosGozados = ref<PeriodoGozado[]>([]);
 const diasGozados = ref(0);
+const totalDiasDisponiveis = ref(0);
 const diasSolicitados = ref(0);
 
 const formData = ref<FormData>({
@@ -338,7 +362,6 @@ const formData = ref<FormData>({
   observacoes: "",
 });
 
-// Computed properties para obter os períodos específicos
 const periodoAquisitivo = computed(() => {
   return periodos.value.find((p) => p.tipo === "aquisitivo");
 });
@@ -347,99 +370,59 @@ const periodoConcessivo = computed(() => {
   return periodos.value.find((p) => p.tipo === "concessivo");
 });
 
-// Dias decorridos no período aquisitivo
 const diasDecorridos = computed(() => {
   if (!periodoAquisitivo.value) return 0;
-
-  const inicio = new Date(periodoAquisitivo.value.inicio);
-  const hoje = new Date();
-  const fim = new Date(periodoAquisitivo.value.fim);
-
-  // Se já passou do fim do período, retorna o total de dias do período
-  if (hoje > fim) {
-    return Math.ceil(
-      (fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)
-    );
-  }
-
-  return Math.ceil((hoje.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24));
+  return differenceInDays(
+    new Date(),
+    new Date(periodoAquisitivo.value.inicio)
+  );
 });
 
-// Dias restantes no período concessivo
-const diasRestantesConcessivo = computed(() => {
+const diasRestantes = computed(() => {
   if (!periodoConcessivo.value) return 0;
-
-  const hoje = new Date();
-  const fim = new Date(periodoConcessivo.value.fim);
-
-  if (hoje > fim) return 0;
-
-  return Math.ceil((fim.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+  return differenceInDays(
+    new Date(periodoConcessivo.value.fim),
+    new Date()
+  );
 });
 
-// Total de dias disponíveis para férias
-const totalDiasDisponiveis = computed(() => {
-  let total = 0;
-
-  if (
-    periodoAquisitivo.value &&
-    periodoAquisitivo.value.status === "disponivel"
-  ) {
-    total += periodoAquisitivo.value.diasDisponiveis;
-  }
-
-  if (
-    periodoConcessivo.value &&
-    periodoConcessivo.value.status === "disponivel"
-  ) {
-    total += periodoConcessivo.value.diasDisponiveis;
-  }
-
-  // Subtrair dias já gozados
-  total = Math.max(0, total - diasGozados.value);
-
-  // Limitar a 30 dias
-  return Math.min(30, total);
-});
-
-// Último período gozado
 const ultimoPeriodoGozado = computed(() => {
-  if (periodosGozados.value.length === 0) {
-    return "Nenhum período gozado";
-  }
-
-  const ultimo = periodosGozados.value[0]; // Assumindo que estão ordenados por data
-  return `Último: ${formatarData(
-    new Date(ultimo.periodoGozoInicio)
-  )} a ${formatarData(new Date(ultimo.periodoGozoFim))}`;
+  if (periodosGozados.value.length === 0) return null;
+  return periodosGozados.value[0];
 });
 
-const formatarData = (data: Date): string => {
-  return data.toLocaleDateString("pt-BR");
+const formatDate = (date) => {
+  if (!date) return "";
+  return format(new Date(date), "dd/MM/yyyy", { locale: ptBR });
 };
 
-const getStatusLabel = (status: string): string => {
-  const labels = {
-    em_andamento: "Em Andamento",
-    disponivel: "Disponível",
-    vencido: "Vencido",
-  };
-  return labels[status as keyof typeof labels] || status;
+const statusPeriodo = (status) => {
+  switch (status) {
+    case "em_andamento":
+      return "Em Andamento";
+    case "disponivel":
+      return "Disponível";
+    case "vencido":
+      return "Vencido";
+    default:
+      return status;
+  }
 };
 
 const calcularDiasSolicitados = () => {
   if (formData.value.periodoGozoInicio && formData.value.periodoGozoFim) {
     const inicio = new Date(formData.value.periodoGozoInicio);
     const fim = new Date(formData.value.periodoGozoFim);
-
-    if (inicio > fim) {
-      toast.error("Data de início não pode ser posterior à data de fim");
+    
+    if (fim >= inicio) {
+      // Adicionar 1 porque o cálculo de diferença não inclui o último dia
+      diasSolicitados.value = differenceInDays(fim, inicio) + 1;
+    } else {
       diasSolicitados.value = 0;
-      return;
+      toast.error("A data final deve ser posterior à data inicial");
     }
-
-    const diffTime = Math.abs(fim.getTime() - inicio.getTime());
-    diasSolicitados.value = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  } else {
+    diasSolicitados.value = 0;
   }
 };
 
@@ -449,9 +432,11 @@ const carregarPeriodos = async () => {
     const response = await api.get(
       `/relatorio-ferias/contrato/${props.contratoId}`
     );
+    
+    console.log("Resposta completa da API:", response.data);
 
     if (response.data.periodos) {
-      periodos.value = response.data.periodos.map((p: any) => ({
+      periodos.value = response.data.periodos.map((p) => ({
         ...p,
         inicio: new Date(p.inicio),
         fim: new Date(p.fim),
@@ -463,30 +448,18 @@ const carregarPeriodos = async () => {
       diasGozados.value = response.data.diasGozados;
     }
 
-    // Carregar períodos gozados
-    if (
-      response.data.periodosGozados &&
-      Array.isArray(response.data.periodosGozados)
-    ) {
-      periodosGozados.value = response.data.periodosGozados.map((h: any) => ({
-        periodoGozoInicio: h.periodoGozoInicio,
-        periodoGozoFim: h.periodoGozoFim,
-        diasGozados:
-          Math.ceil(
-            (new Date(h.periodoGozoFim).getTime() -
-              new Date(h.periodoGozoInicio).getTime()) /
-              (1000 * 60 * 60 * 24)
-          ) + 1,
-        abonoPecuniario: h.abonoPecuniario,
-        status: "Aprovado",
-      }));
+    // Carregar dias disponíveis diretamente da API
+    if (response.data.diasDisponiveis !== undefined) {
+      console.log("Dias disponíveis recebidos da API:", response.data.diasDisponiveis);
+      totalDiasDisponiveis.value = response.data.diasDisponiveis;
+    } else {
+      console.log("Dias disponíveis não encontrados na resposta da API");
     }
 
-    console.log("Dados carregados:", {
-      periodos: periodos.value,
-      diasGozados: diasGozados.value,
-      periodosGozados: periodosGozados.value,
-    });
+    // Carregar períodos gozados
+    if (response.data.periodosGozados) {
+      periodosGozados.value = response.data.periodosGozados;
+    }
   } catch (error) {
     toast.error("Erro ao carregar períodos de férias");
     console.error(error);
@@ -496,17 +469,27 @@ const carregarPeriodos = async () => {
 };
 
 const submitForm = async () => {
-  if (diasSolicitados.value > totalDiasDisponiveis.value) {
-    toast.error(
-      `Você só pode solicitar até ${totalDiasDisponiveis.value} dias de férias`
-    );
-    return;
-  }
-
   try {
+    // Verificar se os dias solicitados excedem os disponíveis
+    if (diasSolicitados.value > totalDiasDisponiveis.value) {
+      toast.error(
+        `Você só pode solicitar até ${totalDiasDisponiveis.value} dias de férias`
+      );
+      return;
+    }
+
     loading.value = true;
-    await api.post("/relatorio-ferias", formData.value);
+    const response = await api.post("/relatorio-ferias", formData.value);
     toast.success("Solicitação de férias enviada com sucesso");
+
+    // Atualizar o saldo de férias e dias gozados com os valores retornados pela API
+    if (response.data.saldoFeriasAtual !== undefined) {
+      totalDiasDisponiveis.value = response.data.saldoFeriasAtual;
+    }
+    
+    if (response.data.diasGozados !== undefined) {
+      diasGozados.value = response.data.diasGozados;
+    }
 
     // Limpar formulário
     formData.value = {
@@ -518,16 +501,30 @@ const submitForm = async () => {
       valorAbono: 0,
       observacoes: "",
     };
+    
+    diasSolicitados.value = 0;
 
-    // Recarregar dados
+    // Recarregar dados para atualizar o saldo e períodos
     await carregarPeriodos();
   } catch (error) {
-    toast.error("Erro ao enviar solicitação de férias");
+    if (error.response && error.response.data && error.response.data.message) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Erro ao enviar solicitação de férias");
+    }
     console.error(error);
   } finally {
     loading.value = false;
   }
 };
+
+// Observar mudanças nas datas para calcular dias solicitados
+watch(
+  () => [formData.value.periodoGozoInicio, formData.value.periodoGozoFim],
+  () => {
+    calcularDiasSolicitados();
+  }
+);
 
 onMounted(() => {
   carregarPeriodos();

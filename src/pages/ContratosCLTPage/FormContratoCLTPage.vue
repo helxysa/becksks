@@ -305,25 +305,56 @@
               <label class="block text-2xl font-medium mb-3"
                 >Projeto Atual*</label
               >
-              <select
-                v-model="formData.projetoAtual"
-                class="input-field text-xl"
-                :class="[
-                  isFieldInvalid('projetoAtual')
-                    ? 'border-red-500 bg-red-50'
-                    : '',
-                ]"
-                required
-              >
-                <option value="" disabled selected>Selecione um projeto</option>
-                <option
-                  v-for="projeto in projetos"
-                  :key="projeto.id"
-                  :value="projeto.projeto"
+              <div class="relative">
+                <div 
+                  class="input-field text-xl flex flex-wrap gap-2 items-center cursor-text min-h-16"
+                  :class="[isFieldInvalid('projetoAtual') ? 'border-red-500 bg-red-50' : '']"
+                  @click="focusProjetoInput"
                 >
-                  {{ projeto.projeto }}
-                </option>
-              </select>
+                  <!-- Tags para projetos selecionados -->
+                  <div 
+                    v-for="(projeto, index) in projetosSelecionados" 
+                    :key="index"
+                    class="bg-blue-100 text-blue-800 px-3 py-1 rounded-md flex items-center gap-1"
+                  >
+                    <span>{{ projeto }}</span>
+                    <button 
+                      type="button" 
+                      @click.stop="removerProjeto(index)" 
+                      class="text-blue-600 hover:text-blue-800"
+                    >
+                      <Icon icon="mdi:close" height="16" />
+                    </button>
+                  </div>
+                  
+                  <!-- Input para busca -->
+                  <input
+                    ref="projetoInput"
+                    v-model="projetoBusca"
+                    type="text"
+                    placeholder="Digite para buscar projetos"
+                    class="flex-grow border-none focus:outline-none bg-transparent py-1 min-w-[120px]"
+                    @input="filtrarProjetos"
+                    @focus="mostrarDropdown = true"
+                    @blur="fecharDropdownComDelay"
+                  />
+                </div>
+                
+                <!-- Dropdown de projetos -->
+                <div 
+                  v-if="mostrarDropdown && projetosFiltrados.length > 0" 
+                  class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
+                >
+                  <div 
+                    v-for="projeto in projetosFiltrados" 
+                    :key="projeto.id"
+                    @mousedown.prevent="selecionarProjeto(projeto.projeto)"
+                    class="px-4 py-3 hover:bg-blue-50 cursor-pointer text-xl"
+                  >
+                    {{ projeto.projeto }}
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="col-span-1">
               <label class="block text-2xl font-medium mb-3 required"
@@ -937,11 +968,12 @@ import { useRoute, useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { toast } from "vue3-toastify";
 import { api } from "../../services/api";
-import { mask } from "vue-the-mask";
+// import { mask } from "vue-the-mask";
 import ConfirmationModal from "./modal/ConfirmationModal.vue";
 
 const showDeleteModal = ref(false);
 const documentToDelete = ref<{ index: number } | null>(null);
+const loading = ref(false);
 
 interface ContratoCLT {
   id?: number;
@@ -1062,6 +1094,12 @@ const invalidFields = ref<Set<string>>(new Set());
 
 const projetos = ref<Projeto[]>([]);
 
+const projetoInput = ref<HTMLInputElement | null>(null);
+const projetoBusca = ref('');
+const projetosFiltrados = ref<Projeto[]>([]);
+const mostrarDropdown = ref(false);
+const projetosSelecionados = ref<string[]>([]);
+
 const fetchProjetos = async () => {
   try {
     const response = await api.get("/projetos");
@@ -1145,33 +1183,47 @@ const clearInvalidState = (fieldName: string) => {
 
 const handleSubmit = async () => {
   try {
-    const formDataObj = new FormData();
-
-    Object.entries(formData.value).forEach(([key, value]) => {
-      if (key !== "documentos") {
-        formDataObj.append(key, value?.toString() || "");
+    loading.value = true;
+    
+    // Crie uma cópia do formData para manipulação
+    const dadosParaEnviar = { ...formData.value };
+    
+    // Certifique-se de que projetoAtual seja uma string válida
+    if (Array.isArray(projetosSelecionados.value) && projetosSelecionados.value.length > 0) {
+      dadosParaEnviar.projetoAtual = projetosSelecionados.value.join(',');
+    } else {
+      // Se não houver projetos selecionados, envie null ou string vazia
+      dadosParaEnviar.projetoAtual = '';
+    }
+    
+    // Remova propriedades undefined ou null
+    Object.keys(dadosParaEnviar).forEach(key => {
+      if (dadosParaEnviar[key] === undefined || dadosParaEnviar[key] === null) {
+        delete dadosParaEnviar[key];
       }
     });
-
-    if (formData.value.documentos) {
-      formData.value.documentos.forEach((file) => {
-        formDataObj.append("documentos", file);
-      });
+    
+    // Resto do código de envio
+    if (isEdicao) {
+      await api.put(`/contrato-clt/${route.params.id}`, dadosParaEnviar);
+      toast.success("Contrato atualizado com sucesso!");
+    } else {
+      await api.post("/contrato-clt", dadosParaEnviar);
+      toast.success("Contrato criado com sucesso!");
     }
-
-    const response = isEdicao
-      ? await api.put(`/contrato-clt/${route.params.id}`, formDataObj)
-      : await api.post("/contrato-clt", formDataObj);
-
-    toast.success(
-      isEdicao
-        ? "Contrato atualizado com sucesso!"
-        : "Contrato cadastrado com sucesso!"
-    );
+    
     router.push("/contratos/clt");
   } catch (error) {
     console.error("Erro ao salvar contrato:", error);
-    toast.error("Erro ao salvar contrato");
+    
+    // Exibir detalhes do erro se disponíveis
+    if (error.response && error.response.data && error.response.data.message) {
+      toast.error(`Erro: ${error.response.data.message}`);
+    } else {
+      toast.error("Erro ao salvar contrato. Verifique os dados e tente novamente.");
+    }
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -1385,6 +1437,61 @@ const handleCPFInput = (event: Event) => {
   clearInvalidState("cpf");
 };
 
+const focusProjetoInput = () => {
+  if (projetoInput.value) {
+    projetoInput.value.focus();
+  }
+};
+
+const filtrarProjetos = () => {
+  if (!projetoBusca.value.trim()) {
+    projetosFiltrados.value = projetos.value;
+    return;
+  }
+  
+  const busca = projetoBusca.value.toLowerCase();
+  projetosFiltrados.value = projetos.value.filter(
+    projeto => projeto.projeto.toLowerCase().includes(busca)
+  );
+};
+
+const selecionarProjeto = (projeto: string) => {
+  // Evita duplicatas
+  if (!projetosSelecionados.value.includes(projeto)) {
+    projetosSelecionados.value.push(projeto);
+    // Atualiza o formData com a string separada por vírgulas
+    formData.value.projetoAtual = projetosSelecionados.value.join(',');
+    clearInvalidState('projetoAtual');
+  }
+  projetoBusca.value = '';
+  filtrarProjetos();
+};
+
+const removerProjeto = (index: number) => {
+  projetosSelecionados.value.splice(index, 1);
+  formData.value.projetoAtual = projetosSelecionados.value.join(',');
+};
+
+const fecharDropdownComDelay = () => {
+  setTimeout(() => {
+    mostrarDropdown.value = false;
+  }, 200);
+};
+
+const inicializarProjetosSelecionados = () => {
+  if (formData.value.projetoAtual) {
+    // Certifique-se de que estamos lidando com uma string
+    const projetoString = String(formData.value.projetoAtual);
+    if (projetoString.trim()) {
+      projetosSelecionados.value = projetoString.split(',').map(p => p.trim()).filter(p => p !== '');
+    } else {
+      projetosSelecionados.value = [];
+    }
+  } else {
+    projetosSelecionados.value = [];
+  }
+};
+
 onMounted(async () => {
   if (isEdicao) {
     try {
@@ -1406,6 +1513,9 @@ onMounted(async () => {
       }
 
       await carregarDocumentos(Number(route.params.id));
+
+      // Inicializa os projetos selecionados após carregar os dados
+      inicializarProjetosSelecionados();
     } catch (error) {
       console.error("Erro ao carregar contrato:", error);
       toast.error("Erro ao carregar contrato");
@@ -1414,6 +1524,11 @@ onMounted(async () => {
   }
 
   fetchProjetos();
+  
+  // Inicializa os projetos filtrados com todos os projetos
+  watch(projetos, (newProjetos) => {
+    projetosFiltrados.value = newProjetos;
+  }, { immediate: true });
 });
 </script>
 

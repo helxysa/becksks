@@ -175,12 +175,19 @@
 
             <!-- Projeto e Gestão -->
             <div class="group">
-              <p class="text-lg text-gray-500 mb-1">Projeto Atual</p>
-              <p
-                class="text-2xl font-semibold text-gray-800 group-"
-              >
-                {{ contrato?.projetoAtual }}
-              </p>
+              <p class="text-lg text-gray-500 mb-1">Projetos Atuais</p>
+              <div class="flex flex-wrap gap-2 mt-2">
+                <span 
+                  v-for="(projeto, index) in projetosArray" 
+                  :key="index"
+                  class="inline-flex items-center px-3 py-1 rounded-full text-lg font-medium bg-blue-100 text-blue-800"
+                >
+                  {{ projeto }}
+                </span>
+                <span v-if="projetosArray.length === 0" class="text-2xl font-semibold text-gray-800">
+                  Nenhum projeto atribuído
+                </span>
+              </div>
             </div>
             <div class="group">
               <p class="text-lg text-gray-500 mb-1">Gestor do Projeto</p>
@@ -466,6 +473,11 @@ const formatarMoeda = (valor?: string) => {
 const voltar = () => {
   router.back();
 };
+
+const projetosArray = computed(() => {
+  if (!contrato.value?.projetoAtual) return [];
+  return contrato.value.projetoAtual.split(',').filter(p => p.trim() !== '');
+});
 
 onMounted(() => {
   carregarContrato();
