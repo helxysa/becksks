@@ -102,13 +102,13 @@
                     class="text-red-600 hover:text-red-700"
                   />
                 </button>
-                <button
+                <!-- <button
                   @click="criarRelatorioFerias(contrato.id)"
                   class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                   title="Gerar Relatório de Férias"
                 >
                   <Icon icon="mdi:beach" width="2rem" class="text-green-600" />
-                </button>
+                </button> -->
               </div>
             </td>
           </tr>

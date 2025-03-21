@@ -1,6 +1,6 @@
 <template>
   <div class="p-8">
-    <div class="flex items-center mb-8">
+    <!-- <div class="flex items-center mb-8">
       <router-link
         to="/contratos/clt"
         class="flex items-center text-blue-600 hover:text-blue-800"
@@ -8,7 +8,7 @@
         <Icon icon="mdi:arrow-left" height="35" />
       </router-link>
       <h1 class="text-4xl font-medium ml-8">Relatório de Férias</h1>
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Período Aquisitivo -->
@@ -204,16 +204,16 @@
     </div>
 
     <!-- Formulário de Solicitação -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h2 class="text-3xl font-semibold text-gray-800 mb-6">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h2 class="text-4xl font-semibold text-gray-800 mb-8">
         Solicitar Férias
       </h2>
       <form @submit.prevent="submitForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div>
             <label
               for="dataInicio"
-              class="block text-lg font-medium text-gray-700 mb-2"
+              class="block text-xl font-medium text-gray-700 mb-3"
             >
               Data Início
             </label>
@@ -221,7 +221,7 @@
               type="date"
               id="dataInicio"
               v-model="formData.periodoGozoInicio"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg py-3"
+              class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg py-3 px-4 bg-white hover:bg-gray-50 transition-colors"
               required
               @change="calcularDiasSolicitados"
             />
@@ -229,7 +229,7 @@
           <div>
             <label
               for="dataFim"
-              class="block text-lg font-medium text-gray-700 mb-2"
+              class="block text-xl font-medium text-gray-700 mb-3"
             >
               Data Fim
             </label>
@@ -237,16 +237,16 @@
               type="date"
               id="dataFim"
               v-model="formData.periodoGozoFim"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg py-3"
+              class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg py-3 px-4 bg-white hover:bg-gray-50 transition-colors"
               required
               @change="calcularDiasSolicitados"
             />
           </div>
         </div>
 
-        <div v-if="diasSolicitados > 0" class="mb-6">
+        <div v-if="diasSolicitados > 0" class="mb-8">
           <div 
-            class="p-4 rounded-md text-lg" 
+            class="p-6 rounded-md text-xl" 
             :class="{
               'bg-blue-50 text-blue-700': diasSolicitados <= totalDiasDisponiveis,
               'bg-red-50 text-red-700': diasSolicitados > totalDiasDisponiveis
@@ -261,27 +261,10 @@
           </div>
         </div>
 
-        <div class="mb-6">
-          <div class="flex items-center">
-            <input
-              id="abonoPecuniario"
-              type="checkbox"
-              v-model="formData.abonoPecuniario"
-              class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label
-              for="abonoPecuniario"
-              class="ml-2 block text-lg text-gray-700"
-            >
-              Abono Pecuniário
-            </label>
-          </div>
-        </div>
-
-        <div class="mb-6">
+        <div class="mb-8">
           <label
             for="observacoes"
-            class="block text-lg font-medium text-gray-700 mb-2"
+            class="block text-xl font-medium text-gray-700 mb-3"
           >
             Observações
           </label>
@@ -289,14 +272,14 @@
             id="observacoes"
             v-model="formData.observacoes"
             rows="4"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg"
+            class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg p-4 bg-white hover:bg-gray-50 transition-colors"
           ></textarea>
         </div>
 
         <div class="flex justify-end">
           <button
             type="submit"
-            class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="inline-flex justify-center py-3 px-8 border border-transparent shadow-md text-xl font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
             :disabled="loading || diasSolicitados > totalDiasDisponiveis || diasSolicitados <= 0"
           >
             Solicitar Férias
