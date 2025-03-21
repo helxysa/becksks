@@ -25,6 +25,10 @@ const ContratoCLTPage = () =>
   import("../pages/ContratosCLTPage/ContratoCLTPage.vue");
 const FormContratoCLTPage = () =>
   import("../pages/ContratosCLTPage/FormContratoCLTPage.vue");
+const FormRelatorioFerias = () =>
+  import("../pages/ContratosCLTPage/FormRelatorioFerias.vue");
+const ContratoCLTInfo = () =>
+  import("../pages/ContratosCLTPage/ContratoCLTInfo.vue");
 
 import Login from "@/pages/Login/Login.vue";
 import ChangePassword from "@/pages/Login/ChangePassword.vue";
@@ -90,6 +94,13 @@ const routes = [
     path: "/contratos/clt/editar/:id",
     name: "EditarContratoCLT",
     component: () => import("@/pages/ContratosCLTPage/FormContratoCLTPage.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/contratos/clt/:contratoId/ferias",
+    name: "RelatorioFerias",
+    component: FormRelatorioFerias,
+    props: true,
     meta: { requiresAuth: true },
   },
   {
@@ -165,18 +176,12 @@ const routes = [
     component: LogView,
     meta: { requiresAuth: true },
   },
-  // {
-  //   path: '/contratos/termo-aditivo/:id/editar',
-  //   name: 'EditarTermoAditivo',
-  //   component: () => import('../pages/ContratosPage/EditarTermoAditivo/EditarTermoAditivo.vue'),
-  //   props: true,
-  //   meta: {
-  //     requiresAuth: true
-  //   },
-  //   beforeEnter: async (to, from, next) => {
-  //     next();
-  //   }
-  // },
+  {
+    path: "/contratos/clt/:id",
+    name: "ContratoCLTInfo",
+    component: ContratoCLTInfo,
+    meta: { requiresAuth: true },
+  },
   {
     path: "/:pathMatch(.*)*",
     redirect: { name: "Dashboard" },

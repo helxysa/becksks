@@ -80,7 +80,7 @@
             <td class="py-3 px-4 text-2xl text-center text-gray-700">
               <div class="flex items-center justify-center gap-2">
                 <button
-                  @click="openInfoModal(contrato)"
+                  @click="verDetalhes(contrato.id)"
                   class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
                   title="Ver detalhes"
                 >
@@ -101,6 +101,13 @@
                     width="2rem"
                     class="text-red-600 hover:text-red-700"
                   />
+                </button>
+                <button
+                  @click="criarRelatorioFerias(contrato.id)"
+                  class="p-1 rounded transition-transform ease-in-out transform hover:-translate-y-[2px]"
+                  title="Gerar Relatório de Férias"
+                >
+                  <Icon icon="mdi:beach" width="2rem" class="text-green-600" />
                 </button>
               </div>
             </td>
@@ -439,6 +446,7 @@ import { usePermissions } from "../../composables/usePermission";
 import { toast } from "vue3-toastify";
 import { api } from "../../services/api";
 import ConfirmationModal from "./modal/ConfirmationModal.vue";
+import { useRouter } from "vue-router";
 
 const { hasPermission } = usePermissions();
 const contratos = ref([]);
@@ -448,6 +456,7 @@ const selectedContrato = ref(null);
 const documentos = ref<Array<{ path: string; nome: string; url: string }>>([]);
 const showConfirmationModal = ref(false);
 const contratoParaExcluir = ref<number | null>(null);
+const router = useRouter();
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat("pt-BR", {
@@ -511,6 +520,17 @@ const carregarDocumentos = async (contratoId: number) => {
     console.error("Erro ao carregar documentos:", error);
     toast.error("Erro ao carregar documentos do contrato");
   }
+};
+
+const criarRelatorioFerias = (contratoId: number) => {
+  console.log("Navegando para:", `/contratos/clt/${contratoId}/ferias`); // Debug
+  router.push(`/contratos/clt/${contratoId}/ferias`).catch((err) => {
+    console.error("Erro na navegação:", err);
+  });
+};
+
+const verDetalhes = (id: number) => {
+  router.push({ name: "ContratoCLTInfo", params: { id } });
 };
 
 // Observar mudanças no contrato selecionado

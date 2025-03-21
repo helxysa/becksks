@@ -302,15 +302,25 @@
               />
             </div>
             <div class="col-span-1">
-              <label class="block text-2xl font-medium mb-3">Projeto Atual*</label>
+              <label class="block text-2xl font-medium mb-3"
+                >Projeto Atual*</label
+              >
               <select
                 v-model="formData.projetoAtual"
                 class="input-field text-xl"
-                :class="[isFieldInvalid('projetoAtual') ? 'border-red-500 bg-red-50' : '']"
+                :class="[
+                  isFieldInvalid('projetoAtual')
+                    ? 'border-red-500 bg-red-50'
+                    : '',
+                ]"
                 required
               >
                 <option value="" disabled selected>Selecione um projeto</option>
-                <option v-for="projeto in projetos" :key="projeto.id" :value="projeto.projeto">
+                <option
+                  v-for="projeto in projetos"
+                  :key="projeto.id"
+                  :value="projeto.projeto"
+                >
                   {{ projeto.projeto }}
                 </option>
               </select>
@@ -539,131 +549,154 @@
               <label class="block text-2xl font-medium mb-3"
                 >Plano de Saúde</label
               >
-              <div class="flex items-center gap-4">
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    v-model="formData.planoSaude"
-                    :value="true"
-                    class="mr-2"
-                  />
-                  Sim
-                </label>
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    v-model="formData.planoSaude"
-                    :value="false"
-                    class="mr-2"
-                  />
-                  Não
-                </label>
+              <div class="grid grid-cols-2 gap-8">
+                <div class="flex gap-8 items-start">
+                  <div class="w-1/2">
+                    <label class="block text-2xl font-medium mb-3"
+                      >Plano de Saúde</label
+                    >
+                    <div class="flex items-center gap-4">
+                      <label class="flex items-center">
+                        <input
+                          type="radio"
+                          v-model="formData.planoSaude"
+                          :value="true"
+                          class="mr-2"
+                        />
+                        Sim
+                      </label>
+                      <label class="flex items-center">
+                        <input
+                          type="radio"
+                          v-model="formData.planoSaude"
+                          :value="false"
+                          class="mr-2"
+                        />
+                        Não
+                      </label>
+                    </div>
+                  </div>
+                  <div class="w-1/2">
+                    <label class="block text-2xl font-medium mb-3"
+                      >Empresa Plano de Saúde</label
+                    >
+                    <input
+                      v-model="formData.empresaPlanoSaude"
+                      type="text"
+                      :disabled="!formData.planoSaude"
+                      :class="[
+                        'input-field text-xl w-full',
+                        isFieldInvalid('empresaPlanoSaude')
+                          ? 'border-red-500 bg-red-50'
+                          : '',
+                        !formData.planoSaude
+                          ? 'bg-gray-100 cursor-not-allowed'
+                          : '',
+                      ]"
+                      @input="clearInvalidState('empresaPlanoSaude')"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex gap-8 items-start">
+                  <div class="w-1/2">
+                    <label class="block text-2xl font-medium mb-3"
+                      >Vale Transporte</label
+                    >
+                    <div class="flex items-center gap-4">
+                      <label class="flex items-center">
+                        <input
+                          type="radio"
+                          v-model="formData.valeTransporte"
+                          :value="true"
+                          class="mr-2"
+                        />
+                        Sim
+                      </label>
+                      <label class="flex items-center">
+                        <input
+                          type="radio"
+                          v-model="formData.valeTransporte"
+                          :value="false"
+                          class="mr-2"
+                        />
+                        Não
+                      </label>
+                    </div>
+                  </div>
+                  <div class="w-1/2">
+                    <label class="block text-2xl font-medium mb-3"
+                      >Valor Vale Transporte</label
+                    >
+                    <input
+                      v-model="formData.valorValeTransporte"
+                      type="text"
+                      placeholder="R$ 0,00"
+                      v-money="money"
+                      :disabled="!formData.valeTransporte"
+                      :class="[
+                        'input-field text-xl w-full',
+                        isFieldInvalid('valorValeTransporte')
+                          ? 'border-red-500 bg-red-50'
+                          : '',
+                        !formData.valeTransporte
+                          ? 'bg-gray-100 cursor-not-allowed'
+                          : '',
+                      ]"
+                      @input="clearInvalidState('valorValeTransporte')"
+                    />
+                  </div>
+                </div>
+
+                <div class="flex gap-8 items-start">
+                  <div class="w-1/2">
+                    <label class="block text-2xl font-medium mb-3"
+                      >Vale Alimentação</label
+                    >
+                    <div class="flex items-center gap-4">
+                      <label class="flex items-center">
+                        <input
+                          type="radio"
+                          v-model="formData.valeAlimentacao"
+                          :value="true"
+                          class="mr-2"
+                        />
+                        Sim
+                      </label>
+                      <label class="flex items-center">
+                        <input
+                          type="radio"
+                          v-model="formData.valeAlimentacao"
+                          :value="false"
+                          class="mr-2"
+                        />
+                        Não
+                      </label>
+                    </div>
+                  </div>
+                  <div class="w-1/2">
+                    <label class="block text-2xl font-medium mb-3"
+                      >Valor Vale Alimentação</label
+                    >
+                    <input
+                      v-model="formData.valorValeAlimentacao"
+                      type="text"
+                      v-money="money"
+                      :disabled="!formData.valeAlimentacao"
+                      :class="[
+                        'input-field text-xl w-full',
+                        isFieldInvalid('valorValeAlimentacao')
+                          ? 'border-red-500 bg-red-50'
+                          : '',
+                        !formData.valeAlimentacao
+                          ? 'bg-gray-100 cursor-not-allowed'
+                          : '',
+                      ]"
+                      @input="clearInvalidState('valorValeAlimentacao')"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div class="col-span-1" v-if="formData.planoSaude">
-              <label class="block text-2xl font-medium mb-3"
-                >Empresa Plano de Saúde</label
-              >
-              <input
-                v-model="formData.empresaPlanoSaude"
-                type="text"
-                :class="[
-                  'input-field text-xl',
-                  isFieldInvalid('empresaPlanoSaude')
-                    ? 'border-red-500 bg-red-50'
-                    : '',
-                ]"
-                @input="clearInvalidState('empresaPlanoSaude')"
-              />
-            </div>
-
-            <div class="col-span-1">
-              <label class="block text-2xl font-medium mb-3"
-                >Vale Transporte</label
-              >
-              <div class="flex items-center gap-4">
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    v-model="formData.valeTransporte"
-                    :value="true"
-                    class="mr-2"
-                  />
-                  Sim
-                </label>
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    v-model="formData.valeTransporte"
-                    :value="false"
-                    class="mr-2"
-                  />
-                  Não
-                </label>
-              </div>
-            </div>
-
-            <div class="col-span-1" v-if="formData.valeTransporte">
-              <label class="block text-2xl font-medium mb-3"
-                >Valor Vale Transporte</label
-              >
-              <input
-                v-model="formData.valorValeTransporte"
-                type="text"
-                v-money="money"
-                :class="[
-                  'input-field text-xl',
-                  isFieldInvalid('valorValeTransporte')
-                    ? 'border-red-500 bg-red-50'
-                    : '',
-                ]"
-                @input="clearInvalidState('valorValeTransporte')"
-              />
-            </div>
-
-            <div class="col-span-1">
-              <label class="block text-2xl font-medium mb-3"
-                >Vale Alimentação</label
-              >
-              <div class="flex items-center gap-4">
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    v-model="formData.valeAlimentacao"
-                    :value="true"
-                    class="mr-2"
-                  />
-                  Sim
-                </label>
-                <label class="flex items-center">
-                  <input
-                    type="radio"
-                    v-model="formData.valeAlimentacao"
-                    :value="false"
-                    class="mr-2"
-                  />
-                  Não
-                </label>
-              </div>
-            </div>
-
-            <div class="col-span-1" v-if="formData.valeAlimentacao">
-              <label class="block text-2xl font-medium mb-3"
-                >Valor Vale Alimentação</label
-              >
-              <input
-                v-model="formData.valorValeAlimentacao"
-                type="text"
-                v-money="money"
-                :class="[
-                  'input-field text-xl',
-                  isFieldInvalid('valorValeAlimentacao')
-                    ? 'border-red-500 bg-red-50'
-                    : '',
-                ]"
-                @input="clearInvalidState('valorValeAlimentacao')"
-              />
             </div>
           </div>
         </div>
@@ -766,10 +799,7 @@
                   </div>
                 </div>
 
-                <div
-                  v-if="isEdicao && documentosAtuais.length > 0"
-                  class="mt-8"
-                >
+                <div v-if="documentosAtuais.length > 0" class="mt-8">
                   <h3 class="text-2xl font-semibold mb-4 text-gray-700">
                     Documentos Anexados
                   </h3>
@@ -807,16 +837,15 @@
                           <Icon icon="mdi:pencil" height="20" />
                         </button>
                         <a
-                          :href="doc.url"
+                          :href="`${api.defaults.baseURL}/download/contrato-clt/${route.params.id}/documento/${doc.nome}`"
                           target="_blank"
-                          download
                           class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-100 rounded-full transition-colors"
                           title="Baixar"
                         >
                           <Icon icon="mdi:download" height="20" />
                         </a>
                         <button
-                          @click="deleteExistingDocument(doc)"
+                          @click="deleteExistingDocument(index)"
                           type="button"
                           class="text-red-600 hover:text-red-800 p-2 hover:bg-red-100 rounded-full transition-colors"
                           title="Excluir"
@@ -893,6 +922,12 @@
         </div>
       </form>
     </div>
+
+    <ConfirmationModal
+      :is-open="showDeleteModal"
+      :on-confirm="confirmDeleteDocument"
+      :on-cancel="cancelDeleteDocument"
+    />
   </div>
 </template>
 
@@ -903,6 +938,10 @@ import { Icon } from "@iconify/vue";
 import { toast } from "vue3-toastify";
 import { api } from "../../services/api";
 import { mask } from "vue-the-mask";
+import ConfirmationModal from "./modal/ConfirmationModal.vue";
+
+const showDeleteModal = ref(false);
+const documentToDelete = ref<{ index: number } | null>(null);
 
 interface ContratoCLT {
   id?: number;
@@ -948,8 +987,8 @@ interface Documento {
 }
 
 interface Projeto {
-  id: number
-  projeto: string
+  id: number;
+  projeto: string;
   // ... outros campos não são necessários para o select
 }
 
@@ -1021,16 +1060,16 @@ const isOutroRegimeTrabalho = ref(false);
 
 const invalidFields = ref<Set<string>>(new Set());
 
-const projetos = ref<Projeto[]>([])
+const projetos = ref<Projeto[]>([]);
 
 const fetchProjetos = async () => {
   try {
-    const response = await api.get('/projetos')
-    projetos.value = response.data.data // acessando o array dentro de data
+    const response = await api.get("/projetos");
+    projetos.value = response.data.data; // acessando o array dentro de data
   } catch (error) {
-    console.error('Erro ao buscar projetos:', error)
+    console.error("Erro ao buscar projetos:", error);
   }
-}
+};
 
 const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -1139,7 +1178,17 @@ const handleSubmit = async () => {
 const carregarDocumentos = async (contratoId: number) => {
   try {
     const response = await api.get(`/contrato-clt/${contratoId}/documentos`);
-    documentosAtuais.value = response.data.documentos;
+    if (response.data.documentos) {
+      const docs = response.data.documentos.split(",").map((path: string) => {
+        const nome = path.split("/").pop();
+        return {
+          path: path,
+          nome: nome,
+          url: `/download/contrato-clt/${contratoId}/documento/${nome}`,
+        };
+      });
+      documentosAtuais.value = docs;
+    }
   } catch (error) {
     console.error("Erro ao carregar documentos:", error);
     toast.error("Erro ao carregar documentos do contrato");
@@ -1182,13 +1231,20 @@ const saveExistingFileName = async (index: number) => {
   }
 
   try {
-    const doc = documentosAtuais.value[index];
-    const fileName = doc.path.split("/").pop();
+    const contratoId = route.params.id;
+    if (!contratoId) {
+      toast.error("ID do contrato não encontrado");
+      return;
+    }
 
-    await api.put(`/contrato-clt/${route.params.id}/documentos/${fileName}`, {
+    const doc = documentosAtuais.value[index];
+    const oldFileName = encodeURIComponent(doc.nome);
+
+    await api.put(`/contrato-clt/${contratoId}/documentos/${oldFileName}`, {
       novoNome: editingExistingName.value,
     });
 
+    // Atualiza o documento na lista local
     documentosAtuais.value[index] = {
       ...doc,
       nome: editingExistingName.value,
@@ -1204,22 +1260,35 @@ const saveExistingFileName = async (index: number) => {
   editingExistingIndex.value = null;
 };
 
-const deleteExistingDocument = async (doc: Documento) => {
-  if (!confirm("Tem certeza que deseja excluir este documento?")) {
-    return;
-  }
+const deleteExistingDocument = async (index: number) => {
+  documentToDelete.value = { index };
+  showDeleteModal.value = true;
+};
+
+const confirmDeleteDocument = async () => {
+  if (!documentToDelete.value) return;
 
   try {
-    const fileName = doc.path.split("/").pop();
+    const doc = documentosAtuais.value[documentToDelete.value.index];
+    const fileName = encodeURIComponent(doc.nome);
+
     await api.delete(`/contrato-clt/${route.params.id}/documentos/${fileName}`);
     documentosAtuais.value = documentosAtuais.value.filter(
-      (d) => d.path !== doc.path
+      (d) => d.nome !== doc.nome
     );
     toast.success("Documento excluído com sucesso!");
   } catch (error) {
     console.error("Erro ao excluir documento:", error);
     toast.error("Erro ao excluir documento");
+  } finally {
+    showDeleteModal.value = false;
+    documentToDelete.value = null;
   }
+};
+
+const cancelDeleteDocument = () => {
+  showDeleteModal.value = false;
+  documentToDelete.value = null;
 };
 
 const handleNivelProfissionalChange = (event: Event) => {
@@ -1344,7 +1413,7 @@ onMounted(async () => {
     }
   }
 
-  fetchProjetos()
+  fetchProjetos();
 });
 </script>
 
@@ -1443,6 +1512,6 @@ label.required::after {
 
 select option[value=""][disabled] {
   display: block;
-  color: #6B7280;
+  color: #6b7280;
 }
 </style>
